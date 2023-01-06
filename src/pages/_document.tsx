@@ -7,10 +7,10 @@ export default function Document() {
       <Head>
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png"></link>
-        <meta name="theme-color" content="#A78BFA" />
+        <meta name="theme-color" content="#fb7185" />
         <meta
           name="description"
-          content="Powered by paradise-code created by alimortazavimanesh.ir"
+          content="Powered by paradise-code created by alimortazavi.org"
         ></meta>
         <meta name="author" content="alimortazavimanesh.ir"></meta>
       </Head>
