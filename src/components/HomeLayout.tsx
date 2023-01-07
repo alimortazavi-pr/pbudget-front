@@ -31,12 +31,12 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
         dispatch(autoLogin(transformedData.token));
       } catch (err: any) {
         router.push("/get-started");
-        console.log(err);
       }
     } else if (!userAuthorization) {
       router.push("/get-started");
     }
   }, [dispatch, didTryAutoLogin]);
+
   return (
     <div>
       <Head>
