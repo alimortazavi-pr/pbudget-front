@@ -44,7 +44,7 @@ export default function BudgetDatePicker({
   function dateHandler(unix: string, formatted: string) {
     const date = moment(formatted, "jYYYY/jMM/jDD").format();
     const dateToTime = new Date(date).getTime();
-    setForm({ ...form, date: dateToTime.toString() });
+    setForm({ ...form, date: dateToTime?.toString() || "" });
   }
 
   return (

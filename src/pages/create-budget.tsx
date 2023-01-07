@@ -91,7 +91,7 @@ export default function CreateBudget({ categories }: createBudgetProps) {
   useEffect(() => {
     setPricePreview(
       convertToPersian(
-        priceGenerator(form.price.toString().split(",").join(""))
+        priceGenerator(form.price?.toString().split(",").join("") || "0")
       )
     );
   }, [form.price]);
@@ -215,7 +215,10 @@ export default function CreateBudget({ categories }: createBudgetProps) {
             form={form}
             setForm={setForm}
           />
-          <FormControl isInvalid={errors.paths.includes("category")} className="">
+          <FormControl
+            isInvalid={errors.paths.includes("category")}
+            className=""
+          >
             <Select
               options={categoriesOptions}
               onChange={(val: any) =>

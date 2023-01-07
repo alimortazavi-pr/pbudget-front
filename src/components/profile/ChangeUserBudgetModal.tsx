@@ -62,7 +62,7 @@ export default function ChangeUserBudgetModal({
   useEffect(() => {
     setPricePreview(
       convertToPersian(
-        priceGenerator(form.price.toString().split(",").join(""))
+        priceGenerator(form.price?.toString().split(",").join("") || "0")
       )
     );
   }, [form.price]);
