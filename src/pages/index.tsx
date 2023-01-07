@@ -110,7 +110,7 @@ export default function Index({
           <InformationBudget />
         </div>
         <ul>
-          {budgetsGlobal.map((budget) => (
+          {budgetsGlobal?.map((budget) => (
             <SingleBudget key={budget._id} budget={budget} />
           ))}
         </ul>

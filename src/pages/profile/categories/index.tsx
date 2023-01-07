@@ -41,7 +41,7 @@ export default function TheCategories({ categories }: theCategoriesProps) {
         </Button>
         <ul className="px-3 flex flex-col gap-x-2 gap-y-5 bg-white p-5 rounded-2xl md:rounded-md">
           {categories.length !== 0 ? (
-            categories.map((category) => (
+            categories?.map((category) => (
               <SingleCategory
                 key={category._id}
                 category={category}
