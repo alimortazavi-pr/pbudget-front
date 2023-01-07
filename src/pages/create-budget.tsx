@@ -79,7 +79,7 @@ export default function CreateBudget({ categories }: createBudgetProps) {
   //Effect
   useEffect(() => {
     let categoriesOptionsHandler: { value: string; label: string }[] = [];
-    categories.forEach((category) => {
+    categories?.forEach((category) => {
       categoriesOptionsHandler.push({
         value: category._id,
         label: category.title,

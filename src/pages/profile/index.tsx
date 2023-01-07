@@ -149,7 +149,7 @@ export default function TheProfile({}: theProfileProps) {
           <div className="flex items-end justify-start text-xl font-bold ltr-important mb-4">
             <span className="text-xs mr-1 text-white">تومان</span>
             <span className="text-white">
-              {convertToPersian(priceGenerator(user.budget))}
+              {convertToPersian(priceGenerator(user.budget || 0))}
             </span>
           </div>
           <Button

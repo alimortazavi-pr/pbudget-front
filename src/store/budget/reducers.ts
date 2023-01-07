@@ -35,7 +35,7 @@ const reducers = {
     return {
       ...state,
       budgets: [
-        ...state.budgets.filter((budget) => budget._id !== action.payload._id),
+        ...state.budgets?.filter((budget) => budget._id !== action.payload._id),
       ],
       totalCostPrice: newTotalCostPrice,
       totalIncomePrice: newTotalIncomePrice,
