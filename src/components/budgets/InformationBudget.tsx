@@ -66,7 +66,7 @@ export default function InformationBudget() {
         </div>
         <div className="text-lg font-semibold text-left">
           <span className="text-gray-800">
-            {convertToPersian(budgets.length || 0)}
+            {convertToPersian(budgets?.length || 0)}
           </span>
         </div>
       </div>

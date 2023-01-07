@@ -40,7 +40,7 @@ export default function TheCategories({ categories }: theCategoriesProps) {
           ایجاد دسته بندی
         </Button>
         <ul className="px-3 flex flex-col gap-x-2 gap-y-5 bg-white p-5 rounded-2xl md:rounded-md">
-          {categories.length !== 0 ? (
+          {categories?.length !== 0 ? (
             categories?.map((category) => (
               <SingleCategory
                 key={category._id}
