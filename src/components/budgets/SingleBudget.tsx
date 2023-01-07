@@ -74,7 +74,7 @@ export default function SingleBudget({ budget }: singleBudgetProps) {
         <div className="flex items-center justify-end">
           <div className="text-lg font-bold text-left">
             <span className="text-gray-800 leading-none">
-              {convertToPersian(priceGenerator(budget.price))}
+              {convertToPersian(priceGenerator(budget.price || 0))}
             </span>
             <span
               className={`text-sm mr-1 ${
@@ -110,7 +110,7 @@ export default function SingleBudget({ budget }: singleBudgetProps) {
             <span className="font-semibold">تاریخ:</span>
             <span className="font-medium">
               {convertToPersian(
-                moment(parseInt(budget.date)).format("jYYYY/jMM/jDD")
+                moment(parseInt(budget.date)).format("jYYYY/jMM/jDD") || 0
               )}
             </span>
           </div>

@@ -32,7 +32,7 @@ export default function InformationBudget() {
         <div className="flex items-end justify-start text-xl font-bold ltr-important">
           <span className="text-xs mr-1 text-white">تومان</span>
           <span className="text-white">
-            {convertToPersian(priceGenerator(user.budget))}
+            {convertToPersian(priceGenerator(user.budget || 0))}
           </span>
         </div>
       </div>
@@ -43,7 +43,7 @@ export default function InformationBudget() {
           </div>
           <div className="flex items-end justify-end text-lg font-bold">
             <span className="text-gray-800">
-              {convertToPersian(priceGenerator(totalIncomePrice))}
+              {convertToPersian(priceGenerator(totalIncomePrice || 0))}
             </span>
             <span className="text-xs mr-1 text-white">تومان</span>
           </div>
@@ -54,7 +54,7 @@ export default function InformationBudget() {
           </div>
           <div className="flex items-end justify-end text-lg font-bold">
             <span className="text-gray-800">
-              {convertToPersian(priceGenerator(totalCostPrice))}
+              {convertToPersian(priceGenerator(totalCostPrice || 0))}
             </span>
             <span className="text-xs mr-1 text-white">تومان</span>
           </div>
@@ -66,7 +66,7 @@ export default function InformationBudget() {
         </div>
         <div className="text-lg font-semibold text-left">
           <span className="text-gray-800">
-            {convertToPersian(budgets.length)}
+            {convertToPersian(budgets.length || 0)}
           </span>
         </div>
       </div>

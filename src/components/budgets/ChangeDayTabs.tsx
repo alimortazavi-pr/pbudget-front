@@ -95,9 +95,9 @@ export default function ChangeDayTabs() {
         <span>روز قبل</span>
       </div>
       <div className="flex items-center gap-2 text-gray-800 font-medium">
-        <span>{convertToPersian(oneToTwoNumber(date.day))}</span>
+        <span>{convertToPersian(oneToTwoNumber(date.day || 0) || 0)}</span>
         <span>{months[date.month]}</span>
-        <span>{convertToPersian(date.year)}</span>
+        <span>{convertToPersian(date.year || 0)}</span>
       </div>
       <div
         className="flex items-center gap-1 text-gray-800 font-medium cursor-pointer"

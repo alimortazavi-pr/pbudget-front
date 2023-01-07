@@ -36,7 +36,7 @@ export default function BudgetDatePicker({
       <Input
         focusBorderColor="red.400"
         {...props}
-        value={convertToPersian(dateValue)}
+        value={convertToPersian(dateValue || 0)}
       />
     );
   }
