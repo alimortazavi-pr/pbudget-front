@@ -81,7 +81,6 @@ export default function CreateCategoryModal({
           });
           setIsLoading(false);
           onClose();
-          router.replace(router.pathname);
         } catch (err: any) {
           toast.error(err.message, {
             position: toast.POSITION.TOP_CENTER,

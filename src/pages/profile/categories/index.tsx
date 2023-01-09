@@ -6,6 +6,9 @@ import { useState } from "react";
 import { ICategory } from "@/ts/interfaces/category.interface";
 import { theCategoriesProps } from "@/ts/types/category.type";
 
+//Categories
+import { categoriesSelector } from "@/store/category/selectors";
+
 //Components
 import TheNavigation from "@/components/layouts/TheNavigation";
 import SingleCategory from "@/components/categories/SingleCategory";
@@ -14,8 +17,12 @@ import EditCategoryModal from "@/components/categories/EditCategoryModal";
 
 //Tools
 import api from "@/api";
+import { useAppSelector } from "@/store/hooks";
 
-export default function TheCategories({ categories }: theCategoriesProps) {
+export default function TheCategories({}: theCategoriesProps) {
+  //Redux
+  const categories = useAppSelector(categoriesSelector);
+
   //ChakraUI
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {

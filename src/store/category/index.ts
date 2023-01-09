@@ -6,7 +6,9 @@ import { ICategoryState } from "@/ts/interfaces/category.interface";
 //Reducers
 import reducers from "@/store/category/reducers";
 
-const initialState: ICategoryState = {};
+const initialState: ICategoryState = {
+  categories: [],
+};
 
 export const categoryReducer = createSlice({
   name: "category",

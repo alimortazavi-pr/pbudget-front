@@ -1,4 +1,6 @@
-export interface ICategoryState {}
+export interface ICategoryState {
+  categories: ICategory[];
+}
 
 export interface ICategory {
   _id: string;

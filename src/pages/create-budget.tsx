@@ -23,8 +23,9 @@ import { ICategory } from "@/ts/interfaces/category.interface";
 import { budgetTypeEnum } from "@/ts/enums/budget.enum";
 
 //Redux
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { createBudget } from "@/store/budget/actions";
+import { categoriesSelector } from "@/store/category/selectors";
 
 //Components
 import TheNavigation from "@/components/layouts/TheNavigation";
@@ -43,9 +44,10 @@ import { createAndEditBudget } from "@/validators/budgetValidator";
 //Styles
 import CustomReactSelectStyle from "@/assets/styles/CustomReactSelectStyle";
 
-export default function CreateBudget({ categories }: createBudgetProps) {
+export default function CreateBudget({}: createBudgetProps) {
   //Redux
   const dispatch = useAppDispatch();
+  const categories = useAppSelector(categoriesSelector);
 
   //Next
   const router = useRouter();
@@ -268,30 +270,3 @@ export default function CreateBudget({ categories }: createBudgetProps) {
     </div>
   );
 }
-
-export const getServerSideProps: GetServerSideProps = async ({
-  req,
-  res,
-  query,
-}) => {
-  let categories: ICategory[] = [];
-  try {
-    if (req.cookies.userAuthorization) {
-      const transformedData = JSON.parse(req.cookies.userAuthorization);
-      const response = await api.get(`/categories`, {
-        headers: {
-          Authorization: `Bearer ${transformedData.token}`,
-        },
-      });
-      categories = response.data.categories;
-    }
-  } catch (error: any) {
-    console.log(error.response?.data);
-  }
-
-  return {
-    props: {
-      categories: categories,
-    },
-  };
-};

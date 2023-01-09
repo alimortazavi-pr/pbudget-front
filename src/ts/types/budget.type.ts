@@ -6,12 +6,9 @@ import {
 } from "../interfaces/budget.interface";
 import { ICategory } from "../interfaces/category.interface";
 
-export type createBudgetProps = {
-  categories: ICategory[];
-};
+export type createBudgetProps = {};
 
 export type editBudgetProps = {
-  categories: ICategory[];
   budget: IBudget;
 };
 

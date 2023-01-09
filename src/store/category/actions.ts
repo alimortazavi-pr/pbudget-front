@@ -6,7 +6,7 @@ import { AppThunk } from "@/store";
 import { categoryReducer } from "@/store/category";
 
 //Actions from reducer
-export const {} = categoryReducer.actions;
+export const { setCategories } = categoryReducer.actions;
 
 //Interfaces
 import {
@@ -18,6 +18,21 @@ import {
 import api from "@/api";
 
 //Actions from actions
+export function getCategories(): AppThunk {
+  return async (dispatch, getState) => {
+    try {
+      const res = await api.get(`/categories`, {
+        headers: {
+          Authorization: `Bearer ${getState().auth.token}`,
+        },
+      });
+      dispatch(setCategories(res.data.categories));
+    } catch (err: any) {
+      throw new Error(err.response.data.message);
+    }
+  };
+}
+
 export function createCategory(form: ICreateAndEditCategoryForm): AppThunk {
   return async (dispatch, getState) => {
     try {
@@ -26,6 +41,9 @@ export function createCategory(form: ICreateAndEditCategoryForm): AppThunk {
           Authorization: `Bearer ${getState().auth.token}`,
         },
       });
+      dispatch(
+        setCategories([...getState().category.categories, res.data.category])
+      );
     } catch (err: any) {
       throw new Error(err.response.data.message);
     }
@@ -43,6 +61,13 @@ export function editCategory(
           Authorization: `Bearer ${getState().auth.token}`,
         },
       });
+      dispatch(
+        setCategories([
+          ...getState().category.categories.map((cat) =>
+            cat._id === category._id ? res.data.category : cat
+          ),
+        ])
+      );
     } catch (err: any) {
       throw new Error(err.response.data.message);
     }
@@ -57,6 +82,13 @@ export function softDeleteCategory(category: ICategory): AppThunk {
           Authorization: `Bearer ${getState().auth.token}`,
         },
       });
+      dispatch(
+        setCategories([
+          ...getState().category.categories.filter(
+            (cat) => cat._id !== category._id
+          ),
+        ])
+      );
     } catch (err: any) {
       throw new Error(err.response.data.message);
     }

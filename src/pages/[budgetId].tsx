@@ -8,24 +8,22 @@ import {
   Switch,
   useDisclosure,
 } from "@chakra-ui/react";
-import { GetServerSideProps } from "next";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import Select from "react-select";
 import { useRouter } from "next/router";
 
 //Types
 import {
-  IBudget,
   ICreateAndEditBudgetForm,
   IValidationErrorsCreateAndEditBudgetForm,
 } from "@/ts/interfaces/budget.interface";
 import { editBudgetProps } from "@/ts/types/budget.type";
-import { ICategory } from "@/ts/interfaces/category.interface";
 import { budgetTypeEnum } from "@/ts/enums/budget.enum";
+import { categoriesSelector } from "@/store/category/selectors";
 
 //Redux
-import { useAppDispatch } from "@/store/hooks";
-import { createBudget, editBudget } from "@/store/budget/actions";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { editBudget } from "@/store/budget/actions";
 
 //Components
 import TheNavigation from "@/components/layouts/TheNavigation";
@@ -33,7 +31,6 @@ import CreateCategoryModal from "@/components/categories/CreateCategoryModal";
 import BudgetDatePicker from "@/components/budgets/BudgetDatePicker";
 
 //Tools
-import api from "@/api";
 import priceGenerator from "price-generator";
 import convertToPersian from "num-to-persian";
 import { toast } from "react-toastify";
@@ -44,9 +41,10 @@ import { createAndEditBudget } from "@/validators/budgetValidator";
 //Styles
 import CustomReactSelectStyle from "@/assets/styles/CustomReactSelectStyle";
 
-export default function EditBudget({ budget, categories }: editBudgetProps) {
+export default function EditBudget({ budget }: editBudgetProps) {
   //Redux
   const dispatch = useAppDispatch();
+  const categories = useAppSelector(categoriesSelector);
 
   //Next
   const router = useRouter();
@@ -96,7 +94,7 @@ export default function EditBudget({ budget, categories }: editBudgetProps) {
   useEffect(() => {
     setPricePreview(
       convertToPersian(
-        priceGenerator(form.price?.toString().split(",").join("") || '0')
+        priceGenerator(form.price?.toString().split(",").join("") || "0")
       )
     );
   }, [form.price]);
@@ -220,7 +218,10 @@ export default function EditBudget({ budget, categories }: editBudgetProps) {
             form={form}
             setForm={setForm}
           />
-          <FormControl isInvalid={errors.paths.includes("category")} className="">
+          <FormControl
+            isInvalid={errors.paths.includes("category")}
+            className=""
+          >
             <Select
               options={categoriesOptions}
               onChange={(val: any) =>
@@ -270,38 +271,3 @@ export default function EditBudget({ budget, categories }: editBudgetProps) {
     </div>
   );
 }
-
-export const getServerSideProps: GetServerSideProps = async ({
-  req,
-  res,
-  query,
-}) => {
-  let categories: ICategory[] = [];
-  let budget: IBudget | object = {};
-  try {
-    if (req.cookies.userAuthorization) {
-      const transformedData = JSON.parse(req.cookies.userAuthorization);
-      const budgetResponse = await api.get(`/budgets/${query.budgetId}`, {
-        headers: {
-          Authorization: `Bearer ${transformedData.token}`,
-        },
-      });
-      const categoriesResponse = await api.get(`/categories`, {
-        headers: {
-          Authorization: `Bearer ${transformedData.token}`,
-        },
-      });
-      budget = budgetResponse.data.budget;
-      categories = categoriesResponse.data.categories;
-    }
-  } catch (error: any) {
-    console.log(error.response?.data);
-  }
-
-  return {
-    props: {
-      categories: categories,
-      budget: budget,
-    },
-  };
-};

@@ -10,6 +10,7 @@ import {
   PopoverTrigger,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 //Types
 import { singleCategoryProps } from "@/ts/types/category.type";
@@ -33,6 +34,9 @@ export default function SingleCategory({
   //Next
   const router = useRouter();
 
+  //Sates
+  const [isLoading, setIsLoading] = useState<boolean>();
+
   //Functions
   function openCategoryEdit() {
     setCategoryEdit(category);
@@ -40,13 +44,15 @@ export default function SingleCategory({
   }
 
   async function deleteCategoryFunc() {
+    setIsLoading(true);
     try {
       await dispatch(softDeleteCategory(category));
-      router.replace("/profile/categories");
+      setIsLoading(false);
     } catch (err: any) {
       toast.success(err.message, {
         position: toast.POSITION.TOP_CENTER,
       });
+      setIsLoading(false);
     }
   }
 
@@ -71,7 +77,7 @@ export default function SingleCategory({
                 <PopoverTrigger>
                   <Trash size="18" className="text-rose-500" variant="Bulk" />
                 </PopoverTrigger>
-                <PopoverContent>
+                <PopoverContent  zIndex={'999'}>
                   <PopoverArrow />
                   <PopoverCloseButton />
                   <PopoverHeader>آیا مطمئن هستید؟</PopoverHeader>
@@ -85,7 +91,11 @@ export default function SingleCategory({
                   <PopoverFooter>
                     <div className="flex items-center gap-2">
                       <Button onClick={onClose}>لغو</Button>
-                      <Button colorScheme={"red"} onClick={deleteCategoryFunc}>
+                      <Button
+                        colorScheme={"red"}
+                        onClick={deleteCategoryFunc}
+                        isLoading={isLoading}
+                      >
                         حذف
                       </Button>
                     </div>

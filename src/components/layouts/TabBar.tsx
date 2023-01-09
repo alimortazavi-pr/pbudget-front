@@ -7,7 +7,7 @@ import { Add, Home, User } from "iconsax-react";
 
 export default function TabBar() {
   return (
-    <div className="px-4 w-screen h-14 fixed bottom-6 flex items-center justify-center">
+    <div className="px-4 w-screen h-14 fixed bottom-6 flex items-center justify-center z-10">
       <ul className="flex items-center gap-x-7 h-full bg-gray-500 bg-opacity-50 backdrop-blur-xl px-7 rounded-2xl">
         <li>
           <Link href={"/"}>

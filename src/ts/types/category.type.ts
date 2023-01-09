@@ -15,9 +15,7 @@ export type editCategoryModalProps = {
   setCategoryEdit: Dispatch<SetStateAction<ICategory | null | undefined>>;
 };
 
-export type theCategoriesProps = {
-  categories: ICategory[];
-};
+export type theCategoriesProps = {};
 
 export type singleCategoryProps = {
   category: ICategory;
