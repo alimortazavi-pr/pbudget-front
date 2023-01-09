@@ -62,7 +62,7 @@ export function signUp(form: ISignUpForm): AppThunk {
           user: res.data.user,
           token: res.data.token,
         })
-      );      
+      );
       dispatch(setProfile(res.data.user));
       saveDataToLocal(res.data.token, res.data.user);
     } catch (err: any) {

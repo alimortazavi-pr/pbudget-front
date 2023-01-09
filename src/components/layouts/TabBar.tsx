@@ -2,14 +2,17 @@ import Link from "next/link";
 import { IconButton } from "@chakra-ui/react";
 import { useEffect } from "react";
 
-//Icons
-import { Add, Home, User } from "iconsax-react";
+//Components
+import ProfileTabIcon from "./ProfileTabIcon";
+
+//Tools
+import { Add, Home } from "iconsax-react";
 
 export default function TabBar() {
   return (
     <div className="px-4 w-screen h-14 fixed bottom-6 flex items-center justify-center z-10">
       <ul className="flex items-center gap-x-7 h-full bg-gray-500 bg-opacity-50 backdrop-blur-xl px-7 rounded-2xl">
-        <li>
+        <li className="h-5 w-5 flex items-center justify-center">
           <Link href={"/"}>
             <Home size="20" className="text-white" />
           </Link>
@@ -30,11 +33,7 @@ export default function TabBar() {
             />
           </Link>
         </li>
-        <li>
-          <Link href={"/profile"}>
-            <User size="20" className="text-white" />
-          </Link>
-        </li>
+        <ProfileTabIcon />
       </ul>
     </div>
   );

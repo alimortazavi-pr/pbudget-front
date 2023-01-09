@@ -41,7 +41,7 @@ export default function TheProfile({}: theProfileProps) {
   const user = useAppSelector(userSelector);
 
   //Next
-  const router = useRouter()
+  const router = useRouter();
 
   //ChakraUI
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -257,17 +257,6 @@ export default function TheProfile({}: theProfileProps) {
             </Button>
           </div>
         </form>
-        <hr className="my-2" />
-        <Button
-          colorScheme="red"
-          className="w-full"
-          type="submit"
-          isLoading={isLoading}
-          size="lg"
-          onClick={() => router.push("/profile/categories")}
-        >
-          مدیریت دسته ها
-        </Button>
       </div>
       <ChangeUserBudgetModal
         isOpen={isOpen}
