@@ -110,7 +110,7 @@ export default function SingleBudget({ budget }: singleBudgetProps) {
             <span className="font-semibold">تاریخ:</span>
             <span className="font-medium">
               {convertToPersian(
-                moment(parseInt(budget.date)).format("jYYYY/jMM/jDD") || 0
+                moment(parseInt(budget.date)).utc().format("jYYYY/jMM/jDD") || 0
               )}
             </span>
           </div>

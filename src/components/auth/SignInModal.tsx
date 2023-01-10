@@ -10,9 +10,10 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
 //Types
 import { signUpAndSignInProps } from "@/ts/types/auth.type";
@@ -27,6 +28,9 @@ import { signInValidator } from "@/validators/authValidator";
 import { toast } from "react-toastify";
 import { signIn } from "@/store/auth/actions";
 
+//Components
+import ForgetPasswordModal from "./ForgetPasswordModal";
+
 export default function SignInModal({
   isOpen,
   onOpen,
@@ -35,6 +39,13 @@ export default function SignInModal({
 }: signUpAndSignInProps) {
   //Redux
   const dispatch = useAppDispatch();
+
+  //ChakraUI
+  const {
+    isOpen: isOpenForgetPassword,
+    onOpen: onOpenForgetPassword,
+    onClose: onCloseForgetPassword,
+  } = useDisclosure();
 
   //Next
   const router = useRouter();
@@ -61,6 +72,11 @@ export default function SignInModal({
   }, [email]);
 
   //Functions
+  function forgetPasswordModalHandler() {
+    onClose();
+    onOpenForgetPassword();
+  }
+
   function inputHandler(e: ChangeEvent<HTMLInputElement>) {
     setForm({
       ...form,
@@ -115,60 +131,74 @@ export default function SignInModal({
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>ورود</ModalHeader>
-        <ModalBody>
-          <FormControl
-            isInvalid={errors.paths.includes("email")}
-            variant={"floating"}
-            className="mb-4"
-          >
-            <Input
-              focusBorderColor="red"
-              placeholder=" "
-              type="text"
-              value={form.email}
-              onChange={inputHandler}
-              name="email"
-            />
-            <FormLabel>ایمیل</FormLabel>
-            <FormErrorMessage>
-              {errors.paths.includes("email") ? errors.messages.email : ""}
-            </FormErrorMessage>
-          </FormControl>
-          <FormControl
-            isInvalid={errors.paths.includes("password")}
-            variant={"floating"}
-            className="mb-4"
-          >
-            <Input
-              focusBorderColor="red.400"
-              placeholder=" "
-              type="password"
-              value={form.password}
-              onChange={inputHandler}
-              name="password"
-            />
-            <FormLabel>رمزعبور</FormLabel>
-            <FormErrorMessage>
-              {errors.paths.includes("password")
-                ? errors.messages.password
-                : ""}
-            </FormErrorMessage>
-          </FormControl>
-        </ModalBody>
+    <div>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>ورود</ModalHeader>
+          <ModalBody>
+            <FormControl
+              isInvalid={errors.paths.includes("email")}
+              variant={"floating"}
+              className="mb-4"
+            >
+              <Input
+                focusBorderColor="red"
+                placeholder=" "
+                type="text"
+                value={form.email}
+                onChange={inputHandler}
+                name="email"
+              />
+              <FormLabel>ایمیل</FormLabel>
+              <FormErrorMessage>
+                {errors.paths.includes("email") ? errors.messages.email : ""}
+              </FormErrorMessage>
+            </FormControl>
+            <FormControl
+              isInvalid={errors.paths.includes("password")}
+              variant={"floating"}
+              className="mb-2"
+            >
+              <Input
+                focusBorderColor="red.400"
+                placeholder=" "
+                type="password"
+                value={form.password}
+                onChange={inputHandler}
+                name="password"
+              />
+              <FormLabel>رمزعبور</FormLabel>
+              <FormErrorMessage>
+                {errors.paths.includes("password")
+                  ? errors.messages.password
+                  : ""}
+              </FormErrorMessage>
+            </FormControl>
+            <div
+              className="text-rose-400 text-xs font-semibold cursor-pointer max-w-max"
+              onClick={forgetPasswordModalHandler}
+            >
+              <span>رمزعبور خود را فراموش کرده اید؟</span>
+            </div>
+          </ModalBody>
 
-        <ModalFooter>
-          <Button colorScheme="gray" ml={3} onClick={onClose}>
-            بستن
-          </Button>
-          <Button isLoading={isLoading} onClick={submit} colorScheme="red">
-            ورود
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+          <ModalFooter>
+            <Button colorScheme="gray" ml={3} onClick={onClose}>
+              بستن
+            </Button>
+            <Button isLoading={isLoading} onClick={submit} colorScheme="red">
+              ورود
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      <ForgetPasswordModal
+        isOpen={isOpenForgetPassword}
+        onClose={onCloseForgetPassword}
+        email={email}
+        onOpen={onOpenForgetPassword}
+      />
+    </div>
   );
 }

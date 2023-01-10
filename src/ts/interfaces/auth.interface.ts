@@ -40,3 +40,31 @@ export interface IValidationErrorsSignInForm {
     password: string;
   };
 }
+
+export interface IForgetPasswordForm {
+  email: string;
+}
+
+export interface IValidationErrorsForgetPasswordForm {
+  paths: string[];
+  messages: {
+    email: string;
+  };
+}
+
+export interface IResetPasswordForm {
+  email: string;
+  code: string;
+  password: string;
+  passwordConfirmation: string;
+}
+
+export interface IValidationErrorsResetPasswordForm {
+  paths: string[];
+  messages: {
+    email: string;
+    code: string;
+    password: string;
+    passwordConfirmation: string;
+  };
+}

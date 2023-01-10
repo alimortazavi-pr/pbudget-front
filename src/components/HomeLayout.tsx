@@ -29,17 +29,19 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
 
   //Functions
   async function autoLoginAndGetCategoriesFunc() {
-    const userAuthorization = Cookies.get("userAuthorization");
-    if (userAuthorization && !didTryAutoLogin) {
-      const transformedData = JSON.parse(userAuthorization);
-      try {
-        await dispatch(autoLogin(transformedData.token));
-        await dispatch(getCategories());
-      } catch (err: any) {
+    if (router.pathname !== "/get-started") {
+      const userAuthorization = Cookies.get("userAuthorization");
+      if (userAuthorization && !didTryAutoLogin) {
+        const transformedData = JSON.parse(userAuthorization);
+        try {
+          await dispatch(autoLogin(transformedData.token));
+          await dispatch(getCategories());
+        } catch (err: any) {
+          router.push("/get-started");
+        }
+      } else if (!userAuthorization) {
         router.push("/get-started");
       }
-    } else if (!userAuthorization) {
-      router.push("/get-started");
     }
   }
 

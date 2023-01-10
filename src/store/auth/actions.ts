@@ -10,7 +10,12 @@ import { authReducer } from "@/store/auth";
 export const { authenticate, setDidTryAutoLogin, logOut } = authReducer.actions;
 
 //Interfaces
-import { ISignInForm, ISignUpForm } from "@/ts/interfaces/auth.interface";
+import {
+  IForgetPasswordForm,
+  IResetPasswordForm,
+  ISignInForm,
+  ISignUpForm,
+} from "@/ts/interfaces/auth.interface";
 
 //Tools
 import api from "@/api";
@@ -89,25 +94,29 @@ export function signIn(form: ISignInForm): AppThunk {
   };
 }
 
-export function sendMobileToResetPass(mobile: string): AppThunk {
+export function forgetPassword(form: IForgetPasswordForm): AppThunk {
   return async (dispatch) => {
     try {
-      await api.post("/auth/password/mobile", { mobile });
+      await api.post("/auth/forget-password", form);
     } catch (err: any) {
       throw new Error(err.response.data.message);
     }
   };
 }
 
-// export function resetPassword(form: FormResetPasswordInterface): AppThunk {
-//   return async (dispatch) => {
-//     try {
-//       await api.post("/auth/password/reset", form);
-//     } catch (err: any) {
-//       throw new Error(err.response.data.message);
-//     }
-//   };
-// }
+export function resetPassword(form: IResetPasswordForm): AppThunk {
+  return async (dispatch) => {
+    try {
+      await api.post("/auth/reset-password", {
+        email: form.email,
+        code: form.code,
+        password: form.password,
+      });
+    } catch (err: any) {
+      throw new Error(err.response.data.message);
+    }
+  };
+}
 
 //Functions
 function saveDataToLocal(token: string, user: object) {

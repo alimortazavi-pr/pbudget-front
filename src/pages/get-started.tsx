@@ -26,6 +26,7 @@ import { toast } from "react-toastify";
 
 //Validators
 import { checkEmailExistValidator } from "@/validators/authValidator";
+import ResetPasswordModal from "@/components/auth/ResetPasswordModal";
 
 export default function GetStarted() {
   //Redux
@@ -45,6 +46,11 @@ export default function GetStarted() {
     isOpen: isOpenSignIn,
     onOpen: onOpenSignIn,
     onClose: onCloseSignIn,
+  } = useDisclosure();
+  const {
+    isOpen: isOpenResetPassword,
+    onOpen: onOpenResetPassword,
+    onClose: onCloseResetPassword,
   } = useDisclosure();
 
   //States
@@ -69,6 +75,12 @@ export default function GetStarted() {
       window.scrollTo(0, document.body.scrollHeight);
     }, 100);
   }, []);
+
+  useEffect(() => {
+    if (router.query.email && router.query.code) {
+      onOpenResetPassword();
+    }
+  }, [router.query]);
 
   //Functions
   function inputHandler(e: ChangeEvent<HTMLInputElement>) {
@@ -184,6 +196,11 @@ export default function GetStarted() {
         onOpen={onOpenSignIn}
         onClose={onCloseSignIn}
         email={email}
+      />
+      <ResetPasswordModal
+        isOpen={isOpenResetPassword}
+        onOpen={onOpenResetPassword}
+        onClose={onCloseResetPassword}
       />
     </div>
   );

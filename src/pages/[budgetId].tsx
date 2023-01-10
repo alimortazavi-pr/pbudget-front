@@ -11,9 +11,11 @@ import {
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import Select from "react-select";
 import { useRouter } from "next/router";
+import { GetServerSideProps } from "next";
 
 //Types
 import {
+  IBudget,
   ICreateAndEditBudgetForm,
   IValidationErrorsCreateAndEditBudgetForm,
 } from "@/ts/interfaces/budget.interface";
@@ -34,6 +36,7 @@ import BudgetDatePicker from "@/components/budgets/BudgetDatePicker";
 import priceGenerator from "price-generator";
 import convertToPersian from "num-to-persian";
 import { toast } from "react-toastify";
+import api from "@/api";
 
 //Validators
 import { createAndEditBudget } from "@/validators/budgetValidator";
@@ -271,3 +274,30 @@ export default function EditBudget({ budget }: editBudgetProps) {
     </div>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  res,
+  query,
+}) => {
+  let budget: IBudget | object = {};
+  try {
+    if (req.cookies.userAuthorization) {
+      const transformedData = JSON.parse(req.cookies.userAuthorization);
+      const budgetResponse = await api.get(`/budgets/${query.budgetId}`, {
+        headers: {
+          Authorization: `Bearer ${transformedData.token}`,
+        },
+      });
+      budget = budgetResponse.data.budget;
+    }
+  } catch (error: any) {
+    console.log(error.response?.data);
+  }
+
+  return {
+    props: {
+      budget: budget,
+    },
+  };
+};

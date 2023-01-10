@@ -22,10 +22,15 @@ export default function BudgetDatePicker({
 
   //Effects
   useEffect(() => {
-    if (form.date) {
-      const date = moment(parseInt(form.date as string)).format(
-        "jYYYY/jMM/jDD"
-      );
+    if (form.date && !dateValue) {
+      const date = moment(parseInt(form.date as string))
+        .utc()
+        .format("jYYYY/jMM/jDD");
+      setDateValue(date);
+    } else if (dateValue) {
+      const date = moment(parseInt(form.date as string) + 24 * 60 * 60 * 1000)
+        .utc()
+        .format("jYYYY/jMM/jDD");
       setDateValue(date);
     }
   }, [form.date]);
