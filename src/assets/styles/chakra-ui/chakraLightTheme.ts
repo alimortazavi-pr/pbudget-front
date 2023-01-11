@@ -1,11 +1,25 @@
 import { extendTheme } from "@chakra-ui/react";
 import { Dict } from "@chakra-ui/utils";
 
-const extendChakraTheme: Dict = extendTheme({
+const chakraLightTheme: Dict = extendTheme({
   direction: "rtl",
   config: {
-    initialColorMode: "dark",
+    initialColorMode: "light",
     useSystemColorMode: false,
+  },
+  colors: {
+    rose: {
+      50: "#fff1f2",
+      100: "#ffe4e6",
+      200: "#fecdd3",
+      300: "#fda4af",
+      400: "#fb7185",
+      500: "#f43f5e",
+      600: "#e11d48",
+      700: "#be123c",
+      800: "#881337",
+      900: "#1a202c",
+    },
   },
   components: {
     Form: {
@@ -40,4 +54,4 @@ const extendChakraTheme: Dict = extendTheme({
   },
 });
 
-export default extendChakraTheme;
+export default chakraLightTheme;

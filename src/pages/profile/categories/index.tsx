@@ -39,14 +39,14 @@ export default function TheCategories({}: theCategoriesProps) {
       <TheNavigation title="مدیریت دسته ها" isEnabledPreviousPage />
       <div className="px-2 md:px-0 w-full max-w-md">
         <Button
-          colorScheme="red"
+          colorScheme={"rose"}
           className="w-full mb-2"
           type="submit"
           onClick={onOpen}
         >
           ایجاد دسته بندی
         </Button>
-        <ul className="px-3 flex flex-col gap-x-2 gap-y-5 bg-white p-5 rounded-2xl md:rounded-md">
+        <ul className="px-3 flex flex-col gap-x-2 gap-y-5 bg-white dark:bg-gray-800 p-5 rounded-2xl md:rounded-md">
           {categories?.length !== 0 ? (
             categories?.map((category) => (
               <SingleCategory

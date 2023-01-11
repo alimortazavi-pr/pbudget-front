@@ -37,7 +37,7 @@ export default function InformationBudget() {
         </div>
       </div>
       <div className="flex flex-col md:flex-row items-center gap-2 mb-2">
-        <div className="flex-1 w-full overflow-y-auto rounded-lg py-2 px-2 bg-teal-400">
+        <div className="flex-1 w-full overflow-y-auto rounded-lg py-2 px-2 bg-teal-400 dark:bg-teal-400">
           <div className="text-lg font-semibold text-white md:mb-3">
             <span>مجموع دریافتی ها</span>
           </div>
@@ -48,7 +48,7 @@ export default function InformationBudget() {
             <span className="text-xs mr-1 text-white">تومان</span>
           </div>
         </div>
-        <div className="flex-1 w-full overflow-y-auto rounded-lg bg-rose-400 py-2 px-2">
+        <div className="flex-1 w-full overflow-y-auto rounded-lg bg-rose-400 dark:bg-rose-400 py-2 px-2">
           <div className="text-lg font-semibold text-white md:mb-3">
             <span>مجموع پرداختی ها</span>
           </div>
@@ -60,7 +60,7 @@ export default function InformationBudget() {
           </div>
         </div>
       </div>
-      <div className="w-full flex items-center justify-between bg-cyan-400 rounded-lg py-1 px-2">
+      <div className="w-full flex items-center justify-between bg-cyan-400 dark:bg-cyan-400 rounded-lg py-1 px-2">
         <div className="text-base font-bold text-white">
           <span>تعداد تراکنش ها</span>
         </div>

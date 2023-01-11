@@ -16,3 +16,37 @@
 .ltr-important {
   direction: ltr !important;
 }
+
+/* react select */
+@layer components {
+  /* .my-react-select-container {
+  } */
+  .my-react-select-container .my-react-select__control {
+    @apply bg-white dark:bg-gray-800 min-h-[2.5rem] border-gray-200 dark:border-white rounded-[0.375rem] border-[1px] hover:border-gray-400 dark:hover:border-gray-500 focus:border-rose-400;
+  }
+
+  .my-react-select-container .my-react-select__control--is-focused {
+    @apply border-rose-400 hover:border-gray-500 dark:border-rose-400 dark:hover:border-gray-400 shadow-none;
+  }
+
+  .my-react-select-container .my-react-select__menu {
+    @apply bg-white dark:bg-gray-800 border-[1px] border-gray-300 dark:border-gray-600;
+  }
+
+  .my-react-select-container .my-react-select__option {
+    @apply text-gray-600 dark:text-gray-200 bg-white hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-800;
+  }
+  /* .my-react-select-container .my-react-select__option--is-focused {
+    @apply bg-gray-200 dark:bg-gray-800;
+  } */
+
+  .my-react-select-container .my-react-select__indicator-separator {
+    @apply bg-gray-400;
+  }
+
+  .my-react-select-container .my-react-select__input-container,
+  .my-react-select-container .my-react-select__placeholder,
+  .my-react-select-container .my-react-select__single-value {
+    @apply text-gray-800 dark:text-gray-200;
+  }
+}

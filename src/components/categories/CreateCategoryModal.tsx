@@ -110,7 +110,9 @@ export default function CreateCategoryModal({
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>ایجاد دسته بندی</ModalHeader>
+        <ModalHeader>
+          <span className="text-gray-800 dark:text-white">ایجاد دسته بندی</span>
+        </ModalHeader>
         <ModalBody>
           <FormControl
             isInvalid={errors.paths.includes("title")}
@@ -118,7 +120,7 @@ export default function CreateCategoryModal({
             className="mb-2"
           >
             <Input
-              focusBorderColor="red.400"
+              focusBorderColor="rose.400"
               placeholder=" "
               type="text"
               value={form.title}
@@ -136,7 +138,7 @@ export default function CreateCategoryModal({
           <Button colorScheme="gray" ml={3} onClick={onClose}>
             بستن
           </Button>
-          <Button isLoading={isLoading} onClick={submit} colorScheme="red">
+          <Button isLoading={isLoading} onClick={submit} colorScheme="rose">
             ایجاد
           </Button>
         </ModalFooter>

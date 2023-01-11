@@ -141,15 +141,15 @@ export default function GetStarted() {
       <div className="h-[65vh] w-full bg-rose-400 flex items-center justify-center">
         <span className="text-3xl font-extralight font-poppins">P BUDGET</span>
       </div>
-      <div className="h-[35vh] w-full bg-white rounded-t-xl px-5 flex flex-col">
+      <div className="h-[35vh] w-full bg-white dark:bg-gray-800 rounded-t-xl px-5 flex flex-col">
         <div>
           <div className="pt-6 mb-5">
-            <span className="text-gray-800 font-bold text-2xl">
+            <span className="text-gray-800 dark:text-white font-bold text-2xl">
               خیلی خوش آمدی :)
             </span>
           </div>
           <div className="mb-4">
-            <span className="text-gray-800">
+            <span className="text-gray-800 dark:text-white">
               لطفا برای ورود یا ثبت‌نام ایمیل خود را وارد کنید.
             </span>
           </div>
@@ -164,7 +164,7 @@ export default function GetStarted() {
             className="mb-3"
           >
             <Input
-              focusBorderColor="red.400"
+              focusBorderColor="rose.400"
               placeholder=" "
               type="text"
               value={email}
@@ -178,7 +178,7 @@ export default function GetStarted() {
           <Button
             isLoading={isLoading}
             type="submit"
-            colorScheme="red"
+            colorScheme={"rose"}
             className="w-full"
           >
             ادامه

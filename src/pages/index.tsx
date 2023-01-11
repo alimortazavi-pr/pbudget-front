@@ -41,6 +41,8 @@ export default function Index({
 
   //Effects
   useEffect(() => {
+    const now = moment().locale("fa");
+
     //Checking duration
     if (
       router.query.duration !== "monthly" &&
@@ -48,44 +50,47 @@ export default function Index({
     ) {
       router.replace({
         pathname: "/",
-        query: { ...router.query, duration: "monthly" },
+        query: {
+          ...router.query,
+          duration: "monthly",
+          year: now.year(),
+          month: now.month() + 1,
+        },
       });
     } else if (router.query.duration === "monthly") {
-      setDailyType(false);
+      if (
+        router.query.duration === "monthly" &&
+        (!router.query.year || !router.query.month)
+      ) {
+        setDailyType(false);
+        const now = moment().locale("fa");
+        router.replace({
+          pathname: "/",
+          query: {
+            ...router.query,
+            year: now.year(),
+            month: now.month() + 1,
+          },
+        });
+      } else {
+        setDailyType(false);
+      }
     } else {
-      setDailyType(true);
-    }
-
-    //Checking date
-    if (
-      router.query.duration === "monthly" &&
-      (!router.query.year || !router.query.month)
-    ) {
-      setDailyType(false);
-      const now = moment().locale("fa");
-      router.replace({
-        pathname: "/",
-        query: {
-          ...router.query,
-          year: now.year(),
-          month: now.month() + 1,
-        },
-      });
-    } else if (
-      router.query.duration === "daily" &&
-      (!router.query.year || !router.query.month || !router.query.day)
-    ) {
-      setDailyType(true);
-      const now = moment().locale("fa");
-      router.replace({
-        pathname: "/",
-        query: {
-          ...router.query,
-          year: now.year(),
-          month: now.month() + 1,
-          day: now.date(),
-        },
-      });
+      if (!router.query.year || !router.query.month || !router.query.day) {
+        setDailyType(true);
+        const now = moment().locale("fa");
+        router.replace({
+          pathname: "/",
+          query: {
+            ...router.query,
+            year: now.year(),
+            month: now.month() + 1,
+            day: now.date(),
+          },
+        });
+      } else {
+        setDailyType(true);
+      }
     }
   }, [router]);
 
@@ -103,7 +108,7 @@ export default function Index({
     <div className="flex flex-col items-center md:mt-5">
       <TheNavigation title="خانه" />
       <div className="px-2 md:px-0 w-full max-w-md">
-        <div className="bg-white p-5 rounded-2xl md:rounded-md mb-2">
+        <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl md:rounded-md mb-2">
           <DailyTypeTabs dailyType={dailyType} setDailyType={setDailyType} />
           {dailyType ? <ChangeDayTabs /> : <ChangeMonthTabs />}
           <hr className="my-4" />
@@ -135,16 +140,10 @@ export const getServerSideProps: GetServerSideProps = async ({
       query.month
     ) {
       const transformedData = JSON.parse(req.cookies.userAuthorization);
-      const date = moment(
-        `${query.year}/${query.month}/${
-          query.duration === "daily" ? query.day : "01"
-        }`,
-        "jYYYY/jMM/jDD"
-      );
       const response = await api.get(
-        `/budgets?duration=${query.duration}&year=${date.year()}&month=${
-          date.month() + 1
-        }${query.duration === "daily" ? "&day=" + date.date() : ""}`,
+        `/budgets?duration=${query.duration}&year=${query.year}&month=${
+          query.month
+        }${query.duration === "daily" ? "&day=" + query.day : ""}`,
         {
           headers: {
             Authorization: `Bearer ${transformedData.token}`,

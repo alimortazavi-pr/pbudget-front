@@ -125,7 +125,11 @@ export default function EditCategoryModal({
     <Modal isOpen={isOpen} onClose={onCloseHandler}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>ویرایش دسته بندی</ModalHeader>
+        <ModalHeader>
+          <span className="text-gray-800 dark:text-white">
+            ویرایش دسته بندی
+          </span>
+        </ModalHeader>
         <ModalBody>
           <FormControl
             isInvalid={errors.paths.includes("title")}
@@ -133,7 +137,7 @@ export default function EditCategoryModal({
             className="mb-2"
           >
             <Input
-              focusBorderColor="red.400"
+              focusBorderColor="rose.400"
               placeholder=" "
               type="text"
               value={form.title}
@@ -151,7 +155,7 @@ export default function EditCategoryModal({
           <Button colorScheme="gray" ml={3} onClick={onClose}>
             بستن
           </Button>
-          <Button isLoading={isLoading} onClick={submit} colorScheme="red">
+          <Button isLoading={isLoading} onClick={submit} colorScheme="rose">
             ویرایش
           </Button>
         </ModalFooter>

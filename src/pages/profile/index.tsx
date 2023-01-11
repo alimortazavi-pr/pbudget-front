@@ -137,7 +137,7 @@ export default function TheProfile({}: theProfileProps) {
     <div className="flex flex-col items-center md:mt-5">
       <TheNavigation title="پروفایل" isEnabledPreviousPage />
       <div className="px-2 md:px-0 w-full max-w-md">
-        <div className="w-full overflow-y-auto rounded-lg py-2 px-2 bg-sky-900 mb-2">
+        <div className="w-full overflow-y-auto rounded-lg py-2 px-2 bg-sky-900 dark:bg-gray-500 mb-2">
           <div className="text-xl font-bold text-white md:mb-3">
             <span>موجودی</span>
             {user.budget < 0 ? (
@@ -162,10 +162,10 @@ export default function TheProfile({}: theProfileProps) {
             تغییر موجودی
           </Button>
         </div>
-        <hr className="my-2" />
+        <hr className="my-2 dark:border-gray-600" />
         <form
           onSubmit={submit}
-          className="px-3 flex flex-col gap-x-2 gap-y-4 bg-white p-5 rounded-2xl md:rounded-md"
+          className="px-3 flex flex-col gap-x-2 gap-y-4 bg-white dark:bg-gray-800 p-5 rounded-2xl md:rounded-md"
         >
           <FormControl
             isInvalid={errors.paths.includes("firstName")}
@@ -173,7 +173,7 @@ export default function TheProfile({}: theProfileProps) {
             className="mb-3"
           >
             <Input
-              focusBorderColor="red.400"
+              focusBorderColor="rose.400"
               placeholder=" "
               type="text"
               value={form.firstName}
@@ -193,7 +193,7 @@ export default function TheProfile({}: theProfileProps) {
             className=""
           >
             <Input
-              focusBorderColor="red.400"
+              focusBorderColor="rose.400"
               placeholder=" "
               type="text"
               value={form.lastName}
@@ -213,7 +213,7 @@ export default function TheProfile({}: theProfileProps) {
             className=""
           >
             <Input
-              focusBorderColor="red.400"
+              focusBorderColor="rose.400"
               placeholder=" "
               type="text"
               value={form.email}
@@ -231,7 +231,7 @@ export default function TheProfile({}: theProfileProps) {
             className=""
           >
             <Input
-              focusBorderColor="red.400"
+              focusBorderColor="rose.400"
               placeholder=" "
               type="password"
               value={form.password}
@@ -247,7 +247,7 @@ export default function TheProfile({}: theProfileProps) {
           </FormControl>
           <div className="flex flex-col-reverse items-center justify-center lg:flex-row">
             <Button
-              colorScheme="red"
+              colorScheme={"rose"}
               variant={"outline"}
               className="w-full"
               type="submit"

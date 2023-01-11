@@ -88,19 +88,19 @@ export default function ChangeDayTabs() {
   return (
     <div className="flex items-center justify-between">
       <div
-        className="flex items-center gap-1 text-gray-800 font-medium cursor-pointer"
+        className="flex items-center gap-1 text-gray-800 dark:text-white font-medium cursor-pointer"
         onClick={previousDay}
       >
         <ArrowRight size={"18"} />
         <span>روز قبل</span>
       </div>
-      <div className="flex items-center gap-2 text-gray-800 font-medium">
+      <div className="flex items-center gap-2 text-gray-800 dark:text-white font-medium">
         <span>{convertToPersian(oneToTwoNumber(date.day || 0) || 0)}</span>
         <span>{months[date.month]}</span>
         <span>{convertToPersian(date.year || 0)}</span>
       </div>
       <div
-        className="flex items-center gap-1 text-gray-800 font-medium cursor-pointer"
+        className="flex items-center gap-1 text-gray-800 dark:text-white font-medium cursor-pointer"
         onClick={nextDay}
       >
         <span>روز بعد</span>

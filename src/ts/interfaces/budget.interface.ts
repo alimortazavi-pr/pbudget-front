@@ -13,15 +13,19 @@ export interface IBudget {
   category: ICategory;
   price: number;
   type: number;
-  date: string;
   deleted: boolean;
+  year: string;
+  month: string;
+  day: string;
 }
 
 export interface ICreateAndEditBudgetForm {
   price: string | number;
   type: number;
   category: string;
-  date: Date | string;
+  year: string;
+  month: string;
+  day: string;
 }
 
 export interface IValidationErrorsCreateAndEditBudgetForm {
@@ -30,6 +34,8 @@ export interface IValidationErrorsCreateAndEditBudgetForm {
     price: string;
     type: string;
     category: string;
-    date: string;
+    year: string;
+    month: string;
+    day: string;
   };
 }

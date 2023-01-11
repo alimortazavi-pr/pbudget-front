@@ -43,14 +43,14 @@ export default function ChangeMonthTabs() {
         className={`flex items-center gap-1 ${
           parseInt(router.query.month as string) <= 1
             ? "text-gray-500"
-            : "text-gray-800"
+            : "text-gray-800 dark:text-white"
         } font-medium cursor-pointer`}
         onClick={previousMonth}
       >
         <ArrowRight size={"18"} />
         <span>ماه قبل</span>
       </div>
-      <div className="flex items-center gap-2 text-gray-800 font-medium">
+      <div className="flex items-center gap-2 text-gray-800 dark:text-white font-medium">
         <span>{months[router.query.month as string]}</span>
       </div>
       <div
@@ -58,7 +58,7 @@ export default function ChangeMonthTabs() {
         ${
           parseInt(router.query.month as string) >= 12
             ? "text-gray-500"
-            : "text-gray-800"
+            : "text-gray-800 dark:text-white"
         }
         font-medium cursor-pointer`}
         onClick={nextMonth}

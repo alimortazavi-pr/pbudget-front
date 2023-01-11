@@ -56,9 +56,9 @@ export default function SingleBudget({ budget }: singleBudgetProps) {
         <div className="flex items-start gap-1">
           <div>
             {budget.type === budgetTypeEnum.INCOME ? (
-              <MoneyAdd variant="Bold" size="24" className="text-gray-800" />
+              <MoneyAdd variant="Bold" size="24" className="text-gray-800 dark:text-gray-200" />
             ) : (
-              <MoneyRemove variant="Bold" size="24" className="text-gray-800" />
+              <MoneyRemove variant="Bold" size="24" className="text-gray-800 dark:text-gray-200" />
             )}
           </div>
           <div
@@ -73,7 +73,7 @@ export default function SingleBudget({ budget }: singleBudgetProps) {
         </div>
         <div className="flex items-center justify-end">
           <div className="text-lg font-bold text-left">
-            <span className="text-gray-800 leading-none">
+            <span className="text-gray-800 dark:text-gray-200 leading-none">
               {convertToPersian(priceGenerator(budget.price || 0))}
             </span>
             <span
@@ -92,8 +92,8 @@ export default function SingleBudget({ budget }: singleBudgetProps) {
               size="20"
               className={`${
                 budget.type === budgetTypeEnum.INCOME
-                  ? "text-teal-800"
-                  : "text-rose-800"
+                  ? "text-teal-800 dark:text-teal-400"
+                  : "text-rose-800 dark:text-rose-400"
               } duration-300 ${isMoreOptions ? "rotate-180" : "rotate-0"}`}
             />
           </div>
@@ -110,7 +110,7 @@ export default function SingleBudget({ budget }: singleBudgetProps) {
             <span className="font-semibold">تاریخ:</span>
             <span className="font-medium">
               {convertToPersian(
-                moment(parseInt(budget.date)).utc().format("jYYYY/jMM/jDD") || 0
+                `${budget.year}/${budget.month}/${budget.day}` || 0
               )}
             </span>
           </div>

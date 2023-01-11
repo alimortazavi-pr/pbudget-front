@@ -31,7 +31,7 @@ export default function SignUpModal({
   isOpen,
   onOpen,
   onClose,
-  email
+  email,
 }: signUpAndSignInProps) {
   //Redux
   const dispatch = useAppDispatch();
@@ -126,7 +126,9 @@ export default function SignUpModal({
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>ثبت‌ نام</ModalHeader>
+        <ModalHeader>
+          <span className="text-gray-800 dark:text-white">ثبت‌ نام</span>
+        </ModalHeader>
         <ModalBody>
           <FormControl
             isInvalid={errors.paths.includes("firstName")}
@@ -134,7 +136,7 @@ export default function SignUpModal({
             className="mb-3"
           >
             <Input
-              focusBorderColor="red.400"
+              focusBorderColor="rose.400"
               placeholder=" "
               type="text"
               value={form.firstName}
@@ -154,7 +156,7 @@ export default function SignUpModal({
             className="mb-4"
           >
             <Input
-              focusBorderColor="red.400"
+              focusBorderColor="rose.400"
               placeholder=" "
               type="text"
               value={form.lastName}
@@ -174,7 +176,7 @@ export default function SignUpModal({
             className="mb-4"
           >
             <Input
-              focusBorderColor="red.400"
+              focusBorderColor="rose.400"
               placeholder=" "
               type="text"
               value={form.email}
@@ -192,7 +194,7 @@ export default function SignUpModal({
             className="mb-4"
           >
             <Input
-              focusBorderColor="red.400"
+              focusBorderColor="rose.400"
               placeholder=" "
               type="password"
               value={form.password}
@@ -212,7 +214,7 @@ export default function SignUpModal({
           <Button colorScheme="gray" ml={3} onClick={onClose}>
             بستن
           </Button>
-          <Button isLoading={isLoading} onClick={submit} colorScheme="red">
+          <Button isLoading={isLoading} onClick={submit} colorScheme="rose">
             ثبت‌ نام
           </Button>
         </ModalFooter>

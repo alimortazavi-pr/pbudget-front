@@ -59,13 +59,13 @@ export default function SingleCategory({
   return (
     <li className="w-full rounded border border-rose-400 px-2 py-4 flex items-center justify-between">
       <div className="text-lg font-bold leading-none">
-        <span>{category.title}</span>
+        <span className="text-gray-800 dark:text-gray-200">{category.title}</span>
       </div>
       <div className="flex items-center gap-2">
         <span className="cursor-pointer">
           <Edit
             size="18"
-            className="text-cyan-500"
+            className="text-cyan-500 dark:text-cyan-400"
             variant="Bulk"
             onClick={openCategoryEdit}
           />
@@ -75,9 +75,9 @@ export default function SingleCategory({
             {({ isOpen, onClose }) => (
               <>
                 <PopoverTrigger>
-                  <Trash size="18" className="text-rose-500" variant="Bulk" />
+                  <Trash size="18" className="text-rose-500 dark:text-rose-400" variant="Bulk" />
                 </PopoverTrigger>
-                <PopoverContent  zIndex={'999'}>
+                <PopoverContent zIndex={"999"}>
                   <PopoverArrow />
                   <PopoverCloseButton />
                   <PopoverHeader>آیا مطمئن هستید؟</PopoverHeader>
@@ -92,7 +92,7 @@ export default function SingleCategory({
                     <div className="flex items-center gap-2">
                       <Button onClick={onClose}>لغو</Button>
                       <Button
-                        colorScheme={"red"}
+                        colorScheme={"rose"}
                         onClick={deleteCategoryFunc}
                         isLoading={isLoading}
                       >

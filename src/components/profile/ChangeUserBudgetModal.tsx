@@ -129,7 +129,9 @@ export default function ChangeUserBudgetModal({
       <ModalOverlay />
       <ModalContent>
         <ModalCloseButton />
-        <ModalHeader>تغییر موجودی</ModalHeader>
+        <ModalHeader>
+          <span className="text-gray-800 dark:text-white">تغییر موجودی</span>
+        </ModalHeader>
         <ModalBody>
           <FormControl
             isInvalid={errors.paths.includes("price")}
@@ -137,7 +139,7 @@ export default function ChangeUserBudgetModal({
             className="mb-3"
           >
             <Input
-              focusBorderColor="red.400"
+              focusBorderColor="rose.400"
               placeholder=" "
               type="number"
               value={form.price}
@@ -149,8 +151,10 @@ export default function ChangeUserBudgetModal({
               {errors.paths.includes("price") ? errors.messages.price : ""}
             </FormErrorMessage>
             <FormHelperText mt={"1"}>
-              <span>{pricePreview ? pricePreview : "۰"}</span>
-              <span className="mr-1">تومان</span>
+              <span className="dark:text-gray-300">
+                {pricePreview ? pricePreview : "۰"}
+              </span>
+              <span className="mr-1 dark:text-gray-300">تومان</span>
             </FormHelperText>
           </FormControl>
           <div className="mb-4 flex items-center gap-2">
@@ -158,7 +162,7 @@ export default function ChangeUserBudgetModal({
               className="flex-1"
               isLoading={isLoading}
               onClick={() => submit("decrease")}
-              colorScheme="red"
+              colorScheme={"rose"}
             >
               از حسابم کم کن
             </Button>
@@ -172,12 +176,6 @@ export default function ChangeUserBudgetModal({
             </Button>
           </div>
         </ModalBody>
-
-        {/* <ModalFooter>
-          <Button colorScheme="gray" ml={3} onClick={onClose}>
-            بستن
-          </Button>
-        </ModalFooter> */}
       </ModalContent>
     </Modal>
   );

@@ -132,10 +132,12 @@ export default function SignInModal({
 
   return (
     <div>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} variant="wide">
         <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>ورود</ModalHeader>
+        <ModalContent className="bg-red-400">
+          <ModalHeader>
+            <span className="text-gray-800 dark:text-white">ورود</span>
+          </ModalHeader>
           <ModalBody>
             <FormControl
               isInvalid={errors.paths.includes("email")}
@@ -143,7 +145,7 @@ export default function SignInModal({
               className="mb-4"
             >
               <Input
-                focusBorderColor="red"
+                focusBorderColor="rose.400"
                 placeholder=" "
                 type="text"
                 value={form.email}
@@ -161,7 +163,7 @@ export default function SignInModal({
               className="mb-2"
             >
               <Input
-                focusBorderColor="red.400"
+                focusBorderColor="rose.400"
                 placeholder=" "
                 type="password"
                 value={form.password}
@@ -187,7 +189,7 @@ export default function SignInModal({
             <Button colorScheme="gray" ml={3} onClick={onClose}>
               بستن
             </Button>
-            <Button isLoading={isLoading} onClick={submit} colorScheme="red">
+            <Button isLoading={isLoading} onClick={submit} colorScheme="rose">
               ورود
             </Button>
           </ModalFooter>

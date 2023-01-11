@@ -40,9 +40,7 @@ import api from "@/api";
 
 //Validators
 import { createAndEditBudget } from "@/validators/budgetValidator";
-
-//Styles
-import CustomReactSelectStyle from "@/assets/styles/CustomReactSelectStyle";
+import moment from "jalali-moment";
 
 export default function EditBudget({ budget }: editBudgetProps) {
   //Redux
@@ -59,7 +57,9 @@ export default function EditBudget({ budget }: editBudgetProps) {
   const [form, setForm] = useState<ICreateAndEditBudgetForm>({
     price: "",
     type: 0,
-    date: "",
+    year: "",
+    month: "",
+    day: "",
     category: "",
   });
   const [pricePreview, setPricePreview] = useState<string>("0");
@@ -69,7 +69,9 @@ export default function EditBudget({ budget }: editBudgetProps) {
       messages: {
         price: "",
         type: "",
-        date: "",
+        year: "",
+        month: "",
+        day: "",
         category: "",
       },
     });
@@ -127,7 +129,9 @@ export default function EditBudget({ budget }: editBudgetProps) {
       messages: {
         price: "",
         type: "",
-        date: "",
+        year: "",
+        month: "",
+        day: "",
         category: "",
       },
     });
@@ -136,12 +140,12 @@ export default function EditBudget({ budget }: editBudgetProps) {
       .validate(form, { abortEarly: false })
       .then(async () => {
         try {
-          await dispatch(editBudget(form, budget._id));
+          await dispatch(editBudget({ ...form }, budget._id));
           toast.success("دریافتی/پرداختی باموفقیت ایجاد شد", {
             position: toast.POSITION.TOP_CENTER,
           });
           setIsLoading(false);
-          router.push("/");
+          // router.push("/");
         } catch (err: any) {
           toast.error(err.message, {
             position: toast.POSITION.TOP_CENTER,
@@ -155,7 +159,9 @@ export default function EditBudget({ budget }: editBudgetProps) {
           messages: {
             price: "",
             type: "",
-            date: "",
+            year: "",
+            month: "",
+            day: "",
             category: "",
           },
         };
@@ -176,7 +182,7 @@ export default function EditBudget({ budget }: editBudgetProps) {
       <div className="px-2 md:px-0 w-full max-w-md">
         <form
           onSubmit={submit}
-          className="px-3 flex flex-col gap-x-2 gap-y-5 bg-white p-5 rounded-2xl md:rounded-md"
+          className="px-3 flex flex-col gap-x-2 gap-y-5 bg-white dark:bg-gray-800 p-5 rounded-2xl md:rounded-md"
         >
           <div className="flex items-start justify-between gap-2">
             <FormControl
@@ -185,7 +191,7 @@ export default function EditBudget({ budget }: editBudgetProps) {
               className=""
             >
               <Input
-                focusBorderColor="red.400"
+                focusBorderColor="rose.400"
                 placeholder=" "
                 type="number"
                 value={form.price}
@@ -194,8 +200,10 @@ export default function EditBudget({ budget }: editBudgetProps) {
               />
               <FormLabel>مبلغ</FormLabel>
               <FormHelperText mt={"1"}>
-                <span>{pricePreview ? pricePreview : "۰"}</span>
-                <span className="mr-1">تومان</span>
+                <span className="dark:text-gray-300">
+                  {pricePreview ? pricePreview : "۰"}
+                </span>
+                <span className="mr-1 dark:text-gray-300">تومان</span>
               </FormHelperText>
               <FormErrorMessage>
                 {errors.paths.includes("price") ? errors.messages.price : ""}
@@ -203,13 +211,18 @@ export default function EditBudget({ budget }: editBudgetProps) {
             </FormControl>
             <div>
               <FormControl className="flex items-center h-10">
-                <FormLabel htmlFor="type" mb="0" ml={"2"}>
+                <FormLabel
+                  htmlFor="type"
+                  mb="0"
+                  ml={"2"}
+                  className="dark:text-white"
+                >
                   {form.type === budgetTypeEnum.INCOME ? "دریافتی" : "پرداختی"}
                 </FormLabel>
                 <Switch
                   id="type"
                   onChange={typeHandler}
-                  colorScheme={"red"}
+                  colorScheme={"rose"}
                   isChecked={form.type === budgetTypeEnum.COST ? true : false}
                 />
               </FormControl>
@@ -231,7 +244,8 @@ export default function EditBudget({ budget }: editBudgetProps) {
                 setForm({ ...form, category: val.value as string })
               }
               placeholder="دسته بندی"
-              styles={CustomReactSelectStyle}
+              className="my-react-select-container"
+              classNamePrefix="my-react-select"
               noOptionsMessage={() => "هنوز دسته‌ای ایجاد نکرده اید"}
               value={
                 form.category
@@ -249,7 +263,7 @@ export default function EditBudget({ budget }: editBudgetProps) {
           </FormControl>
           <div className="col-span-12 flex flex-col-reverse items-center justify-center lg:flex-row">
             <Button
-              colorScheme="red"
+              colorScheme={"rose"}
               variant={"outline"}
               className="w-full"
               type="submit"
@@ -259,9 +273,9 @@ export default function EditBudget({ budget }: editBudgetProps) {
             </Button>
           </div>
         </form>
-        <hr className="my-2" />
+        <hr className="my-2 dark:border-gray-600" />
         <Button
-          colorScheme="red"
+          colorScheme="rose"
           className="w-full"
           type="submit"
           isLoading={isLoading}

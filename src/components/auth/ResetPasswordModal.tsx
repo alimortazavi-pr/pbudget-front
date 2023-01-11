@@ -132,7 +132,9 @@ export default function ResetPasswordModal({
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>بازیابی رمزعبور</ModalHeader>
+        <ModalHeader>
+          <span className="text-gray-800 dark:text-white">بازیابی رمزعبور</span>
+        </ModalHeader>
         <ModalBody>
           <FormControl
             isInvalid={errors.paths.includes("email")}
@@ -140,7 +142,7 @@ export default function ResetPasswordModal({
             className="mb-4"
           >
             <Input
-              focusBorderColor="red"
+              focusBorderColor="rose.400"
               placeholder=" "
               type="text"
               value={form.email}
@@ -159,7 +161,7 @@ export default function ResetPasswordModal({
             className="mb-4"
           >
             <Input
-              focusBorderColor="red"
+              focusBorderColor="rose.400"
               placeholder=" "
               type="text"
               value={form.password}
@@ -179,7 +181,7 @@ export default function ResetPasswordModal({
             className="mb-4"
           >
             <Input
-              focusBorderColor="red"
+              focusBorderColor="rose.400"
               placeholder=" "
               type="text"
               value={form.passwordConfirmation}
@@ -199,7 +201,7 @@ export default function ResetPasswordModal({
           <Button colorScheme="gray" ml={3} onClick={onClose}>
             بستن
           </Button>
-          <Button isLoading={isLoading} onClick={submit} colorScheme="red">
+          <Button isLoading={isLoading} onClick={submit} colorScheme="rose">
             بازیابی
           </Button>
         </ModalFooter>

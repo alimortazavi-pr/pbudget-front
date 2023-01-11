@@ -115,7 +115,9 @@ export default function ForgetPasswordModal({
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>فراموشی رمزعبور</ModalHeader>
+        <ModalHeader>
+          <span className="text-gray-800 dark:text-white">فراموشی رمزعبور</span>
+        </ModalHeader>
         <ModalBody>
           <FormControl
             isInvalid={errors.paths.includes("email")}
@@ -123,7 +125,7 @@ export default function ForgetPasswordModal({
             className="mb-2"
           >
             <Input
-              focusBorderColor="red"
+              focusBorderColor="rose.400"
               placeholder=" "
               type="text"
               value={form.email}
@@ -141,7 +143,7 @@ export default function ForgetPasswordModal({
           <Button colorScheme="gray" ml={3} onClick={onClose}>
             بستن
           </Button>
-          <Button isLoading={isLoading} onClick={submit} colorScheme="red">
+          <Button isLoading={isLoading} onClick={submit} colorScheme="rose">
             تایید
           </Button>
         </ModalFooter>

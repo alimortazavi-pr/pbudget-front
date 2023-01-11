@@ -9,7 +9,6 @@ import { DatePicker } from "react-advance-jalaali-datepicker";
 
 //Tools
 import convertToPersian from "num-to-persian";
-import moment from "jalali-moment";
 
 export default function BudgetDatePicker({
   errors,
@@ -22,47 +21,50 @@ export default function BudgetDatePicker({
 
   //Effects
   useEffect(() => {
-    if (form.date && !dateValue) {
-      const date = moment(parseInt(form.date as string))
-        .utc()
-        .format("jYYYY/jMM/jDD");
-      setDateValue(date);
-    } else if (dateValue) {
-      const date = moment(parseInt(form.date as string) + 24 * 60 * 60 * 1000)
-        .utc()
-        .format("jYYYY/jMM/jDD");
-      setDateValue(date);
+    if (form.year && form.month && form.day && !dateValue) {
+      setDateValue(`${form.year}/${form.month}/${form.day}`);
     }
-  }, [form.date]);
+  }, [form.year, form.month, form.day]);
 
   //Functions
   function DatePickerInput(props: any) {
     return (
       <Input
-        focusBorderColor="red.400"
+        focusBorderColor="rose.400"
         {...props}
-        value={convertToPersian(dateValue || 0)}
+        value={convertToPersian(dateValue || "")}
+        placeholder="تاریخ"
+        className="placeholder:text-gray-800 placeholder:dark:text-white"
       />
     );
   }
 
   function dateHandler(unix: string, formatted: string) {
-    const date = moment(formatted, "jYYYY/jMM/jDD").format();
-    const dateToTime = new Date(date).getTime();
-    setForm({ ...form, date: dateToTime?.toString() || "" });
+    const splitDate = formatted.split("/");
+    setDateValue(formatted);
+    setForm({
+      ...form,
+      year: splitDate[0],
+      month: splitDate[1],
+      day: splitDate[2],
+    });
   }
 
   return (
     <FormControl isInvalid={errors.paths.includes("date")} className="">
       <DatePicker
         inputComponent={DatePickerInput}
-        placeholder="تاریخ"
+        // placeholder="تاریخ"
         format="jYYYY/jMM/jDD"
         onChange={dateHandler}
         id="datePicker"
       />
       <FormErrorMessage>
-        {errors.paths.includes("date") ? errors.messages.date : ""}
+        {errors.paths.includes("year") ||
+        errors.paths.includes("month") ||
+        errors.paths.includes("day")
+          ? errors.messages.year
+          : ""}
       </FormErrorMessage>
     </FormControl>
   );
