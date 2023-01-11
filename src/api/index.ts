@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:7011/v1",
+  baseURL: "https://api-pbudget.alimortazavi.org/v1",
 });
 
 export default api;
