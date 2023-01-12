@@ -106,7 +106,7 @@ export default function SingleBudget({ budget }: singleBudgetProps) {
       >
         <hr className="my-3" />
         <div className="flex items-center justify-around">
-          <div className="text-sm flex items-center gap-1">
+          <div className="text-sm flex items-center gap-1 dark:text-gray-200">
             <span className="font-semibold">تاریخ:</span>
             <span className="font-medium">
               {convertToPersian(

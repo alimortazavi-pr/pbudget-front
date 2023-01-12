@@ -140,7 +140,14 @@ export default function CreateBudget({}: createBudgetProps) {
             position: toast.POSITION.TOP_CENTER,
           });
           setIsLoading(false);
-          router.push("/");
+          router.push({
+            pathname: "/",
+            query: {
+              duration: "monthly",
+              year: form.year,
+              month: form.month,
+            },
+          });
         } catch (err: any) {
           toast.error(err.message, {
             position: toast.POSITION.TOP_CENTER,
