@@ -132,7 +132,7 @@ export default function SignInModal({
 
   return (
     <div>
-      <Modal isOpen={isOpen} onClose={onClose} variant="wide">
+      <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent className="bg-red-400">
           <ModalHeader>

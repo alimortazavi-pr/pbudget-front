@@ -8,7 +8,6 @@ import {
   Switch,
   useDisclosure,
 } from "@chakra-ui/react";
-import { GetServerSideProps } from "next";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import Select from "react-select";
 import { useRouter } from "next/router";

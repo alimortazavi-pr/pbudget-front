@@ -19,6 +19,7 @@ import ChangeDayTabs from "@/components/budgets/ChangeDayTabs";
 import InformationBudget from "@/components/budgets/InformationBudget";
 import SingleBudget from "@/components/budgets/SingleBudget";
 import ChangeMonthTabs from "@/components/budgets/ChangeMonthTabs";
+import FilterSection from "@/components/layouts/FilterSection";
 
 //Tools
 import api from "@/api";
@@ -108,6 +109,7 @@ export default function Index({
     <div className="flex flex-col items-center md:mt-5">
       <TheNavigation title="خانه" />
       <div className="px-2 md:px-0 w-full max-w-md">
+        <FilterSection />
         <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl md:rounded-md mb-2">
           <DailyTypeTabs dailyType={dailyType} setDailyType={setDailyType} />
           {dailyType ? <ChangeDayTabs /> : <ChangeMonthTabs />}
@@ -143,7 +145,11 @@ export const getServerSideProps: GetServerSideProps = async ({
       const response = await api.get(
         `/budgets?duration=${query.duration}&year=${query.year}&month=${
           query.month
-        }${query.duration === "daily" ? "&day=" + query.day : ""}`,
+        }${query.duration === "daily" ? "&day=" + query.day : ""}${
+          query.category && query.category != "همه دسته بندی ها"
+            ? "&category=" + query.category
+            : ""
+        }${query.date ? "&date=" + query.date : ""}`,
         {
           headers: {
             Authorization: `Bearer ${transformedData.token}`,
