@@ -254,33 +254,39 @@ export default function SignUpModal({
                   }}
                 >
                   <PinInputField
+                    className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
                     _focus={{ borderColor: "rose.400", boxShadow: "none" }}
                     mr={"2"}
                   />
                   <PinInputField
+                    className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
                     _focus={{ borderColor: "rose.400", boxShadow: "none" }}
                     mr={"2"}
                   />
                   <PinInputField
+                    className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
                     _focus={{ borderColor: "rose.400", boxShadow: "none" }}
                     mr={"2"}
                   />
                   <PinInputField
+                    className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
                     _focus={{ borderColor: "rose.400", boxShadow: "none" }}
                     mr={"2"}
                   />
                   <PinInputField
+                    className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
                     _focus={{ borderColor: "rose.400", boxShadow: "none" }}
                     mr={"2"}
                   />
                   <PinInputField
+                    className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
                     _focus={{ borderColor: "rose.400", boxShadow: "none" }}
                   />
                 </PinInput>
               </div>
               <div className="mr-2 flex-1">
                 {counter.status ? (
-                  <div className="p-2 border rounded text-center">
+                  <div className="p-2 border rounded-md text-center text-gray-800 dark:text-gray-200 dark:border-gray-500">
                     <span>
                       {convertToPersian(
                         oneToTwoNumber(Math.floor(counter.value / 60)) +
