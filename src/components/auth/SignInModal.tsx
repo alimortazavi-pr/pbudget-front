@@ -10,7 +10,8 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  useDisclosure,
+  PinInput,
+  PinInputField,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { ChangeEvent, useEffect, useState } from "react";
@@ -24,59 +25,62 @@ import {
 
 //Redux
 import { useAppDispatch } from "@/store/hooks";
-import { signInValidator } from "@/validators/authValidator";
-import { toast } from "react-toastify";
-import { signIn } from "@/store/auth/actions";
+import { requestNewCode, signIn } from "@/store/auth/actions";
 
 //Components
-import ForgetPasswordModal from "./ForgetPasswordModal";
+
+//Tools
+import { toast } from "react-toastify";
+import oneToTwoNumber from "one-to-two-num";
+import convertToPersian from "num-to-persian";
+
+//Validators
+import { signInValidator } from "@/validators/authValidator";
 
 export default function SignInModal({
   isOpen,
   onOpen,
   onClose,
-  email,
+  mobile,
 }: signUpAndSignInProps) {
   //Redux
   const dispatch = useAppDispatch();
-
-  //ChakraUI
-  const {
-    isOpen: isOpenForgetPassword,
-    onOpen: onOpenForgetPassword,
-    onClose: onCloseForgetPassword,
-  } = useDisclosure();
 
   //Next
   const router = useRouter();
 
   //States
   const [form, setForm] = useState<ISignInForm>({
-    email: "",
-    password: "",
+    mobile: "",
+    code: "",
+  });
+  const [counter, setCounter] = useState<{ value: number; status: boolean }>({
+    value: 120,
+    status: true,
   });
   const [errors, setErrors] = useState<IValidationErrorsSignInForm>({
     paths: [],
     messages: {
-      email: "",
-      password: "",
+      mobile: "",
+      code: "",
     },
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   //Effects
   useEffect(() => {
-    if (email) {
-      setForm({ ...form, email: email as string });
+    if (mobile) {
+      setForm({ ...form, mobile: mobile as string });
     }
-  }, [email]);
+  }, [mobile]);
+
+  useEffect(() => {
+    if (isOpen) {
+      requestCode();
+    }
+  }, [isOpen]);
 
   //Functions
-  function forgetPasswordModalHandler() {
-    onClose();
-    onOpenForgetPassword();
-  }
-
   function inputHandler(e: ChangeEvent<HTMLInputElement>) {
     setForm({
       ...form,
@@ -84,12 +88,45 @@ export default function SignInModal({
     });
   }
 
+  function calculatingCounter(time: number) {
+    let count: number;
+    count = time;
+    (window as any).counterInterval = setInterval(() => {
+      if (count !== 0) {
+        count -= 1;
+        setCounter({ status: true, value: count });
+      } else {
+        setCounter({ value: count, status: false });
+        window.clearInterval((window as any).counterInterval);
+      }
+    }, 1000);
+  }
+
+  async function requestCode() {
+    window.clearInterval((window as any).counterInterval);
+    setIsLoading(true);
+    try {
+      await dispatch(requestNewCode(form.mobile));
+      toast.success("کدتایید جدید برای شما ارسال شد", {
+        position: toast.POSITION.TOP_CENTER,
+      });
+      calculatingCounter(120);
+      setIsLoading(false);
+    } catch (err: any) {
+      calculatingCounter(counter.value);
+      toast.error(err.message, {
+        position: toast.POSITION.TOP_CENTER,
+      });
+      setIsLoading(false);
+    }
+  }
+
   function submit() {
     setErrors({
       paths: [],
       messages: {
-        email: "",
-        password: "",
+        mobile: "",
+        code: "",
       },
     });
     setIsLoading(true);
@@ -115,8 +152,8 @@ export default function SignInModal({
         let errorsArray: IValidationErrorsSignInForm = {
           paths: [],
           messages: {
-            email: "",
-            password: "",
+            mobile: "",
+            code: "",
           },
         };
         err.inner.forEach((error: any) => {
@@ -140,7 +177,7 @@ export default function SignInModal({
           </ModalHeader>
           <ModalBody>
             <FormControl
-              isInvalid={errors.paths.includes("email")}
+              isInvalid={errors.paths.includes("mobile")}
               variant={"floating"}
               className="mb-4"
             >
@@ -148,41 +185,86 @@ export default function SignInModal({
                 focusBorderColor="rose.400"
                 placeholder=" "
                 type="text"
-                value={form.email}
+                value={form.mobile}
                 onChange={inputHandler}
-                name="email"
+                name="mobile"
+                disabled
               />
-              <FormLabel>ایمیل</FormLabel>
+              <FormLabel>شماره موبایل</FormLabel>
               <FormErrorMessage>
-                {errors.paths.includes("email") ? errors.messages.email : ""}
+                {errors.paths.includes("mobile") ? errors.messages.mobile : ""}
               </FormErrorMessage>
             </FormControl>
             <FormControl
-              isInvalid={errors.paths.includes("password")}
+              isInvalid={errors.paths.includes("code")}
               variant={"floating"}
               className="mb-2"
             >
-              <Input
-                focusBorderColor="rose.400"
-                placeholder=" "
-                type="password"
-                value={form.password}
-                onChange={inputHandler}
-                name="password"
-              />
-              <FormLabel>رمزعبور</FormLabel>
+              <div className="flex items-center justify-center">
+                <div className="flex flex-row-reverse items-center">
+                  <PinInput
+                    otp
+                    onChange={(value) => {
+                      setForm({ ...form, code: value });
+                    }}
+                  >
+                    <PinInputField
+                      className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
+                      _focus={{ borderColor: "rose.400", boxShadow: "none" }}
+                      mr={"2"}
+                    />
+                    <PinInputField
+                      className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
+                      _focus={{ borderColor: "rose.400", boxShadow: "none" }}
+                      mr={"2"}
+                    />
+                    <PinInputField
+                      className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
+                      _focus={{ borderColor: "rose.400", boxShadow: "none" }}
+                      mr={"2"}
+                    />
+                    <PinInputField
+                      className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
+                      _focus={{ borderColor: "rose.400", boxShadow: "none" }}
+                      mr={"2"}
+                    />
+                    <PinInputField
+                      className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
+                      _focus={{ borderColor: "rose.400", boxShadow: "none" }}
+                      mr={"2"}
+                    />
+                    <PinInputField
+                      className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
+                      _focus={{ borderColor: "rose.400", boxShadow: "none" }}
+                    />
+                  </PinInput>
+                </div>
+                <div className="mr-2 flex-1">
+                  {counter.status ? (
+                    <div className="p-2 border rounded-md text-center text-gray-800 dark:text-gray-200 dark:border-gray-500">
+                      <span>
+                        {convertToPersian(
+                          oneToTwoNumber(Math.floor(counter.value / 60)) +
+                            ":" +
+                            oneToTwoNumber(Math.floor(counter.value % 60))
+                        )}
+                      </span>
+                    </div>
+                  ) : (
+                    <Button
+                      isLoading={isLoading}
+                      colorScheme={"red"}
+                      onClick={() => requestCode()}
+                    >
+                      ارسال مجدد کد
+                    </Button>
+                  )}
+                </div>
+              </div>
               <FormErrorMessage>
-                {errors.paths.includes("password")
-                  ? errors.messages.password
-                  : ""}
+                {errors.paths.includes("code") ? errors.messages.code : ""}
               </FormErrorMessage>
             </FormControl>
-            <div
-              className="text-rose-400 text-xs font-semibold cursor-pointer max-w-max"
-              onClick={forgetPasswordModalHandler}
-            >
-              <span>رمزعبور خود را فراموش کرده اید؟</span>
-            </div>
           </ModalBody>
 
           <ModalFooter>
@@ -195,12 +277,6 @@ export default function SignInModal({
           </ModalFooter>
         </ModalContent>
       </Modal>
-      <ForgetPasswordModal
-        isOpen={isOpenForgetPassword}
-        onClose={onCloseForgetPassword}
-        email={email}
-        onOpen={onOpenForgetPassword}
-      />
     </div>
   );
 }

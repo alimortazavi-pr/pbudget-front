@@ -7,7 +7,6 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import { useRouter } from "next/router";
 
 //Types
 import {
@@ -20,6 +19,7 @@ import { theProfileProps } from "@/ts/types/profile.type";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { userSelector } from "@/store/profile/selectors";
 import { editProfile } from "@/store/profile/actions";
+import { darkModeSelector } from "@/store/layout/selectors";
 
 //Components
 import TheNavigation from "@/components/layouts/TheNavigation";
@@ -32,6 +32,7 @@ import { toast } from "react-toastify";
 
 //Validators
 import { editProfileValidator } from "@/validators/profileValidator";
+import ChangeMobileModal from "@/components/profile/ChangeMobileModal";
 
 //Styles
 
@@ -39,27 +40,28 @@ export default function TheProfile({}: theProfileProps) {
   //Redux
   const dispatch = useAppDispatch();
   const user = useAppSelector(userSelector);
-
-  //Next
-  const router = useRouter();
+  const isDarkMode = useAppSelector(darkModeSelector);
 
   //ChakraUI
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenChangeMobile,
+    onOpen: onOpenChangeMobile,
+    onClose: onCloseChangeMobile,
+  } = useDisclosure();
 
   //States
   const [form, setForm] = useState<IEditProfileForm>({
     firstName: "",
     lastName: "",
-    email: "",
-    password: "",
+    mobile: "",
   });
   const [errors, setErrors] = useState<IValidationErrorsEditProfileForm>({
     paths: [],
     messages: {
       firstName: "",
       lastName: "",
-      email: "",
-      password: "",
+      mobile: "",
     },
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -69,8 +71,7 @@ export default function TheProfile({}: theProfileProps) {
     setForm({
       firstName: user.firstName,
       lastName: user.lastName,
-      email: user.email,
-      password: "",
+      mobile: user.mobile,
     });
   }, [user]);
 
@@ -91,8 +92,7 @@ export default function TheProfile({}: theProfileProps) {
       messages: {
         firstName: "",
         lastName: "",
-        email: "",
-        password: "",
+        mobile: "",
       },
     });
     setIsLoading(true);
@@ -118,8 +118,7 @@ export default function TheProfile({}: theProfileProps) {
           messages: {
             firstName: "",
             lastName: "",
-            email: "",
-            password: "",
+            mobile: "",
           },
         };
         err.inner.forEach((error: any) => {
@@ -137,8 +136,8 @@ export default function TheProfile({}: theProfileProps) {
     <div className="flex flex-col items-center md:mt-5">
       <TheNavigation title="پروفایل" isEnabledPreviousPage />
       <div className="px-2 md:px-0 w-full max-w-md">
-        <div className="w-full overflow-y-auto rounded-lg py-2 px-2 bg-sky-900 dark:bg-gray-500 mb-2">
-          <div className="text-xl font-bold text-white md:mb-3">
+        <div className="w-full overflow-y-auto rounded-lg py-2 px-2 bg-sky-900 dark:bg-gray-800 mb-2">
+          <div className="text-xl font-bold text-white dark:text-gray-200 md:mb-3">
             <span>موجودی</span>
             {user.budget < 0 ? (
               <span className="text-red-400 mr-1 text-sm self-center">
@@ -147,8 +146,10 @@ export default function TheProfile({}: theProfileProps) {
             ) : null}
           </div>
           <div className="flex items-end justify-start text-xl font-bold ltr-important mb-4">
-            <span className="text-xs mr-1 text-white">تومان</span>
-            <span className="text-white">
+            <span className="text-xs mr-1 text-white dark:text-gray-200">
+              تومان
+            </span>
+            <span className="text-white dark:text-gray-200">
               {convertToPersian(priceGenerator(user.budget || 0))}
             </span>
           </div>
@@ -208,41 +209,34 @@ export default function TheProfile({}: theProfileProps) {
             </FormErrorMessage>
           </FormControl>
           <FormControl
-            isInvalid={errors.paths.includes("email")}
+            isInvalid={errors.paths.includes("mobile")}
             variant={"floating"}
             className=""
           >
-            <Input
-              focusBorderColor="rose.400"
-              placeholder=" "
-              type="text"
-              value={form.email}
-              onChange={inputHandler}
-              name="email"
-            />
-            <FormLabel>ایمیل</FormLabel>
+            <div className="flex items-center gap-2">
+              <div className="flex-1">
+                <Input
+                  focusBorderColor="rose.400"
+                  placeholder=" "
+                  type="text"
+                  value={form.mobile}
+                  onChange={inputHandler}
+                  name="mobile"
+                  disabled
+                />
+                <FormLabel>شماره موبایل</FormLabel>
+              </div>
+              <div>
+                <Button
+                  colorScheme={isDarkMode ? "gray" : "blackAlpha"}
+                  onClick={onOpenChangeMobile}
+                >
+                  تغییر شماره موبایل
+                </Button>
+              </div>
+            </div>
             <FormErrorMessage>
-              {errors.paths.includes("email") ? errors.messages.email : ""}
-            </FormErrorMessage>
-          </FormControl>
-          <FormControl
-            isInvalid={errors.paths.includes("password")}
-            variant={"floating"}
-            className=""
-          >
-            <Input
-              focusBorderColor="rose.400"
-              placeholder=" "
-              type="password"
-              value={form.password}
-              onChange={inputHandler}
-              name="password"
-            />
-            <FormLabel>رمزعبور</FormLabel>
-            <FormErrorMessage>
-              {errors.paths.includes("password")
-                ? errors.messages.password
-                : ""}
+              {errors.paths.includes("mobile") ? errors.messages.mobile : ""}
             </FormErrorMessage>
           </FormControl>
           <div className="flex flex-col-reverse items-center justify-center lg:flex-row">
@@ -258,6 +252,12 @@ export default function TheProfile({}: theProfileProps) {
           </div>
         </form>
       </div>
+      <ChangeMobileModal
+        isOpen={isOpenChangeMobile}
+        onClose={onCloseChangeMobile}
+        onOpen={onOpenChangeMobile}
+        mobile={user.mobile}
+      />
       <ChangeUserBudgetModal
         isOpen={isOpen}
         onClose={onClose}

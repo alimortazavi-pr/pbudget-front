@@ -10,11 +10,11 @@ import { useRouter } from "next/router";
 import { useDisclosure } from "@chakra-ui/react";
 
 //Types
-import { IValidationErrorsCheckEmailExist } from "@/ts/interfaces/auth.interface";
+import { IValidationErrorsCheckMobileExist } from "@/ts/interfaces/auth.interface";
 
 //Redux
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { checkEmailExist } from "@/store/auth/actions";
+import { checkMobileExist } from "@/store/auth/actions";
 import { isAuthSelector } from "@/store/auth/selectors";
 
 //Components
@@ -25,8 +25,7 @@ import SignInModal from "@/components/auth/SignInModal";
 import { toast } from "react-toastify";
 
 //Validators
-import { checkEmailExistValidator } from "@/validators/authValidator";
-import ResetPasswordModal from "@/components/auth/ResetPasswordModal";
+import { checkMobileExistValidator } from "@/validators/authValidator";
 
 export default function GetStarted() {
   //Redux
@@ -48,17 +47,17 @@ export default function GetStarted() {
     onClose: onCloseSignIn,
   } = useDisclosure();
   const {
-    isOpen: isOpenResetPassword,
-    onOpen: onOpenResetPassword,
-    onClose: onCloseResetPassword,
+    isOpen: isOpenResetCode,
+    onOpen: onOpenResetCode,
+    onClose: onCloseResetCode,
   } = useDisclosure();
 
   //States
-  const [email, setEmail] = useState<string>("");
-  const [errors, setErrors] = useState<IValidationErrorsCheckEmailExist>({
+  const [mobile, setMobile] = useState<string>("");
+  const [errors, setErrors] = useState<IValidationErrorsCheckMobileExist>({
     paths: [],
     messages: {
-      email: "",
+      mobile: "",
     },
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -76,19 +75,13 @@ export default function GetStarted() {
     }, 100);
   }, []);
 
-  useEffect(() => {
-    if (router.query.email && router.query.code) {
-      onOpenResetPassword();
-    }
-  }, [router.query]);
-
   //Functions
   function inputHandler(e: ChangeEvent<HTMLInputElement>) {
-    setEmail(e.target.value);
+    setMobile(e.target.value);
   }
 
   async function authModalHandler() {
-    const res: any = await dispatch(checkEmailExist(email));
+    const res: any = await dispatch(checkMobileExist(mobile));
     if (res) {
       onOpenSignUp();
     } else {
@@ -101,12 +94,12 @@ export default function GetStarted() {
     setErrors({
       paths: [],
       messages: {
-        email: "",
+        mobile: "",
       },
     });
     setIsLoading(true);
-    checkEmailExistValidator
-      .validate({ email: email }, { abortEarly: false })
+    checkMobileExistValidator
+      .validate({ mobile: mobile }, { abortEarly: false })
       .then(async () => {
         try {
           await authModalHandler();
@@ -119,10 +112,10 @@ export default function GetStarted() {
         }
       })
       .catch((err: any) => {
-        let errorsArray: IValidationErrorsCheckEmailExist = {
+        let errorsArray: IValidationErrorsCheckMobileExist = {
           paths: [],
           messages: {
-            email: "",
+            mobile: "",
           },
         };
         err.inner.forEach((error: any) => {
@@ -141,7 +134,7 @@ export default function GetStarted() {
       <div className="h-[65vh] w-full bg-rose-400 flex items-center justify-center">
         <span className="text-3xl font-extralight font-poppins">P BUDGET</span>
       </div>
-      <div className="h-[35vh] w-full bg-white dark:bg-gray-800 rounded-t-xl px-5 flex flex-col">
+      <div className="min-h-[35vh] w-full bg-white dark:bg-gray-800 rounded-t-xl px-5 flex flex-col">
         <div>
           <div className="pt-6 mb-5">
             <span className="text-gray-800 dark:text-white font-bold text-2xl">
@@ -150,7 +143,7 @@ export default function GetStarted() {
           </div>
           <div className="mb-4">
             <span className="text-gray-800 dark:text-white">
-              لطفا برای ورود یا ثبت‌نام ایمیل خود را وارد کنید.
+              لطفا برای ورود یا ثبت‌نام شماره موبایل خود را وارد کنید.
             </span>
           </div>
         </div>
@@ -159,7 +152,7 @@ export default function GetStarted() {
           onSubmit={submit}
         >
           <FormControl
-            isInvalid={errors.paths.includes("email")}
+            isInvalid={errors.paths.includes("mobile")}
             variant={"floating"}
             className="mb-3"
           >
@@ -167,12 +160,13 @@ export default function GetStarted() {
               focusBorderColor="rose.400"
               placeholder=" "
               type="text"
-              value={email}
+              value={mobile}
               onChange={inputHandler}
+              name="mobile"
             />
-            <FormLabel>ایمیل</FormLabel>
+            <FormLabel>شماره موبایل</FormLabel>
             <FormErrorMessage>
-              {errors.paths.includes("email") ? errors.messages.email : ""}
+              {errors.paths.includes("mobile") ? errors.messages.mobile : ""}
             </FormErrorMessage>
           </FormControl>
           <Button
@@ -189,18 +183,13 @@ export default function GetStarted() {
         isOpen={isOpenSignUp}
         onOpen={onOpenSignUp}
         onClose={onCloseSignUp}
-        email={email}
+        mobile={mobile}
       />
       <SignInModal
         isOpen={isOpenSignIn}
         onOpen={onOpenSignIn}
         onClose={onCloseSignIn}
-        email={email}
-      />
-      <ResetPasswordModal
-        isOpen={isOpenResetPassword}
-        onOpen={onOpenResetPassword}
-        onClose={onCloseResetPassword}
+        mobile={mobile}
       />
     </div>
   );

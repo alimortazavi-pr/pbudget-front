@@ -4,18 +4,18 @@ export interface IAuthState {
   isAuth: boolean;
 }
 
-export interface IValidationErrorsCheckEmailExist {
+export interface IValidationErrorsCheckMobileExist {
   paths: string[];
   messages: {
-    email: string;
+    mobile: string;
   };
 }
 
 export interface ISignUpForm {
   firstName: string;
   lastName: string;
-  email: string;
-  password: string;
+  mobile: string;
+  code: string;
 }
 
 export interface IValidationErrorsSignUpForm {
@@ -23,48 +23,31 @@ export interface IValidationErrorsSignUpForm {
   messages: {
     firstName: string;
     lastName: string;
-    email: string;
-    password: string;
+    mobile: string;
+    code: string;
   };
 }
 
 export interface ISignInForm {
-  email: string;
-  password: string;
+  mobile: string;
+  code: string;
 }
 
 export interface IValidationErrorsSignInForm {
   paths: string[];
   messages: {
-    email: string;
-    password: string;
-  };
-}
-
-export interface IForgetPasswordForm {
-  email: string;
-}
-
-export interface IValidationErrorsForgetPasswordForm {
-  paths: string[];
-  messages: {
-    email: string;
-  };
-}
-
-export interface IResetPasswordForm {
-  email: string;
-  code: string;
-  password: string;
-  passwordConfirmation: string;
-}
-
-export interface IValidationErrorsResetPasswordForm {
-  paths: string[];
-  messages: {
-    email: string;
+    mobile: string;
     code: string;
-    password: string;
-    passwordConfirmation: string;
+  };
+}
+
+export interface IForgetCodeForm {
+  mobile: string;
+}
+
+export interface IValidationErrorsForgetCodeForm {
+  paths: string[];
+  messages: {
+    mobile: string;
   };
 }

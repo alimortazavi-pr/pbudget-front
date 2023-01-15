@@ -57,7 +57,7 @@ export default function TheCategories({}: theCategoriesProps) {
               />
             ))
           ) : (
-            <span>هنوز دسته ای ایجاد نکرده اید ...</span>
+            <span className="dark:text-gray-200">هنوز دسته ای ایجاد نکرده اید ...</span>
           )}
         </ul>
       </div>

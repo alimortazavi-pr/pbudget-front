@@ -8,3 +8,10 @@ export type changeUserBudgetModalProps = {
   onOpen: () => void;
   onClose: () => void;
 };
+
+export type changeMobileModalProps = {
+  isOpen: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+  mobile: string;
+};

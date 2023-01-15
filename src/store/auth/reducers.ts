@@ -7,7 +7,10 @@ import { IAuthState } from "@/ts/interfaces/auth.interface";
 import Cookies from "js-cookie";
 
 const reducers = {
-  authenticate: (state: IAuthState, action: PayloadAction<any>) => {
+  authenticate: (
+    state: IAuthState,
+    action: PayloadAction<{ token: string }>
+  ) => {
     return {
       ...state,
       token: action.payload.token,

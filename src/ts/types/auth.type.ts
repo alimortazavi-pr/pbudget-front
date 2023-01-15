@@ -2,17 +2,17 @@ export type signUpAndSignInProps = {
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
-  email: string;
+  mobile: string;
 };
 
-export type forgetPasswordModalProps = {
+export type forgetCodeModalProps = {
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
-  email: string;
+  mobile: string;
 };
 
-export type resetPasswordModalProps = {
+export type resetCodeModalProps = {
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;

@@ -1,5 +1,8 @@
 import { AppThunk } from "@/store";
 
+//Actions of other store
+import { authenticate, saveDataToLocal } from "@/store/auth/actions";
+
 //Reducer
 import { profileReducer } from "@/store/profile";
 
@@ -7,7 +10,10 @@ import { profileReducer } from "@/store/profile";
 export const { setProfile, calculateUserBudget } = profileReducer.actions;
 
 //Interfaces
-import { IEditProfileForm } from "@/ts/interfaces/profile.interface";
+import {
+  IChangeMobileForm,
+  IEditProfileForm,
+} from "@/ts/interfaces/profile.interface";
 
 //Tools
 import api from "@/api";
@@ -25,6 +31,8 @@ export function getProfile(): AppThunk {
         await dispatch(setProfile(res.data.user));
       }
     } catch (err: any) {
+      console.log(err);
+
       throw new Error(err.response.data.message);
     }
   };
@@ -40,6 +48,30 @@ export function editProfile(form: IEditProfileForm): AppThunk {
           },
         });
         await dispatch(setProfile(res.data.user));
+        saveDataToLocal(getState().auth.token as string, res.data.user);
+      }
+    } catch (err: any) {
+      throw new Error(err.response.data.message);
+    }
+  };
+}
+
+export function changeMobile(form: IChangeMobileForm): AppThunk {
+  return async (dispatch, getState) => {
+    try {
+      if (getState().auth.isAuth) {
+        const res = await api.put(`/users/profile/change-mobile`, form, {
+          headers: {
+            Authorization: `Bearer ${getState().auth.token}`,
+          },
+        });
+        await dispatch(setProfile(res.data.user));
+        await dispatch(
+          authenticate({
+            token: res.data.token,
+          })
+        );
+        saveDataToLocal(res.data.token, res.data.user);
       }
     } catch (err: any) {
       throw new Error(err.response.data.message);
@@ -61,6 +93,7 @@ export function changeUserBudget(price: number): AppThunk {
           }
         );
         await dispatch(setProfile(res.data.user));
+        saveDataToLocal(getState().auth.token as string, res.data.user);
       }
     } catch (err: any) {
       throw new Error(err.response.data.message);

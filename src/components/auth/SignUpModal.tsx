@@ -10,6 +10,8 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  PinInput,
+  PinInputField,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
@@ -23,15 +25,21 @@ import {
 
 //Redux
 import { useAppDispatch } from "@/store/hooks";
-import { signUpValidator } from "@/validators/authValidator";
+import { signUp, requestNewCode } from "@/store/auth/actions";
+
+//Tools
 import { toast } from "react-toastify";
-import { signUp } from "@/store/auth/actions";
+import oneToTwoNumber from "one-to-two-num";
+import convertToPersian from "num-to-persian";
+
+//Validators
+import { signUpValidator } from "@/validators/authValidator";
 
 export default function SignUpModal({
   isOpen,
   onOpen,
   onClose,
-  email,
+  mobile,
 }: signUpAndSignInProps) {
   //Redux
   const dispatch = useAppDispatch();
@@ -43,33 +51,76 @@ export default function SignUpModal({
   const [form, setForm] = useState<ISignUpForm>({
     firstName: "",
     lastName: "",
-    email: "",
-    password: "",
+    mobile: "",
+    code: "",
+  });
+  const [counter, setCounter] = useState<{ value: number; status: boolean }>({
+    value: 120,
+    status: true,
   });
   const [errors, setErrors] = useState<IValidationErrorsSignUpForm>({
     paths: [],
     messages: {
       firstName: "",
       lastName: "",
-      email: "",
-      password: "",
+      mobile: "",
+      code: "",
     },
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   //Effects
   useEffect(() => {
-    if (email) {
-      setForm({ ...form, email: email as string });
+    if (mobile) {
+      setForm({ ...form, mobile: mobile as string });
     }
-  }, [email]);
+  }, [mobile]);
+
+  useEffect(() => {
+    if (isOpen) {
+      requestCode();
+    }
+  }, [isOpen]);
 
   //Functions
+  function calculatingCounter(time: number) {
+    let count: number;
+    count = time;
+    (window as any).counterInterval = setInterval(() => {
+      if (count !== 0) {
+        count -= 1;
+        setCounter({ status: true, value: count });
+      } else {
+        setCounter({ value: count, status: false });
+        window.clearInterval((window as any).counterInterval);
+      }
+    }, 1000);
+  }
+
   function inputHandler(e: ChangeEvent<HTMLInputElement>) {
     setForm({
       ...form,
       [e.target.name]: e.target.value,
     });
+  }
+
+  async function requestCode() {
+    window.clearInterval((window as any).counterInterval);
+    setIsLoading(true);
+    try {
+      await dispatch(requestNewCode(form.mobile));
+      toast.success("کدتایید جدید برای شما ارسال شد", {
+        position: toast.POSITION.TOP_CENTER,
+      });
+      calculatingCounter(120);
+      setIsLoading(false);
+    } catch (err: any) {
+      toast.error(err.message, {
+        position: toast.POSITION.TOP_CENTER,
+      });
+      setIsLoading(false);
+      calculatingCounter(counter.value);
+    }
   }
 
   function submit() {
@@ -78,8 +129,8 @@ export default function SignUpModal({
       messages: {
         firstName: "",
         lastName: "",
-        email: "",
-        password: "",
+        mobile: "",
+        code: "",
       },
     });
     setIsLoading(true);
@@ -107,8 +158,8 @@ export default function SignUpModal({
           messages: {
             firstName: "",
             lastName: "",
-            email: "",
-            password: "",
+            mobile: "",
+            code: "",
           },
         };
         err.inner.forEach((error: any) => {
@@ -171,7 +222,7 @@ export default function SignUpModal({
             </FormErrorMessage>
           </FormControl>
           <FormControl
-            isInvalid={errors.paths.includes("email")}
+            isInvalid={errors.paths.includes("mobile")}
             variant={"floating"}
             className="mb-4"
           >
@@ -179,33 +230,78 @@ export default function SignUpModal({
               focusBorderColor="rose.400"
               placeholder=" "
               type="text"
-              value={form.email}
+              value={form.mobile}
               onChange={inputHandler}
-              name="email"
+              name="mobile"
+              disabled
             />
-            <FormLabel>ایمیل</FormLabel>
+            <FormLabel>شماره موبایل</FormLabel>
             <FormErrorMessage>
-              {errors.paths.includes("email") ? errors.messages.email : ""}
+              {errors.paths.includes("mobile") ? errors.messages.mobile : ""}
             </FormErrorMessage>
           </FormControl>
           <FormControl
-            isInvalid={errors.paths.includes("password")}
+            isInvalid={errors.paths.includes("code")}
             variant={"floating"}
-            className="mb-4"
+            className="mb-2"
           >
-            <Input
-              focusBorderColor="rose.400"
-              placeholder=" "
-              type="password"
-              value={form.password}
-              onChange={inputHandler}
-              name="password"
-            />
-            <FormLabel>رمزعبور</FormLabel>
+            <div className="flex items-center justify-center">
+              <div className="flex flex-row-reverse items-center">
+                <PinInput
+                  otp
+                  onChange={(value) => {
+                    setForm({ ...form, code: value });
+                  }}
+                >
+                  <PinInputField
+                    _focus={{ borderColor: "rose.400", boxShadow: "none" }}
+                    mr={"2"}
+                  />
+                  <PinInputField
+                    _focus={{ borderColor: "rose.400", boxShadow: "none" }}
+                    mr={"2"}
+                  />
+                  <PinInputField
+                    _focus={{ borderColor: "rose.400", boxShadow: "none" }}
+                    mr={"2"}
+                  />
+                  <PinInputField
+                    _focus={{ borderColor: "rose.400", boxShadow: "none" }}
+                    mr={"2"}
+                  />
+                  <PinInputField
+                    _focus={{ borderColor: "rose.400", boxShadow: "none" }}
+                    mr={"2"}
+                  />
+                  <PinInputField
+                    _focus={{ borderColor: "rose.400", boxShadow: "none" }}
+                  />
+                </PinInput>
+              </div>
+              <div className="mr-2 flex-1">
+                {counter.status ? (
+                  <div className="p-2 border rounded text-center">
+                    <span>
+                      {convertToPersian(
+                        oneToTwoNumber(Math.floor(counter.value / 60)) +
+                          ":" +
+                          oneToTwoNumber(Math.floor(counter.value % 60))
+                      )}
+                    </span>
+                  </div>
+                ) : (
+                  <Button
+                    isLoading={isLoading}
+                    colorScheme={"red"}
+                    onClick={() => requestCode()}
+                  >
+                    ارسال مجدد کد
+                  </Button>
+                )}
+              </div>
+            </div>
             <FormErrorMessage>
-              {errors.paths.includes("password")
-                ? errors.messages.password
-                : ""}
+              {errors.paths.includes("code") ? errors.messages.code : ""}
             </FormErrorMessage>
           </FormControl>
         </ModalBody>

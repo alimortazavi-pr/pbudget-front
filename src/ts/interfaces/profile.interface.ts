@@ -6,10 +6,9 @@ export interface IProfile {
   _id: string;
   firstName: string;
   lastName: string;
-  email: string;
+  mobile: string;
   profileImage?: string;
-  emailActive: boolean;
-  password: string;
+  mobileActive: boolean;
   budget: number;
   deleted: boolean;
 }
@@ -17,8 +16,7 @@ export interface IProfile {
 export interface IEditProfileForm {
   firstName: string;
   lastName: string;
-  email: string;
-  password: string;
+  mobile: string;
 }
 
 export interface IValidationErrorsEditProfileForm {
@@ -26,8 +24,7 @@ export interface IValidationErrorsEditProfileForm {
   messages: {
     firstName: string;
     lastName: string;
-    email: string;
-    password: string;
+    mobile: string;
   };
 }
 
@@ -39,5 +36,18 @@ export interface IValidationErrorsChangeUserBudgetForm {
   paths: string[];
   messages: {
     price: string;
+  };
+}
+
+export interface IChangeMobileForm {
+  mobile: string;
+  code: string;
+}
+
+export interface IValidationErrorsChangeMobileForm {
+  paths: string[];
+  messages: {
+    mobile: string;
+    code: string;
   };
 }
