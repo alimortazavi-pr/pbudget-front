@@ -128,7 +128,7 @@ export default function ChangeUserBudgetModal({
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalCloseButton />
+        <ModalCloseButton className="dark:text-gray-200" />
         <ModalHeader>
           <span className="text-gray-800 dark:text-white">تغییر موجودی</span>
         </ModalHeader>

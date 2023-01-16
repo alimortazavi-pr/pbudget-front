@@ -154,7 +154,8 @@ export default function TheProfile({}: theProfileProps) {
             </span>
           </div>
           <Button
-            colorScheme="teal"
+            colorScheme={isDarkMode ? "teal" : "teal"}
+            variant={isDarkMode ? "outline" : "solid"}
             className="w-full"
             type="submit"
             isLoading={isLoading}
