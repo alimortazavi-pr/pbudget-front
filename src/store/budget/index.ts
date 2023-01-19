@@ -7,9 +7,9 @@ import { IBudgetState } from "@/ts/interfaces/budget.interface";
 import reducers from "@/store/budget/reducers";
 
 const initialState: IBudgetState = {
-  budgets: [],
-  totalCostPrice: 0,
-  totalIncomePrice: 0,
+  budgets: null,
+  totalCostPrice: null,
+  totalIncomePrice: null,
 };
 
 export const budgetReducer = createSlice({
