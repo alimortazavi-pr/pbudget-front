@@ -87,10 +87,10 @@ export default function EditBudget({ budget }: editBudgetProps) {
 
   useEffect(() => {
     let categoriesOptionsHandler: { value: string; label: string }[] = [];
-    categories.forEach((category) => {
+    categories?.forEach((category) => {
       categoriesOptionsHandler.push({
         value: category._id,
-        label: category.title,
+        label: category.title as string,
       });
     });
     setCategoriesOptions(categoriesOptionsHandler);

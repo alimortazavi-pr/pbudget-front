@@ -4,7 +4,10 @@ import { useRouter } from "next/router";
 
 //Redux
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { didTryAutoLoginSelector } from "@/store/auth/selectors";
+import {
+  didTryAutoLoginSelector,
+  isAuthSelector,
+} from "@/store/auth/selectors";
 import { autoLogin } from "@/store/auth/actions";
 import { getCategories } from "@/store/category/actions";
 import { darkModeSelector } from "@/store/layout/selectors";
@@ -30,6 +33,7 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
   //Redux
   const dispatch = useAppDispatch();
   const didTryAutoLogin = useAppSelector(didTryAutoLoginSelector);
+  const isAuth = useAppSelector(isAuthSelector);
   const darkMode = useAppSelector(darkModeSelector);
 
   //Next
@@ -41,18 +45,23 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    autoLoginAndGetCategoriesFunc();
+    autoLoginFunc();
   }, [dispatch, didTryAutoLogin]);
 
+  useEffect(() => {
+    if (isAuth) {
+      getCategoriesFunc();
+    }
+  }, [isAuth]);
+
   //Functions
-  async function autoLoginAndGetCategoriesFunc() {
+  async function autoLoginFunc() {
     if (router.pathname !== "/get-started") {
       const userAuthorization = Cookies.get("userAuthorization");
       if (userAuthorization && !didTryAutoLogin) {
         const transformedData = JSON.parse(userAuthorization);
         try {
           await dispatch(autoLogin(transformedData.token));
-          await dispatch(getCategories());
         } catch (err: any) {
           router.push("/get-started");
         }
@@ -60,6 +69,10 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
         router.push("/get-started");
       }
     }
+  }
+
+  async function getCategoriesFunc() {
+    await dispatch(getCategories());
   }
 
   function checkDarkModeFunc() {

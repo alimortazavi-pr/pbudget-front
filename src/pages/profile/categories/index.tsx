@@ -1,13 +1,15 @@
 import { GetServerSideProps } from "next";
 import { Button, useDisclosure } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 //Types
 import { ICategory } from "@/ts/interfaces/category.interface";
 import { theCategoriesProps } from "@/ts/types/category.type";
 
-//Categories
+//Redux
 import { categoriesSelector } from "@/store/category/selectors";
+import { getCategories } from "@/store/category/actions";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 //Components
 import TheNavigation from "@/components/layouts/TheNavigation";
@@ -17,10 +19,11 @@ import EditCategoryModal from "@/components/categories/EditCategoryModal";
 
 //Tools
 import api from "@/api";
-import { useAppSelector } from "@/store/hooks";
+import SkeletonCategoriesList from "@/components/categories/SkeletonCategoriesList";
 
 export default function TheCategories({}: theCategoriesProps) {
   //Redux
+  const dispatch = useAppDispatch();
   const categories = useAppSelector(categoriesSelector);
 
   //ChakraUI
@@ -33,6 +36,13 @@ export default function TheCategories({}: theCategoriesProps) {
 
   //States
   const [categoryEdit, setCategoryEdit] = useState<ICategory | null>();
+
+  //Effects
+  // useEffect(() => {
+  //   if (!categories || categories == null) {
+  //     dispatch(getCategories());
+  //   }
+  // }, []);
 
   return (
     <div className="flex flex-col items-center md:mt-5">
@@ -47,6 +57,7 @@ export default function TheCategories({}: theCategoriesProps) {
           ایجاد دسته بندی
         </Button>
         <ul className="px-3 flex flex-col gap-x-2 gap-y-5 bg-white dark:bg-gray-800 p-5 rounded-2xl md:rounded-md">
+          <SkeletonCategoriesList />
           {categories?.length !== 0 ? (
             categories?.map((category) => (
               <SingleCategory
@@ -57,7 +68,9 @@ export default function TheCategories({}: theCategoriesProps) {
               />
             ))
           ) : (
-            <span className="dark:text-gray-200">هنوز دسته ای ایجاد نکرده اید ...</span>
+            <span className="dark:text-gray-200">
+              هنوز دسته ای ایجاد نکرده اید ...
+            </span>
           )}
         </ul>
       </div>

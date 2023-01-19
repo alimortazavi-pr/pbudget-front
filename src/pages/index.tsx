@@ -10,7 +10,6 @@ import { IBudget } from "@/ts/interfaces/budget.interface";
 import { setBudgets } from "@/store/budget/actions";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { budgetsSelector } from "@/store/budget/selectors";
-import { getProfile } from "@/store/profile/actions";
 
 //Components
 import TheNavigation from "@/components/layouts/TheNavigation";
@@ -24,6 +23,7 @@ import FilterSection from "@/components/layouts/FilterSection";
 //Tools
 import api from "@/api";
 import moment from "jalali-moment";
+import SkeletonBudgetsList from "@/components/budgets/SkeletonBudgetsList";
 
 export default function Index({
   budgets,
@@ -102,7 +102,6 @@ export default function Index({
   //Functions
   async function setBudgetsFunc() {
     await dispatch(setBudgets({ budgets, totalCostPrice, totalIncomePrice }));
-    await dispatch(getProfile());
   }
 
   return (
@@ -120,6 +119,7 @@ export default function Index({
           {budgetsGlobal?.map((budget) => (
             <SingleBudget key={budget._id} budget={budget} />
           ))}
+          <SkeletonBudgetsList />
         </ul>
       </div>
     </div>

@@ -24,8 +24,8 @@ const reducers = {
     state: IBudgetState,
     action: PayloadAction<IBudget>
   ): IBudgetState => {
-    let newTotalCostPrice: number = state.totalCostPrice;
-    let newTotalIncomePrice: number = state.totalIncomePrice;
+    let newTotalCostPrice: number = state.totalCostPrice || 0;
+    let newTotalIncomePrice: number = state.totalIncomePrice || 0;
     if (action.payload.type === budgetTypeEnum.INCOME) {
       newTotalIncomePrice -= action.payload.price;
     } else {
@@ -35,7 +35,9 @@ const reducers = {
     return {
       ...state,
       budgets: [
-        ...state.budgets?.filter((budget) => budget._id !== action.payload._id),
+        ...(state.budgets as IBudget[]).filter(
+          (budget) => budget._id !== action.payload._id
+        ),
       ],
       totalCostPrice: newTotalCostPrice,
       totalIncomePrice: newTotalIncomePrice,

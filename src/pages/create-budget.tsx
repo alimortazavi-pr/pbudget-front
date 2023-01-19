@@ -84,7 +84,7 @@ export default function CreateBudget({}: createBudgetProps) {
     categories?.forEach((category) => {
       categoriesOptionsHandler.push({
         value: category._id,
-        label: category.title,
+        label: category.title as string,
       });
     });
     setCategoriesOptions(categoriesOptionsHandler);

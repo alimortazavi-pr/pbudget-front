@@ -1,11 +1,11 @@
 export interface ICategoryState {
-  categories: ICategory[];
+  categories: ICategory[] | null;
 }
 
 export interface ICategory {
   _id: string;
   user: string;
-  title: string;
+  title: string | null;
   deleted: boolean;
 }
 

@@ -143,6 +143,7 @@ export default function EditCategoryModal({
               value={form.title}
               onChange={inputHandler}
               name="title"
+              disabled={!category._id}
             />
             <FormLabel>عنوان</FormLabel>
             <FormErrorMessage>

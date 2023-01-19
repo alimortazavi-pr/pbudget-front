@@ -4,12 +4,12 @@ export interface IProfileState {
 
 export interface IProfile {
   _id: string;
-  firstName: string;
-  lastName: string;
-  mobile: string;
-  profileImage?: string;
+  firstName: string | null;
+  lastName: string | null;
+  mobile: string | null;
+  profileImage?: string | null;
   mobileActive: boolean;
-  budget: number;
+  budget: number | null;
   deleted: boolean;
 }
 

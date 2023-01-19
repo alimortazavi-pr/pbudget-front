@@ -69,9 +69,9 @@ export default function TheProfile({}: theProfileProps) {
   //Effect
   useEffect(() => {
     setForm({
-      firstName: user.firstName,
-      lastName: user.lastName,
-      mobile: user.mobile,
+      firstName: user.firstName || "",
+      lastName: user.lastName || "",
+      mobile: user.mobile || "",
     });
   }, [user]);
 
@@ -139,7 +139,7 @@ export default function TheProfile({}: theProfileProps) {
         <div className="w-full overflow-y-auto rounded-lg py-2 px-2 bg-sky-900 dark:bg-gray-800 mb-2">
           <div className="text-xl font-bold text-white dark:text-gray-200 md:mb-3">
             <span>موجودی</span>
-            {user.budget < 0 ? (
+            {user.budget && user?.budget < 0 ? (
               <span className="text-red-400 mr-1 text-sm self-center">
                 (کمبود وجه)
               </span>
@@ -158,7 +158,7 @@ export default function TheProfile({}: theProfileProps) {
             variant={isDarkMode ? "outline" : "solid"}
             className="w-full"
             type="submit"
-            isLoading={isLoading}
+            isLoading={isLoading || !form.firstName}
             onClick={onOpen}
           >
             تغییر موجودی
@@ -181,6 +181,7 @@ export default function TheProfile({}: theProfileProps) {
               value={form.firstName}
               onChange={inputHandler}
               name="firstName"
+              disabled={!form.firstName}
             />
             <FormLabel>نام</FormLabel>
             <FormErrorMessage>
@@ -201,6 +202,7 @@ export default function TheProfile({}: theProfileProps) {
               value={form.lastName}
               onChange={inputHandler}
               name="lastName"
+              disabled={!form.firstName}
             />
             <FormLabel>نام خانوادگی</FormLabel>
             <FormErrorMessage>
@@ -246,7 +248,7 @@ export default function TheProfile({}: theProfileProps) {
               variant={"outline"}
               className="w-full"
               type="submit"
-              isLoading={isLoading}
+              isLoading={isLoading || !form.mobile}
             >
               ویرایش
             </Button>
@@ -257,7 +259,7 @@ export default function TheProfile({}: theProfileProps) {
         isOpen={isOpenChangeMobile}
         onClose={onCloseChangeMobile}
         onOpen={onOpenChangeMobile}
-        mobile={user.mobile}
+        mobile={user.mobile as string}
       />
       <ChangeUserBudgetModal
         isOpen={isOpen}

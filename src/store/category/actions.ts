@@ -42,7 +42,10 @@ export function createCategory(form: ICreateAndEditCategoryForm): AppThunk {
         },
       });
       dispatch(
-        setCategories([...getState().category.categories, res.data.category])
+        setCategories([
+          ...(getState().category.categories as ICategory[]),
+          res.data.category,
+        ])
       );
     } catch (err: any) {
       throw new Error(err.response.data.message);
@@ -63,7 +66,7 @@ export function editCategory(
       });
       dispatch(
         setCategories([
-          ...getState().category.categories.map((cat) =>
+          ...(getState().category.categories as ICategory[]).map((cat) =>
             cat._id === category._id ? res.data.category : cat
           ),
         ])
@@ -84,7 +87,7 @@ export function softDeleteCategory(category: ICategory): AppThunk {
       });
       dispatch(
         setCategories([
-          ...getState().category.categories.filter(
+          ...(getState().category.categories as ICategory[]).filter(
             (cat) => cat._id !== category._id
           ),
         ])

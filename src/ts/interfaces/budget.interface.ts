@@ -2,9 +2,9 @@
 import { ICategory } from "./category.interface";
 
 export interface IBudgetState {
-  budgets: IBudget[];
-  totalCostPrice: number;
-  totalIncomePrice: number;
+  budgets: IBudget[] | null;
+  totalCostPrice: number | null;
+  totalIncomePrice: number | null;
 }
 
 export interface IBudget {

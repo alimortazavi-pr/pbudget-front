@@ -23,7 +23,10 @@ const reducers = {
   ): IProfileState => {
     return {
       ...state,
-      user: { ...state.user, budget: state.user.budget + action.payload },
+      user: {
+        ...state.user,
+        budget: (state.user.budget as number) + action.payload,
+      },
     };
   },
 };
