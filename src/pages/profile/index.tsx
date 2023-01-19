@@ -4,6 +4,7 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
+  Skeleton,
   useDisclosure,
 } from "@chakra-ui/react";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
@@ -24,6 +25,7 @@ import { darkModeSelector } from "@/store/layout/selectors";
 //Components
 import TheNavigation from "@/components/layouts/TheNavigation";
 import ChangeUserBudgetModal from "@/components/profile/ChangeUserBudgetModal";
+import ChangeMobileModal from "@/components/profile/ChangeMobileModal";
 
 //Tools
 import priceGenerator from "price-generator";
@@ -32,7 +34,6 @@ import { toast } from "react-toastify";
 
 //Validators
 import { editProfileValidator } from "@/validators/profileValidator";
-import ChangeMobileModal from "@/components/profile/ChangeMobileModal";
 
 //Styles
 
@@ -149,9 +150,15 @@ export default function TheProfile({}: theProfileProps) {
             <span className="text-xs mr-1 text-white dark:text-gray-200">
               تومان
             </span>
-            <span className="text-white dark:text-gray-200">
-              {convertToPersian(priceGenerator(user.budget || 0))}
-            </span>
+            <Skeleton
+              minH="20px"
+              minW={"100px"}
+              isLoaded={user.budget != null ? true : false}
+            >
+              <span className="text-white dark:text-gray-200">
+                {convertToPersian(priceGenerator(user.budget || 0))}
+              </span>
+            </Skeleton>
           </div>
           <Button
             colorScheme={isDarkMode ? "teal" : "teal"}

@@ -14,7 +14,7 @@ const initialState: IProfileState = {
     mobile: "",
     profileImage: "",
     mobileActive: false,
-    budget: 0,
+    budget: null,
     deleted: false,
   },
 };
