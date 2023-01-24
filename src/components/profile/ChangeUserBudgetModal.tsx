@@ -33,6 +33,7 @@ import priceGenerator from "price-generator";
 
 //Validators
 import { changeUserBudgetValidator } from "@/validators/profileValidator";
+import convertAPToEnglish from "ap-to-english";
 
 export default function ChangeUserBudgetModal({
   isOpen,
@@ -62,7 +63,12 @@ export default function ChangeUserBudgetModal({
   useEffect(() => {
     setPricePreview(
       convertToPersian(
-        priceGenerator(form.price?.toString().split(",").join("") || "0")
+        priceGenerator(
+          convertAPToEnglish(form.price || "0")
+            .toString()
+            .split(",")
+            .join("")
+        )
       )
     );
   }, [form.price]);

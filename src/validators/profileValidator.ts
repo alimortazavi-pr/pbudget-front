@@ -10,7 +10,7 @@ export const editProfileValidator = yup.object().shape({
 });
 
 export const changeUserBudgetValidator = yup.object().shape({
-  price: yup.number().required("لطفا مبلغ مورد نظر خود را وارد کنید"),
+  price: yup.string().required("لطفا مبلغ مورد نظر خود را وارد کنید"),
 });
 
 export const requestToChangeNumberValidator = yup.object().shape({
