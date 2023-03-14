@@ -16,7 +16,7 @@ export async function middleware(request: NextRequest) {
     const token = transformedData.token;
     try {
       const res = await fetch(
-        "https://api-pbudget.alimortazavi.org/v1/auth/check",
+        "https://api-budget.paradisecode.org/v1/auth/check",
         {
           headers: {
             Authorization: `Bearer ${token}`,
