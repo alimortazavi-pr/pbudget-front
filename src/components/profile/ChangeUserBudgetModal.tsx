@@ -11,6 +11,7 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  Skeleton,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { ChangeEvent, useEffect, useState } from "react";
@@ -23,17 +24,19 @@ import {
 import { changeUserBudgetModalProps } from "@/ts/types/profile.type";
 
 //Redux
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { changeUserBudget } from "@/store/profile/actions";
+import { darkModeSelector } from "@/store/layout/selectors";
+import { userSelector } from "@/store/profile/selectors";
 
 //Tools
 import { toast } from "react-toastify";
 import convertToPersian from "num-to-persian";
 import priceGenerator from "price-generator";
+import convertAPToEnglish from "ap-to-english";
 
 //Validators
 import { changeUserBudgetValidator } from "@/validators/profileValidator";
-import convertAPToEnglish from "ap-to-english";
 
 export default function ChangeUserBudgetModal({
   isOpen,
@@ -42,15 +45,15 @@ export default function ChangeUserBudgetModal({
 }: changeUserBudgetModalProps) {
   //Redux
   const dispatch = useAppDispatch();
+  const isDarkMode = useAppSelector(darkModeSelector);
+  const user = useAppSelector(userSelector);
 
   //Next
-  const router = useRouter();
 
   //States
   const [form, setForm] = useState<IChangeUserBudgetForm>({
     price: "",
   });
-  const [pricePreview, setPricePreview] = useState<string>("0");
   const [errors, setErrors] = useState<IValidationErrorsChangeUserBudgetForm>({
     paths: [],
     messages: {
@@ -59,26 +62,27 @@ export default function ChangeUserBudgetModal({
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  //Effects
-  useEffect(() => {
-    setPricePreview(
-      convertToPersian(
-        priceGenerator(
-          convertAPToEnglish(form.price || "0")
-            .toString()
-            .split(",")
-            .join("")
-        )
-      )
-    );
-  }, [form.price]);
-
   //Functions
-  function inputHandler(e: ChangeEvent<HTMLInputElement>) {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+  function inputHandler(
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) {
+    if (!e.target.value) {
+      setForm({
+        price: convertToPersian(
+          priceGenerator(convertAPToEnglish(e.target.value.replace(/\,/g, "")))
+        ),
+      });
+    } else if (
+      !convertAPToEnglish(e.target.value.replace(/\,/g, "")).match(/^-?\d+$/)
+    ) {
+      return;
+    } else {
+      setForm({
+        price: convertToPersian(
+          priceGenerator(convertAPToEnglish(e.target.value.replace(/\,/g, "")))
+        ),
+      });
+    }
   }
 
   function submit(type: "increase" | "decrease") {
@@ -96,8 +100,12 @@ export default function ChangeUserBudgetModal({
           await dispatch(
             changeUserBudget(
               type === "increase"
-                ? parseInt(form.price as string)
-                : -parseInt(form.price as string)
+                ? parseInt(
+                    convertAPToEnglish(form.price.toString().replace(/\,/g, ""))
+                  )
+                : -parseInt(
+                    convertAPToEnglish(form.price.toString().replace(/\,/g, ""))
+                  )
             )
           );
           toast.success("موجودی شما باموفقیت تغییر کرد", {
@@ -147,20 +155,35 @@ export default function ChangeUserBudgetModal({
             <Input
               focusBorderColor="rose.400"
               placeholder=" "
-              type="number"
+              type="text"
               value={form.price}
               onChange={inputHandler}
               name="price"
             />
-            <FormLabel>مبلغ</FormLabel>
+            <FormLabel>مبلغ (تومان)</FormLabel>
             <FormErrorMessage>
               {errors.paths.includes("price") ? errors.messages.price : ""}
             </FormErrorMessage>
-            <FormHelperText mt={"1"}>
-              <span className="dark:text-gray-300">
-                {pricePreview ? pricePreview : "۰"}
-              </span>
-              <span className="mr-1 dark:text-gray-300">تومان</span>
+            <FormHelperText mt={"2"} mx={'2'}>
+              <div className="flex items-center justify-between">
+                <div className="text-gray-800 dark:text-gray-200 font-semibold text-sm">
+                  <span>موجودی فعلی:</span>
+                </div>
+                <div className="flex items-center justify-start font-semibold ltr-important text-sm">
+                  <span className="mr-1 text-gray-800 dark:text-gray-200">
+                    تومان
+                  </span>
+                  <Skeleton
+                    minH="20px"
+                    minW={"100px"}
+                    isLoaded={user.budget != null ? true : false}
+                  >
+                    <span className="text-gray-800 dark:text-gray-200">
+                      {convertToPersian(priceGenerator(user.budget || 0))}
+                    </span>
+                  </Skeleton>
+                </div>
+              </div>
             </FormHelperText>
           </FormControl>
           <div className="mb-4 flex items-center gap-2">
@@ -169,6 +192,7 @@ export default function ChangeUserBudgetModal({
               isLoading={isLoading}
               onClick={() => submit("decrease")}
               colorScheme={"rose"}
+              variant={isDarkMode ? "outline" : "solid"}
             >
               از حسابم کم کن
             </Button>
@@ -177,6 +201,7 @@ export default function ChangeUserBudgetModal({
               isLoading={isLoading}
               onClick={() => submit("increase")}
               colorScheme="green"
+              variant={isDarkMode ? "outline" : "solid"}
             >
               به حسابم اضافه کن
             </Button>

@@ -5,10 +5,13 @@ import { useEffect, useState } from "react";
 import { budgetDatePickerProps } from "@/ts/types/budget.type";
 
 //Components
-import { DatePicker } from "react-advance-jalaali-datepicker";
 
 //Tools
 import convertToPersian from "num-to-persian";
+import DatePicker from "react-multi-date-picker";
+import persianLocale from "react-date-object/locales/persian_fa";
+import persianCalendar from "react-date-object/calendars/persian";
+import moment from "jalali-moment";
 
 export default function BudgetDatePicker({
   errors,
@@ -17,47 +20,45 @@ export default function BudgetDatePicker({
   setForm,
 }: budgetDatePickerProps) {
   //States
-  const [dateValue, setDateValue] = useState<string>("");
+  const [datePickerValue, setDatePickerValue] = useState<number>(
+    new Date().getTime()
+  );
 
   //Effects
   useEffect(() => {
-    if (form.year && form.month && form.day && !dateValue) {
-      setDateValue(`${form.year}/${form.month}/${form.day}`);
+    if (form.year && form.month && form.day && !datePickerValue) {
+      setDatePickerValue(
+        new Date(
+          moment("1367/11/04", "jYYYY/jMM/jDD").format("YYYY/MM/DD")
+        ).getTime()
+      );
     }
   }, [form.year, form.month, form.day]);
 
   //Functions
-  function DatePickerInput(props: any) {
-    return (
-      <Input
-        focusBorderColor="rose.400"
-        {...props}
-        value={convertToPersian(dateValue || "")}
-        placeholder="تاریخ"
-        className="placeholder:text-gray-800 placeholder:dark:text-white"
-      />
-    );
-  }
-
-  function dateHandler(unix: string, formatted: string) {
-    const splitDate = formatted.split("/");
-    setDateValue(formatted);
+  function setDateFunc(date: any) {
+    const convertDate = moment(parseInt(JSON.stringify(date)))
+      .format("jYYYY/jMM/jDD")
+      .split("/");
     setForm({
       ...form,
-      year: splitDate[0],
-      month: splitDate[1],
-      day: splitDate[2],
+      year: convertDate[0],
+      month: convertDate[1],
+      day: convertDate[2],
     });
   }
 
   return (
     <FormControl isInvalid={errors.paths.includes("date")} className="">
       <DatePicker
-        inputComponent={DatePickerInput}
-        // placeholder="تاریخ"
-        format="jYYYY/jMM/jDD"
-        onChange={dateHandler}
-        id="datePicker"
+        value={datePickerValue}
+        locale={persianLocale}
+        calendar={persianCalendar}
+        onChange={setDateFunc}
+        format={"YYYY/MM/DD"}
+        containerClassName="w-full outline-none"
+        inputClass="w-full h-[2.5rem] outline-none rounded-[0.375rem] border border-[inherit] px-[1rem] dark:bg-transparent dark:text-gray-200 placeholder:text-gray-800 placeholder:dark:text-white"
+        placeholder="تاریخ"
       />
       <FormErrorMessage>
         {errors.paths.includes("year") ||

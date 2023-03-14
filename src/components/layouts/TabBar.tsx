@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { IconButton } from "@chakra-ui/react";
+import { IconButton, Tooltip } from "@chakra-ui/react";
 import { useState } from "react";
 
 //Redux
@@ -44,15 +44,23 @@ export default function TabBar() {
             href={"/create-budget"}
             className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-red-500 to-pink-500 flex items-center justify-center"
           >
-            <IconButton
-              borderRadius="1rem"
-              backgroundImage={
-                "linear-gradient(to top right, #a855f7 , #ec4899)"
-              }
-              colorScheme="pink"
-              aria-label="Create task"
-              icon={<Add size="20" className="text-white" />}
-            />
+            <Tooltip
+              hasArrow
+              label={"ایجاد تراکنش"}
+              placement="top"
+              rounded={"md"}
+              p={"1.5"}
+            >
+              <IconButton
+                borderRadius="1rem"
+                backgroundImage={
+                  "linear-gradient(to top right, #a855f7 , #ec4899)"
+                }
+                colorScheme="pink"
+                aria-label="Create task"
+                icon={<Add size="20" className="text-white" />}
+              />
+            </Tooltip>
           </Link>
         </li>
         <li
@@ -61,7 +69,15 @@ export default function TabBar() {
           }`}
         >
           <Link href={"/"}>
-            <Home size="20" className="text-white" />
+            <Tooltip
+              hasArrow
+              label={"خانه"}
+              placement="top"
+              rounded={"md"}
+              p={"1.5"}
+            >
+              <Home size="20" className="text-white" />
+            </Tooltip>
           </Link>
         </li>
         {isMoreOptions ? (
@@ -69,17 +85,33 @@ export default function TabBar() {
             <ProfileTabIcon />
             <li className="h-5 w-5 flex items-center justify-center">
               <Link href={"/profile/categories"}>
-                <Layer size="20" className="text-white" />
+                <Tooltip
+                  hasArrow
+                  label="دسته بندی ها"
+                  placement="top"
+                  rounded={"md"}
+                  p={"1.5"}
+                >
+                  <Layer size="20" className="text-white" />
+                </Tooltip>
               </Link>
             </li>
             <li className="h-5 w-5 flex items-center justify-center">
-              <span className="cursor-pointer" onClick={darkModeToggle}>
-                {darkMode ? (
-                  <Sun1 size="20" className="text-white" />
-                ) : (
-                  <Moon size="20" className="text-white" />
-                )}
-              </span>
+              <Tooltip
+                hasArrow
+                label="تغییر تم"
+                placement="top"
+                rounded={"md"}
+                p={"1.5"}
+              >
+                <span className="cursor-pointer" onClick={darkModeToggle}>
+                  {darkMode ? (
+                    <Sun1 size="20" className="text-white" />
+                  ) : (
+                    <Moon size="20" className="text-white" />
+                  )}
+                </span>
+              </Tooltip>
             </li>
           </ul>
         ) : null}
@@ -88,12 +120,20 @@ export default function TabBar() {
             className="cursor-pointer"
             onClick={() => setIsMoreOptions(!isMoreOptions)}
           >
-            <SidebarLeft
-              size="20"
-              className={`text-white duration-300 ${
-                isMoreOptions ? "rotate-180" : "rotate-0"
-              }`}
-            />
+            <Tooltip
+              hasArrow
+              label={isMoreOptions ? "بستن" : "بیشتر"}
+              placement="top"
+              rounded={"md"}
+              p={"1.5"}
+            >
+              <SidebarLeft
+                size="20"
+                className={`text-white duration-300 ${
+                  isMoreOptions ? "rotate-180" : "rotate-0"
+                }`}
+              />
+            </Tooltip>
           </span>
         </li>
       </ul>

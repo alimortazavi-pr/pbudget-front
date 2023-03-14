@@ -9,16 +9,17 @@ import { theNavigationProps } from "@/ts/types/layouts.type";
 export default function TheNavigation({
   title,
   previousPage,
-  isEnabledPreviousPage,
+  isEnabledPreviousPage = true,
+  isEnabledPreviousPageIcon,
 }: theNavigationProps) {
   //Next
   const router = useRouter();
 
   //Functions
   function goPreviousPage() {
-    if (previousPage) {
+    if (previousPage && isEnabledPreviousPage) {
       router.push(previousPage);
-    } else {
+    } else if (isEnabledPreviousPage) {
       router.back();
     }
   }
@@ -29,7 +30,7 @@ export default function TheNavigation({
         className="text-lg flex items-end cursor-pointer"
         onClick={goPreviousPage}
       >
-        {isEnabledPreviousPage ? (
+        {isEnabledPreviousPageIcon ? (
           <ArrowRight size={"20"} className="ml-1" />
         ) : null}
         <span className="font-semibold leading-none">{title}</span>

@@ -18,7 +18,6 @@ import {
   IValidationErrorsCreateAndEditBudgetForm,
 } from "@/ts/interfaces/budget.interface";
 import { createBudgetProps } from "@/ts/types/budget.type";
-import { ICategory } from "@/ts/interfaces/category.interface";
 import { budgetTypeEnum } from "@/ts/enums/budget.enum";
 
 //Redux
@@ -32,10 +31,10 @@ import CreateCategoryModal from "@/components/categories/CreateCategoryModal";
 import BudgetDatePicker from "@/components/budgets/BudgetDatePicker";
 
 //Tools
-import api from "@/api";
 import priceGenerator from "price-generator";
 import convertToPersian from "num-to-persian";
 import { toast } from "react-toastify";
+import convertAPToEnglish from "ap-to-english";
 
 //Validators
 import { createAndEditBudget } from "@/validators/budgetValidator";
@@ -60,7 +59,6 @@ export default function CreateBudget({}: createBudgetProps) {
     day: "",
     category: "",
   });
-  const [pricePreview, setPricePreview] = useState<string>("0");
   const [errors, setErrors] =
     useState<IValidationErrorsCreateAndEditBudgetForm>({
       paths: [],
@@ -90,22 +88,29 @@ export default function CreateBudget({}: createBudgetProps) {
     setCategoriesOptions(categoriesOptionsHandler);
   }, [categories]);
 
-  useEffect(() => {
-    setPricePreview(
-      convertToPersian(
-        priceGenerator(form.price?.toString().split(",").join("") || "0")
-      )
-    );
-  }, [form.price]);
-
   //Functions
   function inputHandler(
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    if (!e.target.value) {
+      setForm({
+        ...form,
+        price: convertToPersian(
+          priceGenerator(convertAPToEnglish(e.target.value.replace(/\,/g, "")))
+        ),
+      });
+    } else if (
+      !convertAPToEnglish(e.target.value.replace(/\,/g, "")).match(/^-?\d+$/)
+    ) {
+      return;
+    } else {
+      setForm({
+        ...form,
+        price: convertToPersian(
+          priceGenerator(convertAPToEnglish(e.target.value.replace(/\,/g, "")))
+        ),
+      });
+    }
   }
 
   function typeHandler(e: ChangeEvent<HTMLInputElement>) {
@@ -134,8 +139,15 @@ export default function CreateBudget({}: createBudgetProps) {
       .validate(form, { abortEarly: false })
       .then(async () => {
         try {
-          await dispatch(createBudget(form));
-          toast.success("دریافتی/پرداختی باموفقیت ایجاد شد", {
+          await dispatch(
+            createBudget({
+              ...form,
+              price: parseInt(
+                convertAPToEnglish(form.price.toString().replace(/\,/g, ""))
+              ),
+            })
+          );
+          toast.success("تراکنش باموفقیت ایجاد شد", {
             position: toast.POSITION.TOP_CENTER,
           });
           setIsLoading(false);
@@ -179,7 +191,7 @@ export default function CreateBudget({}: createBudgetProps) {
 
   return (
     <div className="flex flex-col items-center md:mt-5">
-      <TheNavigation title="ایجاد دریافتی/پرداختی" isEnabledPreviousPage />
+      <TheNavigation title="ایجاد تراکنش" isEnabledPreviousPageIcon />
       <div className="px-2 md:px-0 w-full max-w-md">
         <form
           onSubmit={submit}
@@ -194,18 +206,12 @@ export default function CreateBudget({}: createBudgetProps) {
               <Input
                 focusBorderColor="rose.400"
                 placeholder=" "
-                type="number"
+                type="text"
                 value={form.price}
                 onChange={inputHandler}
                 name="price"
               />
-              <FormLabel>مبلغ</FormLabel>
-              <FormHelperText mt={"1"}>
-                <span className="dark:text-gray-300">
-                  {pricePreview ? pricePreview : "۰"}
-                </span>
-                <span className="mr-1 dark:text-gray-300">تومان</span>
-              </FormHelperText>
+              <FormLabel>مبلغ (تومان)</FormLabel>
               <FormErrorMessage>
                 {errors.paths.includes("price") ? errors.messages.price : ""}
               </FormErrorMessage>

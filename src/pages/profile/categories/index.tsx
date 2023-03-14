@@ -46,7 +46,7 @@ export default function TheCategories({}: theCategoriesProps) {
 
   return (
     <div className="flex flex-col items-center md:mt-5">
-      <TheNavigation title="مدیریت دسته ها" isEnabledPreviousPage />
+      <TheNavigation title="مدیریت دسته ها" isEnabledPreviousPageIcon />
       <div className="px-2 md:px-0 w-full max-w-md">
         <Button
           colorScheme={"rose"}

@@ -91,7 +91,7 @@ export default function MoreFilterModal({
       <ModalContent>
         <ModalHeader>
           <span className="text-gray-800 dark:text-white">
-            فیلتر دریافتی/پرداختی ها
+            فیلتر تراکنش ها
           </span>
         </ModalHeader>
         <ModalBody>

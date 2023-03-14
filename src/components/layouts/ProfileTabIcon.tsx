@@ -7,7 +7,13 @@ import { logOut } from "@/store/auth/actions";
 
 //Tools
 import { Logout, User, UserEdit } from "iconsax-react";
-import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react";
+import {
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Tooltip,
+} from "@chakra-ui/react";
 
 export default function ProfileTabIcon() {
   //Redux
@@ -25,9 +31,17 @@ export default function ProfileTabIcon() {
   return (
     <li className="h-5 w-5 flex items-center justify-center">
       <Menu>
-        <MenuButton>
-          <User size="20" className="text-white" />
-        </MenuButton>
+        <Tooltip
+          hasArrow
+          label={"پروفایل / تغییر موجودی"}
+          placement="top"
+          rounded={"md"}
+          p={"1.5"}
+        >
+          <MenuButton>
+            <User size="20" className="text-white" />
+          </MenuButton>
+        </Tooltip>
         <MenuList>
           <MenuItem px={"1rem"} className="rounded-md">
             <Link

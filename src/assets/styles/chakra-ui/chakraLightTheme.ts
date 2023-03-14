@@ -1,5 +1,6 @@
 import { extendTheme } from "@chakra-ui/react";
 import { Dict } from "@chakra-ui/utils";
+import { menuTheme } from "./customLightMenu";
 
 const chakraLightTheme: Dict = extendTheme({
   direction: "rtl",
@@ -22,6 +23,7 @@ const chakraLightTheme: Dict = extendTheme({
     },
   },
   components: {
+    Menu: menuTheme,
     Form: {
       variants: {
         floating: {

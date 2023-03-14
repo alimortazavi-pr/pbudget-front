@@ -80,6 +80,9 @@ export default function CreateCategoryModal({
             position: toast.POSITION.TOP_CENTER,
           });
           setIsLoading(false);
+          setForm({
+            title: "",
+          });
           onClose();
         } catch (err: any) {
           toast.error(err.message, {

@@ -135,7 +135,7 @@ export default function TheProfile({}: theProfileProps) {
 
   return (
     <div className="flex flex-col items-center md:mt-5">
-      <TheNavigation title="پروفایل" isEnabledPreviousPage />
+      <TheNavigation title="پروفایل" isEnabledPreviousPageIcon />
       <div className="px-2 md:px-0 w-full max-w-md">
         <div className="w-full overflow-y-auto rounded-lg py-2 px-2 bg-sky-900 dark:bg-gray-800 mb-2">
           <div className="text-xl font-bold text-white dark:text-gray-200 md:mb-3">

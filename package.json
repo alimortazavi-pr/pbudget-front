@@ -34,6 +34,7 @@
     "react": "18.2.0",
     "react-advance-jalaali-datepicker": "^1.4.0",
     "react-dom": "18.2.0",
+    "react-multi-date-picker": "^3.3.4",
     "react-redux": "^8.0.5",
     "react-select": "^5.7.0",
     "react-toastify": "^9.1.1",

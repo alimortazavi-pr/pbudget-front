@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction } from "react";
 
 export type theNavigationProps = {
   title: string;
+  isEnabledPreviousPageIcon?: boolean;
   isEnabledPreviousPage?: boolean;
   previousPage?: string;
 };
