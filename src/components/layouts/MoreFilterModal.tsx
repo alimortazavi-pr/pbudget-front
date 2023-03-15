@@ -82,6 +82,7 @@ export default function MoreFilterModal({
         category: category,
       },
     });
+    onClose();
     setIsLoading(false);
   }
 
@@ -90,9 +91,7 @@ export default function MoreFilterModal({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          <span className="text-gray-800 dark:text-white">
-            فیلتر تراکنش ها
-          </span>
+          <span className="text-gray-800 dark:text-white">فیلتر تراکنش ها</span>
         </ModalHeader>
         <ModalBody>
           <FormControl className="mb-2">
