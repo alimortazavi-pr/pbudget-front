@@ -20,16 +20,17 @@ export default function BudgetDatePicker({
   setForm,
 }: budgetDatePickerProps) {
   //States
-  const [datePickerValue, setDatePickerValue] = useState<number>(
-    new Date().getTime()
-  );
+  const [datePickerValue, setDatePickerValue] = useState<number>();
 
   //Effects
   useEffect(() => {
     if (form.year && form.month && form.day && !datePickerValue) {
       setDatePickerValue(
         new Date(
-          moment("1367/11/04", "jYYYY/jMM/jDD").format("YYYY/MM/DD")
+          moment(
+            `${form.year}/${form.month}/${form.day}`,
+            "jYYYY/jMM/jDD"
+          ).format("YYYY/MM/DD")
         ).getTime()
       );
     }
@@ -49,7 +50,14 @@ export default function BudgetDatePicker({
   }
 
   return (
-    <FormControl isInvalid={errors.paths.includes("date")} className="">
+    <FormControl
+      isInvalid={
+        errors.paths.includes("year") ||
+        errors.paths.includes("month") ||
+        errors.paths.includes("day")
+      }
+      className=""
+    >
       <DatePicker
         value={datePickerValue}
         locale={persianLocale}
@@ -64,7 +72,7 @@ export default function BudgetDatePicker({
         {errors.paths.includes("year") ||
         errors.paths.includes("month") ||
         errors.paths.includes("day")
-          ? errors.messages.year
+          ? errors.messages.year || errors.messages.month || errors.messages.day
           : ""}
       </FormErrorMessage>
     </FormControl>
