@@ -136,7 +136,16 @@ export default function CreateBudget({}: createBudgetProps) {
     });
     setIsLoading(true);
     createAndEditBudget
-      .validate(form, { abortEarly: false })
+      .validate(
+        {
+          ...form,
+          price:
+            parseInt(
+              convertAPToEnglish(form.price.toString().replace(/\,/g, ""))
+            ) || "",
+        },
+        { abortEarly: false }
+      )
       .then(async () => {
         try {
           await dispatch(
@@ -210,6 +219,7 @@ export default function CreateBudget({}: createBudgetProps) {
                 value={form.price}
                 onChange={inputHandler}
                 name="price"
+                _invalid={{ borderColor: "inherit" }}
               />
               <FormLabel>مبلغ (تومان)</FormLabel>
               <FormErrorMessage>

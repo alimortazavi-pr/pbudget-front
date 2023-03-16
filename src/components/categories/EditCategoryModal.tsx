@@ -147,6 +147,7 @@ export default function EditCategoryModal({
               onChange={inputHandler}
               name="title"
               disabled={!category || !category._id}
+              _invalid={{ borderColor: "inherit" }}
             />
             <FormLabel>عنوان</FormLabel>
             <FormErrorMessage>

@@ -189,6 +189,7 @@ export default function TheProfile({}: theProfileProps) {
               onChange={inputHandler}
               name="firstName"
               disabled={!form.firstName}
+              _invalid={{ borderColor: "inherit" }}
             />
             <FormLabel>نام</FormLabel>
             <FormErrorMessage>
@@ -210,6 +211,7 @@ export default function TheProfile({}: theProfileProps) {
               onChange={inputHandler}
               name="lastName"
               disabled={!form.firstName}
+              _invalid={{ borderColor: "inherit" }}
             />
             <FormLabel>نام خانوادگی</FormLabel>
             <FormErrorMessage>
@@ -233,6 +235,7 @@ export default function TheProfile({}: theProfileProps) {
                   onChange={inputHandler}
                   name="mobile"
                   disabled
+                  _invalid={{ borderColor: "inherit" }}
                 />
                 <FormLabel>شماره موبایل</FormLabel>
               </div>

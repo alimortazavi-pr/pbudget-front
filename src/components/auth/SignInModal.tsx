@@ -201,6 +201,7 @@ export default function SignInModal({
                 onChange={inputHandler}
                 name="mobile"
                 disabled
+                _invalid={{borderColor : 'inherit'}}
               />
               <FormLabel>شماره موبایل</FormLabel>
               <FormErrorMessage>

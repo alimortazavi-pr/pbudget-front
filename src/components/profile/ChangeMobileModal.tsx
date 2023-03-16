@@ -242,6 +242,7 @@ export default function ChangeMobileModal({
                 onChange={inputHandler}
                 name="mobile"
                 disabled={requestToChange}
+                _invalid={{ borderColor: "inherit" }}
               />
               <FormLabel>شماره موبایل</FormLabel>
               <FormErrorMessage>

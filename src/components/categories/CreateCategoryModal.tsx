@@ -129,6 +129,7 @@ export default function CreateCategoryModal({
               value={form.title}
               onChange={inputHandler}
               name="title"
+              _invalid={{ borderColor: "inherit" }}
             />
             <FormLabel>عنوان</FormLabel>
             <FormErrorMessage>

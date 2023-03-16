@@ -163,6 +163,7 @@ export default function GetStarted() {
               value={mobile}
               onChange={inputHandler}
               name="mobile"
+              _invalid={{ borderColor: "inherit" }}
             />
             <FormLabel>شماره موبایل</FormLabel>
             <FormErrorMessage>

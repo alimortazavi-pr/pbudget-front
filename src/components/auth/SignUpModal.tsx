@@ -205,6 +205,7 @@ export default function SignUpModal({
               value={form.firstName}
               onChange={inputHandler}
               name="firstName"
+              _invalid={{ borderColor: "inherit" }}
             />
             <FormLabel>نام</FormLabel>
             <FormErrorMessage>
@@ -225,6 +226,7 @@ export default function SignUpModal({
               value={form.lastName}
               onChange={inputHandler}
               name="lastName"
+              _invalid={{ borderColor: "inherit" }}
             />
             <FormLabel>نام خانوادگی</FormLabel>
             <FormErrorMessage>
@@ -246,6 +248,7 @@ export default function SignUpModal({
               onChange={inputHandler}
               name="mobile"
               disabled
+              _invalid={{ borderColor: "inherit" }}
             />
             <FormLabel>شماره موبایل</FormLabel>
             <FormErrorMessage>

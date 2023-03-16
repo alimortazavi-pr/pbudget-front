@@ -159,12 +159,13 @@ export default function ChangeUserBudgetModal({
               value={form.price}
               onChange={inputHandler}
               name="price"
+              _invalid={{ borderColor: "inherit" }}
             />
             <FormLabel>مبلغ (تومان)</FormLabel>
             <FormErrorMessage>
               {errors.paths.includes("price") ? errors.messages.price : ""}
             </FormErrorMessage>
-            <FormHelperText mt={"2"} mx={'2'}>
+            <FormHelperText mt={"2"} mx={"2"}>
               <div className="flex items-center justify-between">
                 <div className="text-gray-800 dark:text-gray-200 font-semibold text-sm">
                   <span>موجودی فعلی:</span>
