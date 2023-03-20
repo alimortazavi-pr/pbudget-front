@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
 //Tools
-import api from "./api";
 
 export async function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.split(".").length > 1) {

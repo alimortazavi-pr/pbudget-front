@@ -4,7 +4,6 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
-  Skeleton,
   useDisclosure,
 } from "@chakra-ui/react";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
@@ -24,12 +23,9 @@ import { darkModeSelector } from "@/store/layout/selectors";
 
 //Components
 import TheNavigation from "@/components/layouts/TheNavigation";
-import ChangeUserBudgetModal from "@/components/profile/ChangeUserBudgetModal";
 import ChangeMobileModal from "@/components/profile/ChangeMobileModal";
 
 //Tools
-import priceGenerator from "price-generator";
-import convertToPersian from "num-to-persian";
 import { toast } from "react-toastify";
 
 //Validators
@@ -44,7 +40,6 @@ export default function TheProfile({}: theProfileProps) {
   const isDarkMode = useAppSelector(darkModeSelector);
 
   //ChakraUI
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     isOpen: isOpenChangeMobile,
     onOpen: onOpenChangeMobile,
@@ -137,41 +132,6 @@ export default function TheProfile({}: theProfileProps) {
     <div className="flex flex-col items-center md:mt-5">
       <TheNavigation title="پروفایل" isEnabledPreviousPageIcon />
       <div className="px-2 md:px-0 w-full max-w-md">
-        <div className="w-full overflow-y-auto rounded-lg py-2 px-2 bg-sky-900 dark:bg-gray-800 mb-2">
-          <div className="text-xl font-bold text-white dark:text-gray-200 md:mb-3">
-            <span>موجودی</span>
-            {user.budget && user?.budget < 0 ? (
-              <span className="text-red-400 mr-1 text-sm self-center">
-                (کمبود وجه)
-              </span>
-            ) : null}
-          </div>
-          <div className="flex items-end justify-start text-xl font-bold ltr-important mb-4">
-            <span className="text-xs mr-1 text-white dark:text-gray-200">
-              تومان
-            </span>
-            <Skeleton
-              minH="20px"
-              minW={"100px"}
-              isLoaded={user.budget != null ? true : false}
-            >
-              <span className="text-white dark:text-gray-200">
-                {convertToPersian(priceGenerator(user.budget || 0))}
-              </span>
-            </Skeleton>
-          </div>
-          <Button
-            colorScheme={isDarkMode ? "teal" : "teal"}
-            variant={isDarkMode ? "outline" : "solid"}
-            className="w-full"
-            type="submit"
-            isLoading={isLoading || !form.firstName}
-            onClick={onOpen}
-          >
-            تغییر موجودی
-          </Button>
-        </div>
-        <hr className="my-2 dark:border-gray-600" />
         <form
           onSubmit={submit}
           className="px-3 flex flex-col gap-x-2 gap-y-4 bg-white dark:bg-gray-800 p-5 rounded-2xl md:rounded-md"
@@ -270,11 +230,6 @@ export default function TheProfile({}: theProfileProps) {
         onClose={onCloseChangeMobile}
         onOpen={onOpenChangeMobile}
         mobile={user.mobile as string}
-      />
-      <ChangeUserBudgetModal
-        isOpen={isOpen}
-        onClose={onClose}
-        onOpen={onOpen}
       />
     </div>
   );

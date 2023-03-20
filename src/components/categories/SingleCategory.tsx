@@ -16,8 +16,9 @@ import { useState } from "react";
 import { singleCategoryProps } from "@/ts/types/category.type";
 
 //Redux
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { softDeleteCategory } from "@/store/category/actions";
+import { darkModeSelector } from "@/store/layout/selectors";
 
 //Tools
 import { Edit, Trash } from "iconsax-react";
@@ -30,6 +31,7 @@ export default function SingleCategory({
 }: singleCategoryProps) {
   //Redux
   const dispatch = useAppDispatch();
+  const isDarkMode = useAppSelector(darkModeSelector);
 
   //Next
   const router = useRouter();
@@ -58,8 +60,8 @@ export default function SingleCategory({
 
   return (
     <li className="w-full rounded border border-rose-400 px-2 py-4 flex items-center justify-between">
-      <div className="text-lg font-bold leading-none">
-        <span className="text-gray-800 dark:text-gray-200">{category.title}</span>
+      <div className="text-lg font-bold leading-none text-gray-800 dark:text-gray-200 truncate">
+        {category.title}
       </div>
       <div className="flex items-center gap-2">
         <span className="cursor-pointer">
@@ -75,14 +77,26 @@ export default function SingleCategory({
             {({ isOpen, onClose }) => (
               <>
                 <PopoverTrigger>
-                  <Trash size="18" className="text-rose-500 dark:text-rose-400" variant="Bulk" />
+                  <Trash
+                    size="18"
+                    className="text-rose-500 dark:text-rose-400"
+                    variant="Bulk"
+                  />
                 </PopoverTrigger>
-                <PopoverContent zIndex={"999"}>
-                  <PopoverArrow />
+                <PopoverContent
+                  bg={isDarkMode ? "#1f2937" : "#f9fafb"}
+                  borderColor={isDarkMode ? "#e5e7eb" : "#e5e7eb"}
+                  zIndex={"999"}
+                >
+                  <PopoverArrow bg={isDarkMode ? "#1f2937" : "#f9fafb"} />
                   <PopoverCloseButton />
-                  <PopoverHeader>آیا مطمئن هستید؟</PopoverHeader>
+                  <PopoverHeader>
+                    <span className="text-gray-800 dark:text-gray-200">
+                      آیا مطمئن هستید؟
+                    </span>
+                  </PopoverHeader>
                   <PopoverBody>
-                    <span>
+                    <span className="text-gray-800 dark:text-gray-200">
                       با حذف دسته بندی تمام تراکنش های مربوط به آن هم{" "}
                       <span className="text-red-500 font-semibold">حذف</span>{" "}
                       می‌شود
@@ -95,6 +109,7 @@ export default function SingleCategory({
                         colorScheme={"rose"}
                         onClick={deleteCategoryFunc}
                         isLoading={isLoading}
+                        variant={isDarkMode ? "outline" : "solid"}
                       >
                         حذف
                       </Button>

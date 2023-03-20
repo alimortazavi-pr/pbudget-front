@@ -21,6 +21,7 @@ import convertToPersian from "num-to-persian";
 import priceGenerator from "price-generator";
 import moment from "jalali-moment";
 import { toast } from "react-toastify";
+import DeleteBudget from "./DeleteBudget";
 
 export default function SingleBudget({ budget }: singleBudgetProps) {
   //Redux
@@ -32,16 +33,6 @@ export default function SingleBudget({ budget }: singleBudgetProps) {
   //Functions
   function toggleIsMoreOptions() {
     setIsMoreOptions(!isMoreOptions);
-  }
-
-  async function deleteBudgetFunc() {
-    try {
-      await dispatch(softDeleteBudget(budget));
-    } catch (err: any) {
-      toast.success(err.message, {
-        position: toast.POSITION.TOP_CENTER,
-      });
-    }
   }
 
   return (
@@ -56,9 +47,17 @@ export default function SingleBudget({ budget }: singleBudgetProps) {
         <div className="flex items-start gap-1">
           <div>
             {budget.type === budgetTypeEnum.INCOME ? (
-              <MoneyAdd variant="Bold" size="24" className="text-gray-800 dark:text-gray-200" />
+              <MoneyAdd
+                variant="Bold"
+                size="24"
+                className="text-gray-800 dark:text-gray-200"
+              />
             ) : (
-              <MoneyRemove variant="Bold" size="24" className="text-gray-800 dark:text-gray-200" />
+              <MoneyRemove
+                variant="Bold"
+                size="24"
+                className="text-gray-800 dark:text-gray-200"
+              />
             )}
           </div>
           <div
@@ -66,7 +65,7 @@ export default function SingleBudget({ budget }: singleBudgetProps) {
               budget.type === budgetTypeEnum.INCOME
                 ? "text-teal-400"
                 : "text-rose-400"
-            } font-bold text-lg`}
+            } font-bold text-lg truncate max-w-[250px]`}
           >
             <span className="leading-none">{budget.category.title}</span>
           </div>
@@ -118,14 +117,7 @@ export default function SingleBudget({ budget }: singleBudgetProps) {
             <Link href={`/${budget._id}`} className="cursor-pointer">
               <Edit size="18" className="text-cyan-500" variant="Bulk" />
             </Link>
-            <span className="cursor-pointer">
-              <Trash
-                size="18"
-                className="text-rose-500"
-                variant="Bulk"
-                onClick={deleteBudgetFunc}
-              />
-            </span>
+            <DeleteBudget budget={budget} />
           </div>
         </div>
       </div>

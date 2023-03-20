@@ -45,3 +45,7 @@ export type setBudgetsAction = {
   totalCostPrice: number;
   totalIncomePrice: number;
 };
+
+export type deleteBudgetProps = {
+  budget: IBudget;
+};

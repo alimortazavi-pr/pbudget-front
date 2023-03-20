@@ -106,7 +106,7 @@ export default function Index({
 
   return (
     <div className="flex flex-col items-center md:mt-5">
-      <TheNavigation title="خانه" isEnabledPreviousPage={false} />
+      <TheNavigation title="داشبورد" isEnabledPreviousPage={false} />
       <div className="px-2 md:px-0 w-full max-w-md">
         <FilterSection />
         <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl md:rounded-md mb-2">
