@@ -77,7 +77,12 @@ export default function Index({
         setDailyType(false);
       }
     } else {
-      if (!router.query.year || !router.query.month || !router.query.day) {
+      if (
+        !router.query.year ||
+        !router.query.month ||
+        !router.query.day ||
+        parseInt(router.query.year as string) <= 0
+      ) {
         setDailyType(true);
         const now = moment().locale("fa");
         router.replace({

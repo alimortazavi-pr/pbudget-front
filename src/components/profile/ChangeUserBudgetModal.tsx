@@ -112,6 +112,9 @@ export default function ChangeUserBudgetModal({
             position: toast.POSITION.TOP_CENTER,
           });
           setIsLoading(false);
+          setForm({
+            price: "",
+          });
           onClose();
         } catch (err: any) {
           toast.error(err.message, {

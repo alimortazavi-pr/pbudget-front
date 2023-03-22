@@ -11,40 +11,50 @@ export default function ChangeMonthTabs() {
   //Functions
   function previousMonth() {
     if (parseInt(router.query.month as string) <= 1) {
-      return;
+      router.replace({
+        pathname: "/",
+        query: {
+          ...router.query,
+          year: parseInt(router.query.year as string) - 1,
+          month: 12,
+        },
+      });
+    } else {
+      router.replace({
+        pathname: "/",
+        query: {
+          ...router.query,
+          month: parseInt(router.query.month as string) - 1,
+        },
+      });
     }
-
-    router.replace({
-      pathname: "/",
-      query: {
-        ...router.query,
-        month: parseInt(router.query.month as string) - 1,
-      },
-    });
   }
 
   function nextMonth() {
     if (parseInt(router.query.month as string) >= 12) {
-      return;
+      router.replace({
+        pathname: "/",
+        query: {
+          ...router.query,
+          year: parseInt(router.query.year as string) + 1,
+          month: 1,
+        },
+      });
+    } else {
+      router.replace({
+        pathname: "/",
+        query: {
+          ...router.query,
+          month: parseInt(router.query.month as string) + 1,
+        },
+      });
     }
-
-    router.replace({
-      pathname: "/",
-      query: {
-        ...router.query,
-        month: parseInt(router.query.month as string) + 1,
-      },
-    });
   }
 
   return (
     <div className="flex items-center justify-between">
       <div
-        className={`flex items-center gap-1 ${
-          parseInt(router.query.month as string) <= 1
-            ? "text-gray-500"
-            : "text-gray-800 dark:text-white"
-        } font-medium cursor-pointer`}
+        className={`flex items-center gap-1 text-gray-800 dark:text-white font-medium cursor-pointer`}
         onClick={previousMonth}
       >
         <ArrowRight size={"18"} />
@@ -55,11 +65,7 @@ export default function ChangeMonthTabs() {
       </div>
       <div
         className={`flex items-center gap-1 
-        ${
-          parseInt(router.query.month as string) >= 12
-            ? "text-gray-500"
-            : "text-gray-800 dark:text-white"
-        }
+        text-gray-800 dark:text-white
         font-medium cursor-pointer`}
         onClick={nextMonth}
       >
