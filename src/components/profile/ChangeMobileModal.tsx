@@ -119,23 +119,11 @@ export default function ChangeMobileModal({
       });
       calculatingCounter(120);
       setIsLoading(false);
-      toast.warning(
-        "در صورتی که دریافت پیامکی تبلیغاتی را برای خط خودغیر فعال کرده‌اید ممکن است برای شما کدتایید ارسال نشود",
-        {
-          position: toast.POSITION.TOP_CENTER,
-        }
-      );
     } catch (err: any) {
       calculatingCounter(counter.value);
       toast.error(err.message, {
         position: toast.POSITION.TOP_CENTER,
       });
-      toast.warning(
-        "در صورتی که دریافت پیامکی تبلیغاتی را برای خط خودغیر فعال کرده‌اید ممکن است برای شما کدتایید ارسال نشود",
-        {
-          position: toast.POSITION.TOP_CENTER,
-        }
-      );
       setIsLoading(false);
     }
   }

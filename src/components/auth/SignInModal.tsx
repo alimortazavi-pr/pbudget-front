@@ -110,12 +110,6 @@ export default function SignInModal({
       toast.success("کدتایید جدید برای شما ارسال شد", {
         position: toast.POSITION.TOP_CENTER,
       });
-      toast.warning(
-        "در صورتی که دریافت پیامکی تبلیغاتی را برای خط خودغیر فعال کرده‌اید ممکن است برای شما کدتایید ارسال نشود",
-        {
-          position: toast.POSITION.TOP_CENTER,
-        }
-      );
       calculatingCounter(120);
       setIsLoading(false);
     } catch (err: any) {
@@ -123,12 +117,6 @@ export default function SignInModal({
       toast.error(err.message, {
         position: toast.POSITION.TOP_CENTER,
       });
-      toast.warning(
-        "در صورتی که دریافت پیامکی تبلیغاتی را برای خط خودغیر فعال کرده‌اید ممکن است برای شما کدتایید ارسال نشود",
-        {
-          position: toast.POSITION.TOP_CENTER,
-        }
-      );
       setIsLoading(false);
     }
   }
