@@ -48,10 +48,10 @@ export default function TheDrawerButton() {
   function darkModeToggle() {
     const htmlElement = document.querySelector("html");
     if (isDarkMode) {
-      Cookies.set("dark-mode", "false");
+      Cookies.set("dark-mode", "false", { expires: 90 });
       htmlElement?.classList.remove("dark");
     } else {
-      Cookies.set("dark-mode", "true");
+      Cookies.set("dark-mode", "true", { expires: 90 });
       htmlElement?.classList.add("dark");
     }
 
@@ -116,7 +116,10 @@ export default function TheDrawerButton() {
                 className="flex flex-col gap-1 items-center justify-center bg-gray-100 dark:bg-gray-700 w-14 h-14 rounded-xl duration-200 hover:opacity-75"
               >
                 <div>
-                  <UserEdit size="20" className="text-gray-800 dark:text-gray-200" />
+                  <UserEdit
+                    size="20"
+                    className="text-gray-800 dark:text-gray-200"
+                  />
                 </div>
                 <div className="text-gray-800 dark:text-gray-200 font-medium text-sm">
                   <span>پروفایل</span>
@@ -141,7 +144,10 @@ export default function TheDrawerButton() {
                 className="flex flex-col gap-1 items-center justify-center bg-gray-100 dark:bg-gray-700 w-14 h-14 rounded-xl duration-200 hover:opacity-75"
               >
                 <div>
-                  <Layer size="20" className="text-gray-800 dark:text-gray-200" />
+                  <Layer
+                    size="20"
+                    className="text-gray-800 dark:text-gray-200"
+                  />
                 </div>
                 <div className="text-gray-800 dark:text-gray-200 font-medium text-sm">
                   <span>دسته ها</span>

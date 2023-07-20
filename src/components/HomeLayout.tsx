@@ -78,7 +78,7 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
   function checkDarkModeFunc() {
     const darkModeCheck = Cookies.get("dark-mode");
     if (darkModeCheck === undefined) {
-      Cookies.set("dark-mode", "false");
+      Cookies.set("dark-mode", "false", { expires: 90 });
       dispatch(setDarkMode(false));
     } else {
       if (darkModeCheck == "true") {
