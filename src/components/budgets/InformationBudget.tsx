@@ -23,8 +23,8 @@ export default function InformationBudget() {
 
   return (
     <div>
-      <div className="w-full rounded-lg py-2 px-2 bg-transparent border border-gray-800 mb-2">
-        <div className="text-xl font-bold text-gray-800 md:mb-3">
+      <div className="w-full rounded-lg py-2 px-2 bg-transparent border border-gray-800 dark:border-white mb-2">
+        <div className="text-xl font-bold text-gray-800 dark:text-white md:mb-3">
           <span>موجودی</span>
           {user.budget && user.budget < 0 ? (
             <span className="text-red-500 mr-1 text-sm self-center">
@@ -33,13 +33,13 @@ export default function InformationBudget() {
           ) : null}
         </div>
         <div className="flex items-end justify-start text-xl font-bold ltr-important">
-          <span className="text-xs mr-1 text-gray-800">تومان</span>
+          <span className="text-xs mr-1 text-gray-800 dark:text-white">تومان</span>
           <Skeleton
             minH="20px"
             minW={"100px"}
             isLoaded={user.budget != null ? true : false}
           >
-            <span className="text-gray-800">
+            <span className="text-gray-800 dark:text-white">
               {convertToPersian(priceGenerator(user.budget || 0))}
             </span>
           </Skeleton>
@@ -57,7 +57,7 @@ export default function InformationBudget() {
               isLoaded={totalIncomePrice != null ? true : false}
               className="flex items-end justify-end text-lg font-bold"
             >
-              <span className="text-gray-800">
+              <span className="text-gray-800 dark:text-white">
                 {convertToPersian(priceGenerator(totalIncomePrice || 0))}
               </span>
             </Skeleton>
@@ -75,7 +75,7 @@ export default function InformationBudget() {
               isLoaded={totalCostPrice != null ? true : false}
               className="flex items-end justify-end text-lg font-bold"
             >
-              <span className="text-gray-800">
+              <span className="text-gray-800 dark:text-white">
                 {convertToPersian(priceGenerator(totalCostPrice || 0))}
               </span>
             </Skeleton>
@@ -94,7 +94,7 @@ export default function InformationBudget() {
             isLoaded={totalCostPrice != null ? true : false}
           >
             <div className="text-lg font-semibold text-left">
-              <span className="text-gray-800">
+              <span className="text-gray-800 dark:text-white">
                 {convertToPersian(budgets?.length || 0)}
               </span>
             </div>
