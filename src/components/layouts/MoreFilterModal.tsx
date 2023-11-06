@@ -13,7 +13,7 @@ import { ChangeEvent, useEffect, useState } from "react";
 import Select from "react-select";
 
 //Types
-import { moreFilterModalProps } from "@/ts/types/layouts.type";
+import { chakraUIModalsProps } from "@/ts/types/layouts.type";
 
 //Redux
 import { categoriesSelector } from "@/store/category/selectors";
@@ -28,7 +28,7 @@ export default function MoreFilterModal({
   isOpen,
   onOpen,
   onClose,
-}: moreFilterModalProps) {
+}: chakraUIModalsProps) {
   //Redux
   const categories = useAppSelector(categoriesSelector);
 

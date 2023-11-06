@@ -41,14 +41,16 @@ export default function FilterDatePicker({
 
   //Functions
   function setDateFunc(date: any) {
-    const convertDate = moment(parseInt(JSON.stringify(date)))
-      .format("jYYYY/jMM/jDD")
-      .split("/");
-    setDate({
-      year: convertDate[0],
-      month: convertDate[1],
-      day: convertDate[2],
-    });
+    try {
+      const convertDate = moment(parseInt(JSON.stringify(date)))
+        .format("jYYYY/jMM/jDD")
+        .split("/");
+      setDate({
+        year: convertDate[0],
+        month: convertDate[1],
+        day: convertDate[2],
+      });
+    } catch (err: any) {}
   }
 
   return (

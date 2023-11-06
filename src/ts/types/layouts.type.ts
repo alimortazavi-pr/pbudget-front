@@ -7,7 +7,7 @@ export type theNavigationProps = {
   previousPage?: string;
 };
 
-export type moreFilterModalProps = {
+export type chakraUIModalsProps = {
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
@@ -19,3 +19,6 @@ export type filterDatePickerProps = {
     SetStateAction<{ year: string; month: string; day: string }>
   >;
 };
+
+export type durationTypes = "all" | "yearly" | "monthly" | "daily";
+export type exportTypes = "excel" | "html";
