@@ -87,10 +87,12 @@ export default function HtmlAndExcelExportModal({
     try {
       if (exportType == "excel") {
         const response = await api(
-          `/budgets/excel-export?duration=${duration}&year=${date.year}&month=${date.month
-          }${duration === "daily" ? "&day=" + date.day : ""}${category && category != "همه دسته بندی ها"
-            ? "&category=" + category
-            : ""
+          `/budgets/excel-export?duration=${duration}&year=${date.year}&month=${
+            date.month
+          }${duration === "daily" ? "&day=" + date.day : ""}${
+            category && category != "همه دسته بندی ها"
+              ? "&category=" + category
+              : ""
           }`,
           {
             headers: {
@@ -111,11 +113,14 @@ export default function HtmlAndExcelExportModal({
         link.click();
       } else if (exportType == "html") {
         const response = await api(
-          `/budgets/${exportType}-export?duration=${duration}&year=${date.year
-          }&month=${date.month}${duration === "daily" ? "&day=" + date.day : ""
-          }${category && category != "همه دسته بندی ها"
-            ? "&category=" + category
-            : ""
+          `/budgets/${exportType}-export?duration=${duration}&year=${
+            date.year
+          }&month=${date.month}${
+            duration === "daily" ? "&day=" + date.day : ""
+          }${
+            category && category != "همه دسته بندی ها"
+              ? "&category=" + category
+              : ""
           }`,
           {
             headers: {
@@ -169,37 +174,41 @@ export default function HtmlAndExcelExportModal({
           <div className="grid grid-cols-3 items-center gap-2">
             <div
               onClick={() => setDuration("daily")}
-              className={`col-span-1 flex items-center justify-center h-10 border border-rose-500 ${duration == "daily"
+              className={`col-span-1 flex items-center justify-center h-10 border border-rose-500 ${
+                duration == "daily"
                   ? "bg-rose-500 text-gray-100"
-                  : "bg-transparent text-gray-800"
-                } rounded-lg cursor-pointer`}
+                  : "bg-transparent text-gray-800 dark:text-gray-100"
+              } rounded-lg cursor-pointer`}
             >
               <span className="leading-none">روزانه</span>
             </div>
             <div
               onClick={() => setDuration("monthly")}
-              className={`col-span-1 flex items-center justify-center h-10 border border-rose-500 ${duration == "monthly"
+              className={`col-span-1 flex items-center justify-center h-10 border border-rose-500 ${
+                duration == "monthly"
                   ? "bg-rose-500 text-gray-100"
-                  : "bg-transparent text-gray-800"
-                } rounded-lg cursor-pointer`}
+                  : "bg-transparent text-gray-800 dark:text-gray-100"
+              } rounded-lg cursor-pointer`}
             >
               <span className="leading-none">ماهانه</span>
             </div>
             <div
               onClick={() => setDuration("yearly")}
-              className={`col-span-1 flex items-center justify-center h-10 border border-rose-500 ${duration == "yearly"
+              className={`col-span-1 flex items-center justify-center h-10 border border-rose-500 ${
+                duration == "yearly"
                   ? "bg-rose-500 text-gray-100"
-                  : "bg-transparent text-gray-800"
-                } rounded-lg cursor-pointer`}
+                  : "bg-transparent text-gray-800 dark:text-gray-100"
+              } rounded-lg cursor-pointer`}
             >
               <span className="leading-none">سالانه</span>
             </div>
             <div
               onClick={() => setDuration("all")}
-              className={`col-span-3 flex items-center justify-center h-10 border border-rose-500 ${duration == "all"
+              className={`col-span-3 flex items-center justify-center h-10 border border-rose-500 ${
+                duration == "all"
                   ? "bg-rose-500 text-gray-100"
-                  : "bg-transparent text-gray-800"
-                } rounded-lg cursor-pointer`}
+                  : "bg-transparent text-gray-800 dark:text-gray-100"
+              } rounded-lg cursor-pointer`}
             >
               <span className="leading-none">تمام تراکنش ها</span>
             </div>
@@ -208,19 +217,21 @@ export default function HtmlAndExcelExportModal({
           <div className="flex items-center gap-2">
             <div
               onClick={() => setExportType("excel")}
-              className={`flex-1 flex items-center justify-center h-10 border border-rose-500 ${exportType == "excel"
+              className={`flex-1 flex items-center justify-center h-10 border border-rose-500 ${
+                exportType == "excel"
                   ? "bg-rose-500 text-gray-100"
-                  : "bg-transparent text-gray-800"
-                } rounded-lg cursor-pointer`}
+                  : "bg-transparent text-gray-800 dark:text-gray-100"
+              } rounded-lg cursor-pointer`}
             >
               <span className="leading-none font-poppins text-sm">Excel</span>
             </div>
             <div
               onClick={() => setExportType("html")}
-              className={`flex-1 flex items-center justify-center h-10 border border-rose-500 ${exportType == "html"
+              className={`flex-1 flex items-center justify-center h-10 border border-rose-500 ${
+                exportType == "html"
                   ? "bg-rose-500 text-gray-100"
-                  : "bg-transparent text-gray-800"
-                } rounded-lg cursor-pointer`}
+                  : "bg-transparent text-gray-800 dark:text-gray-100"
+              } rounded-lg cursor-pointer`}
             >
               <span className="leading-none font-poppins text-sm">
                 Web (HTML)
