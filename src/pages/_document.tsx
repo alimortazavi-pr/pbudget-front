@@ -77,9 +77,9 @@ export default function Document() {
         <meta name="theme-color" content="#fb7185" />
         <meta
           name="description"
-          content="Powered by paradise-code created by alimortazavi.org"
+          content="Powered by paradise-code created by alimor.ir"
         ></meta>
-        <meta name="author" content="alimortazavi.org"></meta>
+        <meta name="author" content="alimor.ir"></meta>
       </Head>
       <body className="bg-rose-400 ">
         <Main />

@@ -14,7 +14,9 @@ import ChangeUserBudgetModal from "../profile/ChangeUserBudgetModal";
 
 //Tools
 import {
+  Call,
   CloseSquare,
+  Copyright,
   Layer,
   LogoutCurve,
   Moneys,
@@ -94,7 +96,7 @@ export default function TheDrawerButton() {
         >
           <div className="absolute bottom-0 right-0 flex justify-center w-screen">
             <div
-              className="w-full max-w-md bg-white dark:bg-gray-800 rounded-t-xl flex justify-center items-center flex-wrap gap-3 p-3 cursor-default"
+              className="w-full max-w-md bg-white dark:bg-gray-800 rounded-t-xl flex justify-center items-center flex-wrap gap-3 p-3 pb-0 cursor-default"
               ref={optionsMenuRef}
             >
               <div
@@ -174,6 +176,20 @@ export default function TheDrawerButton() {
                   <span>تغییر تم</span>
                 </div>
               </div>
+              <a
+                href={"tel:+989999961218"}
+                className="flex flex-col gap-1 items-center justify-center bg-gray-100 dark:bg-gray-700 w-14 h-14 rounded-xl duration-200 hover:opacity-75"
+              >
+                <div>
+                  <Call
+                    size="20"
+                    className="text-gray-800 dark:text-gray-200"
+                  />
+                </div>
+                <div className="text-gray-800 dark:text-gray-200 font-medium text-sm">
+                  <span>تماس باما</span>
+                </div>
+              </a>
               <div
                 onClick={logoutHandler}
                 className="flex flex-col gap-1 items-center justify-center bg-gray-100 dark:bg-gray-700 w-14 h-14 rounded-xl duration-200 hover:opacity-75 cursor-pointer"
@@ -187,6 +203,16 @@ export default function TheDrawerButton() {
                 <div className="text-rose-500 dark:text-rose-400 font-medium text-sm">
                   <span>خروج</span>
                 </div>
+              </div>
+              <div className="w-full flex items-start justify-center gap-1 mt-2 mb-1">
+                <a
+                  href="https://alimor.ir"
+                  className="text-gray-600 dark:text-gray-400 text-xs"
+                  target="blank"
+                >
+                  ALIMOR.IR | ALI MORTAZAVI
+                </a>
+                <Copyright size={"10"} className="text-gray-600 dark:text-gray-400" />
               </div>
             </div>
           </div>
