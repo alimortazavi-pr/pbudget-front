@@ -17,6 +17,7 @@ export interface IBudget {
   year: string;
   month: string;
   day: string;
+  description: string;
 }
 
 export interface ICreateAndEditBudgetForm {
@@ -26,6 +27,7 @@ export interface ICreateAndEditBudgetForm {
   year: string;
   month: string;
   day: string;
+  description: string;
 }
 
 export interface IValidationErrorsCreateAndEditBudgetForm {
@@ -37,5 +39,6 @@ export interface IValidationErrorsCreateAndEditBudgetForm {
     year: string;
     month: string;
     day: string;
+    description: string;
   };
 }

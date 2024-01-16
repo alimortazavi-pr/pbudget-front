@@ -6,6 +6,7 @@ import {
   FormLabel,
   Input,
   Switch,
+  Textarea,
   useDisclosure,
 } from "@chakra-ui/react";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
@@ -24,6 +25,7 @@ import { budgetTypeEnum } from "@/ts/enums/budget.enum";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { createBudget } from "@/store/budget/actions";
 import { categoriesSelector } from "@/store/category/selectors";
+import { darkModeSelector } from "@/store/layout/selectors";
 
 //Components
 import TheNavigation from "@/components/layouts/TheNavigation";
@@ -43,6 +45,7 @@ export default function CreateBudget({}: createBudgetProps) {
   //Redux
   const dispatch = useAppDispatch();
   const categories = useAppSelector(categoriesSelector);
+  const isDarkMode = useAppSelector(darkModeSelector);
 
   //Next
   const router = useRouter();
@@ -58,6 +61,7 @@ export default function CreateBudget({}: createBudgetProps) {
     month: "",
     day: "",
     category: "",
+    description: "",
   });
   const [errors, setErrors] =
     useState<IValidationErrorsCreateAndEditBudgetForm>({
@@ -69,6 +73,7 @@ export default function CreateBudget({}: createBudgetProps) {
         month: "",
         day: "",
         category: "",
+        description: "",
       },
     });
   const [categoriesOptions, setCategoriesOptions] = useState<
@@ -113,6 +118,15 @@ export default function CreateBudget({}: createBudgetProps) {
     }
   }
 
+  function descriptionHandler(
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) {
+    setForm({
+      ...form,
+      description: convertAPToEnglish(e.target.value.replace(/\,/g, "")),
+    });
+  }
+
   function typeHandler(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.checked) {
       setForm({ ...form, type: budgetTypeEnum.COST });
@@ -132,6 +146,7 @@ export default function CreateBudget({}: createBudgetProps) {
         month: "",
         day: "",
         category: "",
+        description: "",
       },
     });
     setIsLoading(true);
@@ -185,6 +200,7 @@ export default function CreateBudget({}: createBudgetProps) {
             month: "",
             day: "",
             category: "",
+            description: "",
           },
         };
         err.inner.forEach((error: any) => {
@@ -275,6 +291,29 @@ export default function CreateBudget({}: createBudgetProps) {
             <FormErrorMessage>
               {errors.paths.includes("category")
                 ? errors.messages.category
+                : ""}
+            </FormErrorMessage>
+          </FormControl>
+          <FormControl
+            isInvalid={errors.paths.includes("description")}
+            variant={"floating"}
+            className=""
+            style={{
+              color: isDarkMode ? "white" : "black",
+            }}
+          >
+            <Textarea
+              focusBorderColor="rose.400"
+              placeholder=" "
+              value={form.description}
+              onChange={descriptionHandler}
+              name="description"
+              _invalid={{ borderColor: "inherit" }}
+            />
+            <FormLabel>توضیحات دلخواه</FormLabel>
+            <FormErrorMessage>
+              {errors.paths.includes("description")
+                ? errors.messages.description
                 : ""}
             </FormErrorMessage>
           </FormControl>

@@ -32,6 +32,7 @@ export function createBudget(form: ICreateAndEditBudgetForm): AppThunk {
           year: form.year.toString(),
           month: form.month.toString(),
           day: form.day.toString(),
+          description: form.description.toString(),
         },
         {
           headers: {
@@ -79,6 +80,7 @@ export function editBudget(
           year: form.year.toString(),
           month: form.month.toString(),
           day: form.day.toString(),
+          description: form.description.toString(),
         },
         {
           headers: {

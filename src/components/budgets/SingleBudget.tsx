@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import Link from "next/link";
 
 //Types
@@ -104,6 +104,17 @@ export default function SingleBudget({ budget }: singleBudgetProps) {
         }`}
       >
         <hr className="my-3" />
+        {budget.description ? (
+          <Fragment>
+            {" "}
+            <p className="text-gray-800 dark:text-gray-100">
+              {budget.description}
+            </p>
+            <hr className="my-3" />
+          </Fragment>
+        ) : (
+          ""
+        )}
         <div className="flex items-center justify-around">
           <div className="text-sm flex items-center gap-1 dark:text-gray-200">
             <span className="font-semibold">تاریخ:</span>

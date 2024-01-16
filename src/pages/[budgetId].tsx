@@ -6,6 +6,7 @@ import {
   FormLabel,
   Input,
   Switch,
+  Textarea,
   useDisclosure,
 } from "@chakra-ui/react";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
@@ -25,6 +26,7 @@ import { categoriesSelector } from "@/store/category/selectors";
 
 //Redux
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { darkModeSelector } from "@/store/layout/selectors";
 import { editBudget } from "@/store/budget/actions";
 
 //Components
@@ -46,6 +48,7 @@ export default function EditBudget({ budget }: editBudgetProps) {
   //Redux
   const dispatch = useAppDispatch();
   const categories = useAppSelector(categoriesSelector);
+  const isDarkMode = useAppSelector(darkModeSelector);
 
   //Next
   const router = useRouter();
@@ -61,6 +64,7 @@ export default function EditBudget({ budget }: editBudgetProps) {
     month: "",
     day: "",
     category: "",
+    description: "",
   });
   const [errors, setErrors] =
     useState<IValidationErrorsCreateAndEditBudgetForm>({
@@ -72,6 +76,7 @@ export default function EditBudget({ budget }: editBudgetProps) {
         month: "",
         day: "",
         category: "",
+        description: "",
       },
     });
   const [categoriesOptions, setCategoriesOptions] = useState<
@@ -128,6 +133,15 @@ export default function EditBudget({ budget }: editBudgetProps) {
     }
   }
 
+  function descriptionHandler(
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) {
+    setForm({
+      ...form,
+      description: convertAPToEnglish(e.target.value.replace(/\,/g, "")),
+    });
+  }
+
   function typeHandler(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.checked) {
       setForm({ ...form, type: budgetTypeEnum.COST });
@@ -147,6 +161,7 @@ export default function EditBudget({ budget }: editBudgetProps) {
         month: "",
         day: "",
         category: "",
+        description: "",
       },
     });
     setIsLoading(true);
@@ -174,7 +189,7 @@ export default function EditBudget({ budget }: editBudgetProps) {
               budget._id
             )
           );
-          toast.success("تراکنش باموفقیت ایجاد شد", {
+          toast.success("تراکنش باموفقیت ویرایش شد", {
             position: toast.POSITION.TOP_CENTER,
           });
           setIsLoading(false);
@@ -203,6 +218,7 @@ export default function EditBudget({ budget }: editBudgetProps) {
             month: "",
             day: "",
             category: "",
+            description: "",
           },
         };
         err.inner.forEach((error: any) => {
@@ -293,6 +309,29 @@ export default function EditBudget({ budget }: editBudgetProps) {
             <FormErrorMessage>
               {errors.paths.includes("category")
                 ? errors.messages.category
+                : ""}
+            </FormErrorMessage>
+          </FormControl>
+          <FormControl
+            isInvalid={errors.paths.includes("description")}
+            variant={"floating"}
+            className=""
+            style={{
+              color: isDarkMode ? "white" : "black",
+            }}
+          >
+            <Textarea
+              focusBorderColor="rose.400"
+              placeholder=" "
+              value={form.description}
+              onChange={descriptionHandler}
+              name="description"
+              _invalid={{ borderColor: "inherit" }}
+            />
+            <FormLabel>توضیحات دلخواه</FormLabel>
+            <FormErrorMessage>
+              {errors.paths.includes("description")
+                ? errors.messages.description
                 : ""}
             </FormErrorMessage>
           </FormControl>
