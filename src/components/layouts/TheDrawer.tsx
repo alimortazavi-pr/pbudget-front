@@ -7,7 +7,7 @@ import { MouseEvent, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { darkModeSelector } from "@/store/layout/selectors";
 import { setDarkMode } from "@/store/layout/actions";
-import { logOut } from "@/store/auth/actions";
+import { logOut, logOutAction } from "@/store/auth/actions";
 
 //Components
 import ChangeUserBudgetModal from "../profile/ChangeUserBudgetModal";
@@ -60,9 +60,13 @@ export default function TheDrawerButton() {
     dispatch(setDarkMode(!isDarkMode));
   }
 
-  function logoutHandler() {
-    dispatch(logOut());
-    router.push("/get-started");
+  async function logoutHandler() {
+    const hasOthersUser: any = await dispatch(logOutAction());
+    !hasOthersUser
+      ? router.replace(router.asPath)
+      : router.push("/get-started");
+
+    onClose();
   }
 
   function closeHandler(e: MouseEvent<HTMLDivElement>) {
@@ -212,7 +216,10 @@ export default function TheDrawerButton() {
                 >
                   ALIMOR.IR | ALI MORTAZAVI
                 </a>
-                <Copyright size={"10"} className="text-gray-600 dark:text-gray-400" />
+                <Copyright
+                  size={"10"}
+                  className="text-gray-600 dark:text-gray-400"
+                />
               </div>
             </div>
           </div>

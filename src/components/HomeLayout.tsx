@@ -61,7 +61,9 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
       if (userAuthorization && !didTryAutoLogin) {
         const transformedData = JSON.parse(userAuthorization);
         try {
-          await dispatch(autoLogin(transformedData.token));
+          await dispatch(
+            autoLogin(transformedData.token, transformedData.users)
+          );
         } catch (err: any) {
           router.push("/get-started");
         }

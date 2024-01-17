@@ -1,10 +1,9 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 
 //Interfaces
-import { IAuthState } from "@/ts/interfaces/auth.interface";
+import { IAuthState, ISaveToLocalUser } from "@/ts/interfaces/auth.interface";
 
 //Tools
-import Cookies from "js-cookie";
 
 const reducers = {
   authenticate: (
@@ -18,18 +17,30 @@ const reducers = {
       isAuth: true,
     };
   },
+  setUsers: (state: IAuthState, action: PayloadAction<ISaveToLocalUser[]>) => {
+    return {
+      ...state,
+      users: action.payload,
+    };
+  },
   setDidTryAutoLogin: (state: IAuthState) => {
     return {
       ...state,
       didTryAutoLogin: true,
     };
   },
-  logOut: (state: IAuthState) => {
-    Cookies.remove("userAuthorization");
+  logOut: (
+    state: IAuthState,
+    action: PayloadAction<{
+      users: ISaveToLocalUser[];
+      user: ISaveToLocalUser | null;
+    }>
+  ): IAuthState => {
     return {
-      ...state,
+      token: action.payload.user ? action.payload.user.token : null,
+      users: action.payload.users,
       didTryAutoLogin: true,
-      isAuth: false,
+      isAuth: action.payload.user ? true : false,
     };
   },
 };

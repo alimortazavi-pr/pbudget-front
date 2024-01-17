@@ -1,7 +1,10 @@
+import { IProfile } from "./profile.interface";
+
 export interface IAuthState {
   token: null | string;
   didTryAutoLogin: boolean;
   isAuth: boolean;
+  users: ISaveToLocalUser[];
 }
 
 export interface IValidationErrorsCheckMobileExist {
@@ -50,4 +53,13 @@ export interface IValidationErrorsForgetCodeForm {
   messages: {
     mobile: string;
   };
+}
+
+export interface ISaveToLocal {
+  token: string;
+  users: ISaveToLocalUser[];
+}
+
+export interface ISaveToLocalUser extends IProfile {
+  token: string;
 }

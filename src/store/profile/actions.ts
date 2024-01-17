@@ -1,7 +1,11 @@
 import { AppThunk } from "@/store";
 
 //Actions of other store
-import { authenticate, saveDataToLocal } from "@/store/auth/actions";
+import {
+  authenticate,
+  saveDataToLocal,
+  setUsers,
+} from "@/store/auth/actions";
 
 //Reducer
 import { profileReducer } from "@/store/profile";
@@ -48,7 +52,20 @@ export function editProfile(form: IEditProfileForm): AppThunk {
           },
         });
         await dispatch(setProfile(res.data.user));
-        saveDataToLocal(getState().auth.token as string, res.data.user);
+
+        //Preparing users
+        const users = [
+          ...getState().auth.users.filter(
+            (user) => user._id !== res.data.user._id
+          ),
+          {
+            ...res.data.user,
+            token: getState().auth.token as string,
+          },
+        ];
+        dispatch(setUsers(users));
+
+        saveDataToLocal({ token: getState().auth.token as string, users });
       }
     } catch (err: any) {
       throw new Error(err.response.data.message);
@@ -71,7 +88,18 @@ export function changeMobile(form: IChangeMobileForm): AppThunk {
             token: res.data.token,
           })
         );
-        saveDataToLocal(res.data.token, res.data.user);
+
+        //Preparing users
+        const users = [
+          ...getState().auth.users.map((user) =>
+            user.token == getState().auth.token
+              ? { ...user, token: res.data.token }
+              : user
+          ),
+        ];
+        dispatch(setUsers(users));
+
+        saveDataToLocal({ token: res.data.token, users });
       }
     } catch (err: any) {
       throw new Error(err.response.data.message);
@@ -93,7 +121,20 @@ export function changeUserBudget(price: number): AppThunk {
           }
         );
         await dispatch(setProfile(res.data.user));
-        saveDataToLocal(getState().auth.token as string, res.data.user);
+
+        //Preparing users
+        const users = [
+          ...getState().auth.users.filter(
+            (user) => user._id !== res.data.user._id
+          ),
+          {
+            ...res.data.user,
+            token: getState().auth.token as string,
+          },
+        ];
+        dispatch(setUsers(users));
+
+        saveDataToLocal({ token: getState().auth.token as string, users });
       }
     } catch (err: any) {
       throw new Error(err.response.data.message);

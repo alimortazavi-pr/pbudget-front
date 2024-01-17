@@ -9,13 +9,16 @@ dependencies:
     specifier: ^2.2.2
     version: 2.2.2
   '@chakra-ui/react':
-    specifier: ^2.8.1
+    specifier: ^2.8.2
     version: 2.8.2(@emotion/react@11.11.3)(@emotion/styled@11.11.0)(@types/react@18.2.34)(framer-motion@10.18.0)(react-dom@18.2.0)(react@18.2.0)
   '@chakra-ui/utils':
     specifier: ^2.0.14
     version: 2.0.14
+  '@emotion/cache':
+    specifier: ^11.11.0
+    version: 11.11.0
   '@emotion/react':
-    specifier: ^11.11.1
+    specifier: ^11.11.3
     version: 11.11.3(@types/react@18.2.34)(react@18.2.0)
   '@emotion/styled':
     specifier: ^11.11.0
@@ -48,7 +51,7 @@ dependencies:
     specifier: ^14.0.1
     version: 14.0.4(eslint@8.56.0)(typescript@5.3.3)
   framer-motion:
-    specifier: ^10.16.4
+    specifier: ^10.18.0
     version: 10.18.0(react-dom@18.2.0)(react@18.2.0)
   iconsax-react:
     specifier: ^0.0.8

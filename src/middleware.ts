@@ -40,20 +40,6 @@ export async function middleware(request: NextRequest) {
   } else {
     isAuth = false;
   }
-
-  if (request.nextUrl.pathname !== "/get-started") {
-    if (isAuth) {
-      return NextResponse.next();
-    } else {
-      return NextResponse.redirect(`${request.nextUrl.origin}/get-started`);
-    }
-  } else if (request.nextUrl.pathname === "/get-started") {
-    if (isAuth) {
-      return NextResponse.redirect(`${request.nextUrl.origin}/`);
-    } else {
-      return NextResponse.next();
-    }
-  }
 }
 
 export const config = {

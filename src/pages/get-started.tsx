@@ -1,12 +1,11 @@
-import { Button } from "@chakra-ui/button";
 import {
+  Input,
   FormControl,
   FormErrorMessage,
   FormLabel,
-} from "@chakra-ui/form-control";
-import { Input } from "@chakra-ui/input";
+  Button,
+} from "@chakra-ui/react";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import { useRouter } from "next/router";
 import { useDisclosure } from "@chakra-ui/react";
 
 //Types
@@ -15,7 +14,6 @@ import { IValidationErrorsCheckMobileExist } from "@/ts/interfaces/auth.interfac
 //Redux
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { checkMobileExist } from "@/store/auth/actions";
-import { isAuthSelector } from "@/store/auth/selectors";
 
 //Components
 import SignUpModal from "@/components/auth/SignUpModal";
@@ -30,10 +28,6 @@ import { checkMobileExistValidator } from "@/validators/authValidator";
 export default function GetStarted() {
   //Redux
   const dispatch = useAppDispatch();
-  const isAuth = useAppSelector(isAuthSelector);
-
-  //Next
-  const router = useRouter();
 
   //ChakraUI
   const {
@@ -45,11 +39,6 @@ export default function GetStarted() {
     isOpen: isOpenSignIn,
     onOpen: onOpenSignIn,
     onClose: onCloseSignIn,
-  } = useDisclosure();
-  const {
-    isOpen: isOpenResetCode,
-    onOpen: onOpenResetCode,
-    onClose: onCloseResetCode,
   } = useDisclosure();
 
   //States
@@ -63,12 +52,6 @@ export default function GetStarted() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   //Effects
-  useEffect(() => {
-    if (isAuth) {
-      router.push("/");
-    }
-  }, [isAuth]);
-
   useEffect(() => {
     setTimeout(() => {
       window.scrollTo(0, document.body.scrollHeight);

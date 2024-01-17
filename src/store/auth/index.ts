@@ -10,6 +10,7 @@ const initialState: IAuthState = {
   token: null,
   didTryAutoLogin: false,
   isAuth: false,
+  users: [],
 };
 
 export const authReducer = createSlice({
