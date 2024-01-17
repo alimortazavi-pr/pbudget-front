@@ -127,7 +127,7 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
             {router.pathname !== "/get-started" ? <TabBar /> : null}
           </div>
         </motion.div>
-        <ToastContainer rtl />
+        <ToastContainer rtl theme={darkMode ? "dark" : "light"} />
       </RtlProvider>
     </ChakraProvider>
   );
