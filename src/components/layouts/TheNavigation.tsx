@@ -110,7 +110,7 @@ export default function TheNavigation({
                   </div>
                 )}
 
-                {users.map((user) => (
+                {users?.map((user) => (
                   <li
                     onClick={() => changeAccount(user.token)}
                     key={user._id}

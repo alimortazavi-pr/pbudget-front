@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from "react";
+import { ReactNode, use, useEffect } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 
@@ -60,6 +60,9 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
       const userAuthorization = Cookies.get("userAuthorization");
       if (userAuthorization && !didTryAutoLogin) {
         const transformedData = JSON.parse(userAuthorization);
+        if (!transformedData.users) {
+          Cookies.remove("userAuthorization");
+        }
         try {
           await dispatch(
             autoLogin(transformedData.token, transformedData.users)
