@@ -276,6 +276,12 @@ export default function CreateBudget({}: createBudgetProps) {
               onChange={(val: any) =>
                 setForm({ ...form, category: val.value as string })
               }
+              styles={{
+                menu: (provided) => ({
+                  ...provided,
+                  zIndex: 5,
+                }),
+              }}
               placeholder="دسته بندی"
               className="my-react-select-container"
               classNamePrefix="my-react-select"

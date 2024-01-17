@@ -290,6 +290,12 @@ export default function EditBudget({ budget }: editBudgetProps) {
             className=""
           >
             <Select
+              styles={{
+                menu: (provided) => ({
+                  ...provided,
+                  zIndex: 5,
+                }),
+              }}
               options={categoriesOptions}
               onChange={(val: any) =>
                 setForm({ ...form, category: val.value as string })
