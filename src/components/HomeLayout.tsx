@@ -62,6 +62,8 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
         const transformedData = JSON.parse(userAuthorization);
         if (!transformedData.users) {
           Cookies.remove("userAuthorization");
+          router.push("/get-started");
+          return;
         }
         try {
           await dispatch(
