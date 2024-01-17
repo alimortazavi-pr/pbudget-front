@@ -61,11 +61,13 @@ export default function TheNavigation({
       await dispatch(changeAccountAction(token));
       router.replace(router.asPath);
       setIsLoading(false);
+      onClose();
     } catch (err: any) {
       setIsLoading(false);
       toast.error(err.message, {
         position: toast.POSITION.TOP_CENTER,
       });
+      onClose();
     }
   }
 
@@ -127,6 +129,7 @@ export default function TheNavigation({
                 <Link
                   href={"/get-started"}
                   className="p-2 rounded-lg hover:bg-gray-400/40 dark:hover:bg-gray-600/50 flex items-start cursor-pointer"
+                  onClick={onClose}
                 >
                   افزودن اکانت <Add size="20" className="mr-1" />
                 </Link>
