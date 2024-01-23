@@ -31,6 +31,7 @@ import { signUp, requestNewCode } from "@/store/auth/actions";
 import { toast } from "react-toastify";
 import oneToTwoNumber from "one-to-two-num";
 import convertToPersian from "num-to-persian";
+import { useToday } from "@/hooks/getTodayHook";
 
 //Validators
 import { signUpValidator } from "@/validators/authValidator";
@@ -46,6 +47,9 @@ export default function SignUpModal({
 
   //Next
   const router = useRouter();
+
+  //Other hooks
+  const { duration, month, year } = useToday();
 
   //States
   const [form, setForm] = useState<ISignUpForm>({
@@ -144,7 +148,13 @@ export default function SignUpModal({
           });
           setIsLoading(false);
           onClose();
-          router.push("/");
+          router.push("/", {
+            query: {
+              year,
+              month,
+              duration,
+            },
+          });
         } catch (err: any) {
           toast.error(err.message, {
             position: toast.POSITION.TOP_CENTER,
