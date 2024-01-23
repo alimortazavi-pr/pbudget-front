@@ -79,7 +79,7 @@ export default function MoreFilterModal({
         year: date.year,
         month: date.month,
         day: date.day,
-        category: category,
+        category: category.trim(),
       },
     });
     onClose();
