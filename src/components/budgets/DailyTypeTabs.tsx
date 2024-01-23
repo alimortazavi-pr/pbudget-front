@@ -21,8 +21,8 @@ export default function DailyTypeTabs({
         pathname: "/",
         query: {
           duration: "daily",
-          year: now.year(),
-          month: now.month() + 1,
+          year: router.query.year ? router.query.year : now.year(),
+          month: router.query.month ? router.query.month : now.month() + 1,
           day: now.date(),
         },
       });
@@ -33,8 +33,8 @@ export default function DailyTypeTabs({
         pathname: "/",
         query: {
           duration: "monthly",
-          year: now.year(),
-          month: now.month() + 1,
+          year: router.query.year ? router.query.year : now.year(),
+          month: router.query.month ? router.query.month : now.month() + 1,
         },
       });
       setDailyType(false);
@@ -45,7 +45,9 @@ export default function DailyTypeTabs({
     <div className="flex items-center gap-2 mb-7">
       <div
         className={`p-1 flex-1 text-center border border-rose-400 rounded-lg cursor-pointer ${
-          dailyType ? "bg-rose-400 text-white dark:text-gray-800" : "bg-transparent dark:text-rose-400"
+          dailyType
+            ? "bg-rose-400 text-white dark:text-gray-800"
+            : "bg-transparent dark:text-rose-400"
         }`}
         onClick={() => setDailyHandler(true)}
       >
@@ -53,7 +55,9 @@ export default function DailyTypeTabs({
       </div>
       <div
         className={`p-1 flex-1 text-center border border-rose-400 rounded-lg cursor-pointer ${
-          !dailyType ? "bg-rose-400 text-white dark:text-gray-800" : "bg-transparent dark:text-rose-400"
+          !dailyType
+            ? "bg-rose-400 text-white dark:text-gray-800"
+            : "bg-transparent dark:text-rose-400"
         }`}
         onClick={() => setDailyHandler(false)}
       >
