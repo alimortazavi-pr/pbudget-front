@@ -54,7 +54,7 @@ export default function FilterSection() {
     setCategory(val.value);
     router.replace({
       pathname: "/",
-      query: { ...router.query, category: val.label },
+      query: { ...router.query, category: val.label.trim() },
     });
   }
 
