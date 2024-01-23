@@ -61,7 +61,7 @@ export default function ChangeMonthTabs() {
         <span>ماه قبل</span>
       </div>
       <div className="flex items-center gap-2 text-gray-800 dark:text-white font-medium">
-        <span>{months[router.query.month as string]}</span>
+        <span>{months[parseInt(router.query.month as string)]}</span>
       </div>
       <div
         className={`flex items-center gap-1 
