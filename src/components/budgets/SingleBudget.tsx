@@ -7,21 +7,16 @@ import { budgetTypeEnum } from "@/ts/enums/budget.enum";
 
 //Redux
 import { useAppDispatch } from "@/store/hooks";
-import { softDeleteBudget } from "@/store/budget/actions";
+
+//Components
+import DeleteBudget from "./DeleteBudget";
 
 //Tools
-import {
-  ArrowCircleDown,
-  Edit,
-  MoneyAdd,
-  MoneyRemove,
-  Trash,
-} from "iconsax-react";
+import { ArrowCircleDown, Edit, MoneyAdd, MoneyRemove } from "iconsax-react";
 import convertToPersian from "num-to-persian";
 import priceGenerator from "price-generator";
 import moment from "jalali-moment";
-import { toast } from "react-toastify";
-import DeleteBudget from "./DeleteBudget";
+import oneToTwoNumber from "one-to-two-num";
 
 export default function SingleBudget({ budget }: singleBudgetProps) {
   //Redux
@@ -116,11 +111,13 @@ export default function SingleBudget({ budget }: singleBudgetProps) {
           ""
         )}
         <div className="flex items-center justify-around">
-          <div className="text-sm flex items-center gap-1 dark:text-gray-200">
-            <span className="font-semibold">تاریخ:</span>
+          <div className="text-sm flex items-center dark:text-gray-200">
             <span className="font-medium">
+              {convertToPersian(moment(budget.createdAt).format("HH:mm"))} -{" "}
               {convertToPersian(
-                `${budget.year}/${budget.month}/${budget.day}` || 0
+                `${budget.year}/${oneToTwoNumber(
+                  budget.month
+                )}/${oneToTwoNumber(budget.day)}` || 0
               )}
             </span>
           </div>

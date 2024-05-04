@@ -18,6 +18,7 @@ export interface IBudget {
   month: string;
   day: string;
   description: string;
+  createdAt: string;
 }
 
 export interface ICreateAndEditBudgetForm {
