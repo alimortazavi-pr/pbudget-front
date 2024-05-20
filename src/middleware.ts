@@ -15,7 +15,7 @@ export async function middleware(request: NextRequest) {
     const token = transformedData.token;
     try {
       const res = await fetch(
-        "https://pbudget-back.cyclic.app/v1/auth/check",
+        "https://pb-back.pourhomestore.top/v1/auth/check",
         {
           headers: {
             Authorization: `Bearer ${token}`,

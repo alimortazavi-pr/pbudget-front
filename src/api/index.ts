@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://pbudget-back.cyclic.app/v1",
+  baseURL: "https://pb-back.pourhomestore.top/v1",
 });
 
 export default api;
