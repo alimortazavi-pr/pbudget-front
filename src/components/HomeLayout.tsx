@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   didTryAutoLoginSelector,
   isAuthSelector,
+  tokenSelector,
 } from "@/store/auth/selectors";
 import { autoLogin } from "@/store/auth/actions";
 import { getCategories } from "@/store/category/actions";
@@ -33,6 +34,7 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
   //Redux
   const dispatch = useAppDispatch();
   const didTryAutoLogin = useAppSelector(didTryAutoLoginSelector);
+  const token = useAppSelector(tokenSelector);
   const isAuth = useAppSelector(isAuthSelector);
   const darkMode = useAppSelector(darkModeSelector);
 
@@ -52,7 +54,7 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
     if (isAuth) {
       getCategoriesFunc();
     }
-  }, [isAuth]);
+  }, [isAuth, token]);
 
   //Functions
   async function autoLoginFunc() {
