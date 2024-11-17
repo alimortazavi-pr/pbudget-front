@@ -56,7 +56,7 @@ export default function CreateBudget({}: createBudgetProps) {
   //States
   const [form, setForm] = useState<ICreateAndEditBudgetForm>({
     price: "",
-    type: 0,
+    type: 1,
     year: "",
     month: "",
     day: "",

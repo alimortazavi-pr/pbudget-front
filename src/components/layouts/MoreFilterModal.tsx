@@ -97,14 +97,14 @@ export default function MoreFilterModal({
           <FormControl className="mb-2">
             <Select
               options={categoriesOptions}
-              onChange={(val: any) => setCategory(val.label)}
+              onChange={(val: any) => setCategory(val.value)}
               placeholder="فیلتر بر اساس دسته بندی"
               className="my-react-select-container"
               classNamePrefix="my-react-select"
               noOptionsMessage={() => "هنوز دسته‌ای ایجاد نکرده اید"}
               value={
                 category
-                  ? categoriesOptions.find((cat) => cat.label === category)
+                  ? categoriesOptions.find((cat) => cat.value === category)
                   : ""
               }
             />

@@ -54,7 +54,7 @@ export default function FilterSection() {
     setCategory(val.value);
     router.replace({
       pathname: "/",
-      query: { ...router.query, category: val.label.trim() },
+      query: { ...router.query, category: val.value },
     });
   }
 
@@ -70,7 +70,7 @@ export default function FilterSection() {
           noOptionsMessage={() => "هنوز دسته‌ای ایجاد نکرده اید"}
           value={
             category
-              ? categoriesOptions.find((cat) => cat.label === category)
+              ? categoriesOptions.find((cat) => cat.value === category)
               : ""
           }
         />
