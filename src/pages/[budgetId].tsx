@@ -23,16 +23,22 @@ import {
 import { editBudgetProps } from "@/ts/types/budget.type";
 import { budgetTypeEnum } from "@/ts/enums/budget.enum";
 import { categoriesSelector } from "@/store/category/selectors";
+import {
+  ICreateAndEditCreditForm,
+  IValidationErrorsCreateAndEditCreditForm,
+} from "@/ts/interfaces/credit.interface";
 
 //Redux
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { darkModeSelector } from "@/store/layout/selectors";
 import { editBudget } from "@/store/budget/actions";
+import { createCredit, editCredit } from "@/store/credit/actions";
 
 //Components
 import TheNavigation from "@/components/layouts/TheNavigation";
 import CreateCategoryModal from "@/components/categories/CreateCategoryModal";
 import BudgetDatePicker from "@/components/budgets/BudgetDatePicker";
+import CreateOrEditCredit from "@/components/credits/CreateOrEditCredit";
 
 //Tools
 import priceGenerator from "price-generator";
@@ -79,10 +85,37 @@ export default function EditBudget({ budget }: editBudgetProps) {
         description: "",
       },
     });
+  const [formCredit, setFormCredit] = useState<ICreateAndEditCreditForm>({
+    price: "",
+    type: 1,
+    year: "",
+    month: "",
+    day: "",
+    category: "",
+    description: "",
+    paid: false,
+    person: "",
+  });
+  const [errorsCredit, setErrorsCredit] =
+    useState<IValidationErrorsCreateAndEditCreditForm>({
+      paths: [],
+      messages: {
+        price: "",
+        type: "",
+        year: "",
+        month: "",
+        day: "",
+        category: "",
+        description: "",
+        paid: false,
+        person: "",
+      },
+    });
   const [categoriesOptions, setCategoriesOptions] = useState<
     { value: string; label: string }[]
   >([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isCreatingCredit, setIsCreatingCredit] = useState<boolean>(true);
 
   //Effect
   useEffect(() => {
@@ -95,7 +128,43 @@ export default function EditBudget({ budget }: editBudgetProps) {
         )
       ),
     });
+    if (budget.credits && budget.credits.length > 0) {
+      setFormCredit({
+        ...budget,
+        category: budget.category._id,
+        price: convertToPersian(
+          priceGenerator(
+            convertAPToEnglish(budget.price.toString().replace(/\,/g, ""))
+          )
+        ),
+        paid: budget.credits[0].paid,
+        person: budget.credits[0].person,
+      });
+    } else {
+      setIsCreatingCredit(false);
+    }
   }, [budget]);
+
+  useEffect(() => {
+    if (
+      isCreatingCredit &&
+      !formCredit.person &&
+      budget.credits &&
+      budget.credits.length > 0
+    ) {
+      setFormCredit({
+        ...form,
+        paid: budget.credits[0].paid,
+        person: budget.credits[0].person,
+      });
+    } else if (isCreatingCredit) {
+      setFormCredit({
+        ...form,
+        paid: formCredit.paid,
+        person: formCredit.person,
+      });
+    }
+  }, [isCreatingCredit, form]);
 
   useEffect(() => {
     let categoriesOptionsHandler: { value: string; label: string }[] = [];
@@ -178,6 +247,31 @@ export default function EditBudget({ budget }: editBudgetProps) {
       )
       .then(async () => {
         try {
+          if (budget.credits && budget.credits.length > 0) {
+            await dispatch(
+              editCredit(
+                {
+                  ...formCredit,
+                  price: parseInt(
+                    convertAPToEnglish(form.price.toString().replace(/\,/g, ""))
+                  ),
+                },
+                budget.credits[0]._id
+              )
+            );
+          } else {
+            await dispatch(
+              createCredit(
+                {
+                  ...formCredit,
+                  price: parseInt(
+                    convertAPToEnglish(form.price.toString().replace(/\,/g, ""))
+                  ),
+                },
+                budget._id
+              )
+            );
+          }
           await dispatch(
             editBudget(
               {
@@ -341,6 +435,13 @@ export default function EditBudget({ budget }: editBudgetProps) {
                 : ""}
             </FormErrorMessage>
           </FormControl>
+          <CreateOrEditCredit
+            form={formCredit}
+            setForm={setFormCredit}
+            errors={errorsCredit}
+            isCreating={isCreatingCredit}
+            setIsCreating={setIsCreatingCredit}
+          />
           <div className="col-span-12 flex flex-col-reverse items-center justify-center lg:flex-row">
             <Button
               colorScheme={"rose"}

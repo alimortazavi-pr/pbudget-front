@@ -59,6 +59,7 @@ export function createBudget(form: ICreateAndEditBudgetForm): AppThunk {
       await dispatch(
         setProfile({ ...getState().profile.user, budget: res.data.userBudget })
       );
+      return res.data.budget._id;
     } catch (err: any) {
       throw new Error(err.response.data.message);
     }

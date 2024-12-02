@@ -6,6 +6,7 @@ import budgetReducer from "@/store/budget";
 import categoryReducer from "@/store/category";
 import profileReducer from "@/store/profile";
 import layoutReducer from "@/store/layout";
+import creditReducer from "@/store/credit";
 
 export function makeStore() {
   return configureStore({
@@ -15,6 +16,7 @@ export function makeStore() {
       profile: profileReducer,
       category: categoryReducer,
       layout: layoutReducer,
+      credit: creditReducer,
     },
   });
 }

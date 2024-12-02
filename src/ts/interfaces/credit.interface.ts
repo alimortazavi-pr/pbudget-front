@@ -1,29 +1,30 @@
 //Types
 import { ICategory } from "./category.interface";
-import { ICredit } from "./credit.interface";
 
-export interface IBudgetState {
-  budgets: IBudget[] | null;
-  totalCostPrice: number | null;
-  totalIncomePrice: number | null;
+export interface ICreditState {
+  credits: ICredit[] | null;
+  totalDebtPrice: number | null;
+  totalDuesPrice: number | null;
 }
 
-export interface IBudget {
+export interface ICredit {
   _id: string;
   user: string;
   category: ICategory;
+  budget: string;
   price: number;
   type: number;
+  paid: boolean;
+  person: string;
   deleted: boolean;
   year: string;
   month: string;
   day: string;
   description: string;
   createdAt: string;
-  credits?: ICredit[];
 }
 
-export interface ICreateAndEditBudgetForm {
+export interface ICreateAndEditCreditForm {
   price: string | number;
   type: number;
   category: string;
@@ -31,9 +32,11 @@ export interface ICreateAndEditBudgetForm {
   month: string;
   day: string;
   description: string;
+  paid: boolean;
+  person: string;
 }
 
-export interface IValidationErrorsCreateAndEditBudgetForm {
+export interface IValidationErrorsCreateAndEditCreditForm {
   paths: string[];
   messages: {
     price: string;
@@ -43,5 +46,7 @@ export interface IValidationErrorsCreateAndEditBudgetForm {
     month: string;
     day: string;
     description: string;
+    paid: boolean;
+    person: string;
   };
 }

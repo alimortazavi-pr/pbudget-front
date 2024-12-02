@@ -17,6 +17,7 @@ import convertToPersian from "num-to-persian";
 import priceGenerator from "price-generator";
 import moment from "jalali-moment";
 import oneToTwoNumber from "one-to-two-num";
+import { creditTypeEnum } from "@/ts/enums/credit.enum";
 
 export default function SingleBudget({ budget }: singleBudgetProps) {
   //Redux
@@ -67,6 +68,20 @@ export default function SingleBudget({ budget }: singleBudgetProps) {
         </div>
         <div className="flex items-center justify-end">
           <div className="text-lg font-bold text-left">
+            {budget.credits && budget.credits.length > 0 && (
+              <span
+                className={`text-sm ${
+                  budget.credits[0].type === creditTypeEnum.DUES
+                    ? "text-teal-400"
+                    : "text-rose-400"
+                } leading-none`}
+              >
+                {budget.credits[0].type === creditTypeEnum.DUES
+                  ? "طلب"
+                  : "بدهی"}
+                <span className="mx-1">-</span>
+              </span>
+            )}
             <span className="text-gray-800 dark:text-gray-200 leading-none">
               {convertToPersian(priceGenerator(budget.price || 0))}
             </span>
@@ -98,8 +113,27 @@ export default function SingleBudget({ budget }: singleBudgetProps) {
           isMoreOptions ? "block" : "hidden"
         }`}
       >
+        {budget.credits && budget.credits.length > 0 && (
+          <p
+            className={`${
+              budget.credits[0].type === creditTypeEnum.DUES
+                ? "text-teal-400"
+                : budget.credits[0].paid
+                ? "text-teal-400"
+                : "text-rose-400"
+            } leading-none font-medium text-center mt-3`}
+          >
+            {budget.credits[0].type === creditTypeEnum.DUES
+              ? "طلب از"
+              : "بدهی به"}{" "}
+            {budget.credits[0].person}{" "}
+            <span className="text-sm text-teal-400">
+              {budget.credits[0].paid && "(پرداخت شده)"}
+            </span>
+          </p>
+        )}
         <hr className="my-3" />
-        {budget.description ? (
+        {budget.description && (
           <Fragment>
             {" "}
             <p className="text-gray-800 dark:text-gray-100">
@@ -107,8 +141,6 @@ export default function SingleBudget({ budget }: singleBudgetProps) {
             </p>
             <hr className="my-3" />
           </Fragment>
-        ) : (
-          ""
         )}
         <div className="flex items-center justify-around">
           <div className="text-sm flex items-center dark:text-gray-200">

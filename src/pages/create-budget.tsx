@@ -20,17 +20,23 @@ import {
 } from "@/ts/interfaces/budget.interface";
 import { createBudgetProps } from "@/ts/types/budget.type";
 import { budgetTypeEnum } from "@/ts/enums/budget.enum";
+import {
+  ICreateAndEditCreditForm,
+  IValidationErrorsCreateAndEditCreditForm,
+} from "@/ts/interfaces/credit.interface";
 
 //Redux
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { createBudget } from "@/store/budget/actions";
 import { categoriesSelector } from "@/store/category/selectors";
 import { darkModeSelector } from "@/store/layout/selectors";
+import { createCredit } from "@/store/credit/actions";
 
 //Components
 import TheNavigation from "@/components/layouts/TheNavigation";
 import CreateCategoryModal from "@/components/categories/CreateCategoryModal";
 import BudgetDatePicker from "@/components/budgets/BudgetDatePicker";
+import CreateOrEditCredit from "@/components/credits/CreateOrEditCredit";
 
 //Tools
 import priceGenerator from "price-generator";
@@ -40,6 +46,7 @@ import convertAPToEnglish from "ap-to-english";
 
 //Validators
 import { createAndEditBudget } from "@/validators/budgetValidator";
+
 
 export default function CreateBudget({}: createBudgetProps) {
   //Redux
@@ -76,10 +83,37 @@ export default function CreateBudget({}: createBudgetProps) {
         description: "",
       },
     });
+  const [formCredit, setFormCredit] = useState<ICreateAndEditCreditForm>({
+    price: "",
+    type: 1,
+    year: "",
+    month: "",
+    day: "",
+    category: "",
+    description: "",
+    paid: false,
+    person: "",
+  });
+  const [errorsCredit, setErrorsCredit] =
+    useState<IValidationErrorsCreateAndEditCreditForm>({
+      paths: [],
+      messages: {
+        price: "",
+        type: "",
+        year: "",
+        month: "",
+        day: "",
+        category: "",
+        description: "",
+        paid: false,
+        person: "",
+      },
+    });
   const [categoriesOptions, setCategoriesOptions] = useState<
     { value: string; label: string }[]
   >([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isCreatingCredit, setIsCreatingCredit] = useState<boolean>(false);
 
   //Effect
   useEffect(() => {
@@ -92,6 +126,16 @@ export default function CreateBudget({}: createBudgetProps) {
     });
     setCategoriesOptions(categoriesOptionsHandler);
   }, [categories]);
+
+  useEffect(() => {
+    if (isCreatingCredit) {
+      setFormCredit({
+        ...form,
+        paid: formCredit.paid,
+        person: formCredit.person,
+      });
+    }
+  }, [isCreatingCredit, form]);
 
   //Functions
   function inputHandler(
@@ -163,14 +207,40 @@ export default function CreateBudget({}: createBudgetProps) {
       )
       .then(async () => {
         try {
-          await dispatch(
-            createBudget({
-              ...form,
-              price: parseInt(
-                convertAPToEnglish(form.price.toString().replace(/\,/g, ""))
-              ),
-            })
-          );
+          if (isCreatingCredit) {
+            if (formCredit.person === "") {
+              throw new Error("لطفا نام شخص را وارد کنید");
+            }
+            const budgetId: any = await dispatch(
+              createBudget({
+                ...form,
+                price: parseInt(
+                  convertAPToEnglish(form.price.toString().replace(/\,/g, ""))
+                ),
+              })
+            );
+            await dispatch(
+              createCredit(
+                {
+                  ...formCredit,
+                  price: parseInt(
+                    convertAPToEnglish(form.price.toString().replace(/\,/g, ""))
+                  ),
+                },
+                budgetId
+              )
+            );
+          } else {
+            await dispatch(
+              createBudget({
+                ...form,
+                price: parseInt(
+                  convertAPToEnglish(form.price.toString().replace(/\,/g, ""))
+                ),
+              })
+            );
+          }
+
           toast.success("تراکنش باموفقیت ایجاد شد", {
             position: toast.POSITION.TOP_CENTER,
           });
@@ -323,6 +393,13 @@ export default function CreateBudget({}: createBudgetProps) {
                 : ""}
             </FormErrorMessage>
           </FormControl>
+          <CreateOrEditCredit
+            form={formCredit}
+            setForm={setFormCredit}
+            errors={errorsCredit}
+            isCreating={isCreatingCredit}
+            setIsCreating={setIsCreatingCredit}
+          />
           <div className="col-span-12 flex flex-col-reverse items-center justify-center lg:flex-row">
             <Button
               colorScheme={"rose"}
