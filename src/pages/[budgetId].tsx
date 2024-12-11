@@ -259,7 +259,7 @@ export default function EditBudget({ budget }: editBudgetProps) {
                 budget.credits[0]._id
               )
             );
-          } else {
+          } else if(formCredit.person) {
             await dispatch(
               createCredit(
                 {
