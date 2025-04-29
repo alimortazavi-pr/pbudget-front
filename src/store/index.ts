@@ -7,6 +7,7 @@ import categoryReducer from "@/store/category";
 import profileReducer from "@/store/profile";
 import layoutReducer from "@/store/layout";
 import creditReducer from "@/store/credit";
+import boxReducer from "@/store/box";
 
 export function makeStore() {
   return configureStore({
@@ -17,6 +18,7 @@ export function makeStore() {
       category: categoryReducer,
       layout: layoutReducer,
       credit: creditReducer,
+      box: boxReducer,
     },
   });
 }

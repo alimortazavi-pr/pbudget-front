@@ -7,7 +7,7 @@ import { IconButton, Tooltip } from "@chakra-ui/react";
 import TheDrawer from "./TheDrawer";
 
 //Tools
-import { Add, Home } from "iconsax-react";
+import { Add, Box, Home, Layer } from "iconsax-react";
 import { useToday } from "@/hooks/getTodayHook";
 
 export default function TabBar() {
@@ -27,6 +27,19 @@ export default function TabBar() {
               p={"1.5"}
             >
               <Home size="20" className="text-white" />
+            </Tooltip>
+          </Link>
+        </li>
+        <li className={`h-5 w-5 flex items-center justify-center`}>
+          <Link href={`/boxes`}>
+            <Tooltip
+              hasArrow
+              label={"باکس ها"}
+              placement="top"
+              rounded={"md"}
+              p={"1.5"}
+            >
+              <Box size="20" className="text-white" />
             </Tooltip>
           </Link>
         </li>
@@ -51,6 +64,19 @@ export default function TabBar() {
                 aria-label="Create task"
                 icon={<Add size="20" className="text-white" />}
               />
+            </Tooltip>
+          </Link>
+        </li>
+        <li className={`h-5 w-5 flex items-center justify-center`}>
+          <Link href={`/profile/categories`}>
+            <Tooltip
+              hasArrow
+              label={"دسته ها"}
+              placement="top"
+              rounded={"md"}
+              p={"1.5"}
+            >
+              <Layer size="20" className="text-white" />
             </Tooltip>
           </Link>
         </li>

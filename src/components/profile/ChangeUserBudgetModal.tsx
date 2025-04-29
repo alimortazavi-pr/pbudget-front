@@ -13,7 +13,6 @@ import {
   ModalOverlay,
   Skeleton,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
 import { ChangeEvent, useEffect, useState } from "react";
 
 //Types

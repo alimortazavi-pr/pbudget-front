@@ -145,20 +145,6 @@ export default function TheDrawerButton() {
                   <span>موجودی</span>
                 </div>
               </div>
-              <Link
-                href={"/profile/categories"}
-                className="flex flex-col gap-1 items-center justify-center bg-gray-100 dark:bg-gray-700 w-14 h-14 rounded-xl duration-200 hover:opacity-75"
-              >
-                <div>
-                  <Layer
-                    size="20"
-                    className="text-gray-800 dark:text-gray-200"
-                  />
-                </div>
-                <div className="text-gray-800 dark:text-gray-200 font-medium text-sm">
-                  <span>دسته ها</span>
-                </div>
-              </Link>
               <div
                 onClick={darkModeToggle}
                 className="flex flex-col gap-1 items-center justify-center bg-gray-100 dark:bg-gray-700 w-14 h-14 rounded-xl duration-200 hover:opacity-75 cursor-pointer"

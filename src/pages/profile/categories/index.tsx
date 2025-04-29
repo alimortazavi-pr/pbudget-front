@@ -1,6 +1,6 @@
 import { GetServerSideProps } from "next";
 import { Button, useDisclosure } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 //Types
 import { ICategory } from "@/ts/interfaces/category.interface";
@@ -8,8 +8,7 @@ import { theCategoriesProps } from "@/ts/types/category.type";
 
 //Redux
 import { categoriesSelector } from "@/store/category/selectors";
-import { getCategories } from "@/store/category/actions";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { useAppSelector } from "@/store/hooks";
 
 //Components
 import TheNavigation from "@/components/layouts/TheNavigation";
@@ -23,7 +22,6 @@ import SkeletonCategoriesList from "@/components/categories/SkeletonCategoriesLi
 
 export default function TheCategories({}: theCategoriesProps) {
   //Redux
-  const dispatch = useAppDispatch();
   const categories = useAppSelector(categoriesSelector);
 
   //ChakraUI
@@ -36,13 +34,6 @@ export default function TheCategories({}: theCategoriesProps) {
 
   //States
   const [categoryEdit, setCategoryEdit] = useState<ICategory | null>();
-
-  //Effects
-  // useEffect(() => {
-  //   if (!categories || categories == null) {
-  //     dispatch(getCategories());
-  //   }
-  // }, []);
 
   return (
     <div className="flex flex-col items-center md:mt-5">
