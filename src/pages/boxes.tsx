@@ -9,7 +9,8 @@ import { boxesSelector } from "@/store/box/selectors";
 
 //Redux
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { setBoxes } from "@/store/box/actions";
+import { getBoxes } from "@/store/box/actions";
+import { tokenSelector } from "@/store/auth/selectors";
 
 //Components
 import TheNavigation from "@/components/layouts/TheNavigation";
@@ -18,13 +19,11 @@ import CreateBoxModal from "@/components/boxes/CreateBoxModal";
 import EditBoxModal from "@/components/boxes/EditBoxModal";
 import SkeletonBoxesList from "@/components/boxes/SkeletonBoxesList";
 
-//Tools
-import api from "@/api";
-
-export default function TheBoxes({ boxes }: theBoxesProps) {
+export default function TheBoxes({}: theBoxesProps) {
   //Redux
   const dispatch = useAppDispatch();
-  const globalBoxes = useAppSelector(boxesSelector);
+  const boxes = useAppSelector(boxesSelector);
+  const token = useAppSelector(tokenSelector);
 
   //ChakraUI
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -39,8 +38,10 @@ export default function TheBoxes({ boxes }: theBoxesProps) {
 
   //Effects
   useEffect(() => {
-    dispatch(setBoxes(boxes));
-  }, [boxes]);
+    if (token) {
+      dispatch(getBoxes());
+    }
+  }, [token]);
 
   return (
     <div className="flex flex-col items-center md:mt-5">
@@ -56,8 +57,8 @@ export default function TheBoxes({ boxes }: theBoxesProps) {
         </Button>
         <ul className="px-3 flex flex-col gap-x-2 gap-y-5 bg-white dark:bg-gray-800 p-5 rounded-2xl md:rounded-md">
           <SkeletonBoxesList />
-          {globalBoxes?.length !== 0 ? (
-            globalBoxes?.map((box) => (
+          {boxes?.length !== 0 ? (
+            boxes?.map((box) => (
               <SingleBox
                 key={box._id}
                 box={box}
@@ -83,30 +84,3 @@ export default function TheBoxes({ boxes }: theBoxesProps) {
     </div>
   );
 }
-
-export const getServerSideProps: GetServerSideProps = async ({
-  req,
-  res,
-  query,
-}) => {
-  let boxes: IBox[] = [];
-  try {
-    if (req.cookies.userAuthorization) {
-      const transformedData = JSON.parse(req.cookies.userAuthorization);
-      const response = await api.get(`/boxes`, {
-        headers: {
-          Authorization: `Bearer ${transformedData.token}`,
-        },
-      });
-      boxes = response.data.boxes;
-    }
-  } catch (error: any) {
-    console.log(error.response?.data);
-  }
-
-  return {
-    props: {
-      boxes: boxes,
-    },
-  };
-};

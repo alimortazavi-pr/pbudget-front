@@ -18,6 +18,7 @@ import {
 //Tools
 import api from "@/api";
 import moment from "jalali-moment";
+import { setProfile } from "../profile/actions";
 
 //Actions from actions
 export function getBoxes(): AppThunk {
@@ -99,6 +100,15 @@ export function changeBoxBudget(
             bx._id === box._id ? res.data.box : bx
           ),
         ])
+      );
+
+      //Calculate user budget
+      const price = parseInt(form.price.toString());
+      await dispatch(
+        setProfile({
+          ...getState().profile.user,
+          budget: (getState().profile.user.budget as number) + price,
+        })
       );
     } catch (err: any) {
       throw new Error(err.response.data.message);

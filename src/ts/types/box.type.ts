@@ -15,9 +15,7 @@ export type editBoxModalProps = {
   setBoxEdit: Dispatch<SetStateAction<IBox | null | undefined>>;
 };
 
-export type theBoxesProps = {
-  boxes: IBox[];
-};
+export type theBoxesProps = {};
 
 export type singleBoxProps = {
   box: IBox;
