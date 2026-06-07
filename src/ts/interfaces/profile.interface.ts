@@ -39,6 +39,17 @@ export interface IValidationErrorsChangeUserBudgetForm {
   };
 }
 
+export interface IVerifyMobileForm {
+  code: string;
+}
+
+export interface IValidationErrorsVerifyMobileForm {
+  paths: string[];
+  messages: {
+    code: string;
+  };
+}
+
 export interface IChangeMobileForm {
   mobile: string;
   code: string;

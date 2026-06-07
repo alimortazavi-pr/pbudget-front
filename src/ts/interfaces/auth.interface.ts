@@ -19,6 +19,8 @@ export interface ISignUpForm {
   lastName: string;
   mobile: string;
   code: string;
+  password?: string;
+  confirmPassword?: string;
 }
 
 export interface IValidationErrorsSignUpForm {
@@ -28,12 +30,15 @@ export interface IValidationErrorsSignUpForm {
     lastName: string;
     mobile: string;
     code: string;
+    password: string;
+    confirmPassword: string;
   };
 }
 
 export interface ISignInForm {
   mobile: string;
   code: string;
+  password?: string;
 }
 
 export interface IValidationErrorsSignInForm {
@@ -41,7 +46,31 @@ export interface IValidationErrorsSignInForm {
   messages: {
     mobile: string;
     code: string;
+    password: string;
   };
+}
+
+export interface ISignInPasswordForm {
+  mobile: string;
+  password: string;
+}
+
+export interface ISetPasswordForm {
+  password: string;
+  confirmPassword: string;
+}
+
+export interface IValidationErrorsSetPasswordForm {
+  paths: string[];
+  messages: {
+    password: string;
+    confirmPassword: string;
+  };
+}
+
+export interface ICheckMobileExistResult {
+  isMustRegister: boolean;
+  hasPassword: boolean;
 }
 
 export interface IForgetCodeForm {

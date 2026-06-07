@@ -25,9 +25,7 @@ import {
 
 //Redux
 import { useAppDispatch } from "@/store/hooks";
-import { requestNewCode, signIn } from "@/store/auth/actions";
-
-//Components
+import { requestNewCode, signIn, signInWithPassword } from "@/store/auth/actions";
 
 //Tools
 import { toast } from "react-toastify";
@@ -35,24 +33,26 @@ import oneToTwoNumber from "one-to-two-num";
 import convertToPersian from "num-to-persian";
 
 //Validators
-import { signInValidator } from "@/validators/authValidator";
+import { signInPasswordValidator, signInValidator } from "@/validators/authValidator";
+
+type LoginMethod = "sms" | "password";
 
 export default function SignInModal({
   isOpen,
-  onOpen,
   onClose,
   mobile,
+  hasPassword = false,
 }: signUpAndSignInProps) {
-  //Redux
   const dispatch = useAppDispatch();
-
-  //Next
   const router = useRouter();
 
-  //States
+  const [loginMethod, setLoginMethod] = useState<LoginMethod>(
+    hasPassword ? "password" : "sms"
+  );
   const [form, setForm] = useState<ISignInForm>({
     mobile: "",
     code: "",
+    password: "",
   });
   const [counter, setCounter] = useState<{ value: number; status: boolean }>({
     value: 120,
@@ -63,24 +63,29 @@ export default function SignInModal({
     messages: {
       mobile: "",
       code: "",
+      password: "",
     },
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  //Effects
   useEffect(() => {
     if (mobile) {
-      setForm({ ...form, mobile: mobile as string });
+      setForm((prev) => ({ ...prev, mobile: mobile as string }));
     }
   }, [mobile]);
 
   useEffect(() => {
     if (isOpen) {
+      setLoginMethod(hasPassword ? "password" : "sms");
+    }
+  }, [isOpen, hasPassword]);
+
+  useEffect(() => {
+    if (isOpen && loginMethod === "sms" && form.mobile) {
       requestCode();
     }
-  }, [isOpen]);
+  }, [isOpen, loginMethod, form.mobile]);
 
-  //Functions
   function inputHandler(e: ChangeEvent<HTMLInputElement>) {
     setForm({
       ...form,
@@ -127,14 +132,28 @@ export default function SignInModal({
       messages: {
         mobile: "",
         code: "",
+        password: "",
       },
     });
     setIsLoading(true);
-    signInValidator
+
+    const validator =
+      loginMethod === "password" ? signInPasswordValidator : signInValidator;
+
+    validator
       .validate(form, { abortEarly: false })
       .then(async () => {
         try {
-          await dispatch(signIn(form));
+          if (loginMethod === "password") {
+            await dispatch(
+              signInWithPassword({
+                mobile: form.mobile,
+                password: form.password as string,
+              })
+            );
+          } else {
+            await dispatch(signIn(form));
+          }
           toast.success("با موفقیت وارد شدید", {
             position: toast.POSITION.TOP_CENTER,
           });
@@ -154,6 +173,7 @@ export default function SignInModal({
           messages: {
             mobile: "",
             code: "",
+            password: "",
           },
         };
         err.inner.forEach((error: any) => {
@@ -176,6 +196,26 @@ export default function SignInModal({
             <span className="text-gray-800 dark:text-white">ورود</span>
           </ModalHeader>
           <ModalBody>
+            {hasPassword && (
+              <div className="flex gap-2 mb-4">
+                <Button
+                  size="sm"
+                  colorScheme={loginMethod === "password" ? "rose" : "gray"}
+                  onClick={() => setLoginMethod("password")}
+                  className="flex-1"
+                >
+                  ورود با رمز عبور
+                </Button>
+                <Button
+                  size="sm"
+                  colorScheme={loginMethod === "sms" ? "rose" : "gray"}
+                  onClick={() => setLoginMethod("sms")}
+                  className="flex-1"
+                >
+                  ورود با کد پیامک
+                </Button>
+              </div>
+            )}
             <FormControl
               isInvalid={errors.paths.includes("mobile")}
               variant={"floating"}
@@ -196,76 +236,101 @@ export default function SignInModal({
                 {errors.paths.includes("mobile") ? errors.messages.mobile : ""}
               </FormErrorMessage>
             </FormControl>
-            <FormControl
-              isInvalid={errors.paths.includes("code")}
-              variant={"floating"}
-              className="mb-2"
-            >
-              <div className="flex items-center justify-center">
-                <div className="flex flex-row-reverse items-center">
-                  <PinInput
-                    otp
-                    onChange={(value) => {
-                      setForm({ ...form, code: value });
-                    }}
-                  >
-                    <PinInputField
-                      className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
-                      _focus={{ borderColor: "rose.400", boxShadow: "none" }}
-                      mr={"2"}
-                    />
-                    <PinInputField
-                      className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
-                      _focus={{ borderColor: "rose.400", boxShadow: "none" }}
-                      mr={"2"}
-                    />
-                    <PinInputField
-                      className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
-                      _focus={{ borderColor: "rose.400", boxShadow: "none" }}
-                      mr={"2"}
-                    />
-                    <PinInputField
-                      className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
-                      _focus={{ borderColor: "rose.400", boxShadow: "none" }}
-                      mr={"2"}
-                    />
-                    <PinInputField
-                      className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
-                      _focus={{ borderColor: "rose.400", boxShadow: "none" }}
-                      mr={"2"}
-                    />
-                    <PinInputField
-                      className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
-                      _focus={{ borderColor: "rose.400", boxShadow: "none" }}
-                    />
-                  </PinInput>
-                </div>
-                <div className="mr-2 flex-1">
-                  {counter.status ? (
-                    <div className="p-2 border rounded-md text-center text-gray-800 dark:text-gray-200 dark:border-gray-500">
-                      <span>
-                        {convertToPersian(
-                          oneToTwoNumber(Math.floor(counter.value / 60)) +
-                          ":" +
-                          oneToTwoNumber(Math.floor(counter.value % 60))
-                        )}
-                      </span>
-                    </div>
-                  ) : (
-                    <Button
-                      isLoading={isLoading}
-                      colorScheme={"red"}
-                      onClick={() => requestCode()}
+
+            {loginMethod === "password" ? (
+              <FormControl
+                isInvalid={errors.paths.includes("password")}
+                variant={"floating"}
+                className="mb-2"
+              >
+                <Input
+                  focusBorderColor="rose.400"
+                  placeholder=" "
+                  type="password"
+                  value={form.password}
+                  onChange={inputHandler}
+                  name="password"
+                  _invalid={{ borderColor: "inherit" }}
+                />
+                <FormLabel>رمز عبور</FormLabel>
+                <FormErrorMessage>
+                  {errors.paths.includes("password")
+                    ? errors.messages.password
+                    : ""}
+                </FormErrorMessage>
+              </FormControl>
+            ) : (
+              <FormControl
+                isInvalid={errors.paths.includes("code")}
+                variant={"floating"}
+                className="mb-2"
+              >
+                <div className="flex items-center justify-center">
+                  <div className="flex flex-row-reverse items-center">
+                    <PinInput
+                      otp
+                      onChange={(value) => {
+                        setForm({ ...form, code: value });
+                      }}
                     >
-                      ارسال مجدد کد
-                    </Button>
-                  )}
+                      <PinInputField
+                        className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
+                        _focus={{ borderColor: "rose.400", boxShadow: "none" }}
+                        mr={"2"}
+                      />
+                      <PinInputField
+                        className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
+                        _focus={{ borderColor: "rose.400", boxShadow: "none" }}
+                        mr={"2"}
+                      />
+                      <PinInputField
+                        className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
+                        _focus={{ borderColor: "rose.400", boxShadow: "none" }}
+                        mr={"2"}
+                      />
+                      <PinInputField
+                        className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
+                        _focus={{ borderColor: "rose.400", boxShadow: "none" }}
+                        mr={"2"}
+                      />
+                      <PinInputField
+                        className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
+                        _focus={{ borderColor: "rose.400", boxShadow: "none" }}
+                        mr={"2"}
+                      />
+                      <PinInputField
+                        className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
+                        _focus={{ borderColor: "rose.400", boxShadow: "none" }}
+                      />
+                    </PinInput>
+                  </div>
+                  <div className="mr-2 flex-1">
+                    {counter.status ? (
+                      <div className="p-2 border rounded-md text-center text-gray-800 dark:text-gray-200 dark:border-gray-500">
+                        <span>
+                          {convertToPersian(
+                            oneToTwoNumber(Math.floor(counter.value / 60)) +
+                              ":" +
+                              oneToTwoNumber(Math.floor(counter.value % 60))
+                          )}
+                        </span>
+                      </div>
+                    ) : (
+                      <Button
+                        isLoading={isLoading}
+                        colorScheme={"red"}
+                        onClick={() => requestCode()}
+                      >
+                        ارسال مجدد کد
+                      </Button>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <FormErrorMessage>
-                {errors.paths.includes("code") ? errors.messages.code : ""}
-              </FormErrorMessage>
-            </FormControl>
+                <FormErrorMessage>
+                  {errors.paths.includes("code") ? errors.messages.code : ""}
+                </FormErrorMessage>
+              </FormControl>
+            )}
           </ModalBody>
 
           <ModalFooter>

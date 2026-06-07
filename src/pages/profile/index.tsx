@@ -24,6 +24,8 @@ import { darkModeSelector } from "@/store/layout/selectors";
 //Components
 import TheNavigation from "@/components/layouts/TheNavigation";
 import ChangeMobileModal from "@/components/profile/ChangeMobileModal";
+import SetPasswordModal from "@/components/profile/SetPasswordModal";
+import VerifyMobileModal from "@/components/profile/VerifyMobileModal";
 
 //Tools
 import { toast } from "react-toastify";
@@ -44,6 +46,16 @@ export default function TheProfile({}: theProfileProps) {
     isOpen: isOpenChangeMobile,
     onOpen: onOpenChangeMobile,
     onClose: onCloseChangeMobile,
+  } = useDisclosure();
+  const {
+    isOpen: isOpenSetPassword,
+    onOpen: onOpenSetPassword,
+    onClose: onCloseSetPassword,
+  } = useDisclosure();
+  const {
+    isOpen: isOpenVerifyMobile,
+    onOpen: onOpenVerifyMobile,
+    onClose: onCloseVerifyMobile,
   } = useDisclosure();
 
   //States
@@ -185,34 +197,58 @@ export default function TheProfile({}: theProfileProps) {
             variant={"floating"}
             className=""
           >
-            <div className="flex items-center gap-2">
-              <div className="flex-1">
-                <Input
-                  focusBorderColor="rose.400"
-                  placeholder=" "
-                  type="text"
-                  value={form.mobile}
-                  onChange={inputHandler}
-                  name="mobile"
-                  disabled
-                  _invalid={{ borderColor: "inherit" }}
-                />
-                <FormLabel>شماره موبایل</FormLabel>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <div className="flex-1">
+                  <Input
+                    focusBorderColor="rose.400"
+                    placeholder=" "
+                    type="text"
+                    value={form.mobile}
+                    onChange={inputHandler}
+                    name="mobile"
+                    disabled
+                    _invalid={{ borderColor: "inherit" }}
+                  />
+                  <FormLabel>شماره موبایل</FormLabel>
+                </div>
+                <div>
+                  <Button
+                    colorScheme={isDarkMode ? "gray" : "blackAlpha"}
+                    onClick={onOpenChangeMobile}
+                  >
+                    تغییر شماره
+                  </Button>
+                </div>
               </div>
-              <div>
-                <Button
-                  colorScheme={isDarkMode ? "gray" : "blackAlpha"}
-                  onClick={onOpenChangeMobile}
-                >
-                  تغییر شماره موبایل
-                </Button>
-              </div>
+              {!user.mobileActive && (
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-sm text-amber-600 dark:text-amber-400">
+                    شماره موبایل تأیید نشده
+                  </span>
+                  <Button
+                    size="sm"
+                    colorScheme="rose"
+                    variant="outline"
+                    onClick={onOpenVerifyMobile}
+                  >
+                    تأیید شماره
+                  </Button>
+                </div>
+              )}
             </div>
             <FormErrorMessage>
               {errors.paths.includes("mobile") ? errors.messages.mobile : ""}
             </FormErrorMessage>
           </FormControl>
-          <div className="flex flex-col-reverse items-center justify-center lg:flex-row">
+          <div className="flex flex-col gap-3">
+            <Button
+              colorScheme={isDarkMode ? "gray" : "blackAlpha"}
+              onClick={onOpenSetPassword}
+              className="w-full"
+            >
+              تنظیم رمز عبور
+            </Button>
             <Button
               colorScheme={"rose"}
               variant={"outline"}
@@ -229,6 +265,17 @@ export default function TheProfile({}: theProfileProps) {
         isOpen={isOpenChangeMobile}
         onClose={onCloseChangeMobile}
         onOpen={onOpenChangeMobile}
+        mobile={user.mobile as string}
+      />
+      <SetPasswordModal
+        isOpen={isOpenSetPassword}
+        onClose={onCloseSetPassword}
+        onOpen={onOpenSetPassword}
+      />
+      <VerifyMobileModal
+        isOpen={isOpenVerifyMobile}
+        onClose={onCloseVerifyMobile}
+        onOpen={onOpenVerifyMobile}
         mobile={user.mobile as string}
       />
     </div>

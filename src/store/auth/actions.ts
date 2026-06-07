@@ -12,9 +12,11 @@ export const { authenticate, setDidTryAutoLogin, logOut, setUsers } =
 
 //Interfaces
 import {
+  ICheckMobileExistResult,
   ISaveToLocal,
   ISaveToLocalUser,
   ISignInForm,
+  ISignInPasswordForm,
   ISignUpForm,
 } from "@/ts/interfaces/auth.interface";
 
@@ -84,11 +86,11 @@ export function changeAccountAction(token: string): AppThunk {
   };
 }
 
-export function checkMobileExist(mobile: string): AppThunk {
+export function checkMobileExist(mobile: string): AppThunk<Promise<ICheckMobileExistResult>> {
   return async (dispatch) => {
     try {
       const res = await api.post("/auth/check-mobile-exist", { mobile });
-      return res.data.isMustRegister;
+      return res.data;
     } catch (err: any) {
       throw new Error(err.response.data.message);
     }
@@ -108,7 +110,18 @@ export function requestNewCode(mobile: string): AppThunk {
 export function signUp(form: ISignUpForm): AppThunk {
   return async (dispatch, getState) => {
     try {
-      const res = await api.post("/auth/register", form);
+      const payload: Record<string, string> = {
+        firstName: form.firstName,
+        lastName: form.lastName,
+        mobile: form.mobile,
+      };
+      if (form.code) {
+        payload.code = form.code;
+      }
+      if (form.password) {
+        payload.password = form.password;
+      }
+      const res = await api.post("/auth/register", payload);
       dispatch(
         authenticate({
           token: res.data.token,
@@ -144,6 +157,32 @@ export function signIn(form: ISignInForm): AppThunk {
       dispatch(setProfile(res.data.user));
 
       //Preparing users
+      const users = [
+        ...getState().auth.users.filter(
+          (user) => user._id !== res.data.user._id
+        ),
+        { ...res.data.user, token: res.data.token },
+      ];
+      dispatch(setUsers(users));
+
+      saveDataToLocal({ token: res.data.token, users: users });
+    } catch (err: any) {
+      throw new Error(err.response.data.message);
+    }
+  };
+}
+
+export function signInWithPassword(form: ISignInPasswordForm): AppThunk {
+  return async (dispatch, getState) => {
+    try {
+      const res = await api.post("/auth/login-password", form);
+      dispatch(
+        authenticate({
+          token: res.data.token,
+        })
+      );
+      dispatch(setProfile(res.data.user));
+
       const users = [
         ...getState().auth.users.filter(
           (user) => user._id !== res.data.user._id

@@ -107,6 +107,59 @@ export function changeMobile(form: IChangeMobileForm): AppThunk {
   };
 }
 
+export function verifyMobile(code: string): AppThunk {
+  return async (dispatch, getState) => {
+    try {
+      if (getState().auth.isAuth) {
+        const res = await api.put(
+          `/users/profile/verify-mobile`,
+          { code },
+          {
+            headers: {
+              Authorization: `Bearer ${getState().auth.token}`,
+            },
+          }
+        );
+        await dispatch(setProfile(res.data.user));
+
+        const users = [
+          ...getState().auth.users.filter(
+            (user) => user._id !== res.data.user._id
+          ),
+          {
+            ...res.data.user,
+            token: getState().auth.token as string,
+          },
+        ];
+        dispatch(setUsers(users));
+        saveDataToLocal({ token: getState().auth.token as string, users });
+      }
+    } catch (err: any) {
+      throw new Error(err.response.data.message);
+    }
+  };
+}
+
+export function setPassword(password: string): AppThunk {
+  return async (dispatch, getState) => {
+    try {
+      if (getState().auth.isAuth) {
+        await api.put(
+          `/users/profile/set-password`,
+          { password },
+          {
+            headers: {
+              Authorization: `Bearer ${getState().auth.token}`,
+            },
+          }
+        );
+      }
+    } catch (err: any) {
+      throw new Error(err.response.data.message);
+    }
+  };
+}
+
 export function changeUserBudget(price: number): AppThunk {
   return async (dispatch, getState) => {
     try {

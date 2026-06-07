@@ -14,45 +14,41 @@ import {
   PinInputField,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
-//Types
 import { signUpAndSignInProps } from "@/ts/types/auth.type";
 import {
   ISignUpForm,
   IValidationErrorsSignUpForm,
 } from "@/ts/interfaces/auth.interface";
-
-//Redux
 import { useAppDispatch } from "@/store/hooks";
 import { signUp, requestNewCode } from "@/store/auth/actions";
-
-//Tools
 import { toast } from "react-toastify";
 import oneToTwoNumber from "one-to-two-num";
 import convertToPersian from "num-to-persian";
+import {
+  signUpPasswordValidator,
+  signUpSmsValidator,
+} from "@/validators/authValidator";
 
-//Validators
-import { signUpValidator } from "@/validators/authValidator";
+type SignUpMethod = "password" | "sms";
 
 export default function SignUpModal({
   isOpen,
-  onOpen,
   onClose,
   mobile,
 }: signUpAndSignInProps) {
-  //Redux
   const dispatch = useAppDispatch();
-
-  //Next
   const router = useRouter();
 
-  //States
+  const [signUpMethod, setSignUpMethod] = useState<SignUpMethod>("password");
   const [form, setForm] = useState<ISignUpForm>({
     firstName: "",
     lastName: "",
     mobile: "",
     code: "",
+    password: "",
+    confirmPassword: "",
   });
   const [counter, setCounter] = useState<{ value: number; status: boolean }>({
     value: 120,
@@ -65,27 +61,32 @@ export default function SignUpModal({
       lastName: "",
       mobile: "",
       code: "",
+      password: "",
+      confirmPassword: "",
     },
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  //Effects
   useEffect(() => {
     if (mobile) {
-      setForm({ ...form, mobile: mobile as string });
+      setForm((prev) => ({ ...prev, mobile: mobile as string }));
     }
   }, [mobile]);
 
   useEffect(() => {
     if (isOpen) {
-      requestCode();
+      setSignUpMethod("password");
     }
   }, [isOpen]);
 
-  //Functions
+  useEffect(() => {
+    if (isOpen && signUpMethod === "sms" && form.mobile) {
+      requestCode();
+    }
+  }, [isOpen, signUpMethod, form.mobile]);
+
   function calculatingCounter(time: number) {
-    let count: number;
-    count = time;
+    let count = time;
     (window as any).counterInterval = setInterval(() => {
       if (count !== 0) {
         count -= 1;
@@ -131,14 +132,24 @@ export default function SignUpModal({
         lastName: "",
         mobile: "",
         code: "",
+        password: "",
+        confirmPassword: "",
       },
     });
     setIsLoading(true);
-    signUpValidator
+
+    const validator =
+      signUpMethod === "password" ? signUpPasswordValidator : signUpSmsValidator;
+
+    validator
       .validate(form, { abortEarly: false })
       .then(async () => {
         try {
-          await dispatch(signUp(form));
+          const payload: ISignUpForm = {
+            ...form,
+            code: signUpMethod === "password" ? "" : form.code,
+          };
+          await dispatch(signUp(payload));
           toast.success("ثبت نام شما با موفقیت انجام شد", {
             position: toast.POSITION.TOP_CENTER,
           });
@@ -160,6 +171,8 @@ export default function SignUpModal({
             lastName: "",
             mobile: "",
             code: "",
+            password: "",
+            confirmPassword: "",
           },
         };
         err.inner.forEach((error: any) => {
@@ -181,6 +194,25 @@ export default function SignUpModal({
           <span className="text-gray-800 dark:text-white">ثبت‌ نام</span>
         </ModalHeader>
         <ModalBody>
+          <div className="flex gap-2 mb-4">
+            <Button
+              size="sm"
+              colorScheme={signUpMethod === "password" ? "rose" : "gray"}
+              onClick={() => setSignUpMethod("password")}
+              className="flex-1"
+            >
+              ثبت‌نام با رمز عبور
+            </Button>
+            <Button
+              size="sm"
+              colorScheme={signUpMethod === "sms" ? "rose" : "gray"}
+              onClick={() => setSignUpMethod("sms")}
+              className="flex-1"
+            >
+              ثبت‌نام با کد پیامک
+            </Button>
+          </div>
+
           <FormControl
             isInvalid={errors.paths.includes("firstName")}
             variant={"floating"}
@@ -243,76 +275,109 @@ export default function SignUpModal({
               {errors.paths.includes("mobile") ? errors.messages.mobile : ""}
             </FormErrorMessage>
           </FormControl>
-          <FormControl
-            isInvalid={errors.paths.includes("code")}
-            variant={"floating"}
-            className="mb-2"
-          >
-            <div className="flex items-center justify-center">
-              <div className="flex flex-row-reverse items-center">
-                <PinInput
-                  otp
-                  onChange={(value) => {
-                    setForm({ ...form, code: value });
-                  }}
-                >
-                  <PinInputField
-                    className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
-                    _focus={{ borderColor: "rose.400", boxShadow: "none" }}
-                    mr={"2"}
-                  />
-                  <PinInputField
-                    className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
-                    _focus={{ borderColor: "rose.400", boxShadow: "none" }}
-                    mr={"2"}
-                  />
-                  <PinInputField
-                    className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
-                    _focus={{ borderColor: "rose.400", boxShadow: "none" }}
-                    mr={"2"}
-                  />
-                  <PinInputField
-                    className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
-                    _focus={{ borderColor: "rose.400", boxShadow: "none" }}
-                    mr={"2"}
-                  />
-                  <PinInputField
-                    className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
-                    _focus={{ borderColor: "rose.400", boxShadow: "none" }}
-                    mr={"2"}
-                  />
-                  <PinInputField
-                    className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
-                    _focus={{ borderColor: "rose.400", boxShadow: "none" }}
-                  />
-                </PinInput>
-              </div>
-              <div className="mr-2 flex-1">
-                {counter.status ? (
-                  <div className="p-2 border rounded-md text-center text-gray-800 dark:text-gray-200 dark:border-gray-500">
-                    <span>
-                      {convertToPersian(
-                        oneToTwoNumber(Math.floor(counter.value / 60)) +
-                        ":" +
-                        oneToTwoNumber(Math.floor(counter.value % 60))
-                      )}
-                    </span>
-                  </div>
-                ) : (
-                  <Button
-                    isLoading={isLoading}
-                    colorScheme={"red"}
-                    onClick={() => requestCode()}
+
+          {signUpMethod === "sms" ? (
+            <FormControl
+              isInvalid={errors.paths.includes("code")}
+              variant={"floating"}
+              className="mb-2"
+            >
+              <div className="flex items-center justify-center">
+                <div className="flex flex-row-reverse items-center">
+                  <PinInput
+                    otp
+                    onChange={(value) => {
+                      setForm({ ...form, code: value });
+                    }}
                   >
-                    ارسال مجدد کد
-                  </Button>
-                )}
+                    {[...Array(6)].map((_, index) => (
+                      <PinInputField
+                        key={index}
+                        className="text-gray-800 dark:text-gray-200 dark:border-gray-500"
+                        _focus={{ borderColor: "rose.400", boxShadow: "none" }}
+                        mr={index < 5 ? "2" : undefined}
+                      />
+                    ))}
+                  </PinInput>
+                </div>
+                <div className="mr-2 flex-1">
+                  {counter.status ? (
+                    <div className="p-2 border rounded-md text-center text-gray-800 dark:text-gray-200 dark:border-gray-500">
+                      <span>
+                        {convertToPersian(
+                          oneToTwoNumber(Math.floor(counter.value / 60)) +
+                            ":" +
+                            oneToTwoNumber(Math.floor(counter.value % 60))
+                        )}
+                      </span>
+                    </div>
+                  ) : (
+                    <Button
+                      isLoading={isLoading}
+                      colorScheme={"red"}
+                      onClick={() => requestCode()}
+                    >
+                      ارسال مجدد کد
+                    </Button>
+                  )}
+                </div>
               </div>
-            </div>
+              <FormErrorMessage>
+                {errors.paths.includes("code") ? errors.messages.code : ""}
+              </FormErrorMessage>
+            </FormControl>
+          ) : (
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+              می‌توانید بعداً از پروفایل شماره موبایل را تأیید کنید.
+            </p>
+          )}
+
+          <FormControl
+            isInvalid={errors.paths.includes("password")}
+            variant={"floating"}
+            className="mb-3"
+          >
+            <Input
+              focusBorderColor="rose.400"
+              placeholder=" "
+              type="password"
+              value={form.password}
+              onChange={inputHandler}
+              name="password"
+              _invalid={{ borderColor: "inherit" }}
+            />
+            <FormLabel>
+              {signUpMethod === "password" ? "رمز عبور" : "رمز عبور (اختیاری)"}
+            </FormLabel>
             <FormErrorMessage>
-              {errors.paths.includes("code") ? errors.messages.code : ""}
+              {errors.paths.includes("password")
+                ? errors.messages.password
+                : ""}
             </FormErrorMessage>
           </FormControl>
+          {(signUpMethod === "password" || form.password) && (
+            <FormControl
+              isInvalid={errors.paths.includes("confirmPassword")}
+              variant={"floating"}
+              className="mb-2"
+            >
+              <Input
+                focusBorderColor="rose.400"
+                placeholder=" "
+                type="password"
+                value={form.confirmPassword}
+                onChange={inputHandler}
+                name="confirmPassword"
+                _invalid={{ borderColor: "inherit" }}
+              />
+              <FormLabel>تکرار رمز عبور</FormLabel>
+              <FormErrorMessage>
+                {errors.paths.includes("confirmPassword")
+                  ? errors.messages.confirmPassword
+                  : ""}
+              </FormErrorMessage>
+            </FormControl>
+          )}
         </ModalBody>
 
         <ModalFooter>

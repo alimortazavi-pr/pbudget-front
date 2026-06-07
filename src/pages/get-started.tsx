@@ -43,6 +43,7 @@ export default function GetStarted() {
 
   //States
   const [mobile, setMobile] = useState<string>("");
+  const [hasPassword, setHasPassword] = useState<boolean>(false);
   const [errors, setErrors] = useState<IValidationErrorsCheckMobileExist>({
     paths: [],
     messages: {
@@ -64,8 +65,9 @@ export default function GetStarted() {
   }
 
   async function authModalHandler() {
-    const res: any = await dispatch(checkMobileExist(mobile));
-    if (res) {
+    const res = await dispatch(checkMobileExist(mobile));
+    setHasPassword(res.hasPassword);
+    if (res.isMustRegister) {
       onOpenSignUp();
     } else {
       onOpenSignIn();
@@ -174,6 +176,7 @@ export default function GetStarted() {
         onOpen={onOpenSignIn}
         onClose={onCloseSignIn}
         mobile={mobile}
+        hasPassword={hasPassword}
       />
     </div>
   );

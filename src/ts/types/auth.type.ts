@@ -3,6 +3,7 @@ export type signUpAndSignInProps = {
   onOpen: () => void;
   onClose: () => void;
   mobile: string;
+  hasPassword?: boolean;
 };
 
 export type forgetCodeModalProps = {
