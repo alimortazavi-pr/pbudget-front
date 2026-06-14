@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Button, Modal } from "@heroui/react";
 
 import * as authApi from "@/common/api/auth";
@@ -29,7 +29,21 @@ export function ProfilePage() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
+  const [telegramLinked, setTelegramLinked] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  const loadTelegramStatus = useCallback(async () => {
+    try {
+      const status = await profileApi.fetchTelegramStatus();
+      setTelegramLinked(status.linked);
+    } catch {
+      setTelegramLinked(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadTelegramStatus();
+  }, [loadTelegramStatus]);
 
   async function saveProfile(e?: FormEvent) {
     e?.preventDefault();
@@ -84,7 +98,7 @@ export function ProfilePage() {
     if (!user?.mobile) return;
     try {
       await authApi.requestCode(user.mobile);
-      showToast("کد ارسال شد", "success");
+      showToast("کد به تلگرام ارسال شد", "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     }
@@ -128,7 +142,7 @@ export function ProfilePage() {
               </Button>
             </div>
 
-            {!user?.isVerifiedMobile && (
+            {!user?.isVerifiedMobile && telegramLinked && (
               <div className="flex items-center justify-between gap-2 rounded-xl bg-surface-secondary px-3 py-2.5">
                 <span className="text-sm text-warning-foreground">
                   شماره موبایل تأیید نشده
@@ -139,9 +153,14 @@ export function ProfilePage() {
                   variant="secondary"
                   onPress={() => setVerifyOpen(true)}
                 >
-                  تأیید شماره
+                  تأیید با تلگرام
                 </Button>
               </div>
+            )}
+            {!user?.isVerifiedMobile && !telegramLinked && (
+              <p className="rounded-xl bg-surface-secondary px-3 py-2 text-sm text-muted">
+                برای تأیید شماره، ابتدا تلگرام را وصل کنید.
+              </p>
             )}
           </div>
 
@@ -167,6 +186,7 @@ export function ProfilePage() {
         open={mobileOpen}
         onOpenChange={setMobileOpen}
         currentMobile={user?.mobile ?? ""}
+        telegramLinked={telegramLinked}
       />
 
       <AppModal open={passwordOpen} onOpenChange={setPasswordOpen}>
@@ -200,7 +220,7 @@ export function ProfilePage() {
               <Modal.Heading>تأیید موبایل</Modal.Heading>
             </Modal.Header>
             <Modal.Body className="space-y-4">
-              <OtpCodeField label="کد تأیید" value={code} onChange={setCode} />
+              <OtpCodeField label="کد تأیید تلگرام" value={code} onChange={setCode} />
               <div className="flex justify-end">
                 <Button
                   type="button"
@@ -208,7 +228,7 @@ export function ProfilePage() {
                   variant="secondary"
                   onPress={() => void requestVerifyCode()}
                 >
-                  ارسال کد
+                  ارسال کد به تلگرام
                 </Button>
               </div>
             </Modal.Body>

@@ -19,6 +19,8 @@ export interface ISaveToLocalUser extends IProfile {
 export interface ICheckMobileExistResult {
   isMustRegister: boolean;
   hasPassword: boolean;
+  hasTelegram: boolean;
+  otpEnabled: boolean;
 }
 
 export interface ISignUpForm {

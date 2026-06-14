@@ -7,7 +7,6 @@ import * as authApi from "@/common/api/auth";
 import { showToast } from "@/common/utils/toast";
 import { AppModal } from "@/components/common/ui/AppModal";
 import { FormInput } from "@/components/common/form/FormFields";
-import { OtpCodeField } from "@/components/common/form/OtpCodeField";
 import type { IProfile } from "@/common/interfaces/profile.interface";
 
 type SignUpModalProps = {
@@ -25,7 +24,6 @@ export function SignUpModal({
 }: SignUpModalProps) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -33,30 +31,24 @@ export function SignUpModal({
     if (open) {
       setFirstName("");
       setLastName("");
-      setCode("");
       setPassword("");
     }
   }, [open]);
 
-  async function requestCode() {
-    try {
-      await authApi.requestCode(mobile);
-      showToast("کد تأیید ارسال شد", "success");
-    } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
-    }
-  }
-
   async function submit(e?: FormEvent) {
     e?.preventDefault();
+    if (!password.trim() || password.trim().length < 6) {
+      showToast("رمز عبور باید حداقل ۶ کاراکتر باشد");
+      return;
+    }
+
     setLoading(true);
     try {
       const data = await authApi.signUp({
         firstName,
         lastName,
         mobile,
-        code: code || undefined,
-        password: password || undefined,
+        password: password.trim(),
       });
       onSuccess(data.token, data.user);
       onOpenChange(false);
@@ -78,18 +70,17 @@ export function SignUpModal({
             <FormInput label="نام" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
             <FormInput label="نام خانوادگی" value={lastName} onChange={(e) => setLastName(e.target.value)} />
             <FormInput label="موبایل" value={mobile} readOnly />
-            <OtpCodeField label="کد تأیید" value={code} onChange={setCode} />
-            <div className="flex justify-end">
-              <Button type="button" size="sm" variant="secondary" onPress={() => void requestCode()}>
-                ارسال کد
-              </Button>
-            </div>
             <FormInput
-              label="رمز عبور (اختیاری)"
+              label="رمز عبور"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              placeholder="حداقل ۶ کاراکتر"
             />
+            <p className="text-xs text-muted">
+              ورود با کد یکبارمصرف غیرفعال است. بعد از ثبت‌نام می‌توانید تلگرام
+              را وصل کنید تا کد تأیید به تلگرام بیاید.
+            </p>
           </Modal.Body>
           <Modal.Footer>
             <Button type="button" variant="ghost" onPress={() => onOpenChange(false)}>

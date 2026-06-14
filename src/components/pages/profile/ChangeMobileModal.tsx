@@ -18,12 +18,14 @@ type ChangeMobileModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   currentMobile: string;
+  telegramLinked: boolean;
 };
 
 export function ChangeMobileModal({
   open,
   onOpenChange,
   currentMobile,
+  telegramLinked,
 }: ChangeMobileModalProps) {
   const dispatch = useAppDispatch();
   const users = useAppSelector((s) => s.auth.users);
@@ -41,6 +43,11 @@ export function ChangeMobileModal({
   }, [open]);
 
   async function requestCode() {
+    if (!telegramLinked) {
+      showToast("ابتدا تلگرام را از پروفایل وصل کنید");
+      return;
+    }
+
     const normalized = toEnglishDigits(mobile.trim());
     if (!/^09\d{9}$/.test(normalized)) {
       showToast("شماره موبایل معتبر نیست");
@@ -56,7 +63,7 @@ export function ChangeMobileModal({
       await authApi.requestCode(normalized);
       setMobile(normalized);
       setCodeSent(true);
-      showToast("کد تأیید ارسال شد", "success");
+      showToast("کد تأیید به تلگرام ارسال شد", "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     } finally {
@@ -66,6 +73,10 @@ export function ChangeMobileModal({
 
   async function submit(e?: FormEvent) {
     e?.preventDefault();
+    if (!telegramLinked) {
+      showToast("ابتدا تلگرام را وصل کنید");
+      return;
+    }
     if (!codeSent) {
       await requestCode();
       return;
@@ -101,16 +112,23 @@ export function ChangeMobileModal({
             <Modal.Heading>تغییر شماره موبایل</Modal.Heading>
           </Modal.Header>
           <Modal.Body className="space-y-4">
+            {!telegramLinked ? (
+              <p className="rounded-xl bg-surface-secondary px-3 py-2 text-sm leading-7 text-muted">
+                تغییر شماره با کد فقط وقتی فعال است که تلگرام وصل باشد. کد به
+                تلگرام شما ارسال می‌شود.
+              </p>
+            ) : null}
             <FormInput
               label="شماره موبایل جدید"
               inputMode="tel"
               value={mobile}
               onChange={(e) => setMobile(e.target.value)}
               readOnly={codeSent}
+              disabled={!telegramLinked}
             />
             {codeSent ? (
               <>
-                <OtpCodeField label="کد تأیید" value={code} onChange={setCode} />
+                <OtpCodeField label="کد تأیید تلگرام" value={code} onChange={setCode} />
                 <div className="flex justify-end">
                   <Button
                     type="button"
@@ -119,7 +137,7 @@ export function ChangeMobileModal({
                     isPending={loading}
                     onPress={() => void requestCode()}
                   >
-                    ارسال مجدد کد
+                    ارسال مجدد به تلگرام
                   </Button>
                 </div>
               </>
@@ -129,8 +147,12 @@ export function ChangeMobileModal({
             <Button type="button" variant="ghost" onPress={() => onOpenChange(false)}>
               بستن
             </Button>
-            <Button type="submit" isPending={loading}>
-              {codeSent ? "تغییر شماره موبایل" : "درخواست کد تأیید"}
+            <Button
+              type="submit"
+              isPending={loading}
+              isDisabled={!telegramLinked}
+            >
+              {codeSent ? "تغییر شماره موبایل" : "درخواست کد در تلگرام"}
             </Button>
           </Modal.Footer>
         </form>

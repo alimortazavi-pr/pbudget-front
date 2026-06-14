@@ -15,6 +15,7 @@ type SignInModalProps = {
   onOpenChange: (open: boolean) => void;
   mobile: string;
   hasPassword: boolean;
+  hasTelegram: boolean;
   onSuccess: (token: string, user: IProfile) => void;
 };
 
@@ -23,25 +24,33 @@ export function SignInModal({
   onOpenChange,
   mobile,
   hasPassword,
+  hasTelegram,
   onSuccess,
 }: SignInModalProps) {
   const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
-  const [usePassword, setUsePassword] = useState(hasPassword);
+  const [usePassword, setUsePassword] = useState(true);
   const [loading, setLoading] = useState(false);
 
+  const otpEnabled = hasTelegram;
+  const canUsePassword = hasPassword;
+  const canLogin = canUsePassword || otpEnabled;
+
   useEffect(() => {
-    if (open) {
-      setUsePassword(hasPassword);
-      setCode("");
-      setPassword("");
+    if (!open) return;
+    setCode("");
+    setPassword("");
+    if (canUsePassword) {
+      setUsePassword(true);
+    } else if (otpEnabled) {
+      setUsePassword(false);
     }
-  }, [open, hasPassword]);
+  }, [open, canUsePassword, otpEnabled]);
 
   async function requestCode() {
     try {
       await authApi.requestCode(mobile);
-      showToast("کد تأیید ارسال شد", "success");
+      showToast("کد تأیید به تلگرام ارسال شد", "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     }
@@ -49,6 +58,11 @@ export function SignInModal({
 
   async function submit(e?: FormEvent) {
     e?.preventDefault();
+    if (!canLogin) {
+      showToast("ابتدا تلگرام را از پروفایل وصل کنید یا رمز عبور تنظیم کنید");
+      return;
+    }
+
     setLoading(true);
     try {
       const data = usePassword
@@ -73,7 +87,12 @@ export function SignInModal({
           <Modal.Body className="space-y-4">
             <FormInput label="موبایل" value={mobile} readOnly />
 
-            {usePassword ? (
+            {!canLogin ? (
+              <p className="rounded-xl bg-surface-secondary px-3 py-2 text-sm leading-7 text-muted">
+                ورود با کد غیرفعال است. از بات تلگرام وارد شوید و حساب را وصل
+                کنید، یا بعد از ورود رمز عبور تنظیم کنید.
+              </p>
+            ) : usePassword ? (
               <FormInput
                 label="رمز عبور"
                 type="password"
@@ -81,11 +100,16 @@ export function SignInModal({
                 onChange={(e) => setPassword(e.target.value)}
               />
             ) : (
-              <OtpCodeField label="کد تأیید" value={code} onChange={setCode} />
+              <>
+                <OtpCodeField label="کد تأیید تلگرام" value={code} onChange={setCode} />
+                <p className="text-xs text-muted">
+                  کد به تلگرام متصل‌شده شما ارسال می‌شود، نه پیامک.
+                </p>
+              </>
             )}
 
             <div className="flex items-center justify-between gap-4 pt-1">
-              {!usePassword ? (
+              {!usePassword && otpEnabled ? (
                 <Button
                   type="button"
                   size="sm"
@@ -93,19 +117,19 @@ export function SignInModal({
                   className="shrink-0"
                   onPress={() => void requestCode()}
                 >
-                  ارسال کد
+                  ارسال کد به تلگرام
                 </Button>
               ) : (
                 <span />
               )}
 
-              {hasPassword ? (
+              {canUsePassword && otpEnabled ? (
                 <button
                   type="button"
                   className="cursor-pointer text-sm text-rose-500 hover:text-rose-600"
                   onClick={() => setUsePassword((v) => !v)}
                 >
-                  {usePassword ? "ورود با کد یکبار مصرف" : "ورود با رمز عبور"}
+                  {usePassword ? "ورود با کد تلگرام" : "ورود با رمز عبور"}
                 </button>
               ) : null}
             </div>
@@ -118,7 +142,7 @@ export function SignInModal({
             >
               انصراف
             </Button>
-            <Button type="submit" isPending={loading}>
+            <Button type="submit" isPending={loading} isDisabled={!canLogin}>
               ورود
             </Button>
           </Modal.Footer>

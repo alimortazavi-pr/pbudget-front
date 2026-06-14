@@ -28,6 +28,7 @@ export function GetStartedPage() {
   const [mobile, setMobile] = useState("");
   const [loading, setLoading] = useState(false);
   const [hasPassword, setHasPassword] = useState(false);
+  const [hasTelegram, setHasTelegram] = useState(false);
   const [signUpOpen, setSignUpOpen] = useState(false);
   const [signInOpen, setSignInOpen] = useState(false);
   const [error, setError] = useState("");
@@ -58,6 +59,7 @@ export function GetStartedPage() {
     try {
       const res = await authApi.checkMobileExist(normalized);
       setHasPassword(res.hasPassword);
+      setHasTelegram(res.hasTelegram);
       setMobile(normalized);
       if (res.isMustRegister) setSignUpOpen(true);
       else setSignInOpen(true);
@@ -166,6 +168,7 @@ export function GetStartedPage() {
         onOpenChange={setSignInOpen}
         mobile={mobile}
         hasPassword={hasPassword}
+        hasTelegram={hasTelegram}
         onSuccess={onAuthSuccess}
       />
     </div>
