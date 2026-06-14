@@ -7,7 +7,7 @@ import * as authApi from "@/common/api/auth";
 import * as profileApi from "@/common/api/profile";
 import { saveDataToLocal, toEnglishDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
-import { AppModal } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalSheet, modalSheetBodyClass, modalSheetFooterClass, modalSheetFormClass, modalSheetHeaderClass } from "@/components/common/ui/AppModal";
 import { FormInput } from "@/components/common/form/FormFields";
 import { OtpCodeField } from "@/components/common/form/OtpCodeField";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
@@ -105,13 +105,13 @@ export function ChangeMobileModal({
   }
 
   return (
-    <AppModal open={open} onOpenChange={onOpenChange}>
-      <Modal.Dialog>
-        <form onSubmit={(e) => void submit(e)}>
-          <Modal.Header>
+    <AppModal open={open} onOpenChange={onOpenChange} mobileFull>
+      <AppModalSheet>
+        <form onSubmit={(e) => void submit(e)} className={modalSheetFormClass}>
+          <Modal.Header className={modalSheetHeaderClass}>
             <Modal.Heading>تغییر شماره موبایل</Modal.Heading>
           </Modal.Header>
-          <Modal.Body className="space-y-4">
+          <Modal.Body className={`${modalSheetBodyClass} space-y-4`}>
             {!telegramLinked ? (
               <p className="rounded-xl bg-surface-secondary px-3 py-2 text-sm leading-7 text-muted">
                 تغییر شماره با کد فقط وقتی فعال است که تلگرام وصل باشد. کد به
@@ -143,7 +143,7 @@ export function ChangeMobileModal({
               </>
             ) : null}
           </Modal.Body>
-          <Modal.Footer>
+          <Modal.Footer className={modalSheetFooterClass}>
             <Button type="button" variant="ghost" onPress={() => onOpenChange(false)}>
               بستن
             </Button>
@@ -156,7 +156,7 @@ export function ChangeMobileModal({
             </Button>
           </Modal.Footer>
         </form>
-      </Modal.Dialog>
+      </AppModalSheet>
     </AppModal>
   );
 }

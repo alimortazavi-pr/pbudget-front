@@ -7,7 +7,7 @@ import * as authApi from "@/common/api/auth";
 import * as profileApi from "@/common/api/profile";
 import { saveDataToLocal } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
-import { AppModal } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalSheet, modalSheetBodyClass, modalSheetFooterClass, modalSheetFormClass, modalSheetHeaderClass } from "@/components/common/ui/AppModal";
 import { FormInput } from "@/components/common/form/FormFields";
 import { OtpCodeField } from "@/components/common/form/OtpCodeField";
 import { ChangeMobileModal } from "@/components/pages/profile/ChangeMobileModal";
@@ -200,13 +200,13 @@ export function ProfilePage() {
         telegramLinked={telegramLinked}
       />
 
-      <AppModal open={passwordOpen} onOpenChange={setPasswordOpen}>
-        <Modal.Dialog>
-          <form onSubmit={(e) => void savePassword(e)}>
-            <Modal.Header>
+      <AppModal open={passwordOpen} onOpenChange={setPasswordOpen} mobileFull>
+        <AppModalSheet>
+          <form onSubmit={(e) => void savePassword(e)} className={modalSheetFormClass}>
+            <Modal.Header className={modalSheetHeaderClass}>
               <Modal.Heading>رمز عبور</Modal.Heading>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className={modalSheetBodyClass}>
               <FormInput
                 type="password"
                 label="رمز عبور جدید"
@@ -214,23 +214,23 @@ export function ProfilePage() {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </Modal.Body>
-            <Modal.Footer>
+            <Modal.Footer className={modalSheetFooterClass}>
               <Button type="button" variant="ghost" onPress={() => setPasswordOpen(false)}>
                 انصراف
               </Button>
               <Button type="submit">ذخیره</Button>
             </Modal.Footer>
           </form>
-        </Modal.Dialog>
+        </AppModalSheet>
       </AppModal>
 
-      <AppModal open={verifyOpen} onOpenChange={setVerifyOpen}>
-        <Modal.Dialog>
-          <form onSubmit={(e) => void verifyMobile(e)}>
-            <Modal.Header>
+      <AppModal open={verifyOpen} onOpenChange={setVerifyOpen} mobileFull>
+        <AppModalSheet>
+          <form onSubmit={(e) => void verifyMobile(e)} className={modalSheetFormClass}>
+            <Modal.Header className={modalSheetHeaderClass}>
               <Modal.Heading>تأیید موبایل</Modal.Heading>
             </Modal.Header>
-            <Modal.Body className="space-y-4">
+            <Modal.Body className={`${modalSheetBodyClass} space-y-4`}>
               <OtpCodeField label="کد تأیید تلگرام" value={code} onChange={setCode} />
               <div className="flex justify-end">
                 <Button
@@ -243,14 +243,14 @@ export function ProfilePage() {
                 </Button>
               </div>
             </Modal.Body>
-            <Modal.Footer>
+            <Modal.Footer className={modalSheetFooterClass}>
               <Button type="button" variant="ghost" onPress={() => setVerifyOpen(false)}>
                 انصراف
               </Button>
               <Button type="submit">تأیید</Button>
             </Modal.Footer>
           </form>
-        </Modal.Dialog>
+        </AppModalSheet>
       </AppModal>
     </div>
   );

@@ -15,12 +15,15 @@ export function AppDrawer({ open, onOpenChange }: AppDrawerProps) {
     <AppModal
       open={open}
       onOpenChange={onOpenChange}
+      size="full"
       placement="bottom"
       backdropClassName="backdrop-blur-sm"
     >
-      <Modal.Dialog className="rounded-t-3xl border border-border/50 bg-surface p-0">
-        <div className="mx-auto mt-2 h-1 w-12 rounded-full bg-border" />
-        <div className="p-5">
+      <Modal.Dialog className="flex h-[100dvh] max-h-[100dvh] w-full flex-col rounded-none border-0 bg-surface p-0">
+        <div className="shrink-0 px-5 pt-3">
+          <div className="mx-auto h-1 w-12 rounded-full bg-border" />
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-3">
           <ShellAccountMenu
             variant="drawer"
             onNavigate={() => onOpenChange(false)}
