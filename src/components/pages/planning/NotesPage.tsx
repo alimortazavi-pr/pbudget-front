@@ -477,26 +477,37 @@ export function NotesPage() {
       )}
 
       <AppModal open={categoryModalOpen} onOpenChange={setCategoryModalOpen}>
-        <AppModalHeader onClose={() => setCategoryModalOpen(false)}>
-          <h2 className="text-lg font-semibold">
-            {editCategory ? "ویرایش دسته یادداشت" : "دسته یادداشت جدید"}
-          </h2>
-        </AppModalHeader>
-        <Modal.Body>
-          <form className="space-y-4" onSubmit={(e) => void saveCategory(e)}>
-            <TextField name="categoryTitle" isRequired>
-              <Label>عنوان</Label>
-              <Input
-                placeholder="مثلاً: طلب و بدهی"
-                value={categoryTitle}
-                onChange={(e) => setCategoryTitle(e.target.value)}
-              />
-            </TextField>
-            <Button className="w-full" type="submit" isPending={categorySaving}>
-              ذخیره
-            </Button>
+        <Modal.Dialog>
+          <form onSubmit={(e) => void saveCategory(e)}>
+            <AppModalHeader onClose={() => setCategoryModalOpen(false)}>
+              <Modal.Heading>
+                {editCategory ? "ویرایش دسته یادداشت" : "دسته یادداشت جدید"}
+              </Modal.Heading>
+            </AppModalHeader>
+            <Modal.Body>
+              <TextField name="categoryTitle" isRequired>
+                <Label>عنوان</Label>
+                <Input
+                  placeholder="مثلاً: طلب و بدهی"
+                  value={categoryTitle}
+                  onChange={(e) => setCategoryTitle(e.target.value)}
+                />
+              </TextField>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                type="button"
+                variant="ghost"
+                onPress={() => setCategoryModalOpen(false)}
+              >
+                انصراف
+              </Button>
+              <Button type="submit" isPending={categorySaving}>
+                ذخیره
+              </Button>
+            </Modal.Footer>
           </form>
-        </Modal.Body>
+        </Modal.Dialog>
       </AppModal>
     </div>
   );
