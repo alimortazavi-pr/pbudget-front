@@ -10,9 +10,10 @@ import {
   TextArea,
   TextField,
 } from "@heroui/react";
-import type { ComponentProps } from "react";
+import type { ComponentProps, FocusEvent } from "react";
 import { useMemo } from "react";
 import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
+import { scrollFieldIntoView } from "@/common/utils/scroll";
 
 type FormPersonComboBoxProps = {
   label: string;
@@ -83,11 +84,16 @@ type FormInputProps = ComponentProps<typeof Input> & {
   label: string;
 };
 
-export function FormInput({ label, ...props }: FormInputProps) {
+export function FormInput({ label, onFocus, ...props }: FormInputProps) {
+  function handleFocus(event: FocusEvent<HTMLInputElement>) {
+    onFocus?.(event);
+    scrollFieldIntoView(event.currentTarget);
+  }
+
   return (
     <TextField className="gap-2">
       <Label>{label}</Label>
-      <Input variant="secondary" {...props} />
+      <Input variant="secondary" onFocus={handleFocus} {...props} />
     </TextField>
   );
 }
@@ -96,11 +102,16 @@ type FormTextAreaProps = ComponentProps<typeof TextArea> & {
   label: string;
 };
 
-export function FormTextArea({ label, ...props }: FormTextAreaProps) {
+export function FormTextArea({ label, onFocus, ...props }: FormTextAreaProps) {
+  function handleFocus(event: FocusEvent<HTMLTextAreaElement>) {
+    onFocus?.(event);
+    scrollFieldIntoView(event.currentTarget);
+  }
+
   return (
     <TextField className="gap-2">
       <Label>{label}</Label>
-      <TextArea variant="secondary" {...props} />
+      <TextArea variant="secondary" onFocus={handleFocus} {...props} />
     </TextField>
   );
 }

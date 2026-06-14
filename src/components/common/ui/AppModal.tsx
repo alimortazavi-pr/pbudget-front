@@ -44,11 +44,14 @@ export function AppModal({
         <Modal.Container
           size={mobileFull ? "full" : size}
           placement={mobileFull ? "bottom" : placement}
-          className={
+          className={[
+            "max-sm:!max-h-[100dvh] max-sm:!overflow-y-auto max-sm:!overscroll-y-contain",
             mobileFull
-              ? "max-sm:!h-[100dvh] max-sm:!max-h-[100dvh] sm:!h-auto sm:!max-h-[min(90dvh,720px)]"
-              : undefined
-          }
+              ? "max-sm:!flex max-sm:!h-auto max-sm:!min-h-0 max-sm:!flex-col sm:!h-auto sm:!max-h-[min(90dvh,720px)]"
+              : "max-sm:!items-center",
+          ]
+            .filter(Boolean)
+            .join(" ")}
         >
           {children}
         </Modal.Container>
@@ -66,17 +69,17 @@ type AppModalSheetProps = {
 export function AppModalSheet({ children, className = "" }: AppModalSheetProps) {
   return (
     <Modal.Dialog
-      className={`flex h-[100dvh] max-h-[100dvh] w-full flex-col rounded-none border-0 bg-surface p-0 sm:h-auto sm:max-h-[min(90dvh,720px)] sm:max-w-md sm:rounded-2xl sm:border sm:border-border/50 ${className}`}
+      className={`flex w-full min-h-0 max-h-[100dvh] flex-col rounded-none border-0 bg-surface p-0 max-sm:flex-1 sm:h-auto sm:max-h-[min(90dvh,720px)] sm:max-w-md sm:rounded-2xl sm:border sm:border-border/50 ${className}`}
     >
       {children}
     </Modal.Dialog>
   );
 }
 
-export const modalSheetFormClass = "flex min-h-0 flex-1 flex-col";
+export const modalSheetFormClass = "flex min-h-0 flex-1 flex-col overflow-hidden";
 export const modalSheetHeaderClass =
   "shrink-0 border-b border-border/40 px-5 py-4";
 export const modalSheetBodyClass =
-  "min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-5 py-4";
+  "min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-5 py-4 [-webkit-overflow-scrolling:touch]";
 export const modalSheetFooterClass =
   "shrink-0 border-t border-border/40 px-5 pt-4 pb-[max(1.25rem,env(safe-area-inset-bottom))]";

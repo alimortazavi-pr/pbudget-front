@@ -1,6 +1,9 @@
 "use client";
 
 import { InputOTP, Label, TextField } from "@heroui/react";
+import { useEffect, useRef } from "react";
+
+import { scrollFieldIntoView } from "@/common/utils/scroll";
 
 const OTP_LENGTH = 6;
 
@@ -11,10 +14,27 @@ type OtpCodeFieldProps = {
 };
 
 export function OtpCodeField({ label, value, onChange }: OtpCodeFieldProps) {
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    function handleFocusIn(event: FocusEvent) {
+      const target = event.target;
+      if (target instanceof HTMLElement) {
+        scrollFieldIntoView(target);
+      }
+    }
+
+    root.addEventListener("focusin", handleFocusIn);
+    return () => root.removeEventListener("focusin", handleFocusIn);
+  }, []);
+
   return (
     <TextField className="w-full gap-3">
       <Label className="text-sm font-medium">{label}</Label>
-      <div className="w-full overflow-hidden" dir="ltr">
+      <div ref={rootRef} className="w-full px-0.5" dir="ltr">
         <InputOTP
           maxLength={OTP_LENGTH}
           value={value}
