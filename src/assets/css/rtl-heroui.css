@@ -204,6 +204,18 @@ html[dir="rtl"] .toast__close-button {
   left: 0.625rem;
 }
 
+/* --- Modal / Alert dialog close (RTL: سمت چپ) --- */
+html[dir="rtl"] .modal__close-trigger,
+html[dir="rtl"] .alert-dialog__close-trigger {
+  right: auto !important;
+  left: 1rem;
+}
+
+html[dir="rtl"] .modal__dialog:has(.modal__close-trigger) .modal__header,
+html[dir="rtl"] .alert-dialog__dialog:has(.alert-dialog__close-trigger) .alert-dialog__header {
+  padding-inline-start: 2.5rem;
+}
+
 @media (min-width: 640px) {
   html[dir="rtl"] .toast__close-button {
     left: -0.25rem;

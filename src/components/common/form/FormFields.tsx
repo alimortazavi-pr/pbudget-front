@@ -12,6 +12,7 @@ import {
 } from "@heroui/react";
 import type { ComponentProps } from "react";
 import { useMemo } from "react";
+import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
 
 type FormPersonComboBoxProps = {
   label: string;
@@ -165,5 +166,31 @@ export function FormSelect({
         )}
       </Select.Popover>
     </Select>
+  );
+}
+
+type FormDatePickerProps = {
+  label: string;
+  year: string;
+  month: string;
+  day: string;
+  onChange: (value: { year: string; month: string; day: string }) => void;
+  hint?: string;
+};
+
+export function FormDatePicker({
+  label,
+  year,
+  month,
+  day,
+  onChange,
+  hint,
+}: FormDatePickerProps) {
+  return (
+    <div className="space-y-2">
+      <Label className="text-sm font-medium">{label}</Label>
+      {hint && <p className="text-xs text-muted">{hint}</p>}
+      <FilterDatePicker year={year} month={month} day={day} onChange={onChange} />
+    </div>
   );
 }

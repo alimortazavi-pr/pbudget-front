@@ -14,6 +14,10 @@ const PAGE_TITLES: Record<string, string> = {
   [PATHS.CREATE_BUDGET]: "ثبت تراکنش",
   [PATHS.CATEGORIES]: "دسته‌بندی‌ها",
   [PATHS.DEBTS]: "طلب و بدهی",
+  [PATHS.INSTALLMENTS]: "اقساط",
+  [PATHS.CHECKS]: "چک‌ها",
+  [PATHS.NOTES]: "یادداشت‌ها",
+  [PATHS.PROJECTS]: "پروژه‌ها",
   [PATHS.PROFILE]: "پروفایل",
 };
 
@@ -31,8 +35,13 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
 
   const isBudgetEdit = pathname.startsWith("/budgets/");
+  const isProjectDetail = pathname.startsWith("/projects/");
   const title =
-    (isBudgetEdit ? "ویرایش تراکنش" : PAGE_TITLES[pathname]) ?? "Paradise Budget";
+    (isBudgetEdit
+      ? "ویرایش تراکنش"
+      : isProjectDetail && pathname !== PATHS.PROJECTS
+        ? "مدیریت پروژه"
+        : PAGE_TITLES[pathname]) ?? "Paradise Budget";
 
   return (
     <>
@@ -48,7 +57,12 @@ export function AppShell({ children }: { children: ReactNode }) {
           pathname === PATHS.CREATE_BUDGET ||
           pathname.startsWith("/budgets/") ||
           pathname === PATHS.ANALYSIS ||
-          pathname === PATHS.DEBTS
+          pathname === PATHS.DEBTS ||
+          pathname === PATHS.INSTALLMENTS ||
+          pathname === PATHS.CHECKS ||
+          pathname === PATHS.NOTES ||
+          pathname === PATHS.PROJECTS ||
+          pathname.startsWith("/projects/")
         }
       >
         {children}

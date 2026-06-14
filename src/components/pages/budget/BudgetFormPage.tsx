@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { Button } from "@heroui/react";
 import { Add } from "iconsax-reactjs";
 
@@ -20,7 +20,7 @@ import {
 import { CreateCategoryModal } from "@/components/pages/categories/CreateCategoryModal";
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
-import { BudgetType, DebtType } from "@/types/enums";
+import { BudgetType, CategoryKind, DebtType } from "@/types/enums";
 
 type BudgetFormPageProps = {
   budget?: IBudget;
@@ -47,6 +47,11 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   const [price, setPrice] = useState(String(budget?.price ?? ""));
   const [type, setType] = useState(String(budget?.type ?? BudgetType.COST));
   const [category, setCategory] = useState(budget?.category?._id ?? "");
+  const selectedCategory = useMemo(
+    () => (categories ?? []).find((item) => item._id === category),
+    [categories, category],
+  );
+  const isProjectCategory = selectedCategory?.kind === CategoryKind.PROJECT;
   const [description, setDescription] = useState(budget?.description ?? "");
   const [loading, setLoading] = useState(false);
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
@@ -196,6 +201,13 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
             options={categoryOptions}
             emptyMessage="دسته‌ای ثبت نشده"
           />
+
+          {isProjectCategory && (
+            <p className="rounded-xl bg-accent/10 px-3 py-2 text-xs leading-6 text-accent">
+              این تراکنش به پروژه مرتبط با دسته «{selectedCategory?.title}» وصل می‌شود و
+              در صفحه پروژه‌ها هم نمایش داده می‌شود.
+            </p>
+          )}
 
           <FormTextArea
             label="توضیحات"

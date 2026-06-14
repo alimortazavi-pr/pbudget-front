@@ -1,6 +1,11 @@
 import type { ICategory } from "./category.interface";
 import type { IDebt } from "./debt.interface";
 
+export interface IProjectRef {
+  _id: string;
+  category?: ICategory;
+}
+
 export interface IBudgetState {
   budgets: IBudget[] | null;
   totalCostPrice: number | null;
@@ -20,6 +25,7 @@ export interface IBudget {
   description: string;
   createdAt: string;
   debt?: IDebt | null;
+  project?: IProjectRef | string | null;
 }
 
 export interface ICreateAndEditBudgetForm {

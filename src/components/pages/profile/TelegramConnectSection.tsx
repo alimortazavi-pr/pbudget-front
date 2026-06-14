@@ -71,7 +71,7 @@ export function TelegramConnectSection() {
   }
 
   return (
-    <div className="glass space-y-4 rounded-2xl p-5">
+    <div id="telegram" className="glass space-y-4 rounded-2xl p-5 scroll-mt-24">
       <div className="space-y-1">
         <h2 className="text-lg font-bold">بات تلگرام</h2>
         <p className="text-sm text-muted">

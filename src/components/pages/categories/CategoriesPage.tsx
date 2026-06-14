@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { Button, Modal } from "@heroui/react";
+import { Button, Modal, Switch } from "@heroui/react";
 import { Add, Category, Edit2, Trash } from "iconsax-reactjs";
 
 import * as categoriesApi from "@/common/api/categories";
@@ -18,6 +18,7 @@ import { FormInput, FormSelect } from "@/components/common/form/FormFields";
 import { AppModal } from "@/components/common/ui/AppModal";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { categoriesSelector, setCategories } from "@/stores/category";
+import { CategoryKind } from "@/types/enums";
 
 export function CategoriesPage() {
   const dispatch = useAppDispatch();
@@ -26,6 +27,7 @@ export function CategoriesPage() {
   const [editItem, setEditItem] = useState<ICategory | null>(null);
   const [title, setTitle] = useState("");
   const [parentId, setParentId] = useState("");
+  const [isProjectKind, setIsProjectKind] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const categoryRows = useMemo(() => {
@@ -48,6 +50,7 @@ export function CategoriesPage() {
     setEditItem(null);
     setTitle("");
     setParentId("");
+    setIsProjectKind(false);
     setOpen(true);
   }
 
@@ -55,6 +58,7 @@ export function CategoriesPage() {
     setEditItem(cat);
     setTitle(cat.title);
     setParentId(getCategoryParentId(cat) ?? "");
+    setIsProjectKind(cat.kind === CategoryKind.PROJECT);
     setOpen(true);
   }
 
@@ -67,6 +71,7 @@ export function CategoriesPage() {
       const payload = {
         title: title.trim(),
         parentId: parentId || null,
+        kind: isProjectKind ? CategoryKind.PROJECT : CategoryKind.DEFAULT,
       };
 
       if (editItem) {
@@ -87,6 +92,7 @@ export function CategoriesPage() {
       setOpen(false);
       setTitle("");
       setParentId("");
+      setIsProjectKind(false);
       setEditItem(null);
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
@@ -138,7 +144,14 @@ export function CategoriesPage() {
               style={depth > 0 ? { marginInlineStart: depth * 16 } : undefined}
             >
               <div className="min-w-0">
-                <span className="font-medium">{category.title}</span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-medium">{category.title}</span>
+                  {category.kind === CategoryKind.PROJECT ? (
+                    <span className="rounded-md bg-accent/15 px-1.5 py-0.5 text-[10px] font-semibold text-accent">
+                      پروژه
+                    </span>
+                  ) : null}
+                </div>
                 {depth > 0 ? (
                   <p className="text-xs text-muted">زیردسته</p>
                 ) : null}
@@ -187,6 +200,17 @@ export function CategoriesPage() {
                 onSelectionChange={(key) => setParentId(key === "none" ? "" : key)}
                 options={parentOptions}
               />
+              <div className="flex items-center justify-between rounded-xl border border-border/50 bg-surface-secondary px-3 py-3">
+                <div>
+                  <p className="text-sm font-medium">نوع پروژه</p>
+                  <p className="text-xs text-muted">برای مدیریت قرارداد و پرداخت‌های خرد</p>
+                </div>
+                <Switch isSelected={isProjectKind} onChange={setIsProjectKind} size="sm">
+                  <Switch.Control>
+                    <Switch.Thumb />
+                  </Switch.Control>
+                </Switch>
+              </div>
             </Modal.Body>
             <Modal.Footer>
               <Button type="button" variant="ghost" onPress={() => setOpen(false)}>

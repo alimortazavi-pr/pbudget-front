@@ -8,4 +8,11 @@ export const PATHS = {
   PROFILE: "/profile",
   CATEGORIES: "/profile/categories",
   DEBTS: "/debts",
+  INSTALLMENTS: "/installments",
+  CHECKS: "/checks",
+  NOTES: "/notes",
+  PROJECTS: "/projects",
+  PROJECT: (id: string) => `/projects/${id}`,
+  /** @deprecated use INSTALLMENTS */
+  PLANNING: "/planning",
 } as const;

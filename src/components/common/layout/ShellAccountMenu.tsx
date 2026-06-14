@@ -1,24 +1,20 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
-import {
-  Call,
-  Category,
-  Card,
-  Logout,
-  Moon,
-  Profile,
-  Sun1,
-  Wallet2,
-} from "iconsax-reactjs";
+import { Call, Logout, Moon, Profile, Sun1, Wallet2 } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 import { formatPrice } from "@/common/utils";
 import { storage } from "@/common/utils/storage";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { ChangeBalanceModal } from "@/components/pages/profile/ChangeBalanceModal";
+import { ShellNavGroup } from "@/components/common/layout/ShellNavGroup";
+import {
+  ACCOUNT_NAV_ITEMS,
+  PLANNING_NAV_ITEMS,
+  SUPPORT_PHONE,
+} from "@/components/common/layout/shell-nav";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { logOut, resetAuth } from "@/stores/auth";
 import { setProfile, userSelector } from "@/stores/profile";
@@ -26,11 +22,13 @@ import { setProfile, userSelector } from "@/stores/profile";
 type ShellAccountMenuProps = {
   onNavigate?: () => void;
   variant?: "drawer" | "sidebar";
+  showPlanning?: boolean;
 };
 
 export function ShellAccountMenu({
   onNavigate,
   variant = "drawer",
+  showPlanning = true,
 }: ShellAccountMenuProps) {
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -59,10 +57,10 @@ export function ShellAccountMenu({
     router.replace(PATHS.GET_STARTED);
   }
 
-  const linkClass =
+  const utilityLinkClass =
     variant === "sidebar"
       ? "flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-surface-secondary"
-      : "flex cursor-pointer items-center gap-3 rounded-xl px-3 py-3 hover:bg-surface-secondary";
+      : "flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-surface-secondary";
 
   return (
     <>
@@ -91,7 +89,7 @@ export function ShellAccountMenu({
         className={
           variant === "sidebar"
             ? "mb-4 rounded-2xl border border-border/50 bg-surface-secondary/60 p-3"
-            : "mb-4 rounded-2xl border border-border/50 bg-surface-secondary p-4"
+            : "mb-2 rounded-2xl border border-border/50 bg-surface-secondary p-4"
         }
       >
         <div className="flex items-center justify-between">
@@ -119,42 +117,42 @@ export function ShellAccountMenu({
         </p>
       </div>
 
-      <div className="flex flex-col gap-1">
-        <Link href={PATHS.DEBTS} onClick={onNavigate} className={linkClass}>
-          <Card size={20} />
-          طلب و بدهی
-        </Link>
-        <Link
-          href={PATHS.CATEGORIES}
-          onClick={onNavigate}
-          className={linkClass}
-        >
-          <Category size={20} />
-          دسته‌بندی‌ها
-        </Link>
-        <Link
-          href={PATHS.PROFILE}
-          onClick={onNavigate}
-          className={linkClass}
-        >
-          <Profile size={20} />
-          پروفایل
-        </Link>
+      {showPlanning && (
+        <ShellNavGroup
+          title="برنامه‌ریزی و ابزار"
+          items={PLANNING_NAV_ITEMS}
+          variant={variant}
+          onNavigate={onNavigate}
+        />
+      )}
+
+      <ShellNavGroup
+        title="حساب کاربری"
+        items={ACCOUNT_NAV_ITEMS}
+        variant={variant}
+        onNavigate={onNavigate}
+      />
+
+      <div className={variant === "sidebar" ? "mt-4" : "mt-4"}>
+        <p className="mb-2 px-3 text-xs font-semibold tracking-wide text-muted">
+          تنظیمات
+        </p>
+        <div className="flex flex-col gap-0.5">
+          <button type="button" className={utilityLinkClass} onClick={toggleTheme}>
+            {theme === "dark" ? <Sun1 size={20} /> : <Moon size={20} />}
+            {theme === "dark" ? "حالت روشن" : "حالت تاریک"}
+          </button>
+          <a href={SUPPORT_PHONE} className={utilityLinkClass} onClick={onNavigate}>
+            <Call size={20} />
+            پشتیبانی
+          </a>
+        </div>
+      </div>
+
+      <div className="mt-4 border-t border-border/50 pt-3">
         <button
           type="button"
-          className={linkClass}
-          onClick={toggleTheme}
-        >
-          {theme === "dark" ? <Sun1 size={20} /> : <Moon size={20} />}
-          {theme === "dark" ? "حالت روشن" : "حالت تاریک"}
-        </button>
-        <a href="tel:02112345678" className={linkClass}>
-          <Call size={20} />
-          پشتیبانی
-        </a>
-        <button
-          type="button"
-          className={`${linkClass} text-danger hover:bg-danger/10`}
+          className={`${utilityLinkClass} w-full text-danger hover:bg-danger/10`}
           onClick={() => void handleLogout()}
         >
           <Logout size={20} />

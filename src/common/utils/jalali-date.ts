@@ -11,6 +11,17 @@ export function padJalaliPart(value: string | number): string {
   return n.length === 1 ? `0${n}` : n;
 }
 
+/** نمایش ماه و سال: خرداد ۱۴۰۵ */
+export function formatJalaliMonthYear(year: string, month: string) {
+  const monthIndex = parseInt(month, 10) - 1;
+  const monthName = JALALI_MONTHS[monthIndex] ?? month;
+  return `${monthName} ${toPersianDigits(year)}`;
+}
+
+/** نمایش سال: سال ۱۴۰۵ */
+export function formatJalaliYear(year: string) {
+  return `سال ${toPersianDigits(year)}`;
+}
 /** نمایش کوتاه: ۱۸ خرداد ۱۴۰۵ */
 export function formatJalaliDate(year: string, month: string, day: string) {
   const monthIndex = parseInt(month, 10) - 1;

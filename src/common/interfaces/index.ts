@@ -4,3 +4,7 @@ export * from "./budget.interface";
 export * from "./category.interface";
 export * from "./box.interface";
 export * from "./debt.interface";
+export * from "./check.interface";
+export * from "./payment-plan.interface";
+export * from "./period-note.interface";
+export * from "./project.interface";
