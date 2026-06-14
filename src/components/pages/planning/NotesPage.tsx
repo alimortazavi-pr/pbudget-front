@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button, Checkbox, Input, Label, Modal, TextField } from "@heroui/react";
+import { Button, Input, Label, Modal, TextField } from "@heroui/react";
 import { Add, Edit2, Note, Trash } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
@@ -10,6 +10,7 @@ import * as noteCategoriesApi from "@/common/api/note-categories";
 import * as userNotesApi from "@/common/api/user-notes";
 import type {
   INoteCategory,
+  INoteLine,
   IUserNote,
   NoteDuration,
 } from "@/common/interfaces/note.interface";
@@ -20,14 +21,34 @@ import {
 } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
+import {
+  AppleNoteEditor,
+  hasEditorContent,
+  linesFromNote,
+} from "@/components/pages/planning/AppleNoteEditor";
 import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
 import { chipClass } from "@/components/pages/planning/planning-shared";
 import { PeriodNavigator } from "@/components/pages/planning/PeriodNavigator";
 import { usePeriodQuery } from "@/components/pages/planning/usePeriodQuery";
 
 function getCategoryTitle(note: IUserNote) {
-  if (!note.category || typeof note.category === "string") return null;
+  if (!note.category || typeof note.category === "string") return "بدون دسته";
   return note.category.title;
+}
+
+function periodPayload(
+  noteDuration: NoteDuration,
+  year: string,
+  month: string,
+  day: string,
+) {
+  return {
+    duration: noteDuration,
+    year: noteDuration === "general" ? undefined : year,
+    month:
+      noteDuration === "daily" || noteDuration === "monthly" ? month : undefined,
+    day: noteDuration === "daily" ? day : undefined,
+  };
 }
 
 export function NotesPage() {
@@ -49,15 +70,21 @@ export function NotesPage() {
   const categoryFilter = searchParams.get("categoryId") ?? "";
 
   const [loading, setLoading] = useState(true);
-  const [notes, setNotes] = useState<IUserNote[]>([]);
+  const [saving, setSaving] = useState(false);
+  const [clearing, setClearing] = useState(false);
+  const [noteDoc, setNoteDoc] = useState<IUserNote | null>(null);
+  const [previewDocs, setPreviewDocs] = useState<IUserNote[]>([]);
+  const [lines, setLines] = useState<INoteLine[]>(linesFromNote(null));
   const [categories, setCategories] = useState<INoteCategory[]>([]);
-  const [newNoteText, setNewNoteText] = useState("");
-  const [adding, setAdding] = useState(false);
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [categoryTitle, setCategoryTitle] = useState("");
   const [editCategory, setEditCategory] = useState<INoteCategory | null>(null);
   const [categorySaving, setCategorySaving] = useState(false);
-  const [clearing, setClearing] = useState(false);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastSavedRef = useRef("");
+
+  const editingCategoryId = categoryFilter || "none";
+  const canEdit = Boolean(categoryFilter);
 
   const periodLabel = useMemo(() => {
     if (noteDuration === "general") return "یادداشت کلی";
@@ -80,23 +107,34 @@ export function NotesPage() {
   const loadNotes = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await userNotesApi.fetchUserNotes({
-        duration: noteDuration,
-        year: noteDuration === "general" ? undefined : year,
-        month:
-          noteDuration === "daily" || noteDuration === "monthly"
-            ? month
-            : undefined,
-        day: noteDuration === "daily" ? day : undefined,
-        categoryId: categoryFilter || undefined,
+      const period = periodPayload(noteDuration, year, month, day);
+
+      if (!canEdit) {
+        const docs = await userNotesApi.fetchUserNoteDocuments({
+          ...period,
+        });
+        setPreviewDocs(docs);
+        setNoteDoc(null);
+        setLines(linesFromNote(null));
+        lastSavedRef.current = "";
+        return;
+      }
+
+      const note = await userNotesApi.fetchUserNoteDocument({
+        ...period,
+        categoryId: editingCategoryId === "none" ? null : editingCategoryId,
       });
-      setNotes(data);
+      const nextLines = linesFromNote(note);
+      setNoteDoc(note);
+      setLines(nextLines);
+      setPreviewDocs([]);
+      lastSavedRef.current = JSON.stringify(nextLines);
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا در بارگذاری");
     } finally {
       setLoading(false);
     }
-  }, [noteDuration, year, month, day, categoryFilter]);
+  }, [noteDuration, year, month, day, canEdit, editingCategoryId]);
 
   useEffect(() => {
     void loadCategories();
@@ -105,6 +143,58 @@ export function NotesPage() {
   useEffect(() => {
     void loadNotes();
   }, [loadNotes]);
+
+  const saveDocument = useCallback(
+    async (nextLines: INoteLine[], silent = false) => {
+      if (!canEdit) return;
+
+      const serialized = JSON.stringify(nextLines);
+      if (serialized === lastSavedRef.current) return;
+
+      setSaving(true);
+      try {
+        const period = periodPayload(noteDuration, year, month, day);
+        const note = await userNotesApi.upsertUserNoteDocument({
+          ...period,
+          categoryId: editingCategoryId === "none" ? null : editingCategoryId,
+          items: nextLines,
+        });
+        setNoteDoc(note);
+        lastSavedRef.current = serialized;
+        if (!silent) {
+          showToast("ذخیره شد", "success");
+        }
+      } catch (err) {
+        showToast(err instanceof Error ? err.message : "خطا در ذخیره");
+      } finally {
+        setSaving(false);
+      }
+    },
+    [canEdit, noteDuration, year, month, day, editingCategoryId],
+  );
+
+  function scheduleSave(nextLines: INoteLine[]) {
+    if (!canEdit) return;
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+    }
+    saveTimerRef.current = setTimeout(() => {
+      void saveDocument(nextLines, true);
+    }, 700);
+  }
+
+  function handleLinesChange(nextLines: INoteLine[]) {
+    setLines(nextLines);
+    scheduleSave(nextLines);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
+      }
+    };
+  }, []);
 
   function handlePeriodPrev() {
     if (noteDuration === "daily") shiftDay(-1);
@@ -118,56 +208,14 @@ export function NotesPage() {
     else shiftMonth(1);
   }
 
-  async function addNote(e?: FormEvent) {
-    e?.preventDefault();
-    const text = newNoteText.trim();
-    if (!text) return;
-
-    setAdding(true);
-    try {
-      const note = await userNotesApi.createUserNote({
-        text,
-        duration: noteDuration,
-        year: noteDuration === "general" ? undefined : year,
-        month:
-          noteDuration === "daily" || noteDuration === "monthly"
-            ? month
-            : undefined,
-        day: noteDuration === "daily" ? day : undefined,
-        categoryId:
-          categoryFilter === "none"
-            ? null
-            : categoryFilter || undefined,
-      });
-      setNotes((prev) => [note, ...prev]);
-      setNewNoteText("");
-      showToast("یادداشت اضافه شد", "success");
-    } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
-    } finally {
-      setAdding(false);
+  function setCategoryFilter(value?: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (!value) {
+      params.delete("categoryId");
+    } else {
+      params.set("categoryId", value);
     }
-  }
-
-  async function toggleNote(note: IUserNote) {
-    try {
-      const updated = await userNotesApi.toggleUserNote(note._id);
-      setNotes((prev) =>
-        prev.map((item) => (item._id === updated._id ? updated : item)),
-      );
-    } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
-    }
-  }
-
-  async function removeNote(note: IUserNote) {
-    try {
-      await userNotesApi.deleteUserNote(note._id);
-      setNotes((prev) => prev.filter((item) => item._id !== note._id));
-      showToast("حذف شد", "success");
-    } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
-    }
+    router.replace(`${PATHS.NOTES}?${params.toString()}`, { scroll: false });
   }
 
   function openCategoryModal(category?: INoteCategory) {
@@ -207,16 +255,6 @@ export function NotesPage() {
     }
   }
 
-  function setCategoryFilter(value?: string) {
-    const params = new URLSearchParams(searchParams.toString());
-    if (!value) {
-      params.delete("categoryId");
-    } else {
-      params.set("categoryId", value);
-    }
-    router.replace(`${PATHS.NOTES}?${params.toString()}`, { scroll: false });
-  }
-
   async function removeCategory(category: INoteCategory) {
     try {
       await noteCategoriesApi.deleteNoteCategory(category._id);
@@ -230,27 +268,22 @@ export function NotesPage() {
     }
   }
 
-  async function clearAllNotes() {
-    if (!notes.length) return;
-    if (!confirm("همه یادداشت‌های این بازه پاک شوند؟")) return;
+  async function clearCurrentNote() {
+    if (!canEdit) return;
+    if (!hasEditorContent(lines) && !noteDoc) return;
+    if (!confirm("یادداشت این دسته و بازه پاک شود؟")) return;
 
     setClearing(true);
     try {
+      const period = periodPayload(noteDuration, year, month, day);
       await userNotesApi.clearUserNotes({
-        duration: noteDuration,
-        year: noteDuration === "general" ? undefined : year,
-        month:
-          noteDuration === "daily" || noteDuration === "monthly"
-            ? month
-            : undefined,
-        day: noteDuration === "daily" ? day : undefined,
-        categoryId:
-          categoryFilter === "none"
-            ? null
-            : categoryFilter || undefined,
+        ...period,
+        categoryId: editingCategoryId === "none" ? null : editingCategoryId,
       });
-      setNotes([]);
-      showToast("یادداشت‌ها پاک شدند", "success");
+      setNoteDoc(null);
+      setLines(linesFromNote(null));
+      lastSavedRef.current = "";
+      showToast("یادداشت پاک شد", "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     } finally {
@@ -258,8 +291,11 @@ export function NotesPage() {
     }
   }
 
-  const pendingNotes = notes.filter((note) => !note.done);
-  const doneNotes = notes.filter((note) => note.done);
+  const editingCategoryLabel =
+    editingCategoryId === "none"
+      ? "بدون دسته"
+      : categories.find((item) => item._id === editingCategoryId)?.title ??
+        "دسته انتخاب‌شده";
 
   return (
     <div className="space-y-5 pb-6">
@@ -267,7 +303,8 @@ export function NotesPage() {
         <p className="text-sm font-medium text-white/80">یادداشت مالی</p>
         <h1 className="mt-1 text-2xl font-bold">یادداشت‌ها</h1>
         <p className="mt-2 text-sm leading-7 text-white/80">
-          طلب و بدهی، نسیه‌ها و یادآوری‌ها — با چک‌باکس و دسته‌بندی جدا از تراکنش.
+          مثل یادداشت اپل — متن آزاد و چک‌لیست در یک صفحه، با دسته‌بندی جدا از
+          تراکنش.
         </p>
       </section>
 
@@ -377,59 +414,75 @@ export function NotesPage() {
         )}
       </section>
 
-      <form className="flex gap-2" onSubmit={(e) => void addNote(e)}>
-        <TextField className="flex-1" name="newNote">
-          <Label className="sr-only">یادداشت جدید</Label>
-          <Input
-            placeholder="مثلاً: ۱۰ ت از علی میخوام"
-            value={newNoteText}
-            onChange={(e) => setNewNoteText(e.target.value)}
-          />
-        </TextField>
-        <Button type="submit" isPending={adding}>
-          افزودن
-        </Button>
-      </form>
-
       {loading ? (
         <p className="text-center text-sm text-muted">در حال بارگذاری…</p>
-      ) : notes.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted">
-          یادداشتی نیست. از بات تلگرام هم می‌توانید با{" "}
-          <span dir="ltr" className="font-mono text-xs">
-            /note متن
-          </span>{" "}
-          ثبت کنید.
-        </p>
+      ) : !canEdit ? (
+        <section className="space-y-4 rounded-2xl border border-border bg-surface p-4">
+          <p className="text-sm leading-7 text-muted">
+            برای نوشتن یا ویرایش، یک دسته انتخاب کنید (مثلاً «بدون دسته» یا «طلب
+            و بدهی»).
+          </p>
+          {previewDocs.length === 0 ? (
+            <p className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted">
+              یادداشتی در این بازه نیست.
+            </p>
+          ) : (
+            previewDocs.map((doc) => (
+              <article
+                key={doc._id}
+                className="rounded-2xl border border-border bg-field-background p-4"
+              >
+                <h3 className="mb-2 text-sm font-semibold text-muted">
+                  {getCategoryTitle(doc)}
+                </h3>
+                <ul className="space-y-1 text-sm leading-7">
+                  {doc.items.map((item) => (
+                    <li key={item.id}>
+                      {item.type === "checkbox" ? (
+                        <span>
+                          {item.done ? "✅" : "⬜️"} {item.text}
+                        </span>
+                      ) : (
+                        <span>{item.text}</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ))
+          )}
+        </section>
       ) : (
-        <div className="space-y-4">
-          <div className="flex justify-end">
-            <Button
-              size="sm"
-              variant="secondary"
-              isPending={clearing}
-              onPress={() => void clearAllNotes()}
-            >
-              پاک کردن همه
-            </Button>
+        <section className="space-y-3 rounded-2xl border border-border bg-surface p-4">
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <h2 className="font-semibold">یادداشت {editingCategoryLabel}</h2>
+              <p className="text-xs text-muted">
+                {saving ? "در حال ذخیره…" : "ذخیره خودکار"}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="secondary"
+                isPending={saving}
+                onPress={() => void saveDocument(lines)}
+              >
+                ذخیره
+              </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                isPending={clearing}
+                onPress={() => void clearCurrentNote()}
+              >
+                پاک کردن
+              </Button>
+            </div>
           </div>
-          {pendingNotes.length > 0 && (
-            <NoteList
-              title="باز"
-              notes={pendingNotes}
-              onToggle={(note) => void toggleNote(note)}
-              onRemove={(note) => void removeNote(note)}
-            />
-          )}
-          {doneNotes.length > 0 && (
-            <NoteList
-              title="انجام‌شده"
-              notes={doneNotes}
-              onToggle={(note) => void toggleNote(note)}
-              onRemove={(note) => void removeNote(note)}
-            />
-          )}
-        </div>
+
+          <AppleNoteEditor items={lines} onChange={handleLinesChange} />
+        </section>
       )}
 
       <AppModal open={categoryModalOpen} onOpenChange={setCategoryModalOpen}>
@@ -455,67 +508,5 @@ export function NotesPage() {
         </Modal.Body>
       </AppModal>
     </div>
-  );
-}
-
-function NoteList({
-  title,
-  notes,
-  onToggle,
-  onRemove,
-}: {
-  title: string;
-  notes: IUserNote[];
-  onToggle: (note: IUserNote) => void;
-  onRemove: (note: IUserNote) => void;
-}) {
-  return (
-    <section className="space-y-2">
-      <h3 className="text-sm font-medium text-muted">{title}</h3>
-      <ul className="space-y-2">
-        {notes.map((note) => {
-          const categoryTitle = getCategoryTitle(note);
-          return (
-            <li
-              key={note._id}
-              className="flex items-start gap-2 rounded-2xl border border-border bg-field-background p-3"
-            >
-              <Checkbox
-                isSelected={note.done}
-                onChange={() => onToggle(note)}
-                aria-label={note.text}
-              >
-                <Checkbox.Control>
-                  <Checkbox.Indicator />
-                </Checkbox.Control>
-                <Checkbox.Content className="min-w-0 flex-1">
-                  <span
-                    className={`block text-sm leading-7 ${
-                      note.done ? "text-muted line-through" : ""
-                    }`}
-                  >
-                    {note.text}
-                  </span>
-                  {categoryTitle && (
-                    <span className="mt-1 block text-xs text-muted">
-                      {categoryTitle}
-                    </span>
-                  )}
-                </Checkbox.Content>
-              </Checkbox>
-              <Button
-                isIconOnly
-                size="sm"
-                variant="ghost"
-                className="shrink-0"
-                onPress={() => onRemove(note)}
-              >
-                <Trash size={16} />
-              </Button>
-            </li>
-          );
-        })}
-      </ul>
-    </section>
   );
 }

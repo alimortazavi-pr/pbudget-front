@@ -1,10 +1,12 @@
 import { axiosInstance } from "@/common/axiosInstance";
 import type {
+  INoteLine,
   IUserNote,
   NoteDuration,
+  NoteLineType,
 } from "@/common/interfaces/note.interface";
 
-export async function fetchUserNotes(params: {
+export async function fetchUserNoteDocuments(params: {
   duration?: NoteDuration;
   year?: string;
   month?: string;
@@ -18,41 +20,57 @@ export async function fetchUserNotes(params: {
   return data.notes;
 }
 
-export async function createUserNote(payload: {
+export async function fetchUserNoteDocument(params: {
+  duration: NoteDuration;
+  year?: string;
+  month?: string;
+  day?: string;
+  categoryId?: string | null;
+}) {
+  const { data } = await axiosInstance.get<{ note: IUserNote | null }>(
+    "/user-notes/document",
+    {
+      params: {
+        ...params,
+        categoryId:
+          params.categoryId === null || params.categoryId === undefined
+            ? "none"
+            : params.categoryId,
+      },
+    },
+  );
+  return data.note;
+}
+
+export async function upsertUserNoteDocument(payload: {
+  items: INoteLine[];
+  duration: NoteDuration;
+  year?: string;
+  month?: string;
+  day?: string;
+  categoryId?: string | null;
+}) {
+  const { data } = await axiosInstance.put<{ note: IUserNote | null }>(
+    "/user-notes/document",
+    payload,
+  );
+  return data.note;
+}
+
+export async function appendUserNoteLine(payload: {
   text: string;
+  type?: NoteLineType;
   categoryId?: string | null;
   duration?: NoteDuration;
   year?: string;
   month?: string;
   day?: string;
 }) {
-  const { data } = await axiosInstance.post<{ note: IUserNote }>(
-    "/user-notes",
+  const { data } = await axiosInstance.post<{ note: IUserNote; line: INoteLine }>(
+    "/user-notes/line",
     payload,
   );
-  return data.note;
-}
-
-export async function updateUserNote(
-  id: string,
-  payload: { text?: string; done?: boolean; categoryId?: string | null },
-) {
-  const { data } = await axiosInstance.patch<{ note: IUserNote }>(
-    `/user-notes/${id}`,
-    payload,
-  );
-  return data.note;
-}
-
-export async function toggleUserNote(id: string) {
-  const { data } = await axiosInstance.patch<{ note: IUserNote }>(
-    `/user-notes/${id}/toggle`,
-  );
-  return data.note;
-}
-
-export async function deleteUserNote(id: string) {
-  await axiosInstance.delete(`/user-notes/${id}`);
+  return data;
 }
 
 export async function clearUserNotes(payload: {

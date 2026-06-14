@@ -4,15 +4,23 @@ export interface INoteCategory {
 }
 
 export type NoteDuration = "daily" | "monthly" | "yearly" | "general";
+export type NoteLineType = "text" | "checkbox";
+
+export interface INoteLine {
+  id: string;
+  type: NoteLineType;
+  text: string;
+  done?: boolean;
+}
 
 export interface IUserNote {
   _id: string;
-  text: string;
-  done: boolean;
+  items: INoteLine[];
   duration: NoteDuration;
   year: number;
   month: number;
-  day?: number;
+  day: number;
   category?: INoteCategory | string | null;
   createdAt?: string;
+  updatedAt?: string;
 }
