@@ -79,4 +79,18 @@ export function formatHourRange(startHour?: number, endHour?: number) {
   return `${formatHourLabel(startHour)} تا ${formatHourLabel(endHour)}`;
 }
 
+export function formatJalaliDateTime(
+  year: number | string,
+  month: number | string,
+  day: number | string,
+  hour: number | string,
+  minute: number | string,
+) {
+  const date = formatJalaliDateSlashed(String(year), String(month), String(day));
+  const time = toPersianDigits(
+    `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`,
+  );
+  return `${date} · ${time}`;
+}
+
 export { moment };

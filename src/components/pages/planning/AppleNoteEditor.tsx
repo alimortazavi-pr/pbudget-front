@@ -1,210 +1,306 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
-import { Button, Checkbox } from "@heroui/react";
-import { TaskSquare, Text } from "iconsax-reactjs";
+import { useEffect, useState } from "react";
+import { Button, Checkbox, TextArea } from "@heroui/react";
+import { Add, Alarm, Trash } from "iconsax-reactjs";
 
-import type { INoteLine, NoteLineType } from "@/common/interfaces/note.interface";
+import type {
+  INoteLine,
+  INoteLineReminder,
+  IUserNote,
+} from "@/common/interfaces/note.interface";
+import { toPersianDigits } from "@/common/utils/persian-digits";
+import {
+  formatJalaliDateTime,
+  getJalaliNow,
+} from "@/common/utils/jalali-date";
+import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
+import { FormSelect } from "@/components/common/form/FormFields";
 
-function createLine(type: NoteLineType = "text"): INoteLine {
+export type EditorLine = INoteLine;
+
+const HOUR_OPTIONS = Array.from({ length: 24 }, (_, hour) => ({
+  id: String(hour),
+  label: toPersianDigits(`${String(hour).padStart(2, "0")}:00`),
+}));
+
+const MINUTE_OPTIONS = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map(
+  (m) => ({
+    id: String(m),
+    label: toPersianDigits(String(m).padStart(2, "0")),
+  }),
+);
+
+function newLineId() {
+  return `line-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+function emptyReminder(): INoteLineReminder {
+  const now = getJalaliNow();
   return {
-    id: crypto.randomUUID(),
-    type,
-    text: "",
-    done: false,
+    year: now.jYear(),
+    month: now.jMonth() + 1,
+    day: now.jDate(),
+    hour: 8,
+    minute: 0,
+    beforeMinutes: 30,
   };
 }
 
-function normalizeLines(items: INoteLine[]) {
-  return items.length ? items : [createLine("text")];
+function reminderFromLine(r?: INoteLineReminder | null): INoteLineReminder | null {
+  if (!r?.year) return null;
+  return {
+    year: r.year,
+    month: r.month,
+    day: r.day,
+    hour: r.hour ?? 0,
+    minute: r.minute ?? 0,
+    beforeMinutes: r.beforeMinutes ?? 30,
+  };
+}
+
+export function linesFromNote(
+  note: IUserNote | INoteLine[] | null | undefined,
+): EditorLine[] {
+  const items = Array.isArray(note) ? note : note?.items;
+  if (!items?.length) {
+    return [{ id: newLineId(), type: "text", text: "", done: false, reminder: null }];
+  }
+  return items.map((item) => ({
+    id: item.id || newLineId(),
+    type: item.type === "checkbox" ? "checkbox" : "text",
+    text: item.text ?? "",
+    done: Boolean(item.done),
+    reminder: reminderFromLine(item.reminder),
+  }));
+}
+
+export function hasEditorContent(lines: EditorLine[]) {
+  return lines.some((line) => line.text.trim().length > 0);
 }
 
 type AppleNoteEditorProps = {
-  items: INoteLine[];
-  onChange: (items: INoteLine[]) => void;
-  disabled?: boolean;
+  items: EditorLine[];
+  onChange: (items: EditorLine[]) => void;
 };
 
-export function AppleNoteEditor({
-  items,
+function ReminderPanel({
+  reminder,
   onChange,
-  disabled = false,
-}: AppleNoteEditorProps) {
-  const lines = normalizeLines(items);
-  const inputRefs = useRef<Record<string, HTMLTextAreaElement | null>>({});
-
-  const updateLines = useCallback(
-    (next: INoteLine[]) => {
-      onChange(normalizeLines(next));
-    },
-    [onChange],
-  );
-
-  function updateLine(id: string, patch: Partial<INoteLine>) {
-    updateLines(
-      lines.map((line) => (line.id === id ? { ...line, ...patch } : line)),
-    );
-  }
-
-  function insertLineAfter(id: string, type: NoteLineType) {
-    const index = lines.findIndex((line) => line.id === id);
-    const next = [...lines];
-    const newLine = createLine(type);
-    next.splice(index + 1, 0, newLine);
-    updateLines(next);
-    requestAnimationFrame(() => inputRefs.current[newLine.id]?.focus());
-  }
-
-  function removeLine(id: string) {
-    const index = lines.findIndex((line) => line.id === id);
-    const next = lines.filter((line) => line.id !== id);
-    updateLines(next);
-    const focusId = next[Math.max(0, index - 1)]?.id;
-    if (focusId) {
-      requestAnimationFrame(() => inputRefs.current[focusId]?.focus());
-    }
-  }
-
-  function toggleLineType(id: string) {
-    const line = lines.find((row) => row.id === id);
-    if (!line) return;
-    updateLine(id, {
-      type: line.type === "checkbox" ? "text" : "checkbox",
-      done: false,
-    });
-  }
-
-  function handleKeyDown(
-    event: KeyboardEvent<HTMLTextAreaElement>,
-    line: INoteLine,
-  ) {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
-      insertLineAfter(line.id, line.type);
-      return;
-    }
-
-    if (event.key === "Backspace" && !line.text) {
-      event.preventDefault();
-      if (lines.length > 1) {
-        removeLine(line.id);
-      }
-    }
-  }
-
+  onRemove,
+}: {
+  reminder: INoteLineReminder;
+  onChange: (r: INoteLineReminder) => void;
+  onRemove: () => void;
+}) {
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap gap-2">
-        <Button
-          size="sm"
-          variant="secondary"
-          isDisabled={disabled}
-          onPress={() => updateLines([...lines, createLine("text")])}
-        >
-          <Text size={16} />
-          خط متن
-        </Button>
-        <Button
-          size="sm"
-          variant="secondary"
-          isDisabled={disabled}
-          onPress={() => updateLines([...lines, createLine("checkbox")])}
-        >
-          <TaskSquare size={16} />
-          چک‌لیست
+    <div className="mt-2 rounded-xl border border-default-200 bg-default-50 p-3 space-y-3">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-xs font-medium text-default-600">یادآوری تلگرام</span>
+        <Button size="sm" variant="ghost" onPress={onRemove}>
+          حذف یادآوری
         </Button>
       </div>
-
-      <div className="min-h-48 rounded-2xl border border-border bg-field-background p-3">
-        <div className="space-y-1">
-          {lines.map((line) => (
-            <div key={line.id} className="group flex items-start gap-2">
-              {line.type === "checkbox" ? (
-                <Checkbox
-                  variant="secondary"
-                  isSelected={Boolean(line.done)}
-                  isDisabled={disabled}
-                  onChange={(selected) =>
-                    updateLine(line.id, { done: Boolean(selected) })
-                  }
-                  aria-label={line.text || "مورد چک‌لیست"}
-                  className="mt-2 shrink-0"
-                >
-                  <Checkbox.Control>
-                    <Checkbox.Indicator />
-                  </Checkbox.Control>
-                </Checkbox>
-              ) : (
-                <span className="mt-2.5 w-5 shrink-0 text-center text-xs text-muted">
-                  •
-                </span>
-              )}
-
-              <textarea
-                ref={(node) => {
-                  inputRefs.current[line.id] = node;
-                }}
-                rows={1}
-                disabled={disabled}
-                value={line.text}
-                onChange={(event) => {
-                  updateLine(line.id, { text: event.target.value });
-                  event.target.style.height = "auto";
-                  event.target.style.height = `${event.target.scrollHeight}px`;
-                }}
-                onKeyDown={(event) => handleKeyDown(event, line)}
-                placeholder={
-                  line.type === "checkbox"
-                    ? "مثلاً: ۱۰ ت از علی میخوام"
-                    : "متن آزاد…"
-                }
-                className={`min-h-[2rem] flex-1 resize-none bg-transparent py-1.5 text-sm leading-7 outline-none ${
-                  line.type === "checkbox" && line.done
-                    ? "text-muted line-through"
-                    : ""
-                }`}
-              />
-
-              <Button
-                isIconOnly
-                size="sm"
-                variant="ghost"
-                isDisabled={disabled}
-                className="mt-1 shrink-0 opacity-70 group-hover:opacity-100"
-                onPress={() => toggleLineType(line.id)}
-                aria-label={
-                  line.type === "checkbox"
-                    ? "تبدیل به متن"
-                    : "تبدیل به چک‌لیست"
-                }
-              >
-                {line.type === "checkbox" ? <Text size={16} /> : <TaskSquare size={16} />}
-              </Button>
-            </div>
-          ))}
-        </div>
+      <FilterDatePicker
+        year={String(reminder.year)}
+        month={String(reminder.month)}
+        day={String(reminder.day)}
+        onChange={({ year, month, day }) => {
+          onChange({
+            ...reminder,
+            year: parseInt(year, 10),
+            month: parseInt(month, 10),
+            day: parseInt(day, 10),
+          });
+        }}
+      />
+      <div className="grid grid-cols-2 gap-3">
+        <FormSelect
+          label="ساعت"
+          selectedKey={String(reminder.hour)}
+          onSelectionChange={(v) => onChange({ ...reminder, hour: parseInt(v, 10) })}
+          options={HOUR_OPTIONS}
+        />
+        <FormSelect
+          label="دقیقه"
+          selectedKey={String(reminder.minute)}
+          onSelectionChange={(v) => onChange({ ...reminder, minute: parseInt(v, 10) })}
+          options={MINUTE_OPTIONS}
+        />
       </div>
-
-      <p className="text-xs leading-6 text-muted">
-        Enter خط جدید می‌سازد. با آیکون کنار هر خط می‌توانید همان جمله را چک‌لیست
-        یا متن عادی کنید.
+      <p className="text-xs text-default-500 leading-relaxed">
+        {formatJalaliDateTime(
+          reminder.year,
+          reminder.month,
+          reminder.day,
+          reminder.hour,
+          reminder.minute,
+        )}
+        {" — "}
+        ۳۰ دقیقه قبل و سر وقت در تلگرام پیام می‌گیرید.
       </p>
     </div>
   );
 }
 
-export function linesFromNote(note: { items?: INoteLine[] } | null) {
-  if (!note?.items?.length) {
-    return [createLine("text")];
-  }
-  return note.items.map((item) => ({
-    id: item.id,
-    type: item.type,
-    text: item.text,
-    done: Boolean(item.done),
-  }));
+export function AppleNoteEditor({ items, onChange }: AppleNoteEditorProps) {
+  const [expandedReminderId, setExpandedReminderId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setExpandedReminderId(null);
+  }, [items]);
+
+  const updateLine = (id: string, patch: Partial<EditorLine>) => {
+    onChange(items.map((l) => (l.id === id ? { ...l, ...patch } : l)));
+  };
+
+  const addTextLine = () => {
+    onChange([
+      ...items,
+      { id: newLineId(), type: "text", text: "", done: false, reminder: null },
+    ]);
+  };
+
+  const addCheckboxLine = () => {
+    onChange([
+      ...items,
+      { id: newLineId(), type: "checkbox", text: "", done: false, reminder: null },
+    ]);
+  };
+
+  const removeLine = (id: string) => {
+    if (items.length <= 1) return;
+    onChange(items.filter((l) => l.id !== id));
+  };
+
+  const toggleReminder = (line: EditorLine) => {
+    if (line.reminder) {
+      updateLine(line.id, { reminder: null });
+      if (expandedReminderId === line.id) setExpandedReminderId(null);
+    } else {
+      updateLine(line.id, { reminder: emptyReminder() });
+      setExpandedReminderId(line.id);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-1">
+      {items.map((line) => (
+        <div key={line.id} className="group flex flex-col">
+          <div className="flex items-start gap-2 py-0.5">
+            {line.type === "checkbox" ? (
+              <Checkbox
+                variant="secondary"
+                isSelected={line.done}
+                onChange={(checked) => updateLine(line.id, { done: checked })}
+                className="mt-2 shrink-0"
+                aria-label="انجام شد"
+              >
+                <Checkbox.Control>
+                  <Checkbox.Indicator />
+                </Checkbox.Control>
+              </Checkbox>
+            ) : (
+              <span className="mt-2 w-6 shrink-0" aria-hidden />
+            )}
+            <TextArea
+              value={line.text}
+              onChange={(e) => updateLine(line.id, { text: e.target.value })}
+              placeholder={line.type === "checkbox" ? "کار یا یادآوری…" : "متن…"}
+              rows={1}
+              className="min-h-0 flex-1"
+              variant="secondary"
+            />
+            <Button
+              size="sm"
+              variant={line.reminder ? "primary" : "ghost"}
+              isIconOnly
+              className="mt-1 shrink-0 opacity-60 group-hover:opacity-100"
+              onPress={() => {
+                if (line.reminder) {
+                  setExpandedReminderId((id) => (id === line.id ? null : line.id));
+                } else {
+                  toggleReminder(line);
+                }
+              }}
+              aria-label="یادآوری"
+            >
+              <Alarm size={16} />
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              isIconOnly
+              className="mt-1 shrink-0 opacity-0 group-hover:opacity-100"
+              onPress={() => removeLine(line.id)}
+              aria-label="حذف خط"
+            >
+              <Trash size={16} />
+            </Button>
+          </div>
+          {line.reminder && expandedReminderId === line.id && (
+            <div className="ps-8">
+              <ReminderPanel
+                reminder={line.reminder}
+                onChange={(r) => updateLine(line.id, { reminder: r })}
+                onRemove={() => toggleReminder(line)}
+              />
+            </div>
+          )}
+          {line.reminder && expandedReminderId !== line.id && (
+            <button
+              type="button"
+              className="ps-8 text-xs text-primary text-start hover:underline"
+              onClick={() => setExpandedReminderId(line.id)}
+            >
+              ⏰{" "}
+              {formatJalaliDateTime(
+                line.reminder.year,
+                line.reminder.month,
+                line.reminder.day,
+                line.reminder.hour,
+                line.reminder.minute,
+              )}
+            </button>
+          )}
+        </div>
+      ))}
+
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Button size="sm" variant="secondary" onPress={addTextLine}>
+          <Add size={16} />
+          متن
+        </Button>
+        <Button size="sm" variant="secondary" onPress={addCheckboxLine}>
+          <Add size={16} />
+          چک‌باکس
+        </Button>
+      </div>
+    </div>
+  );
 }
 
-export function hasEditorContent(items: INoteLine[]) {
-  return items.some((item) => item.text.trim().length > 0);
+export function NotePreviewLine({ line }: { line: INoteLine }) {
+  const prefix = line.type === "checkbox" ? (line.done ? "☑" : "☐") : "•";
+  const reminderLabel =
+    line.reminder?.year != null
+      ? formatJalaliDateTime(
+          line.reminder.year,
+          line.reminder.month,
+          line.reminder.day,
+          line.reminder.hour,
+          line.reminder.minute,
+        )
+      : null;
+  return (
+    <div className="text-sm text-default-700">
+      <span className="me-1 text-default-500">{prefix}</span>
+      <span className={line.done ? "line-through text-default-400" : ""}>
+        {line.text}
+      </span>
+      {reminderLabel && (
+        <span className="ms-2 text-xs text-primary">⏰ {reminderLabel}</span>
+      )}
+    </div>
+  );
 }

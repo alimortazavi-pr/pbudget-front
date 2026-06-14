@@ -16,6 +16,7 @@ import type {
 } from "@/common/interfaces/note.interface";
 import {
   formatJalaliDate,
+  formatJalaliDateTime,
   formatJalaliMonthYear,
   formatJalaliYear,
 } from "@/common/utils";
@@ -534,6 +535,18 @@ function NotePreviewLine({ item }: { item: INoteLine }) {
           }`}
         >
           {item.text}
+          {item.reminder?.year != null && (
+            <span className="mt-1 block text-xs text-primary">
+              ⏰{" "}
+              {formatJalaliDateTime(
+                item.reminder.year,
+                item.reminder.month,
+                item.reminder.day,
+                item.reminder.hour,
+                item.reminder.minute,
+              )}
+            </span>
+          )}
         </span>
       </li>
     );
@@ -542,6 +555,18 @@ function NotePreviewLine({ item }: { item: INoteLine }) {
   return (
     <li className="rounded-xl bg-surface px-3 py-1.5 text-sm leading-7">
       {item.text}
+      {item.reminder?.year != null && (
+        <span className="mt-1 block text-xs text-primary">
+          ⏰{" "}
+          {formatJalaliDateTime(
+            item.reminder.year,
+            item.reminder.month,
+            item.reminder.day,
+            item.reminder.hour,
+            item.reminder.minute,
+          )}
+        </span>
+      )}
     </li>
   );
 }

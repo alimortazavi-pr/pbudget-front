@@ -6,11 +6,23 @@ export interface INoteCategory {
 export type NoteDuration = "daily" | "monthly" | "yearly" | "general";
 export type NoteLineType = "text" | "checkbox";
 
+export interface INoteLineReminder {
+  year: number;
+  month: number;
+  day: number;
+  hour: number;
+  minute: number;
+  beforeMinutes?: number;
+  sentBefore?: boolean;
+  sentAt?: boolean;
+}
+
 export interface INoteLine {
   id: string;
   type: NoteLineType;
   text: string;
   done?: boolean;
+  reminder?: INoteLineReminder | null;
 }
 
 export interface IUserNote {
