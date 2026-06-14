@@ -37,11 +37,9 @@ export function GetStartedPage() {
     document.documentElement.classList.remove("dark");
     document.documentElement.classList.add("light");
     document.body.style.overflow = "hidden";
-    document.body.style.backgroundColor = "#fb7185";
 
     return () => {
       document.body.style.overflow = "";
-      document.body.style.backgroundColor = "";
     };
   }, []);
 
@@ -83,34 +81,34 @@ export function GetStartedPage() {
   }
 
   return (
-    <div className="min-h-dvh bg-rose-400 lg:flex lg:items-center lg:justify-center lg:p-8">
-      <div className="flex h-dvh w-full flex-col overflow-hidden bg-rose-400 lg:h-auto lg:min-h-[34rem] lg:max-w-5xl lg:flex-row lg:overflow-hidden lg:rounded-3xl lg:shadow-2xl">
-        <div className="flex h-[65%] shrink-0 items-center justify-center bg-rose-400 lg:h-auto lg:min-h-[34rem] lg:flex-1">
+    <div className="min-h-dvh bg-background lg:flex lg:items-center lg:justify-center lg:p-8">
+      <div className="flex h-dvh w-full flex-col overflow-hidden lg:h-auto lg:min-h-[34rem] lg:max-w-5xl lg:flex-row lg:overflow-hidden lg:rounded-3xl lg:border lg:border-border/60 lg:bg-surface lg:shadow-xl">
+        <div className="flex h-[42%] shrink-0 items-center justify-center bg-gradient-to-br from-rose-50 via-background to-background px-6 lg:h-auto lg:min-h-[34rem] lg:flex-1 lg:from-rose-50/80 lg:via-surface-secondary lg:to-surface">
           <div className="text-center">
             <Image
               src="/assets/logo-mark.svg"
               alt=""
-              width={96}
-              height={96}
-              className="mx-auto rounded-3xl shadow-lg"
+              width={88}
+              height={88}
+              className="mx-auto rounded-3xl shadow-md"
               priority
             />
-            <p className="mt-6 font-display text-3xl font-bold tracking-wide text-gray-900 lg:text-4xl">
+            <p className="mt-5 text-3xl font-bold text-foreground lg:text-4xl">
               {APP_NAME_FA}
             </p>
-            <p className="mt-2 text-sm font-semibold tracking-[0.2em] text-gray-700 lg:text-base">
+            <p className="mt-2 font-display text-sm font-semibold tracking-[0.18em] text-muted lg:text-base">
               {APP_NAME_EN}
             </p>
-            <p className="mt-4 hidden text-sm text-gray-800 lg:block">
+            <p className="mt-4 hidden max-w-xs text-sm leading-7 text-muted lg:mx-auto lg:block">
               {APP_TAGLINE_FA}
             </p>
           </div>
         </div>
 
-        <div className="flex h-[35%] min-h-0 shrink-0 flex-col overflow-y-auto rounded-t-2xl bg-white px-5 pb-6 pt-6 text-gray-900 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] lg:h-auto lg:min-h-[34rem] lg:justify-center lg:rounded-none lg:rounded-s-3xl lg:px-10 lg:py-10 lg:shadow-none">
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto rounded-t-3xl border-t border-border/50 bg-surface px-5 pb-6 pt-6 lg:justify-center lg:rounded-none lg:rounded-s-3xl lg:border-t-0 lg:border-s lg:px-10 lg:py-10">
           <div className="shrink-0 lg:max-w-md">
-            <h1 className="text-2xl font-bold text-gray-900">خیلی خوش آمدی :)</h1>
-            <p className="mt-4 text-base leading-7 text-gray-800">
+            <h1 className="text-2xl font-bold text-foreground">خیلی خوش آمدی :)</h1>
+            <p className="mt-3 text-base leading-7 text-muted">
               لطفا برای ورود یا ثبت‌نام شماره موبایل خود را وارد کنید.
             </p>
           </div>
@@ -125,7 +123,7 @@ export function GetStartedPage() {
               isInvalid={Boolean(error)}
               className="mb-1 gap-2"
             >
-              <Label className="text-gray-700">شماره موبایل</Label>
+              <Label>شماره موبایل</Label>
               <Input
                 type="tel"
                 inputMode="tel"
@@ -137,10 +135,10 @@ export function GetStartedPage() {
                 }}
                 autoComplete="tel"
                 variant="secondary"
-                className="min-h-14 rounded-xl border border-gray-200 bg-white text-base text-gray-900"
+                className="min-h-14 text-base"
               />
               {error ? (
-                <span className="text-sm text-red-500">{error}</span>
+                <span className="text-sm text-danger">{error}</span>
               ) : null}
             </TextField>
 
@@ -149,7 +147,7 @@ export function GetStartedPage() {
               fullWidth
               size="lg"
               isPending={loading}
-              className="mt-4 min-h-12 bg-rose-400 text-white data-[hover=true]:bg-rose-500"
+              className="mt-4 min-h-12"
             >
               ادامه
             </Button>
