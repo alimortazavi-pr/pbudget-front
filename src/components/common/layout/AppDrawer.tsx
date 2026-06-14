@@ -2,7 +2,10 @@
 
 import { Modal } from "@heroui/react";
 
-import { AppModal } from "@/components/common/ui/AppModal";
+import {
+  AppModal,
+  AppModalHeader,
+} from "@/components/common/ui/AppModal";
 import { ShellAccountMenu } from "@/components/common/layout/ShellAccountMenu";
 
 type AppDrawerProps = {
@@ -20,9 +23,9 @@ export function AppDrawer({ open, onOpenChange }: AppDrawerProps) {
       backdropClassName="backdrop-blur-sm"
     >
       <Modal.Dialog className="flex max-h-[100dvh] w-full min-h-0 flex-col rounded-none border-0 bg-surface p-0">
-        <div className="shrink-0 px-5 pt-3">
-          <div className="mx-auto h-1 w-12 rounded-full bg-border" />
-        </div>
+        <AppModalHeader onClose={() => onOpenChange(false)}>
+          <Modal.Heading className="text-base font-bold">منو و حساب</Modal.Heading>
+        </AppModalHeader>
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-3">
           <ShellAccountMenu
             variant="drawer"

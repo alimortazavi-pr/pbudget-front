@@ -5,7 +5,7 @@ import { Button, Modal } from "@heroui/react";
 
 import * as authApi from "@/common/api/auth";
 import { showToast } from "@/common/utils/toast";
-import { AppModal, AppModalSheet, modalSheetBodyClass, modalSheetFooterClass, modalSheetFormClass, modalSheetHeaderClass } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalHeader, AppModalSheet, modalSheetBodyClass, modalSheetFooterClass, modalSheetFormClass } from "@/components/common/ui/AppModal";
 import { FormInput } from "@/components/common/form/FormFields";
 import { OtpCodeField } from "@/components/common/form/OtpCodeField";
 import type { IProfile } from "@/common/interfaces/profile.interface";
@@ -81,9 +81,9 @@ export function SignInModal({
     <AppModal open={open} onOpenChange={onOpenChange} mobileFull>
       <AppModalSheet>
         <form onSubmit={(e) => void submit(e)} className={modalSheetFormClass}>
-          <Modal.Header className={modalSheetHeaderClass}>
+          <AppModalHeader onClose={() => onOpenChange(false)}>
             <Modal.Heading>ورود</Modal.Heading>
-          </Modal.Header>
+          </AppModalHeader>
           <Modal.Body className={`${modalSheetBodyClass} space-y-4`}>
             <FormInput label="موبایل" value={mobile} readOnly />
 

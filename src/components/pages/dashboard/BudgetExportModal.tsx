@@ -16,7 +16,7 @@ import { JALALI_MONTHS } from "@/common/utils/jalali-date";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showToast } from "@/common/utils/toast";
 import { FormSelect } from "@/components/common/form/FormFields";
-import { AppModal } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
 import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
 
 const DURATION_OPTIONS: Array<{ id: BudgetDuration; label: string; hint: string }> = [
@@ -172,12 +172,12 @@ export function BudgetExportModal({
   return (
     <AppModal open={open} onOpenChange={onOpenChange}>
       <Modal.Dialog className="overflow-visible">
-        <Modal.Header>
+        <AppModalHeader onClose={() => onOpenChange(false)}>
           <div className="flex items-center gap-2">
             <Export size={22} className="text-accent" />
             <Modal.Heading>خروجی گزارش مالی</Modal.Heading>
           </div>
-        </Modal.Header>
+        </AppModalHeader>
         <Modal.Body className="space-y-5 overflow-visible">
           <div className="rounded-2xl border border-border/60 bg-surface-secondary/70 px-4 py-3 text-sm leading-7 text-muted">
             گزارش شامل <strong className="text-foreground">خلاصه آماری</strong>،{" "}

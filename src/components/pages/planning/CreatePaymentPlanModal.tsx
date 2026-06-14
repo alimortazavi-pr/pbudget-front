@@ -8,7 +8,7 @@ import { getJalaliNow, toEnglishDigits } from "@/common/utils";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showToast } from "@/common/utils/toast";
 import { FormInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
-import { AppModal } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
 
@@ -79,9 +79,9 @@ export function CreatePaymentPlanModal({
     <AppModal open={open} onOpenChange={onOpenChange}>
       <Modal.Dialog className="max-w-lg">
         <Modal.CloseTrigger />
-        <Modal.Header>
+        <AppModalHeader onClose={() => onOpenChange(false)}>
           <Modal.Heading>برنامه پرداخت جدید</Modal.Heading>
-        </Modal.Header>
+        </AppModalHeader>
         <Modal.Body className="max-h-[70vh] space-y-4 overflow-y-auto">
           <p className="text-sm text-muted">
             برای اقساط ماهانه مثل اجاره، وام یا نسیه — هر ماه در روز مشخص یادآوری

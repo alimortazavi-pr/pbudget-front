@@ -5,7 +5,7 @@ import { Button, Modal } from "@heroui/react";
 
 import * as authApi from "@/common/api/auth";
 import { showToast } from "@/common/utils/toast";
-import { AppModal, AppModalSheet, modalSheetBodyClass, modalSheetFooterClass, modalSheetFormClass, modalSheetHeaderClass } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalHeader, AppModalSheet, modalSheetBodyClass, modalSheetFooterClass, modalSheetFormClass } from "@/components/common/ui/AppModal";
 import { FormInput } from "@/components/common/form/FormFields";
 import type { IProfile } from "@/common/interfaces/profile.interface";
 
@@ -65,11 +65,11 @@ export function SignUpModal({
     <AppModal open={open} onOpenChange={onOpenChange} mobileFull>
       <AppModalSheet>
         <form onSubmit={(e) => void submit(e)} className={modalSheetFormClass}>
-          <Modal.Header className={modalSheetHeaderClass}>
+          <AppModalHeader onClose={() => onOpenChange(false)}>
             <Modal.Heading>
               {needsPasswordSetup ? "تکمیل ثبت‌نام" : "ثبت‌نام"}
             </Modal.Heading>
-          </Modal.Header>
+          </AppModalHeader>
           <Modal.Body className={`${modalSheetBodyClass} space-y-4`}>
             <FormInput label="نام" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
             <FormInput label="نام خانوادگی" value={lastName} onChange={(e) => setLastName(e.target.value)} />

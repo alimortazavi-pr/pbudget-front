@@ -7,7 +7,7 @@ import * as authApi from "@/common/api/auth";
 import * as profileApi from "@/common/api/profile";
 import { saveDataToLocal } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
-import { AppModal, AppModalSheet, modalSheetBodyClass, modalSheetFooterClass, modalSheetFormClass, modalSheetHeaderClass } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalHeader, AppModalSheet, modalSheetBodyClass, modalSheetFooterClass, modalSheetFormClass } from "@/components/common/ui/AppModal";
 import { FormInput } from "@/components/common/form/FormFields";
 import { OtpCodeField } from "@/components/common/form/OtpCodeField";
 import { ChangeMobileModal } from "@/components/pages/profile/ChangeMobileModal";
@@ -203,9 +203,9 @@ export function ProfilePage() {
       <AppModal open={passwordOpen} onOpenChange={setPasswordOpen} mobileFull>
         <AppModalSheet>
           <form onSubmit={(e) => void savePassword(e)} className={modalSheetFormClass}>
-            <Modal.Header className={modalSheetHeaderClass}>
+            <AppModalHeader onClose={() => setPasswordOpen(false)}>
               <Modal.Heading>رمز عبور</Modal.Heading>
-            </Modal.Header>
+            </AppModalHeader>
             <Modal.Body className={modalSheetBodyClass}>
               <FormInput
                 type="password"
@@ -227,9 +227,9 @@ export function ProfilePage() {
       <AppModal open={verifyOpen} onOpenChange={setVerifyOpen} mobileFull>
         <AppModalSheet>
           <form onSubmit={(e) => void verifyMobile(e)} className={modalSheetFormClass}>
-            <Modal.Header className={modalSheetHeaderClass}>
+            <AppModalHeader onClose={() => setVerifyOpen(false)}>
               <Modal.Heading>تأیید موبایل</Modal.Heading>
-            </Modal.Header>
+            </AppModalHeader>
             <Modal.Body className={`${modalSheetBodyClass} space-y-4`}>
               <OtpCodeField label="کد تأیید تلگرام" value={code} onChange={setCode} />
               <div className="flex justify-end">

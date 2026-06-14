@@ -8,7 +8,7 @@ import type { IBudget } from "@/common/interfaces/budget.interface";
 import type { IDebt } from "@/common/interfaces/debt.interface";
 import { formatJalaliDate, formatPrice, toEnglishDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
-import { AppModal } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
 import { FormInput } from "@/components/common/form/FormFields";
 import { DebtType } from "@/types/enums";
 
@@ -79,9 +79,9 @@ export function DebtSettleModal({
     <AppModal open={open} onOpenChange={onOpenChange}>
       <Modal.Dialog className="max-w-lg">
         <Modal.CloseTrigger />
-        <Modal.Header>
+        <AppModalHeader onClose={() => onOpenChange(false)}>
           <Modal.Heading>تسویه {debt.person}</Modal.Heading>
-        </Modal.Header>
+        </AppModalHeader>
         <Modal.Body className="space-y-4">
           <p className="text-sm text-muted">{hint}</p>
           <p className="text-sm">

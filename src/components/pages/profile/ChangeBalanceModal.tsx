@@ -6,7 +6,7 @@ import { Button, Modal } from "@heroui/react";
 import * as profileApi from "@/common/api/profile";
 import { toEnglishDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
-import { AppModal } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
 import { FormInput } from "@/components/common/form/FormFields";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { setProfile, userSelector } from "@/stores/profile";
@@ -47,9 +47,9 @@ export function ChangeBalanceModal({ trigger }: ChangeBalanceModalProps) {
       <AppModal open={open} onOpenChange={setOpen}>
         <Modal.Dialog>
           <form onSubmit={(e) => void submit(e)}>
-            <Modal.Header>
+            <AppModalHeader onClose={() => setOpen(false)}>
               <Modal.Heading>ویرایش موجودی</Modal.Heading>
-            </Modal.Header>
+            </AppModalHeader>
             <Modal.Body>
               <p className="mb-3 text-sm text-muted">
                 موجودی فعلی: {user?.budget ?? 0} تومان — مقدار جدید را وارد کنید

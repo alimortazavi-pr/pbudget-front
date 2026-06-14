@@ -12,7 +12,7 @@ import {
   FormPersonComboBox,
   FormTextArea,
 } from "@/components/common/form/FormFields";
-import { AppModal } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
 import { CheckType } from "@/types/enums";
 
 type CreateCheckModalProps = {
@@ -91,9 +91,9 @@ export function CreateCheckModal({
     <AppModal open={open} onOpenChange={onOpenChange}>
       <Modal.Dialog className="max-w-lg">
         <Modal.CloseTrigger />
-        <Modal.Header>
+        <AppModalHeader onClose={() => onOpenChange(false)}>
           <Modal.Heading>ثبت چک جدید</Modal.Heading>
-        </Modal.Header>
+        </AppModalHeader>
         <Modal.Body className="max-h-[70vh] space-y-4 overflow-y-auto">
           <div className="flex gap-2">
             {[

@@ -14,7 +14,7 @@ import {
   FormSelect,
   FormTextArea,
 } from "@/components/common/form/FormFields";
-import { AppModal } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
 
 const PRIORITY_OPTIONS = [
   { id: "low", label: "کم" },
@@ -141,11 +141,11 @@ export function CreateRoutineModal({
     <AppModal open={open} onOpenChange={onOpenChange}>
       <Modal.Dialog>
         <form onSubmit={(e) => void save(e)}>
-          <Modal.Header>
+          <AppModalHeader onClose={() => onOpenChange(false)}>
             <Modal.Heading>
               {routine ? "ویرایش تسک ثابت" : "تسک ثابت جدید"}
             </Modal.Heading>
-          </Modal.Header>
+          </AppModalHeader>
           <Modal.Body className="space-y-4">
             <p className="text-sm leading-7 text-muted">
               تسک‌های ثابت هر روز (یا روزهای انتخابی) خودکار به برنامه روزانه اضافه

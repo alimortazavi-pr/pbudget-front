@@ -1,6 +1,7 @@
 "use client";
 
-import { Modal, useOverlayState } from "@heroui/react";
+import { Button, Modal, useOverlayState } from "@heroui/react";
+import { CloseCircle } from "iconsax-reactjs";
 import { useEffect, type ReactNode } from "react";
 
 type AppModalProps = {
@@ -77,9 +78,52 @@ export function AppModalSheet({ children, className = "" }: AppModalSheetProps) 
 }
 
 export const modalSheetFormClass = "flex min-h-0 flex-1 flex-col overflow-hidden";
-export const modalSheetHeaderClass =
-  "shrink-0 border-b border-border/40 px-5 py-4";
 export const modalSheetBodyClass =
   "min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-5 py-4 [-webkit-overflow-scrolling:touch]";
 export const modalSheetFooterClass =
   "shrink-0 border-t border-border/40 px-5 pt-4 pb-[max(1.25rem,env(safe-area-inset-bottom))]";
+
+type ModalCloseButtonProps = {
+  onPress: () => void;
+  label?: string;
+};
+
+/** Close control — sits at the visual top-left in RTL headers */
+export function ModalCloseButton({
+  onPress,
+  label = "بستن",
+}: ModalCloseButtonProps) {
+  return (
+    <Button
+      isIconOnly
+      variant="ghost"
+      size="sm"
+      aria-label={label}
+      onPress={onPress}
+      className="shrink-0 text-muted"
+    >
+      <CloseCircle size={22} variant="Bold" />
+    </Button>
+  );
+}
+
+type AppModalHeaderProps = {
+  children: ReactNode;
+  onClose: () => void;
+  className?: string;
+};
+
+export function AppModalHeader({
+  children,
+  onClose,
+  className = "",
+}: AppModalHeaderProps) {
+  return (
+    <Modal.Header
+      className={`flex flex-row items-start gap-3 border-b border-border/40 px-5 py-4 ${className}`}
+    >
+      <div className="min-w-0 flex-1">{children}</div>
+      <ModalCloseButton onPress={onClose} />
+    </Modal.Header>
+  );
+}

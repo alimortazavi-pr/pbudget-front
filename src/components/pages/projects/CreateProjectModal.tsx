@@ -9,7 +9,7 @@ import type { ICategory } from "@/common/interfaces/category.interface";
 import { toEnglishDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { FormInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
-import { AppModal } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { categoriesSelector, setCategories } from "@/stores/category";
 import { CategoryKind } from "@/types/enums";
@@ -130,9 +130,9 @@ export function CreateProjectModal({
     <AppModal open={open} onOpenChange={onOpenChange}>
       <Modal.Dialog>
         <form onSubmit={(e) => void save(e)}>
-          <Modal.Header>
+          <AppModalHeader onClose={() => onOpenChange(false)}>
             <Modal.Heading>پروژه جدید</Modal.Heading>
-          </Modal.Header>
+          </AppModalHeader>
           <Modal.Body className="space-y-4">
             {hasExistingCategories && (
               <div className="flex gap-2">

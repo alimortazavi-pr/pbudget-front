@@ -14,7 +14,7 @@ import {
   FormSelect,
   FormTextArea,
 } from "@/components/common/form/FormFields";
-import { AppModal } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
 import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
 
 type CreateTaskModalProps = {
@@ -118,9 +118,9 @@ export function CreateTaskModal({
     <AppModal open={open} onOpenChange={onOpenChange}>
       <Modal.Dialog>
         <form onSubmit={(e) => void save(e)}>
-          <Modal.Header>
+          <AppModalHeader onClose={() => onOpenChange(false)}>
             <Modal.Heading>{task ? "ویرایش تسک" : "تسک جدید"}</Modal.Heading>
-          </Modal.Header>
+          </AppModalHeader>
           <Modal.Body className="space-y-4">
             <FormInput
               label="عنوان"

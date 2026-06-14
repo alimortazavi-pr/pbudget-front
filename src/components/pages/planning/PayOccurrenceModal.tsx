@@ -9,7 +9,7 @@ import { getJalaliNow, toEnglishDigits } from "@/common/utils";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showToast } from "@/common/utils/toast";
 import { FormInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
-import { AppModal } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
 
@@ -73,9 +73,9 @@ export function PayOccurrenceModal({
     <AppModal open={open} onOpenChange={onOpenChange}>
       <Modal.Dialog className="max-w-lg">
         <Modal.CloseTrigger />
-        <Modal.Header>
+        <AppModalHeader onClose={() => onOpenChange(false)}>
           <Modal.Heading>پرداخت {occurrence.plan.title}</Modal.Heading>
-        </Modal.Header>
+        </AppModalHeader>
         <Modal.Body className="space-y-4">
           <p className="text-sm text-muted">
             قسط {occurrence.sequence} · سررسید {occurrence.year}/{occurrence.month}/
