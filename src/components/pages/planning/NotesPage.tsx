@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button, Input, Label, Modal, TextField } from "@heroui/react";
+import { Button, Checkbox, Input, Label, Modal, TextField } from "@heroui/react";
 import { Add, Edit2, Note, Trash } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
@@ -432,20 +432,12 @@ export function NotesPage() {
                 key={doc._id}
                 className="rounded-2xl border border-border bg-field-background p-4"
               >
-                <h3 className="mb-2 text-sm font-semibold text-muted">
+                <h3 className="mb-3 text-sm font-semibold text-muted">
                   {getCategoryTitle(doc)}
                 </h3>
-                <ul className="space-y-1 text-sm leading-7">
+                <ul className="space-y-2">
                   {doc.items.map((item) => (
-                    <li key={item.id}>
-                      {item.type === "checkbox" ? (
-                        <span>
-                          {item.done ? "✅" : "⬜️"} {item.text}
-                        </span>
-                      ) : (
-                        <span>{item.text}</span>
-                      )}
-                    </li>
+                    <NotePreviewLine key={item.id} item={item} />
                   ))}
                 </ul>
               </article>
@@ -508,5 +500,37 @@ export function NotesPage() {
         </Modal.Body>
       </AppModal>
     </div>
+  );
+}
+
+function NotePreviewLine({ item }: { item: INoteLine }) {
+  if (item.type === "checkbox") {
+    return (
+      <li className="flex items-start gap-2 rounded-xl bg-surface px-2 py-1.5">
+        <Checkbox
+          isSelected={Boolean(item.done)}
+          isReadOnly
+          aria-label={item.text}
+          className="shrink-0"
+        >
+          <Checkbox.Control>
+            <Checkbox.Indicator />
+          </Checkbox.Control>
+        </Checkbox>
+        <span
+          className={`min-w-0 flex-1 pt-0.5 text-sm leading-7 ${
+            item.done ? "text-muted line-through" : ""
+          }`}
+        >
+          {item.text}
+        </span>
+      </li>
+    );
+  }
+
+  return (
+    <li className="rounded-xl bg-surface px-3 py-1.5 text-sm leading-7">
+      {item.text}
+    </li>
   );
 }
