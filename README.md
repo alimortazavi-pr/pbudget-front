@@ -1,4 +1,4 @@
-# Paradise Budget — Frontend v2
+# Paradise Desk / میز پردیس — Frontend v2
 
 فرانت‌اند بازطراحی‌شده با استراکچر پروژه‌های Ali:
 

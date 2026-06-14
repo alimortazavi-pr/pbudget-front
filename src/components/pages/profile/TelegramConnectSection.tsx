@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Button } from "@heroui/react";
 
 import * as profileApi from "@/common/api/profile";
+import { APP_NAME_EN } from "@/common/constants/brand";
 import { showToast } from "@/common/utils/toast";
 
 const FALLBACK_BOT_USERNAME =
@@ -117,7 +118,7 @@ export function TelegramConnectSection() {
       ) : (
         <div className="space-y-3">
           <p className="text-sm text-muted">
-            با زدن دکمه زیر، بات Paradise Budget در تلگرام باز می‌شود و حساب
+            با زدن دکمه زیر، بات {APP_NAME_EN} در تلگرام باز می‌شود و حساب
             وب‌اپ به بات متصل می‌شود.
           </p>
           <Button

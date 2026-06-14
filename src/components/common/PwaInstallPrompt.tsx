@@ -1,8 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@heroui/react";
-import { CloseCircle, ExportSquare } from "iconsax-reactjs";
+import { CloseCircle } from "iconsax-reactjs";
+
+import { APP_NAME_FA } from "@/common/constants/brand";
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -71,12 +74,18 @@ export function PwaInstallPrompt() {
   return (
     <div className="fixed inset-x-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-[60] mx-auto max-w-lg md:bottom-6 md:left-auto md:right-6">
       <div className="glass flex items-start gap-3 rounded-2xl border border-white/20 p-4 shadow-xl">
-        <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-rose-500/15 text-rose-500">
-          <ExportSquare size={22} variant="Bold" />
+        <div className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-xl">
+          <Image
+            src="/assets/logo-mark.svg"
+            alt=""
+            width={44}
+            height={44}
+            className="size-11"
+          />
         </div>
         <div className="min-w-0 flex-1 space-y-3">
           <div>
-            <p className="font-semibold text-foreground">نصب Paradise Budget</p>
+            <p className="font-semibold text-foreground">نصب {APP_NAME_FA}</p>
             <p className="mt-1 text-sm text-muted">
               اپ را روی گوشی یا دسکتاپ نصب کنید و مثل برنامه native بازش کنید.
             </p>

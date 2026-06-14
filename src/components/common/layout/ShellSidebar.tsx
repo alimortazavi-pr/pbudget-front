@@ -12,6 +12,7 @@ import {
   PRIMARY_NAV_ITEMS,
 } from "@/components/common/layout/shell-nav";
 import { PATHS } from "@/common/constants";
+import { AppLogo } from "@/components/common/brand/AppLogo";
 
 export function ShellSidebar() {
   const pathname = usePathname();
@@ -19,14 +20,8 @@ export function ShellSidebar() {
   return (
     <aside className="pb-sidebar" aria-label="ناوبری دسکتاپ">
       <div className="flex h-full flex-col overflow-y-auto p-5 xl:p-6">
-        <Link href={PATHS.HOME} className="mb-6 flex items-center gap-3 px-2">
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent text-sm font-bold text-accent-foreground">
-            PB
-          </span>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-bold">Paradise Budget</p>
-            <p className="text-xs text-muted">مدیریت مالی شخصی</p>
-          </div>
+        <Link href={PATHS.HOME} className="mb-6 block px-2">
+          <AppLogo />
         </Link>
 
         <div>

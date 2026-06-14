@@ -1,11 +1,17 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Input, Label, TextField } from "@heroui/react";
 
 import * as authApi from "@/common/api/auth";
 import { PATHS } from "@/common/constants";
+import {
+  APP_NAME_EN,
+  APP_NAME_FA,
+  APP_TAGLINE_FA,
+} from "@/common/constants/brand";
 import { saveDataToLocal, toEnglishDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
@@ -79,11 +85,22 @@ export function GetStartedPage() {
       <div className="flex h-dvh w-full flex-col overflow-hidden bg-rose-400 lg:h-auto lg:min-h-[34rem] lg:max-w-5xl lg:flex-row lg:overflow-hidden lg:rounded-3xl lg:shadow-2xl">
         <div className="flex h-[65%] shrink-0 items-center justify-center bg-rose-400 lg:h-auto lg:min-h-[34rem] lg:flex-1">
           <div className="text-center">
-            <span className="font-display text-3xl font-extralight tracking-[0.25em] text-gray-900 lg:text-5xl">
-              P BUDGET
-            </span>
+            <Image
+              src="/assets/logo-mark.svg"
+              alt=""
+              width={96}
+              height={96}
+              className="mx-auto rounded-3xl shadow-lg"
+              priority
+            />
+            <p className="mt-6 font-display text-3xl font-bold tracking-wide text-gray-900 lg:text-4xl">
+              {APP_NAME_FA}
+            </p>
+            <p className="mt-2 text-sm font-semibold tracking-[0.2em] text-gray-700 lg:text-base">
+              {APP_NAME_EN}
+            </p>
             <p className="mt-4 hidden text-sm text-gray-800 lg:block">
-              مدیریت ساده و شفاف هزینه‌ها و درآمدها
+              {APP_TAGLINE_FA}
             </p>
           </div>
         </div>

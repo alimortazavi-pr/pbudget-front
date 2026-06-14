@@ -6,7 +6,8 @@
     "dev": "next dev -p 7711 --webpack",
     "build": "next build --webpack",
     "start": "next start -p 7711",
-    "lint": "eslint"
+    "lint": "eslint",
+    "icons": "node scripts/generate-icons.mjs"
   },
   "dependencies": {
     "@heroui/react": "^3.1.0",
@@ -37,11 +38,15 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "serwist": "^9.5.11",
+    "sharp": "^0.35.1",
     "tailwindcss": "^4.3.1",
     "typescript": "^5"
   },
   "packageManager": "pnpm@10.28.1",
   "pnpm": {
-    "ignoredBuiltDependencies": ["sharp", "unrs-resolver"]
+    "ignoredBuiltDependencies": [
+      "sharp",
+      "unrs-resolver"
+    ]
   }
 }

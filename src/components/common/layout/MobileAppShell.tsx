@@ -11,6 +11,7 @@ import {
 import { useState, type ReactNode } from "react";
 
 import { PATHS } from "@/common/constants";
+import { APP_NAME_FA } from "@/common/constants/brand";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { AppDrawer } from "./AppDrawer";
 import { ChangeAccountPopover } from "./ChangeAccountPopover";
@@ -34,7 +35,7 @@ const MOBILE_TAB_ITEMS = [
 
 export function MobileAppShell({
   children,
-  title = "Paradise Budget",
+  title = APP_NAME_FA,
   showBack = false,
   hideTabBar = false,
 }: MobileAppShellProps) {

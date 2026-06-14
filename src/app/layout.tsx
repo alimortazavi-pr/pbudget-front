@@ -2,21 +2,25 @@ import type { Metadata, Viewport } from "next";
 
 import "@/assets/css/globals.css";
 
-import { ClientProvider } from "@/components/providers/ClientProvider";
+import {
+  APP_DESCRIPTION_FA,
+  APP_NAME_EN,
+  APP_NAME_FA,
+  APP_SHORT_NAME_FA,
+} from "@/common/constants/brand";
 import { ThemeScript } from "@/components/common/ThemeScript";
-
-const APP_NAME = "Paradise Budget";
+import { ClientProvider } from "@/components/providers/ClientProvider";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:7711",
   ),
-  applicationName: APP_NAME,
+  applicationName: APP_NAME_EN,
   title: {
-    default: "Paradise Budget | مدیریت بودجه",
-    template: "%s | Paradise Budget",
+    default: `${APP_NAME_FA} | ${APP_NAME_EN}`,
+    template: `%s | ${APP_NAME_FA}`,
   },
-  description: "اپلیکیشن هوشمند مدیریت درآمد و هزینه",
+  description: APP_DESCRIPTION_FA,
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -56,7 +60,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "P Budget",
+    title: APP_SHORT_NAME_FA,
   },
   formatDetection: {
     telephone: false,

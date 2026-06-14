@@ -1,11 +1,17 @@
 import type { MetadataRoute } from "next";
 
+import {
+  APP_DESCRIPTION_FA,
+  APP_NAME_FA,
+  APP_SHORT_NAME_FA,
+} from "@/common/constants/brand";
+
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: "/",
-    name: "Paradise Budget",
-    short_name: "P Budget",
-    description: "اپلیکیشن هوشمند مدیریت درآمد و هزینه",
+    name: APP_NAME_FA,
+    short_name: APP_SHORT_NAME_FA,
+    description: APP_DESCRIPTION_FA,
     lang: "fa",
     dir: "rtl",
     start_url: "/",

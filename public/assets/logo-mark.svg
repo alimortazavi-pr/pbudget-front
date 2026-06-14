@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="pd-bg" x1="64" y1="48" x2="448" y2="464" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fb7185"/>
+      <stop stop-color="#e11d48"/>
+    </linearGradient>
+    <linearGradient id="pd-surface" x1="144" y1="176" x2="368" y2="272" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff"/>
+      <stop stop-color="#fff1f2"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#pd-bg)"/>
+  <rect x="136" y="168" width="240" height="96" rx="20" fill="url(#pd-surface)"/>
+  <rect x="168" y="204" width="72" height="10" rx="5" fill="#fb7185" opacity="0.9"/>
+  <rect x="168" y="226" width="120" height="8" rx="4" fill="#fda4af"/>
+  <rect x="168" y="244" width="96" height="8" rx="4" fill="#fecdd3"/>
+  <rect x="112" y="280" width="288" height="28" rx="10" fill="#ffffff"/>
+  <rect x="144" y="308" width="40" height="96" rx="10" fill="#ffffff" opacity="0.95"/>
+  <rect x="328" y="308" width="40" height="96" rx="10" fill="#ffffff" opacity="0.95"/>
+  <circle cx="392" cy="136" r="28" fill="#ffffff" opacity="0.22"/>
+  <circle cx="416" cy="112" r="12" fill="#ffffff" opacity="0.35"/>
+</svg>

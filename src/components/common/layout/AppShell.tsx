@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
 import { PATHS } from "@/common/constants";
+import { APP_NAME_FA } from "@/common/constants/brand";
 import { AuthBootstrap } from "@/components/common/layout/AuthBootstrap";
 import { MobileAppShell } from "@/components/common/layout/MobileAppShell";
 
@@ -42,7 +43,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       ? "ویرایش تراکنش"
       : isProjectDetail && pathname !== PATHS.PROJECTS
         ? "مدیریت پروژه"
-        : PAGE_TITLES[pathname]) ?? "Paradise Budget";
+        : PAGE_TITLES[pathname]) ?? APP_NAME_FA;
 
   return (
     <>

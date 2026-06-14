@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
 import { WifiSquare } from "iconsax-reactjs";
 
+import { APP_NAME_FA } from "@/common/constants/brand";
+
 export default function OfflinePage() {
   const router = useRouter();
 
@@ -15,7 +17,7 @@ export default function OfflinePage() {
       <div className="space-y-2">
         <h1 className="text-2xl font-bold text-foreground">اتصال اینترنت نیست</h1>
         <p className="max-w-sm text-sm text-muted">
-          برای استفاده از Paradise Budget به اینترنت نیاز دارید. وقتی وصل شدید دوباره
+          برای استفاده از {APP_NAME_FA} به اینترنت نیاز دارید. وقتی وصل شدید دوباره
           تلاش کنید.
         </p>
       </div>
