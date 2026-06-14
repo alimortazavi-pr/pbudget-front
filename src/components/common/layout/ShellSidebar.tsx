@@ -61,7 +61,7 @@ export function ShellSidebar() {
           variant="sidebar"
         />
 
-        <div className="mt-auto border-t border-border/50 pt-5">
+        <div className="mt-auto mt-6 border-t border-border/50 pt-5">
           <ShellAccountMenu variant="sidebar" showPlanning={false} />
         </div>
       </div>

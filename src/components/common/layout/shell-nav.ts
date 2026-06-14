@@ -19,7 +19,7 @@ import { PATHS } from "@/common/constants";
 export const TELEGRAM_BOT_USERNAME =
   process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME?.replace(/^@/, "") ?? "";
 
-export const SUPPORT_PHONE = "tel:02112345678";
+export const SUPPORT_PHONE = "tel:09125519818";
 
 export function getTelegramHref() {
   return TELEGRAM_BOT_USERNAME
