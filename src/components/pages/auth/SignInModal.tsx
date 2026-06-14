@@ -59,7 +59,7 @@ export function SignInModal({
   async function submit(e?: FormEvent) {
     e?.preventDefault();
     if (!canLogin) {
-      showToast("ابتدا تلگرام را از پروفایل وصل کنید یا رمز عبور تنظیم کنید");
+      showToast("ابتدا با تعیین رمز عبور حساب بسازید");
       return;
     }
 
@@ -89,8 +89,8 @@ export function SignInModal({
 
             {!canLogin ? (
               <p className="rounded-xl bg-surface-secondary px-3 py-2 text-sm leading-7 text-muted">
-                ورود با کد غیرفعال است. از بات تلگرام وارد شوید و حساب را وصل
-                کنید، یا بعد از ورود رمز عبور تنظیم کنید.
+                برای این شماره رمز عبور تنظیم نشده است. مودال را ببندید و دوباره
+                «ادامه» را بزنید تا حساب بسازید.
               </p>
             ) : usePassword ? (
               <FormInput

@@ -21,6 +21,7 @@ export interface ICheckMobileExistResult {
   hasPassword: boolean;
   hasTelegram: boolean;
   otpEnabled: boolean;
+  needsPasswordSetup?: boolean;
 }
 
 export interface ISignUpForm {

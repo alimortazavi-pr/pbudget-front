@@ -13,6 +13,7 @@ type SignUpModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mobile: string;
+  needsPasswordSetup?: boolean;
   onSuccess: (token: string, user: IProfile) => void;
 };
 
@@ -20,6 +21,7 @@ export function SignUpModal({
   open,
   onOpenChange,
   mobile,
+  needsPasswordSetup = false,
   onSuccess,
 }: SignUpModalProps) {
   const [firstName, setFirstName] = useState("");
@@ -64,7 +66,9 @@ export function SignUpModal({
       <AppModalSheet>
         <form onSubmit={(e) => void submit(e)} className={modalSheetFormClass}>
           <Modal.Header className={modalSheetHeaderClass}>
-            <Modal.Heading>ثبت‌نام</Modal.Heading>
+            <Modal.Heading>
+              {needsPasswordSetup ? "تکمیل ثبت‌نام" : "ثبت‌نام"}
+            </Modal.Heading>
           </Modal.Header>
           <Modal.Body className={`${modalSheetBodyClass} space-y-4`}>
             <FormInput label="نام" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
@@ -77,9 +81,10 @@ export function SignUpModal({
               onChange={(e) => setPassword(e.target.value)}
               placeholder="حداقل ۶ کاراکتر"
             />
-            <p className="text-xs text-muted">
-              ورود با کد یکبارمصرف غیرفعال است. بعد از ثبت‌نام می‌توانید تلگرام
-              را وصل کنید تا کد تأیید به تلگرام بیاید.
+            <p className="text-xs leading-6 text-muted">
+              با تعیین رمز عبور حساب شما ساخته می‌شود. اتصال تلگرام اختیاری است
+              و بعداً از بخش پروفایل می‌توانید انجامش دهید؛ آن وقت کدهای تأیید
+              هم به تلگرام می‌آید.
             </p>
           </Modal.Body>
           <Modal.Footer className={modalSheetFooterClass}>

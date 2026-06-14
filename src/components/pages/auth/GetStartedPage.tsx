@@ -31,6 +31,7 @@ export function GetStartedPage() {
   const [hasTelegram, setHasTelegram] = useState(false);
   const [signUpOpen, setSignUpOpen] = useState(false);
   const [signInOpen, setSignInOpen] = useState(false);
+  const [needsPasswordSetup, setNeedsPasswordSetup] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -58,9 +59,13 @@ export function GetStartedPage() {
       const res = await authApi.checkMobileExist(normalized);
       setHasPassword(res.hasPassword);
       setHasTelegram(res.hasTelegram);
+      setNeedsPasswordSetup(Boolean(res.needsPasswordSetup));
       setMobile(normalized);
-      if (res.isMustRegister) setSignUpOpen(true);
-      else setSignInOpen(true);
+      if (res.isMustRegister || !res.hasPassword) {
+        setSignUpOpen(true);
+      } else {
+        setSignInOpen(true);
+      }
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     } finally {
@@ -159,6 +164,7 @@ export function GetStartedPage() {
         open={signUpOpen}
         onOpenChange={setSignUpOpen}
         mobile={mobile}
+        needsPasswordSetup={needsPasswordSetup}
         onSuccess={onAuthSuccess}
       />
       <SignInModal
