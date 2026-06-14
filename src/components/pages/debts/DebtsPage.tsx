@@ -7,7 +7,7 @@ import { ArrowDown, ArrowUp, Profile2User } from "iconsax-reactjs";
 
 import * as debtsApi from "@/common/api/debts";
 import type { IDebt, IDebtSummary } from "@/common/interfaces/debt.interface";
-import { formatJalaliDate, formatPrice } from "@/common/utils";
+import { formatJalaliDate, formatPrice, formatCount } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { DebtSettleModal } from "@/components/pages/debts/DebtSettleModal";
 import { DebtType } from "@/types/enums";
@@ -90,7 +90,7 @@ export function DebtsPage() {
             </div>
             <p className="mt-2 text-2xl font-bold">{formatPrice(summary.openReceivable)}</p>
             <p className="mt-1 text-xs text-muted">
-              {summary.openReceivableCount} مورد · باید به شما پرداخت شود
+              {formatCount(summary.openReceivableCount)} مورد · باید به شما پرداخت شود
             </p>
           </div>
           <div className="glass rounded-2xl p-4">
@@ -100,7 +100,7 @@ export function DebtsPage() {
             </div>
             <p className="mt-2 text-2xl font-bold">{formatPrice(summary.openPayable)}</p>
             <p className="mt-1 text-xs text-muted">
-              {summary.openPayableCount} مورد · شما باید پرداخت کنید
+              {formatCount(summary.openPayableCount)} مورد · شما باید پرداخت کنید
             </p>
           </div>
         </div>

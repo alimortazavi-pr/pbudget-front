@@ -8,6 +8,11 @@ export function toEnglishDigits(value: string): string {
   return value.replace(/[۰-۹]/g, (d) => String(PERSIAN_DIGITS.indexOf(d)));
 }
 
+/** Display-only: counts, stats, plain integers in the UI */
+export function formatCount(value: number | string): string {
+  return toPersianDigits(value);
+}
+
 export function formatPrice(amount: number | string): string {
   const num = typeof amount === "string" ? parseInt(amount, 10) : amount;
   if (Number.isNaN(num)) return toPersianDigits("0");

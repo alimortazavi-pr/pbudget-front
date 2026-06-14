@@ -18,6 +18,7 @@ const PAGE_TITLES: Record<string, string> = {
   [PATHS.CHECKS]: "چک‌ها",
   [PATHS.NOTES]: "یادداشت‌ها",
   [PATHS.PROJECTS]: "پروژه‌ها",
+  [PATHS.TASKS]: "برنامه روزانه",
   [PATHS.PROFILE]: "پروفایل",
 };
 
@@ -62,6 +63,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           pathname === PATHS.CHECKS ||
           pathname === PATHS.NOTES ||
           pathname === PATHS.PROJECTS ||
+          pathname === PATHS.TASKS ||
           pathname.startsWith("/projects/")
         }
       >

@@ -67,4 +67,16 @@ export const JALALI_MONTHS = [
   "اسفند",
 ];
 
+/** شنبه = 0 … جمعه = 6 */
+export const JALALI_WEEKDAYS_SHORT = ["ش", "ی", "د", "س", "چ", "پ", "ج"] as const;
+
+export function formatHourLabel(hour: number) {
+  return toPersianDigits(`${String(hour).padStart(2, "0")}:00`);
+}
+
+export function formatHourRange(startHour?: number, endHour?: number) {
+  if (startHour === undefined || endHour === undefined) return null;
+  return `${formatHourLabel(startHour)} تا ${formatHourLabel(endHour)}`;
+}
+
 export { moment };

@@ -10,7 +10,7 @@ import type {
   IMonthlyPaymentOverview,
   IPaymentPlanOccurrence,
 } from "@/common/interfaces/payment-plan.interface";
-import { formatJalaliMonthYear, formatPrice } from "@/common/utils";
+import { formatJalaliMonthYear, formatPrice, formatCount } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { CreatePaymentPlanModal } from "@/components/pages/planning/CreatePaymentPlanModal";
 import { PayOccurrenceModal } from "@/components/pages/planning/PayOccurrenceModal";
@@ -71,7 +71,7 @@ export function InstallmentsPage() {
               {formatPrice(monthlyData.pendingAmount)}
             </p>
             <p className="mt-1 text-xs text-muted">
-              {monthlyData.pendingCount} قسط در انتظار
+              {formatCount(monthlyData.pendingCount)} قسط در انتظار
             </p>
           </div>
           <div className="glass rounded-2xl p-4">
@@ -79,7 +79,7 @@ export function InstallmentsPage() {
             <p className="mt-2 text-2xl font-bold text-income">
               {formatPrice(monthlyData.paidAmount)}
             </p>
-            <p className="mt-1 text-xs text-muted">{monthlyData.paidCount} قسط</p>
+            <p className="mt-1 text-xs text-muted">{formatCount(monthlyData.paidCount)} قسط</p>
           </div>
         </div>
       )}

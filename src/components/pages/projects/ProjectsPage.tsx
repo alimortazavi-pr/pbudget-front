@@ -9,7 +9,7 @@ import { Add, Briefcase } from "iconsax-reactjs";
 import { PATHS } from "@/common/constants";
 import * as projectsApi from "@/common/api/projects";
 import type { IProject } from "@/common/interfaces/project.interface";
-import { formatPrice } from "@/common/utils";
+import { formatPrice, formatCount } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { CreateProjectModal } from "@/components/pages/projects/CreateProjectModal";
 import { ProjectStatus } from "@/types/enums";
@@ -98,7 +98,7 @@ export function ProjectsPage() {
       )}
 
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted">{projects.length} پروژه</p>
+        <p className="text-sm text-muted">{formatCount(projects.length)} پروژه</p>
         <Button
           size="sm"
           className="bg-accent text-accent-foreground"

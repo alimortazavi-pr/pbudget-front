@@ -4,12 +4,12 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button, Switch } from "@heroui/react";
-import { Add, Trash } from "iconsax-reactjs";
+import { Add, Edit2, Task, Trash, TaskSquare } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 import * as projectsApi from "@/common/api/projects";
 import type { IProjectDetail, IProjectItem, ProjectStatus as ProjectStatusType } from "@/common/interfaces/project.interface";
-import { formatJalaliDate, formatPrice, toEnglishDigits } from "@/common/utils";
+import { formatJalaliDate, formatPrice, formatCount, toEnglishDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { FormInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
 import { BudgetType, ProjectItemType, ProjectStatus } from "@/types/enums";
@@ -179,8 +179,18 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
   return (
     <div className="space-y-5 pb-6">
       <section className="glass rounded-3xl p-5">
-        <p className="text-sm text-muted">پروژه</p>
-        <h1 className="mt-1 text-2xl font-bold">{project.category?.title}</h1>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-sm text-muted">پروژه</p>
+            <h1 className="mt-1 text-2xl font-bold">{project.category?.title}</h1>
+          </div>
+          <Link href={`${PATHS.TASKS}?projectId=${projectId}&duration=daily`}>
+            <Button size="sm" variant="secondary">
+              <TaskSquare size={16} />
+              برنامه روزانه پروژه
+            </Button>
+          </Link>
+        </div>
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
           <div className="rounded-xl bg-surface-secondary p-3">
             <p className="text-xs text-muted">کل قرارداد</p>
@@ -273,7 +283,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted">
-              {data.budgets.length} تراکنش مرتبط · در لیست اصلی هم نمایش داده می‌شوند
+              {formatCount(data.budgets.length)} تراکنش مرتبط · در لیست اصلی هم نمایش داده می‌شوند
             </p>
             <Link href={PATHS.CREATE_BUDGET}>
               <Button size="sm" variant="secondary">

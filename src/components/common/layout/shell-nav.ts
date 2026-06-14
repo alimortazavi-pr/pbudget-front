@@ -6,6 +6,7 @@ import {
   Card,
   Category,
   Chart,
+  Task,
   DocumentText,
   Home2,
   Messages2,
@@ -34,6 +35,7 @@ export const PRIMARY_NAV_ITEMS = [
 ] as const;
 
 export const PLANNING_NAV_ITEMS = [
+  { href: PATHS.TASKS, label: "برنامه روزانه", icon: Task },
   { href: PATHS.PROJECTS, label: "پروژه‌ها", icon: Briefcase },
   { href: PATHS.DEBTS, label: "طلب و بدهی", icon: Card },
   { href: PATHS.INSTALLMENTS, label: "اقساط", icon: Calendar },
