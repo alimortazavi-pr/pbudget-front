@@ -121,6 +121,7 @@ export function AppleNoteEditor({
             <div key={line.id} className="group flex items-start gap-2">
               {line.type === "checkbox" ? (
                 <Checkbox
+                  variant="secondary"
                   isSelected={Boolean(line.done)}
                   isDisabled={disabled}
                   onChange={(selected) =>
@@ -186,7 +187,7 @@ export function AppleNoteEditor({
 
       <p className="text-xs leading-6 text-muted">
         Enter خط جدید می‌سازد. با آیکون کنار هر خط می‌توانید همان جمله را چک‌لیست
-        یا متن عادی کنید — مثل یادداشت اپل.
+        یا متن عادی کنید.
       </p>
     </div>
   );

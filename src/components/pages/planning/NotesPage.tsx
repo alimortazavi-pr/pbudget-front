@@ -303,8 +303,7 @@ export function NotesPage() {
         <p className="text-sm font-medium text-white/80">یادداشت مالی</p>
         <h1 className="mt-1 text-2xl font-bold">یادداشت‌ها</h1>
         <p className="mt-2 text-sm leading-7 text-white/80">
-          مثل یادداشت اپل — متن آزاد و چک‌لیست در یک صفحه، با دسته‌بندی جدا از
-          تراکنش.
+          متن آزاد و چک‌لیست در یک صفحه، با دسته‌بندی جدا از تراکنش.
         </p>
       </section>
 
@@ -508,6 +507,7 @@ function NotePreviewLine({ item }: { item: INoteLine }) {
     return (
       <li className="flex items-start gap-2 rounded-xl bg-surface px-2 py-1.5">
         <Checkbox
+          variant="secondary"
           isSelected={Boolean(item.done)}
           isReadOnly
           aria-label={item.text}
