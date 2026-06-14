@@ -67,15 +67,6 @@ export type AnalyticsReport = {
     currentPeriodLabel: string;
     previousPeriodLabel: string;
   } | null;
-  credits: {
-    count: number;
-    totalDues: number;
-    totalDebt: number;
-    unpaidDues: number;
-    unpaidDebt: number;
-    paidDues: number;
-    paidDebt: number;
-  };
   boxes: Array<{
     id: string;
     title: string;

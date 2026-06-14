@@ -1,32 +1,47 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useMemo, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { Button } from "@heroui/react";
 import { Add } from "iconsax-reactjs";
 
 import * as budgetsApi from "@/common/api/budgets";
+import * as debtsApi from "@/common/api/debts";
 import type { IBudget } from "@/common/interfaces/budget.interface";
 import { getJalaliNow, toEnglishDigits } from "@/common/utils";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showToast } from "@/common/utils/toast";
 import { FormInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
+import {
+  DebtLedgerSection,
+  type DebtLedgerMode,
+  type DebtLedgerValue,
+} from "@/components/pages/budget/DebtLedgerSection";
 import { CreateCategoryModal } from "@/components/pages/categories/CreateCategoryModal";
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
-import { BudgetType } from "@/types/enums";
+import { BudgetType, DebtType } from "@/types/enums";
 
 type BudgetFormPageProps = {
   budget?: IBudget;
 };
 
+const initialDebtLedger: DebtLedgerValue = {
+  enabled: false,
+  mode: "create",
+  debtType: String(DebtType.RECEIVABLE),
+  person: "",
+  settleDebtId: "",
+};
+
+function isSettleDebtMode(mode: DebtLedgerMode) {
+  return mode === "settle-receivable" || mode === "settle-payable";
+}
+
 export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   const router = useRouter();
   const categories = useAppSelector(categoriesSelector);
-  const categoryOptions = useMemo(
-    () => getCategorySelectOptions(categories ?? []),
-    [categories],
-  );
+  const categoryOptions = getCategorySelectOptions(categories ?? []);
   const now = getJalaliNow();
 
   const [price, setPrice] = useState(String(budget?.price ?? ""));
@@ -35,10 +50,27 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   const [description, setDescription] = useState(budget?.description ?? "");
   const [loading, setLoading] = useState(false);
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
+  const [debtLedger, setDebtLedger] = useState<DebtLedgerValue>(initialDebtLedger);
 
   const year = budget?.year ?? String(now.jYear());
   const month = budget?.month ?? String(now.jMonth() + 1);
   const day = budget?.day ?? String(now.jDate());
+
+  function updateDebtLedger(patch: Partial<DebtLedgerValue>) {
+    if (patch.mode === "settle-receivable") {
+      setType(String(BudgetType.INCOME));
+    } else if (patch.mode === "settle-payable" || patch.mode === "create") {
+      setType(String(BudgetType.COST));
+    }
+
+    setDebtLedger((current) => {
+      const next = { ...current, ...patch };
+      if (patch.mode && patch.mode !== current.mode) {
+        next.settleDebtId = "";
+      }
+      return next;
+    });
+  }
 
   async function submit(e?: FormEvent) {
     e?.preventDefault();
@@ -57,14 +89,44 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
       return;
     }
 
+    if (!budget && debtLedger.enabled) {
+      if (debtLedger.mode === "create" && !debtLedger.person.trim()) {
+        showToast("نام طرف حساب الزامی است");
+        return;
+      }
+      if (isSettleDebtMode(debtLedger.mode) && !debtLedger.settleDebtId) {
+        showToast("طلب یا بدهی مورد نظر را انتخاب کنید");
+        return;
+      }
+    }
+
     setLoading(true);
     try {
       if (budget) {
         await budgetsApi.updateBudget(budget._id, payload);
         showToast("تراکنش ویرایش شد", "success");
       } else {
-        await budgetsApi.createBudget(payload);
-        showToast("تراکنش ثبت شد", "success");
+        const res = await budgetsApi.createBudget(payload);
+
+        if (debtLedger.enabled) {
+          if (debtLedger.mode === "create") {
+            await debtsApi.createDebt({
+              sourceBudgetId: res.budget._id,
+              type: debtLedger.debtType,
+              person: debtLedger.person.trim(),
+              amount: toEnglishDigits(price),
+            });
+            showToast("تراکنش و طلب/بدهی ثبت شد", "success");
+          } else {
+            await debtsApi.settleDebt(debtLedger.settleDebtId, {
+              budgetId: res.budget._id,
+              amount: toEnglishDigits(price),
+            });
+            showToast("تراکنش ثبت و طلب/بدهی تسویه شد", "success");
+          }
+        } else {
+          showToast("تراکنش ثبت شد", "success");
+        }
       }
       router.push(`/?duration=monthly&year=${year}&month=${month}`);
     } catch (err) {
@@ -90,7 +152,22 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
               <button
                 key={item.id}
                 type="button"
-                onClick={() => setType(item.id)}
+                onClick={() => {
+                  setType(item.id);
+                  setDebtLedger((current) => {
+                    if (!current.enabled) return current;
+
+                    if (item.id === String(BudgetType.INCOME)) {
+                      if (current.mode === "create" || current.mode === "settle-payable") {
+                        return { ...current, mode: "settle-receivable", settleDebtId: "" };
+                      }
+                    } else if (current.mode === "settle-receivable") {
+                      return { ...current, mode: "settle-payable", settleDebtId: "" };
+                    }
+
+                    return current;
+                  });
+                }}
                 className={`flex-1 cursor-pointer rounded-xl border px-3 py-3 text-sm font-medium transition-all ${
                   type === item.id
                     ? item.id === String(BudgetType.INCOME)
@@ -125,6 +202,14 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
+
+          {!budget && (
+            <DebtLedgerSection
+              amount={price}
+              value={debtLedger}
+              onChange={updateDebtLedger}
+            />
+          )}
 
           <div className="border-t border-border/50 pt-4">
             <Button

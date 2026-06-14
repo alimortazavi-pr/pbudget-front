@@ -1,5 +1,5 @@
 import type { ICategory } from "./category.interface";
-import type { ICredit } from "./credit.interface";
+import type { IDebt } from "./debt.interface";
 
 export interface IBudgetState {
   budgets: IBudget[] | null;
@@ -19,7 +19,7 @@ export interface IBudget {
   day: string;
   description: string;
   createdAt: string;
-  credits?: ICredit[];
+  debt?: IDebt | null;
 }
 
 export interface ICreateAndEditBudgetForm {

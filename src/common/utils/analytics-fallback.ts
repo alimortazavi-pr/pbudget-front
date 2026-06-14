@@ -173,15 +173,6 @@ export function buildClientAnalyticsReport({
       netWorth: userBalance + boxesTotal,
     },
     comparison: null,
-    credits: {
-      count: 0,
-      totalDues: 0,
-      totalDebt: 0,
-      unpaidDues: 0,
-      unpaidDebt: 0,
-      paidDues: 0,
-      paidDebt: 0,
-    },
     boxes: [],
     byCategory,
     monthlyTrends: [

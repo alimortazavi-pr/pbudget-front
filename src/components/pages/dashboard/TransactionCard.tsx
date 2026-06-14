@@ -13,7 +13,7 @@ import { showToast } from "@/common/utils/toast";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { deleteBudget } from "@/stores/budget";
 import { setProfile, userSelector } from "@/stores/profile";
-import { BudgetType } from "@/types/enums";
+import { BudgetType, DebtType } from "@/types/enums";
 
 type TransactionCardProps = {
   budget: IBudget;
@@ -25,6 +25,7 @@ export function TransactionCard({ budget }: TransactionCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const isIncome = budget.type === BudgetType.INCOME;
+  const debt = budget.debt;
 
   async function handleDelete() {
     setDeleting(true);
@@ -53,6 +54,18 @@ export function TransactionCard({ budget }: TransactionCardProps) {
           <p className="mt-0.5 text-xs text-muted">
             {formatJalaliDate(budget.year, budget.month, budget.day)}
           </p>
+          {debt && (
+            <span
+              className={`mt-1 inline-flex rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${
+                debt.type === DebtType.RECEIVABLE
+                  ? "bg-income-soft text-income"
+                  : "bg-expense-soft text-expense"
+              }`}
+            >
+              {debt.type === DebtType.RECEIVABLE ? "طلب" : "بدهی"} · {debt.person}
+              {debt.status !== "settled" ? ` · ${formatPrice(debt.remainingAmount)}` : ""}
+            </span>
+          )}
         </div>
         <p
           className={`shrink-0 text-base font-bold ${

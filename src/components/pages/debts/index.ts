@@ -1,0 +1,1 @@
+export { DebtsPage } from "./DebtsPage";

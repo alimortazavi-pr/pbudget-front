@@ -3,7 +3,7 @@ export enum BudgetType {
   COST = 2,
 }
 
-export enum CreditType {
-  DEBT = 1,
-  CREDIT = 2,
+export enum DebtType {
+  RECEIVABLE = 0,
+  PAYABLE = 1,
 }

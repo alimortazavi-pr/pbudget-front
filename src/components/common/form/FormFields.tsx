@@ -1,7 +1,82 @@
 "use client";
 
-import { Input, Label, ListBox, ListBoxItem, Select, TextArea, TextField } from "@heroui/react";
+import {
+  ComboBox,
+  Input,
+  Label,
+  ListBox,
+  ListBoxItem,
+  Select,
+  TextArea,
+  TextField,
+} from "@heroui/react";
 import type { ComponentProps } from "react";
+import { useMemo } from "react";
+
+type FormPersonComboBoxProps = {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: string[];
+  placeholder?: string;
+};
+
+export function FormPersonComboBox({
+  label,
+  value,
+  onChange,
+  options,
+  placeholder = "نام طرف حساب را انتخاب یا وارد کنید",
+}: FormPersonComboBoxProps) {
+  const items = useMemo(
+    () => options.map((person) => ({ id: person, label: person })),
+    [options],
+  );
+
+  const mergedItems = useMemo(() => {
+    const trimmed = value.trim();
+    if (!trimmed || options.some((person) => person === trimmed)) {
+      return items;
+    }
+    return [{ id: trimmed, label: trimmed }, ...items];
+  }, [items, options, value]);
+
+  return (
+    <ComboBox
+      allowsCustomValue
+      fullWidth
+      variant="secondary"
+      menuTrigger="focus"
+      inputValue={value}
+      onInputChange={onChange}
+      selectedKey={value.trim() || null}
+      onSelectionChange={(key) => {
+        if (key == null) return;
+        onChange(String(key));
+      }}
+      items={mergedItems}
+    >
+      <Label className="mb-1.5 text-sm font-medium">{label}</Label>
+      <ComboBox.InputGroup>
+        <Input placeholder={placeholder} />
+        <ComboBox.Trigger />
+      </ComboBox.InputGroup>
+      <ComboBox.Popover>
+        <ListBox
+          aria-label={label}
+          className="max-h-56 overflow-y-auto p-1"
+          items={mergedItems}
+        >
+          {(item) => (
+            <ListBoxItem id={item.id} textValue={item.label}>
+              {item.label}
+            </ListBoxItem>
+          )}
+        </ListBox>
+      </ComboBox.Popover>
+    </ComboBox>
+  );
+}
 
 type FormInputProps = ComponentProps<typeof Input> & {
   label: string;

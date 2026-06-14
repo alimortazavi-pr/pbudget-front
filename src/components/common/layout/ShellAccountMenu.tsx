@@ -6,6 +6,7 @@ import { Button } from "@heroui/react";
 import {
   Call,
   Category,
+  Card,
   Logout,
   Moon,
   Profile,
@@ -119,6 +120,10 @@ export function ShellAccountMenu({
       </div>
 
       <div className="flex flex-col gap-1">
+        <Link href={PATHS.DEBTS} onClick={onNavigate} className={linkClass}>
+          <Card size={20} />
+          طلب و بدهی
+        </Link>
         <Link
           href={PATHS.CATEGORIES}
           onClick={onNavigate}

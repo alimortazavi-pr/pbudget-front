@@ -13,6 +13,7 @@ const PAGE_TITLES: Record<string, string> = {
   [PATHS.BOXES]: "صندوق‌ها",
   [PATHS.CREATE_BUDGET]: "ثبت تراکنش",
   [PATHS.CATEGORIES]: "دسته‌بندی‌ها",
+  [PATHS.DEBTS]: "طلب و بدهی",
   [PATHS.PROFILE]: "پروفایل",
 };
 
@@ -46,7 +47,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         hideTabBar={
           pathname === PATHS.CREATE_BUDGET ||
           pathname.startsWith("/budgets/") ||
-          pathname === PATHS.ANALYSIS
+          pathname === PATHS.ANALYSIS ||
+          pathname === PATHS.DEBTS
         }
       >
         {children}

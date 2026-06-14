@@ -7,4 +7,5 @@ export const PATHS = {
   BOXES: "/boxes",
   PROFILE: "/profile",
   CATEGORIES: "/profile/categories",
+  DEBTS: "/debts",
 } as const;

@@ -156,12 +156,6 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
   );
 
   const boxData = report.boxes.filter((box) => box.balance > 0);
-  const creditsData = [
-    { name: "طلب پرداخت‌شده", value: report.credits.paidDues },
-    { name: "طلب معوق", value: report.credits.unpaidDues },
-    { name: "بدهی پرداخت‌شده", value: report.credits.paidDebt },
-    { name: "بدهی معوق", value: report.credits.unpaidDebt },
-  ].filter((item) => item.value > 0);
 
   return (
     <div className="space-y-4">
@@ -440,26 +434,6 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
           </ChartCard>
         )}
 
-        {creditsData.length > 0 && (
-          <ChartCard title="طلب و بدهی" subtitle="وضعیت تسویه">
-            <div className="pb-chart-canvas h-64 w-full min-h-[16rem]" dir="ltr">
-              <ResponsiveContainer width="100%" height="100%" minHeight={256}>
-                <BarChart data={creditsData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.2)" />
-                  <XAxis dataKey="name" tick={{ fontSize: 10 }} />
-                  <YAxis tickFormatter={formatChartPrice} />
-                  <Tooltip
-                    formatter={(value) => [
-                      `${formatPrice(Number(value ?? 0))} تومان`,
-                      "مبلغ",
-                    ]}
-                  />
-                  <Bar dataKey="value" name="مبلغ" fill={CHART_COLORS.net} radius={[6, 6, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </ChartCard>
-        )}
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
