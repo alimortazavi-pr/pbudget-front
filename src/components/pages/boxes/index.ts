@@ -1,0 +1,1 @@
+export { BoxesPage } from "./BoxesPage";

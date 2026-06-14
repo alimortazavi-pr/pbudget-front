@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Paradise Budget — Frontend v2
 
-## Getting Started
+فرانت‌اند بازطراحی‌شده با استراکچر پروژه‌های Ali:
 
-First, run the development server:
+- **Next.js 16** (App Router)
+- **HeroUI v3** + **Tailwind CSS v4**
+- **Redux Toolkit** + **axios**
+- **iconsax-reactjs** + **moment-jalali**
+- RTL فارسی، تم روشن/تاریک
+
+## اجرا
 
 ```bash
-npm run dev
-# or
-yarn dev
+cp .env.example .env.local
+pnpm install
+pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+پورت dev: **7711**
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+API پیش‌فرض: `https://api.pbudget.ir/v1` (همان بک‌اند فعلی)
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## مسیرها
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+| مسیر | توضیح |
+|------|--------|
+| `/get-started` | ورود / ثبت‌نام |
+| `/` | داشبورد |
+| `/create-budget` | ثبت تراکنش |
+| `/budgets/[id]` | ویرایش تراکنش |
+| `/boxes` | صندوق‌ها |
+| `/profile/categories` | دسته‌بندی‌ها |
+| `/profile` | پروفایل |
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## ساختار
 
-## Learn More
+```
+src/
+├── app/                 # روت‌های نازک
+├── components/
+│   ├── pages/           # UI اصلی
+│   ├── common/          # layout، form، branding
+│   └── providers/
+├── common/              # api، axios، constants، utils
+└── stores/              # Redux slices
+```
 
-To learn more about Next.js, take a look at the following resources:
+## نکته
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+این پروژه جایگزین `pbudget-front` قدیمی (Chakra UI + Pages Router) است. کوکی `userAuthorization` برای سازگاری با sesion‌های قبلی حفظ شده.

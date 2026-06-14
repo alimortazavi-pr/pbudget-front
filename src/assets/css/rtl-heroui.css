@@ -1,0 +1,212 @@
+/**
+ * HeroUI — پیش‌فرض LTR: indicator با position:absolute و right:0.5rem
+ * در RTL فلش باید سمت چپ باشد؛ indicator پیش‌فرض کلاس .autocomplete__indicator / .select__indicator دارد
+ * (نه فقط data-slot="autocomplete-indicator").
+ */
+
+html[dir="rtl"] [data-slot="autocomplete-value"],
+html[dir="rtl"] [data-slot="select-value"],
+html[dir="rtl"] [data-slot="combo-box-value"] {
+  text-align: start;
+}
+
+html[dir="rtl"] [data-slot="autocomplete-value"][data-placeholder],
+html[dir="rtl"] [data-slot="select-value"][data-placeholder] {
+  unicode-bidi: plaintext;
+}
+
+/* --- Autocomplete trigger: flex + فلش در جریان چیدمان (سمت چپ) --- */
+html[dir="rtl"] [data-slot="autocomplete-trigger"] {
+  display: flex !important;
+  align-items: center;
+  gap: 0.5rem;
+  direction: rtl;
+}
+
+html[dir="rtl"] [data-slot="autocomplete-value"] {
+  flex: 1 1 auto;
+  min-width: 0;
+  order: 0;
+}
+
+/* دکمهٔ wrap دور آیکن پیش‌فرض */
+html[dir="rtl"] [data-slot="autocomplete-trigger"] > button:has(.autocomplete__indicator) {
+  position: static !important;
+  flex-shrink: 0;
+  order: 1;
+  margin-inline-start: auto;
+  margin-inline-end: 0;
+  width: auto;
+  min-width: 0;
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+
+html[dir="rtl"] .autocomplete__indicator,
+html[dir="rtl"] [data-slot="autocomplete-indicator"],
+html[dir="rtl"] [data-slot="autocomplete-default-indicator"] {
+  position: static !important;
+  right: auto !important;
+  left: auto !important;
+  inset: auto !important;
+  flex-shrink: 0;
+}
+
+html[dir="rtl"] [data-slot="autocomplete-trigger"]:has(.autocomplete__indicator),
+html[dir="rtl"] .autocomplete__trigger:has(.autocomplete__indicator) {
+  padding-inline-end: 0.75rem !important;
+  padding-inline-start: 0.75rem !important;
+}
+
+/* --- Select trigger --- */
+html[dir="rtl"] [data-slot="select-trigger"] {
+  display: flex !important;
+  align-items: center;
+  gap: 0.5rem;
+  direction: rtl;
+}
+
+html[dir="rtl"] [data-slot="select-value"] {
+  flex: 1 1 auto;
+  min-width: 0;
+  order: 0;
+}
+
+html[dir="rtl"] .select__indicator,
+html[dir="rtl"] [data-slot="select-indicator"],
+html[dir="rtl"] [data-slot="select-default-indicator"] {
+  position: static !important;
+  right: auto !important;
+  left: auto !important;
+  inset: auto !important;
+  flex-shrink: 0;
+  order: 1;
+  margin-inline-start: auto;
+  margin-inline-end: 0;
+}
+
+html[dir="rtl"] [data-slot="select-trigger"]:has(.select__indicator),
+html[dir="rtl"] .select__trigger:has(.select__indicator) {
+  padding-inline-end: 0.75rem !important;
+  padding-inline-start: 0.75rem !important;
+}
+
+/* ComboBox (در صورت استفاده) */
+html[dir="rtl"] [data-slot="combo-box-trigger"] {
+  display: flex !important;
+  align-items: center;
+  direction: rtl;
+}
+
+html[dir="rtl"] .combo-box__indicator,
+html[dir="rtl"] [data-slot="combo-box-indicator"] {
+  position: static !important;
+  margin-inline-start: auto;
+  flex-shrink: 0;
+}
+
+html[dir="rtl"] [data-slot="autocomplete-clear-button"] {
+  margin-inline-start: 0.25rem;
+  margin-inline-end: 0;
+}
+
+html[dir="rtl"] [data-slot="list-box-item"] {
+  text-align: start;
+}
+
+html[dir="rtl"] [data-slot="list-box-item"][data-selected="true"],
+html[dir="rtl"] [data-slot="list-box-item"][aria-selected="true"] {
+  background: color-mix(in oklch, var(--accent) 12%, transparent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+html[dir="rtl"] [data-slot="list-box-item-indicator"] {
+  margin-inline-start: auto;
+}
+
+html[dir="rtl"] [data-slot="search-field-group"]:has([data-slot="search-field-search-icon"])
+  [data-slot="search-field-input"] {
+  border-radius: 0;
+  padding-inline-start: 0.5rem;
+  padding-inline-end: 0.75rem;
+}
+
+html[dir="rtl"] [data-slot="search-field-search-icon"] {
+  margin-inline-start: 0.75rem;
+  margin-inline-end: 0;
+}
+
+html[dir="rtl"] [data-slot="search-field-clear-button"] {
+  margin-inline-end: 0.5rem;
+  margin-inline-start: 0;
+}
+
+html[dir="rtl"] [data-slot="breadcrumbs"] {
+  direction: rtl;
+}
+
+html[dir="rtl"] [data-slot="autocomplete-popover"],
+html[dir="rtl"] [data-slot="select-popover"],
+html[dir="rtl"] [data-slot="popover"] {
+  direction: rtl;
+  text-align: start;
+}
+
+/* --- Toast (HeroUI) --- */
+html[dir="rtl"] .toast-region {
+  direction: rtl;
+}
+
+html[dir="rtl"] .toast-region--bottom-start {
+  left: auto;
+  right: 1rem;
+}
+
+html[dir="rtl"] .toast-region--bottom-end {
+  right: auto;
+  left: 1rem;
+}
+
+html[dir="rtl"] .toast-region--top-start {
+  left: auto;
+  right: 1rem;
+}
+
+html[dir="rtl"] .toast-region--top-end {
+  right: auto;
+  left: 1rem;
+}
+
+html[dir="rtl"] .toast {
+  direction: rtl;
+  flex-direction: row-reverse;
+  text-align: start;
+}
+
+html[dir="rtl"] .toast__content {
+  align-items: flex-start;
+  text-align: start;
+}
+
+html[dir="rtl"] .toast__title,
+html[dir="rtl"] .toast__description {
+  text-align: start;
+  width: 100%;
+}
+
+html[dir="rtl"] .toast__close-button {
+  right: auto;
+  left: 0.625rem;
+}
+
+@media (min-width: 640px) {
+  html[dir="rtl"] .toast__close-button {
+    left: -0.25rem;
+    right: auto;
+  }
+}

@@ -1,0 +1,78 @@
+/*
+ * Paradise Budget — تم برند
+ * Rose primary: #fb7185 | Teal income: #2dd4bf | Deep navy dark bg
+ */
+
+:root,
+.light,
+.default,
+[data-theme="light"],
+[data-theme="default"] {
+  --brand-rose: #fb7185;
+  --brand-rose-deep: #e11d48;
+  --brand-teal: #2dd4bf;
+  --brand-teal-deep: #0d9488;
+  --brand-violet: #a78bfa;
+
+  --accent: oklch(72% 0.17 12);
+  --accent-foreground: oklch(99% 0 0);
+  --background: oklch(98.5% 0.008 12);
+  --border: oklch(92% 0.015 12);
+  --danger: oklch(62% 0.2 15);
+  --danger-foreground: oklch(99% 0 0);
+  --default: oklch(96% 0.012 12);
+  --default-foreground: oklch(28% 0.04 12);
+  --field-background: oklch(100% 0.004 12);
+  --field-foreground: oklch(25% 0.035 12);
+  --field-placeholder: oklch(58% 0.02 12);
+  --focus: oklch(72% 0.17 12);
+  --foreground: oklch(25% 0.035 12);
+  --muted: oklch(52% 0.025 12);
+  --overlay: oklch(100% 0.004 12);
+  --overlay-foreground: oklch(25% 0.035 12);
+  --success: oklch(78% 0.14 175);
+  --success-foreground: oklch(22% 0.04 175);
+  --surface: oklch(100% 0.003 12);
+  --surface-foreground: oklch(25% 0.035 12);
+  --surface-secondary: oklch(97.5% 0.01 12);
+  --surface-secondary-foreground: oklch(25% 0.035 12);
+  --surface-tertiary: oklch(95% 0.014 12);
+  --surface-tertiary-foreground: oklch(25% 0.04 12);
+  --warning: oklch(78% 0.14 75);
+  --warning-foreground: oklch(28% 0.06 75);
+  --radius: 1rem;
+  --field-radius: 0.875rem;
+  --font-sans: "yekan-bakh", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Poppins", ui-sans-serif, system-ui, sans-serif;
+}
+
+.dark,
+[data-theme="dark"] {
+  color-scheme: dark;
+  --accent: oklch(72% 0.17 12);
+  --accent-foreground: oklch(99% 0 0);
+  --background: oklch(14% 0.025 280);
+  --border: oklch(26% 0.03 280);
+  --danger: oklch(65% 0.19 15);
+  --danger-foreground: oklch(99% 0 0);
+  --default: oklch(22% 0.03 280);
+  --default-foreground: oklch(94% 0.01 280);
+  --field-background: oklch(20% 0.03 280);
+  --field-foreground: oklch(96% 0.01 280);
+  --field-placeholder: oklch(62% 0.02 280);
+  --focus: oklch(72% 0.17 12);
+  --foreground: oklch(96% 0.01 280);
+  --muted: oklch(68% 0.025 280);
+  --overlay: oklch(20% 0.03 280);
+  --overlay-foreground: oklch(96% 0.01 280);
+  --success: oklch(78% 0.14 175);
+  --success-foreground: oklch(15% 0.04 175);
+  --surface: oklch(19% 0.03 280);
+  --surface-foreground: oklch(96% 0.01 280);
+  --surface-secondary: oklch(23% 0.035 280);
+  --surface-secondary-foreground: oklch(96% 0.01 280);
+  --surface-tertiary: oklch(28% 0.04 280);
+  --surface-tertiary-foreground: oklch(96% 0.01 280);
+  --warning: oklch(78% 0.12 75);
+  --warning-foreground: oklch(20% 0.04 75);
+}
