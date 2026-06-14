@@ -9,7 +9,7 @@ type BeforeInstallPromptEvent = Event & {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 };
 
-const DISMISS_KEY = "pbudget-pwa-install-dismissed";
+const SEEN_KEY = "pbudget-pwa-install-seen";
 
 export function PwaInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] =
@@ -20,18 +20,20 @@ export function PwaInstallPrompt() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.matchMedia("(display-mode: standalone)").matches) return;
-    if (localStorage.getItem(DISMISS_KEY) === "1") return;
+    if (localStorage.getItem(SEEN_KEY) === "1") return;
 
     const onBeforeInstall = (event: Event) => {
       event.preventDefault();
+      if (localStorage.getItem(SEEN_KEY) === "1") return;
+      localStorage.setItem(SEEN_KEY, "1");
       setDeferredPrompt(event as BeforeInstallPromptEvent);
       setVisible(true);
     };
 
     const onInstalled = () => {
+      localStorage.setItem(SEEN_KEY, "1");
       setVisible(false);
       setDeferredPrompt(null);
-      localStorage.removeItem(DISMISS_KEY);
     };
 
     window.addEventListener("beforeinstallprompt", onBeforeInstall);
@@ -44,7 +46,6 @@ export function PwaInstallPrompt() {
   }, []);
 
   const dismiss = useCallback(() => {
-    localStorage.setItem(DISMISS_KEY, "1");
     setVisible(false);
   }, []);
 

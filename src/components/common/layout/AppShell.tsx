@@ -40,7 +40,6 @@ export function AppShell({ children }: { children: ReactNode }) {
         title={title}
         showBack={
           pathname !== PATHS.HOME &&
-          pathname !== PATHS.ANALYSIS &&
           pathname !== PATHS.BOXES &&
           pathname !== PATHS.CATEGORIES
         }
