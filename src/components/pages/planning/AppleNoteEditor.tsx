@@ -76,6 +76,18 @@ function ReminderPanel({
   onChange: (r: INoteLineReminder) => void;
   onRemove: () => void;
 }) {
+  const [draft, setDraft] = useState(reminder);
+
+  useEffect(() => {
+    setDraft(reminder);
+  }, [
+    reminder.year,
+    reminder.month,
+    reminder.day,
+    reminder.hour,
+    reminder.minute,
+  ]);
+
   return (
     <div className="mt-2 rounded-xl border border-default-200 bg-default-50 p-3 space-y-3">
       <div className="flex items-center justify-between gap-2">
@@ -85,36 +97,46 @@ function ReminderPanel({
         </Button>
       </div>
       <ReminderDateTimePicker
-        year={reminder.year}
-        month={reminder.month}
-        day={reminder.day}
-        hour={reminder.hour}
-        minute={reminder.minute}
-        onChange={({ year, month, day, hour, minute }) =>
-          onChange({ ...reminder, year, month, day, hour, minute })
+        year={draft.year}
+        month={draft.month}
+        day={draft.day}
+        hour={draft.hour}
+        minute={draft.minute}
+        onDraftChange={({ year, month, day, hour, minute }) =>
+          setDraft((prev) => ({ ...prev, year, month, day, hour, minute }))
         }
       />
       <p className="text-xs text-default-500 leading-relaxed">
         {formatJalaliDateTime(
-          reminder.year,
-          reminder.month,
-          reminder.day,
-          reminder.hour,
-          reminder.minute,
+          draft.year,
+          draft.month,
+          draft.day,
+          draft.hour,
+          draft.minute,
         )}
         {" — "}
         ۳۰ دقیقه قبل و سر وقت در تلگرام پیام می‌گیرید.
       </p>
+      <div className="flex justify-end gap-2">
+        <Button
+          size="sm"
+          variant="primary"
+          onPress={() => onChange({ ...draft, beforeMinutes: draft.beforeMinutes ?? 30 })}
+        >
+          تأیید یادآوری
+        </Button>
+      </div>
     </div>
   );
 }
 
 export function AppleNoteEditor({ items, onChange }: AppleNoteEditorProps) {
   const [expandedReminderId, setExpandedReminderId] = useState<string | null>(null);
+  const lineIdsKey = items.map((line) => line.id).join("|");
 
   useEffect(() => {
     setExpandedReminderId(null);
-  }, [items]);
+  }, [lineIdsKey]);
 
   const updateLine = (id: string, patch: Partial<EditorLine>) => {
     onChange(items.map((l) => (l.id === id ? { ...l, ...patch } : l)));

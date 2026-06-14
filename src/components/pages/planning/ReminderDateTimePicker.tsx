@@ -1,27 +1,50 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+import { Button } from "@heroui/react";
 import DateObject from "react-date-object";
 import persianCalendar from "react-date-object/calendars/persian";
 import persianLocale from "react-date-object/locales/persian_fa";
-import DatePicker from "react-multi-date-picker";
+import DatePicker, { type DatePickerRef } from "react-multi-date-picker";
 import TimePicker from "react-multi-date-picker/plugins/time_picker";
 
 import "react-multi-date-picker/styles/colors/teal.css";
 
-type ReminderDateTimePickerProps = {
+export type ReminderDateTimeValue = {
   year: number;
   month: number;
   day: number;
   hour: number;
   minute: number;
-  onChange: (value: {
-    year: number;
-    month: number;
-    day: number;
-    hour: number;
-    minute: number;
-  }) => void;
 };
+
+type ReminderDateTimePickerProps = ReminderDateTimeValue & {
+  onDraftChange: (value: ReminderDateTimeValue) => void;
+};
+
+function toDateObject(value: ReminderDateTimeValue) {
+  return new DateObject({
+    year: value.year,
+    month: value.month,
+    day: value.day,
+    hour: value.hour,
+    minute: value.minute,
+    calendar: persianCalendar,
+  });
+}
+
+function fromDateObject(selected: DateObject): ReminderDateTimeValue {
+  return {
+    year: selected.year,
+    month:
+      typeof selected.month === "object"
+        ? selected.month.number
+        : Number(selected.month),
+    day: selected.day,
+    hour: selected.hour,
+    minute: selected.minute,
+  };
+}
 
 export function ReminderDateTimePicker({
   year,
@@ -29,36 +52,48 @@ export function ReminderDateTimePicker({
   day,
   hour,
   minute,
-  onChange,
+  onDraftChange,
 }: ReminderDateTimePickerProps) {
-  const value = new DateObject({
+  const pickerRef = useRef<DatePickerRef>(null);
+  const [draft, setDraft] = useState<ReminderDateTimeValue>({
     year,
     month,
     day,
     hour,
     minute,
-    calendar: persianCalendar,
   });
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
-  function handleChange(selected: DateObject | DateObject[] | null) {
+  useEffect(() => {
+    if (!calendarOpen) {
+      setDraft({ year, month, day, hour, minute });
+    }
+  }, [year, month, day, hour, minute, calendarOpen]);
+
+  function updateDraft(next: ReminderDateTimeValue) {
+    setDraft(next);
+    onDraftChange(next);
+  }
+
+  function handlePickerChange(
+    selected: DateObject | DateObject[] | null,
+  ): false | void {
     if (!selected || Array.isArray(selected)) return;
-    onChange({
-      year: selected.year,
-      month:
-        typeof selected.month === "object"
-          ? selected.month.number
-          : Number(selected.month),
-      day: selected.day,
-      hour: selected.hour,
-      minute: selected.minute,
-    });
+    updateDraft(fromDateObject(selected));
+    return false;
   }
 
   return (
-    <div className="pb-filter-date">
+    <div className="pb-filter-date space-y-3">
       <DatePicker
-        value={value}
-        onChange={handleChange}
+        ref={pickerRef}
+        value={toDateObject(draft)}
+        onChange={handlePickerChange}
+        onOpen={() => setCalendarOpen(true)}
+        onClose={() => {
+          setCalendarOpen(false);
+          return false;
+        }}
         format="YYYY/MM/DD HH:mm"
         locale={persianLocale}
         calendar={persianCalendar}
@@ -72,6 +107,15 @@ export function ReminderDateTimePicker({
         inputClass="w-full min-h-11 rounded-xl border border-border bg-field-background px-3 text-sm text-foreground outline-none"
         placeholder="تاریخ و ساعت"
       />
+      <div className="flex justify-end">
+        <Button
+          size="sm"
+          variant="secondary"
+          onPress={() => pickerRef.current?.closeCalendar()}
+        >
+          بستن تقویم
+        </Button>
+      </div>
     </div>
   );
 }
