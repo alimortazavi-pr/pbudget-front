@@ -1,9 +1,10 @@
 import { axiosInstance } from "@/common/axiosInstance";
 import type { IProfile } from "@/common/interfaces/profile.interface";
+import { normalizeProfile } from "@/common/utils/profile";
 
 export async function fetchProfile() {
   const { data } = await axiosInstance.get<{ user: IProfile }>("/users/profile");
-  return data.user;
+  return normalizeProfile(data.user as unknown as Record<string, unknown>);
 }
 
 export async function updateProfile(payload: {
@@ -11,19 +12,22 @@ export async function updateProfile(payload: {
   lastName: string;
 }) {
   const { data } = await axiosInstance.put("/users/profile", payload);
-  return data.user as IProfile;
+  return normalizeProfile(data.user as Record<string, unknown>);
 }
 
 export async function changeMobile(payload: { mobile: string; code: string }) {
   const { data } = await axiosInstance.put("/users/profile/change-mobile", payload);
-  return data as { token: string; user: IProfile };
+  return {
+    token: data.token as string,
+    user: normalizeProfile(data.user as Record<string, unknown>),
+  };
 }
 
 export async function verifyMobile(code: string) {
   const { data } = await axiosInstance.put("/users/profile/verify-mobile", {
     code,
   });
-  return data.user as IProfile;
+  return normalizeProfile(data.user as Record<string, unknown>);
 }
 
 export async function setPassword(password: string) {
@@ -34,7 +38,7 @@ export async function changeUserBudget(price: number) {
   const { data } = await axiosInstance.put("/users/profile/change-budget", {
     price,
   });
-  return data.user as IProfile;
+  return normalizeProfile(data.user as Record<string, unknown>);
 }
 
 export type TelegramStatus = {

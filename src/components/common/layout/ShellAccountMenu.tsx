@@ -15,6 +15,7 @@ import {
   PLANNING_NAV_ITEMS,
   SUPPORT_PHONE,
 } from "@/components/common/layout/shell-nav";
+import { useTelegramStatus } from "@/common/hooks/useTelegramStatus";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { logOut, resetAuth } from "@/stores/auth";
 import { setProfile, userSelector } from "@/stores/profile";
@@ -34,6 +35,11 @@ export function ShellAccountMenu({
   const router = useRouter();
   const user = useAppSelector(userSelector);
   const { theme, toggleTheme } = useTheme();
+  const { linked: telegramLinked } = useTelegramStatus();
+
+  const accountNavItems = ACCOUNT_NAV_ITEMS.filter(
+    (item) => item.label !== "بات تلگرام" || !telegramLinked,
+  );
 
   async function handleLogout() {
     const authData = storage.getAuthData();
@@ -128,7 +134,7 @@ export function ShellAccountMenu({
 
       <ShellNavGroup
         title="حساب کاربری"
-        items={ACCOUNT_NAV_ITEMS}
+        items={accountNavItems}
         variant={variant}
         onNavigate={onNavigate}
       />

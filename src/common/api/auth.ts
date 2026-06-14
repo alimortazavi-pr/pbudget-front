@@ -6,12 +6,13 @@ import type {
   ISignUpForm,
 } from "@/common/interfaces";
 import type { IProfile } from "@/common/interfaces/profile.interface";
+import { normalizeProfile } from "@/common/utils/profile";
 
 export async function checkAuth(token: string) {
   const { data } = await axiosInstance.get<{ user: IProfile }>("/auth/check", {
     headers: { Authorization: `Bearer ${token}` },
   });
-  return data;
+  return { user: normalizeProfile(data.user as unknown as Record<string, unknown>) };
 }
 
 export async function checkMobileExist(mobile: string) {
@@ -31,7 +32,10 @@ export async function signUp(form: ISignUpForm) {
     token: string;
     user: IProfile;
   }>("/auth/register", form);
-  return data;
+  return {
+    token: data.token,
+    user: normalizeProfile(data.user as unknown as Record<string, unknown>),
+  };
 }
 
 export async function signIn(form: ISignInForm) {
@@ -39,7 +43,10 @@ export async function signIn(form: ISignInForm) {
     token: string;
     user: IProfile;
   }>("/auth/login", form);
-  return data;
+  return {
+    token: data.token,
+    user: normalizeProfile(data.user as unknown as Record<string, unknown>),
+  };
 }
 
 export async function signInWithPassword(form: ISignInPasswordForm) {
@@ -47,5 +54,8 @@ export async function signInWithPassword(form: ISignInPasswordForm) {
     token: string;
     user: IProfile;
   }>("/auth/login-password", form);
-  return data;
+  return {
+    token: data.token,
+    user: normalizeProfile(data.user as unknown as Record<string, unknown>),
+  };
 }

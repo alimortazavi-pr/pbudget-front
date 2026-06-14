@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Button, Modal } from "@heroui/react";
 
 import * as authApi from "@/common/api/auth";
@@ -12,6 +12,7 @@ import { FormInput } from "@/components/common/form/FormFields";
 import { OtpCodeField } from "@/components/common/form/OtpCodeField";
 import { ChangeMobileModal } from "@/components/pages/profile/ChangeMobileModal";
 import { TelegramConnectSection } from "@/components/pages/profile/TelegramConnectSection";
+import { useTelegramStatus } from "@/common/hooks/useTelegramStatus";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { setUsers, tokenSelector } from "@/stores/auth";
 import { setProfile, userSelector } from "@/stores/profile";
@@ -29,21 +30,26 @@ export function ProfilePage() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
-  const [telegramLinked, setTelegramLinked] = useState(false);
+  const { linked: telegramLinked } = useTelegramStatus();
   const [saving, setSaving] = useState(false);
 
-  const loadTelegramStatus = useCallback(async () => {
-    try {
-      const status = await profileApi.fetchTelegramStatus();
-      setTelegramLinked(status.linked);
-    } catch {
-      setTelegramLinked(false);
-    }
-  }, []);
-
   useEffect(() => {
-    void loadTelegramStatus();
-  }, [loadTelegramStatus]);
+    void profileApi.fetchProfile().then((fresh) => {
+      dispatch(setProfile(fresh));
+      setFirstName(fresh.firstName);
+      setLastName(fresh.lastName);
+
+      if (!token) return;
+
+      const nextUsers = users.map((u) =>
+        u._id === fresh._id ? { ...fresh, token } : u,
+      );
+      dispatch(setUsers(nextUsers));
+      saveDataToLocal({ token, users: nextUsers });
+    });
+    // Refresh profile once on mount so verification flags match the server.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch]);
 
   async function saveProfile(e?: FormEvent) {
     e?.preventDefault();
@@ -105,7 +111,7 @@ export function ProfilePage() {
   }
 
   return (
-    <div className="pb-form-page">
+    <div className="pb-form-page space-y-6">
       <form onSubmit={(e) => void saveProfile(e)}>
         <div className="glass space-y-4 rounded-2xl p-5">
           <h2 className="text-lg font-bold">پروفایل</h2>
@@ -113,6 +119,11 @@ export function ProfilePage() {
           {!user?.isVerifiedMobile && (
             <p className="rounded-xl bg-warning/15 px-3 py-2 text-sm text-warning-foreground">
               موبایل شما تأیید نشده است
+            </p>
+          )}
+          {user?.isVerifiedMobile && (
+            <p className="rounded-xl bg-success/15 px-3 py-2 text-sm text-success-foreground">
+              موبایل شما تأیید شده است
             </p>
           )}
 

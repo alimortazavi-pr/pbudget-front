@@ -1,47 +1,32 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@heroui/react";
 
 import * as profileApi from "@/common/api/profile";
 import { APP_NAME_EN } from "@/common/constants/brand";
+import {
+  notifyTelegramStatusChanged,
+  useTelegramStatus,
+} from "@/common/hooks/useTelegramStatus";
 import { showToast } from "@/common/utils/toast";
 
 const FALLBACK_BOT_USERNAME =
   process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME?.replace(/^@/, "") ?? "";
 
 export function TelegramConnectSection() {
-  const [linked, setLinked] = useState(false);
-  const [botUsername, setBotUsername] = useState(FALLBACK_BOT_USERNAME);
-  const [loading, setLoading] = useState(true);
+  const { linked, botUsername, loading, refresh } = useTelegramStatus();
   const [connecting, setConnecting] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
 
-  const loadStatus = useCallback(async () => {
-    setLoading(true);
-    try {
-      const status = await profileApi.fetchTelegramStatus();
-      setLinked(status.linked);
-      if (status.botUsername) {
-        setBotUsername(status.botUsername);
-      }
-    } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در دریافت وضعیت تلگرام");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    void loadStatus();
-  }, [loadStatus]);
+  const resolvedBotUsername = botUsername || FALLBACK_BOT_USERNAME;
 
   async function connectTelegram() {
     setConnecting(true);
     try {
       const { token, botUsername: apiBotUsername } =
         await profileApi.createTelegramLink();
-      const username = apiBotUsername || botUsername || FALLBACK_BOT_USERNAME;
+      const username = apiBotUsername || resolvedBotUsername;
 
       if (!username) {
         showToast("نام کاربری بات تلگرام تنظیم نشده است");
@@ -62,7 +47,7 @@ export function TelegramConnectSection() {
     setDisconnecting(true);
     try {
       await profileApi.unlinkTelegram();
-      setLinked(false);
+      notifyTelegramStatusChanged();
       showToast("اتصال تلگرام قطع شد", "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا در قطع اتصال");
@@ -88,14 +73,14 @@ export function TelegramConnectSection() {
             حساب شما به بات تلگرام متصل است
           </p>
           <div className="flex flex-col gap-2 sm:flex-row">
-            {botUsername && (
+            {resolvedBotUsername && (
               <Button
                 type="button"
                 variant="secondary"
                 className="w-full sm:flex-1"
                 onPress={() =>
                   window.open(
-                    `https://t.me/${botUsername}`,
+                    `https://t.me/${resolvedBotUsername}`,
                     "_blank",
                     "noopener,noreferrer",
                   )
@@ -134,7 +119,9 @@ export function TelegramConnectSection() {
             variant="ghost"
             size="sm"
             className="w-full"
-            onPress={() => void loadStatus()}
+            onPress={() => {
+              void refresh().then(() => notifyTelegramStatusChanged());
+            }}
           >
             بروزرسانی وضعیت
           </Button>
