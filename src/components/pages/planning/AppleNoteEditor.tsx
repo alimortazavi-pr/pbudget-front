@@ -9,27 +9,10 @@ import type {
   INoteLineReminder,
   IUserNote,
 } from "@/common/interfaces/note.interface";
-import { toPersianDigits } from "@/common/utils/persian-digits";
-import {
-  formatJalaliDateTime,
-  getJalaliNow,
-} from "@/common/utils/jalali-date";
-import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
-import { FormSelect } from "@/components/common/form/FormFields";
+import { formatJalaliDateTime, getJalaliNow } from "@/common/utils/jalali-date";
+import { ReminderDateTimePicker } from "@/components/pages/planning/ReminderDateTimePicker";
 
 export type EditorLine = INoteLine;
-
-const HOUR_OPTIONS = Array.from({ length: 24 }, (_, hour) => ({
-  id: String(hour),
-  label: toPersianDigits(`${String(hour).padStart(2, "0")}:00`),
-}));
-
-const MINUTE_OPTIONS = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map(
-  (m) => ({
-    id: String(m),
-    label: toPersianDigits(String(m).padStart(2, "0")),
-  }),
-);
 
 function newLineId() {
   return `line-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -101,33 +84,16 @@ function ReminderPanel({
           حذف یادآوری
         </Button>
       </div>
-      <FilterDatePicker
-        year={String(reminder.year)}
-        month={String(reminder.month)}
-        day={String(reminder.day)}
-        onChange={({ year, month, day }) => {
-          onChange({
-            ...reminder,
-            year: parseInt(year, 10),
-            month: parseInt(month, 10),
-            day: parseInt(day, 10),
-          });
-        }}
+      <ReminderDateTimePicker
+        year={reminder.year}
+        month={reminder.month}
+        day={reminder.day}
+        hour={reminder.hour}
+        minute={reminder.minute}
+        onChange={({ year, month, day, hour, minute }) =>
+          onChange({ ...reminder, year, month, day, hour, minute })
+        }
       />
-      <div className="grid grid-cols-2 gap-3">
-        <FormSelect
-          label="ساعت"
-          selectedKey={String(reminder.hour)}
-          onSelectionChange={(v) => onChange({ ...reminder, hour: parseInt(v, 10) })}
-          options={HOUR_OPTIONS}
-        />
-        <FormSelect
-          label="دقیقه"
-          selectedKey={String(reminder.minute)}
-          onSelectionChange={(v) => onChange({ ...reminder, minute: parseInt(v, 10) })}
-          options={MINUTE_OPTIONS}
-        />
-      </div>
       <p className="text-xs text-default-500 leading-relaxed">
         {formatJalaliDateTime(
           reminder.year,
