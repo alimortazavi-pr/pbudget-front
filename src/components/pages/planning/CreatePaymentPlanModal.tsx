@@ -7,7 +7,7 @@ import * as paymentPlansApi from "@/common/api/payment-plans";
 import { getJalaliNow, toEnglishDigits } from "@/common/utils";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showToast } from "@/common/utils/toast";
-import { FormInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
+import { FormInput, FormPriceInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
 import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
@@ -94,11 +94,10 @@ export function CreatePaymentPlanModal({
             value={person}
             onChange={(e) => setPerson(e.target.value)}
           />
-          <FormInput
+          <FormPriceInput
             label="مبلغ هر قسط (تومان)"
-            inputMode="numeric"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            onChange={setAmount}
           />
           <FormSelect
             label="دسته‌بندی پیش‌فرض"

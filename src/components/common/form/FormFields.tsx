@@ -10,8 +10,9 @@ import {
   TextArea,
   TextField,
 } from "@heroui/react";
-import type { ComponentProps, FocusEvent } from "react";
+import type { ChangeEvent, ComponentProps, FocusEvent } from "react";
 import { useMemo } from "react";
+import { formatPriceInput, parsePriceInput } from "@/common/utils/price-input";
 import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
 import { scrollFieldIntoView } from "@/common/utils/scroll";
 
@@ -83,6 +84,47 @@ export function FormPersonComboBox({
 type FormInputProps = ComponentProps<typeof Input> & {
   label: string;
 };
+
+type FormPriceInputProps = Omit<ComponentProps<typeof Input>, "value" | "onChange"> & {
+  label: string;
+  value: string;
+  onChange: (rawValue: string) => void;
+  allowNegative?: boolean;
+};
+
+export function FormPriceInput({
+  label,
+  value,
+  onChange,
+  allowNegative = false,
+  onFocus,
+  ...props
+}: FormPriceInputProps) {
+  function handleFocus(event: FocusEvent<HTMLInputElement>) {
+    onFocus?.(event);
+    scrollFieldIntoView(event.currentTarget);
+  }
+
+  function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    onChange(parsePriceInput(event.target.value, allowNegative));
+  }
+
+  return (
+    <TextField className="gap-2">
+      <Label>{label}</Label>
+      <Input
+        variant="secondary"
+        inputMode="numeric"
+        dir="ltr"
+        className="text-left"
+        value={formatPriceInput(value, allowNegative)}
+        onChange={handleChange}
+        onFocus={handleFocus}
+        {...props}
+      />
+    </TextField>
+  );
+}
 
 export function FormInput({ label, onFocus, ...props }: FormInputProps) {
   function handleFocus(event: FocusEvent<HTMLInputElement>) {
@@ -201,7 +243,13 @@ export function FormDatePicker({
     <div className="space-y-2">
       <Label className="text-sm font-medium">{label}</Label>
       {hint && <p className="text-xs text-muted">{hint}</p>}
-      <FilterDatePicker year={year} month={month} day={day} onChange={onChange} />
+      <FilterDatePicker
+        year={year}
+        month={month}
+        day={day}
+        onChange={onChange}
+        hideHint
+      />
     </div>
   );
 }

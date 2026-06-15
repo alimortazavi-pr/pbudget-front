@@ -11,7 +11,7 @@ import type { IBudget } from "@/common/interfaces/budget.interface";
 import { getJalaliNow, toEnglishDigits } from "@/common/utils";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showToast } from "@/common/utils/toast";
-import { FormInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
+import { FormDatePicker, FormInput, FormPriceInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
 import {
   DebtLedgerSection,
   type DebtLedgerMode,
@@ -47,6 +47,9 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   const [price, setPrice] = useState(String(budget?.price ?? ""));
   const [type, setType] = useState(String(budget?.type ?? BudgetType.COST));
   const [category, setCategory] = useState(budget?.category?._id ?? "");
+  const [year, setYear] = useState(budget?.year ?? String(now.jYear()));
+  const [month, setMonth] = useState(budget?.month ?? String(now.jMonth() + 1));
+  const [day, setDay] = useState(budget?.day ?? String(now.jDate()));
   const selectedCategory = useMemo(
     () => (categories ?? []).find((item) => item._id === category),
     [categories, category],
@@ -57,9 +60,11 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [debtLedger, setDebtLedger] = useState<DebtLedgerValue>(initialDebtLedger);
 
-  const year = budget?.year ?? String(now.jYear());
-  const month = budget?.month ?? String(now.jMonth() + 1);
-  const day = budget?.day ?? String(now.jDate());
+  function handleDateChange(value: { year: string; month: string; day: string }) {
+    setYear(value.year);
+    setMonth(value.month);
+    setDay(value.day);
+  }
 
   function updateDebtLedger(patch: Partial<DebtLedgerValue>) {
     if (patch.mode === "settle-receivable") {
@@ -186,11 +191,18 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
             ))}
           </div>
 
-          <FormInput
+          <FormPriceInput
             label="مبلغ (تومان)"
-            inputMode="numeric"
             value={price}
-            onChange={(e) => setPrice(e.target.value)}
+            onChange={setPrice}
+          />
+
+          <FormDatePicker
+            label="تاریخ (شمسی)"
+            year={year}
+            month={month}
+            day={day}
+            onChange={handleDateChange}
           />
 
           <FormSelect

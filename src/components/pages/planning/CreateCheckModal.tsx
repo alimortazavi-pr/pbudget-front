@@ -10,6 +10,7 @@ import {
   FormDatePicker,
   FormInput,
   FormPersonComboBox,
+  FormPriceInput,
   FormTextArea,
 } from "@/components/common/form/FormFields";
 import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
@@ -115,12 +116,7 @@ export function CreateCheckModal({
             ))}
           </div>
 
-          <FormInput
-            label="مبلغ (تومان)"
-            inputMode="numeric"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-          />
+          <FormPriceInput label="مبلغ (تومان)" value={amount} onChange={setAmount} />
           <FormPersonComboBox
             label="طرف حساب"
             value={person}

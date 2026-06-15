@@ -7,7 +7,7 @@ import * as profileApi from "@/common/api/profile";
 import { toEnglishDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
-import { FormInput } from "@/components/common/form/FormFields";
+import { FormPriceInput } from "@/components/common/form/FormFields";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { setProfile, userSelector } from "@/stores/profile";
 
@@ -54,11 +54,10 @@ export function ChangeBalanceModal({ trigger }: ChangeBalanceModalProps) {
               <p className="mb-3 text-sm text-muted">
                 موجودی فعلی: {user?.budget ?? 0} تومان — مقدار جدید را وارد کنید
               </p>
-              <FormInput
+              <FormPriceInput
                 label="موجودی جدید"
-                inputMode="numeric"
                 value={price}
-                onChange={(e) => setPrice(e.target.value)}
+                onChange={setPrice}
               />
             </Modal.Body>
             <Modal.Footer>

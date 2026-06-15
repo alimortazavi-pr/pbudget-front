@@ -11,6 +11,7 @@ import { AppModal, AppModalHeader, AppModalSheet, modalSheetBodyClass, modalShee
 import { FormInput } from "@/components/common/form/FormFields";
 import { OtpCodeField } from "@/components/common/form/OtpCodeField";
 import { ChangeMobileModal } from "@/components/pages/profile/ChangeMobileModal";
+import { ExperienceModeSection } from "@/components/pages/profile/ExperienceModeSection";
 import { TelegramConnectSection } from "@/components/pages/profile/TelegramConnectSection";
 import { useTelegramStatus } from "@/common/hooks/useTelegramStatus";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
@@ -190,6 +191,8 @@ export function ProfilePage() {
           </div>
         </div>
       </form>
+
+      <ExperienceModeSection />
 
       <TelegramConnectSection />
 

@@ -9,7 +9,7 @@ import type { IDebt } from "@/common/interfaces/debt.interface";
 import { formatJalaliDate, formatPrice, toEnglishDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
-import { FormInput } from "@/components/common/form/FormFields";
+import { FormPriceInput } from "@/components/common/form/FormFields";
 import { DebtType } from "@/types/enums";
 
 type DebtSettleModalProps = {
@@ -88,11 +88,10 @@ export function DebtSettleModal({
             مانده: <strong>{formatPrice(debt.remainingAmount)}</strong>
           </p>
 
-          <FormInput
+          <FormPriceInput
             label="مبلغ تسویه (تومان)"
-            inputMode="numeric"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            onChange={setAmount}
           />
 
           {loading ? (

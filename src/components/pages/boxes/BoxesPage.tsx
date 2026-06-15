@@ -6,7 +6,7 @@ import { Add, Box1, Edit2, Trash } from "iconsax-reactjs";
 
 import * as boxesApi from "@/common/api/boxes";
 import type { IBox } from "@/common/interfaces/box.interface";
-import { formatPrice, getJalaliNow } from "@/common/utils";
+import { formatPrice, formatPriceInput, getJalaliNow, parsePriceInput } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { FormInput } from "@/components/common/form/FormFields";
 import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
@@ -61,7 +61,7 @@ export function BoxesPage() {
     const now = getJalaliNow();
     try {
       await boxesApi.changeBoxBudget(box._id, {
-        price: budgetAmount,
+        price: parsePriceInput(budgetAmount, true),
         year: String(now.jYear()),
         month: String(now.jMonth() + 1),
         day: String(now.jDate()),
@@ -158,12 +158,16 @@ export function BoxesPage() {
               </div>
               <div className="mt-4 flex gap-2">
                 <Input
-                placeholder="مبلغ افزایش/کاهش"
-                value={budgetAmount}
-                onChange={(e) => setBudgetAmount(e.target.value)}
-                variant="secondary"
-                className="flex-1"
-              />
+                  placeholder="مبلغ افزایش/کاهش"
+                  value={formatPriceInput(budgetAmount, true)}
+                  onChange={(e) =>
+                    setBudgetAmount(parsePriceInput(e.target.value, true))
+                  }
+                  variant="secondary"
+                  inputMode="numeric"
+                  dir="ltr"
+                  className="flex-1 text-left"
+                />
                 <Button size="sm" onPress={() => void addBudget(box)}>
                   اعمال
                 </Button>

@@ -20,6 +20,7 @@
     "js-cookie": "^3.0.8",
     "moment-jalali": "^0.3.9",
     "next": "16.2.6",
+    "price-generator": "^0.0.3",
     "react": "19.2.4",
     "react-aria": "^3.49.0",
     "react-date-object": "^2.1.9",

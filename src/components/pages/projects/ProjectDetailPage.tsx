@@ -11,7 +11,7 @@ import * as projectsApi from "@/common/api/projects";
 import type { IProjectDetail, IProjectItem, ProjectStatus as ProjectStatusType } from "@/common/interfaces/project.interface";
 import { formatJalaliDate, formatPrice, formatCount, toEnglishDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
-import { FormInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
+import { FormInput, FormPriceInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
 import { BudgetType, ProjectItemType, ProjectStatus } from "@/types/enums";
 
 type ProjectDetailPageProps = {
@@ -250,11 +250,10 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
 
       {tab === "overview" && (
         <div className="glass space-y-4 rounded-2xl p-4">
-          <FormInput
+          <FormPriceInput
             label="مبلغ کل قرارداد (تومان)"
-            inputMode="numeric"
             value={totalAmount}
-            onChange={(e) => setTotalAmount(e.target.value)}
+            onChange={setTotalAmount}
           />
           <FormSelect
             label="وضعیت"

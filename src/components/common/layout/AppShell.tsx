@@ -7,6 +7,8 @@ import { PATHS } from "@/common/constants";
 import { APP_NAME_FA } from "@/common/constants/brand";
 import { AuthBootstrap } from "@/components/common/layout/AuthBootstrap";
 import { MobileAppShell } from "@/components/common/layout/MobileAppShell";
+import { TimelineAppShell } from "@/components/common/layout/TimelineAppShell";
+import { useExperience } from "@/components/providers/ExperienceProvider";
 
 const PAGE_TITLES: Record<string, string> = {
   [PATHS.HOME]: "داشبورد",
@@ -25,6 +27,8 @@ const PAGE_TITLES: Record<string, string> = {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const { experienceMode, mounted } = useExperience();
+  const isTimeline = mounted && experienceMode === "timeline";
   const isAuthPage = pathname === PATHS.GET_STARTED;
 
   if (isAuthPage) {
@@ -43,33 +47,47 @@ export function AppShell({ children }: { children: ReactNode }) {
       ? "ویرایش تراکنش"
       : isProjectDetail && pathname !== PATHS.PROJECTS
         ? "مدیریت پروژه"
-        : PAGE_TITLES[pathname]) ?? APP_NAME_FA;
+        : pathname === PATHS.HOME && isTimeline
+          ? "خط زمانی"
+          : PAGE_TITLES[pathname]) ?? APP_NAME_FA;
+
+  const shellProps = {
+    title,
+    showBack:
+      pathname !== PATHS.HOME &&
+      pathname !== PATHS.BOXES &&
+      pathname !== PATHS.CATEGORIES &&
+      pathname !== PATHS.PROFILE,
+    hideTabBar:
+      pathname === PATHS.CREATE_BUDGET ||
+      pathname.startsWith("/budgets/") ||
+      pathname === PATHS.ANALYSIS ||
+      pathname === PATHS.DEBTS ||
+      pathname === PATHS.INSTALLMENTS ||
+      pathname === PATHS.CHECKS ||
+      pathname === PATHS.NOTES ||
+      pathname === PATHS.PROJECTS ||
+      pathname === PATHS.TASKS ||
+      pathname.startsWith("/projects/"),
+  };
 
   return (
     <>
       <AuthBootstrap />
-      <MobileAppShell
-        title={title}
-        showBack={
-          pathname !== PATHS.HOME &&
-          pathname !== PATHS.BOXES &&
-          pathname !== PATHS.CATEGORIES
-        }
-        hideTabBar={
-          pathname === PATHS.CREATE_BUDGET ||
-          pathname.startsWith("/budgets/") ||
-          pathname === PATHS.ANALYSIS ||
-          pathname === PATHS.DEBTS ||
-          pathname === PATHS.INSTALLMENTS ||
-          pathname === PATHS.CHECKS ||
-          pathname === PATHS.NOTES ||
-          pathname === PATHS.PROJECTS ||
-          pathname === PATHS.TASKS ||
-          pathname.startsWith("/projects/")
-        }
-      >
-        {children}
-      </MobileAppShell>
+      {isTimeline ? (
+        <TimelineAppShell {...shellProps}>{children}</TimelineAppShell>
+      ) : (
+        <MobileAppShell
+          {...shellProps}
+          showBack={
+            pathname !== PATHS.HOME &&
+            pathname !== PATHS.BOXES &&
+            pathname !== PATHS.CATEGORIES
+          }
+        >
+          {children}
+        </MobileAppShell>
+      )}
     </>
   );
 }

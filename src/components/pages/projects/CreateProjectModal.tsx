@@ -8,7 +8,7 @@ import * as projectsApi from "@/common/api/projects";
 import type { ICategory } from "@/common/interfaces/category.interface";
 import { toEnglishDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
-import { FormInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
+import { FormInput, FormPriceInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
 import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { categoriesSelector, setCategories } from "@/stores/category";
@@ -176,11 +176,10 @@ export function CreateProjectModal({
               />
             )}
 
-            <FormInput
+            <FormPriceInput
               label="مبلغ کل قرارداد (تومان)"
-              inputMode="numeric"
               value={totalAmount}
-              onChange={(e) => setTotalAmount(e.target.value)}
+              onChange={setTotalAmount}
             />
             <FormTextArea
               label="توضیحات (اختیاری)"

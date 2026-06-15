@@ -12,6 +12,7 @@ type FilterDatePickerProps = {
   month: string;
   day: string;
   onChange: (value: { year: string; month: string; day: string }) => void;
+  hideHint?: boolean;
 };
 
 export function FilterDatePicker({
@@ -19,6 +20,7 @@ export function FilterDatePicker({
   month,
   day,
   onChange,
+  hideHint,
 }: FilterDatePickerProps) {
   const value =
     year && month
@@ -41,9 +43,11 @@ export function FilterDatePicker({
 
   return (
     <div className="pb-filter-date space-y-2">
-      <p className="text-xs leading-5 text-muted">
-        اگر تاریخ را در حالت ماهانه قرار داده باشید روز تاریخ محاسبه نمی‌شود
-      </p>
+      {!hideHint && (
+        <p className="text-xs leading-5 text-muted">
+          اگر تاریخ را در حالت ماهانه قرار داده باشید روز تاریخ محاسبه نمی‌شود
+        </p>
+      )}
       <DatePicker
         value={value}
         locale={persianLocale}

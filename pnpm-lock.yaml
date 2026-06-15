@@ -38,6 +38,9 @@ importers:
       next:
         specifier: 16.2.6
         version: 16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      price-generator:
+        specifier: ^0.0.3
+        version: 0.0.3
       react:
         specifier: 19.2.4
         version: 19.2.4
@@ -2372,6 +2375,9 @@ packages:
   pretty-bytes@6.1.1:
     resolution: {integrity: sha512-mQUvGU6aUFQ+rNvTIAcZuWGRT9a6f6Yrg9bHs4ImKF+HZCEK+plBvnAZYSIQztknZF2qnzNtr6F8s0+IuptdlQ==}
     engines: {node: ^14.13.1 || >=16.0.0}
+
+  price-generator@0.0.3:
+    resolution: {integrity: sha512-VlUag94JZ+kpyBNEV1oPanvWH+4r3DKwkDIrJ3gxGA6CaFmOmPL86CIejaoEc/MGD9mHcqwl2i1ZABN0u3eYKA==}
 
   prop-types@15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
@@ -5221,6 +5227,8 @@ snapshots:
   prelude-ls@1.2.1: {}
 
   pretty-bytes@6.1.1: {}
+
+  price-generator@0.0.3: {}
 
   prop-types@15.8.1:
     dependencies:
