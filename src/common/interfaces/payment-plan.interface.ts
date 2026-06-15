@@ -1,4 +1,15 @@
+import type { IBudget } from "./budget.interface";
+
 export type OccurrenceStatus = "pending" | "paid" | "skipped";
+
+export interface IPaymentPlanStats {
+  paidAmount: number;
+  pendingAmount: number;
+  paidCount: number;
+  pendingCount: number;
+  skippedCount: number;
+  occurrenceCount: number;
+}
 
 export interface IPaymentPlan {
   _id: string;
@@ -15,6 +26,13 @@ export interface IPaymentPlan {
   remindDaysBefore: number;
   active: boolean;
   description?: string;
+  stats?: IPaymentPlanStats;
+}
+
+export interface IPaymentPlanDetail {
+  plan: IPaymentPlan;
+  occurrences: IPaymentPlanOccurrence[];
+  budgets: IBudget[];
 }
 
 export interface IPaymentPlanOccurrence {

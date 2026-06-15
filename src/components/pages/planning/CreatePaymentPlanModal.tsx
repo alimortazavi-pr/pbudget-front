@@ -15,7 +15,7 @@ import { categoriesSelector } from "@/stores/category";
 type CreatePaymentPlanModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreated: () => void;
+  onCreated: (planId?: string) => void;
 };
 
 export function CreatePaymentPlanModal({
@@ -45,7 +45,7 @@ export function CreatePaymentPlanModal({
 
     setSubmitting(true);
     try {
-      await paymentPlansApi.createPaymentPlan({
+      const result = await paymentPlansApi.createPaymentPlan({
         title: title.trim(),
         person: person.trim(),
         amount: toEnglishDigits(amount),
@@ -59,7 +59,7 @@ export function CreatePaymentPlanModal({
         description,
       });
       showToast("برنامه پرداخت ثبت شد", "success");
-      onCreated();
+      onCreated(result.plan._id);
       onOpenChange(false);
       setTitle("");
       setPerson("");

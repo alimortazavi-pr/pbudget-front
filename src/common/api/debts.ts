@@ -23,6 +23,11 @@ export async function fetchDebts(params?: {
   return data;
 }
 
+export async function fetchDebt(id: string) {
+  const { data } = await axiosInstance.get<{ debt: IDebt }>(`/debts/${id}`);
+  return data.debt;
+}
+
 export async function createDebt(payload: {
   sourceBudgetId: string;
   type: string;

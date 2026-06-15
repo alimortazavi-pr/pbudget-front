@@ -42,14 +42,21 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   const isBudgetEdit = pathname.startsWith("/budgets/");
   const isProjectDetail = pathname.startsWith("/projects/");
+  const isInstallmentDetail =
+    pathname.startsWith("/installments/") && pathname !== PATHS.INSTALLMENTS;
+  const isDebtDetail = pathname.startsWith("/debts/") && pathname !== PATHS.DEBTS;
   const title =
     (isBudgetEdit
       ? "ویرایش تراکنش"
       : isProjectDetail && pathname !== PATHS.PROJECTS
         ? "مدیریت پروژه"
-        : pathname === PATHS.HOME && isTimeline
-          ? "خط زمانی"
-          : PAGE_TITLES[pathname]) ?? APP_NAME_FA;
+        : isInstallmentDetail
+          ? "برنامه پرداخت"
+          : isDebtDetail
+            ? "طلب و بدهی"
+            : pathname === PATHS.HOME && isTimeline
+              ? "خط زمانی"
+              : PAGE_TITLES[pathname]) ?? APP_NAME_FA;
 
   const shellProps = {
     title,
@@ -68,10 +75,14 @@ export function AppShell({ children }: { children: ReactNode }) {
       pathname === PATHS.NOTES ||
       pathname === PATHS.PROJECTS ||
       pathname === PATHS.TASKS ||
-      pathname.startsWith("/projects/"),
+      pathname.startsWith("/projects/") ||
+      isInstallmentDetail ||
+      isDebtDetail,
     showPeriodBar: !(
       [PATHS.INSTALLMENTS, PATHS.CHECKS, PATHS.NOTES, PATHS.TASKS] as string[]
-    ).includes(pathname),
+    ).includes(pathname) &&
+      !isInstallmentDetail &&
+      !isDebtDetail,
   };
 
   return (

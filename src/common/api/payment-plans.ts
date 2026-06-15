@@ -2,6 +2,7 @@ import { axiosInstance } from "@/common/axiosInstance";
 import type {
   IMonthlyPaymentOverview,
   IPaymentPlan,
+  IPaymentPlanDetail,
 } from "@/common/interfaces/payment-plan.interface";
 
 export async function fetchMonthlyPayments(year: string, month: string) {
@@ -15,6 +16,32 @@ export async function fetchMonthlyPayments(year: string, month: string) {
 export async function fetchPaymentPlans() {
   const { data } = await axiosInstance.get<{ plans: IPaymentPlan[] }>("/payment-plans");
   return data.plans;
+}
+
+export async function fetchPaymentPlan(id: string) {
+  const { data } = await axiosInstance.get<IPaymentPlanDetail>(`/payment-plans/${id}`);
+  return data;
+}
+
+export async function updatePaymentPlan(
+  id: string,
+  payload: {
+    title?: string;
+    person?: string;
+    amount?: string;
+    category?: string;
+    dueDayOfMonth?: string;
+    remindOnMonthStart?: boolean;
+    remindDaysBefore?: string;
+    active?: boolean;
+    description?: string;
+  },
+) {
+  const { data } = await axiosInstance.patch<{ plan: IPaymentPlan }>(
+    `/payment-plans/${id}`,
+    payload,
+  );
+  return data.plan;
 }
 
 export async function createPaymentPlan(payload: {

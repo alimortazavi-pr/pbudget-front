@@ -5,11 +5,11 @@ import Link from "next/link";
 import { Button } from "@heroui/react";
 import { ArrowDown, ArrowUp, Profile2User } from "iconsax-reactjs";
 
+import { PATHS } from "@/common/constants";
 import * as debtsApi from "@/common/api/debts";
 import type { IDebt, IDebtSummary } from "@/common/interfaces/debt.interface";
 import { formatJalaliDate, formatPrice, formatCount } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
-import { DebtSettleModal } from "@/components/pages/debts/DebtSettleModal";
 import { DebtType } from "@/types/enums";
 
 type FilterTab = "open" | "all" | "settled";
@@ -29,7 +29,6 @@ export function DebtsPage() {
   const [debts, setDebts] = useState<IDebt[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<FilterTab>("open");
-  const [settleTarget, setSettleTarget] = useState<IDebt | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -76,8 +75,7 @@ export function DebtsPage() {
         <p className="text-sm font-medium text-white/80">مدیریت تعهدات مالی</p>
         <h1 className="mt-1 text-2xl font-bold">طلب و بدهی</h1>
         <p className="mt-2 text-sm leading-7 text-white/80">
-          تراکنش پرداختی را به عنوان بدهی/طلب علامت بزنید و بعداً با تراکنش واقعی
-          تسویه کنید.
+          هر طلب یا بدهی را باز کنید؛ تسویه‌ها، تراکنش‌ها و تحلیل را در یک صفحه ببینید.
         </p>
       </section>
 
@@ -145,7 +143,11 @@ export function DebtsPage() {
                 : 0;
 
             return (
-              <article key={debt._id} className="glass rounded-2xl p-4">
+              <Link
+                key={debt._id}
+                href={PATHS.DEBT(debt._id)}
+                className="block glass rounded-2xl p-4 transition hover:border-accent/40"
+              >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
@@ -168,6 +170,9 @@ export function DebtsPage() {
                     </p>
                     <p className="mt-1 text-xs text-muted">
                       {formatJalaliDate(String(debt.year), String(debt.month), String(debt.day))}
+                      {debt.settlements?.length
+                        ? ` · ${formatCount(debt.settlements.length)} تسویه`
+                        : ""}
                     </p>
                   </div>
                   <div className="text-left">
@@ -182,54 +187,11 @@ export function DebtsPage() {
                     style={{ width: `${Math.min(progress, 100)}%` }}
                   />
                 </div>
-
-                {debt.settlements?.length > 0 && (
-                  <div className="mt-3 space-y-1 border-t border-border/40 pt-3 text-xs text-muted">
-                    {debt.settlements.map((settlement) => {
-                      const budget =
-                        typeof settlement.budget === "object" ? settlement.budget : null;
-                      return (
-                        <p key={settlement._id ?? `${debt._id}-${settlement.amount}`}>
-                          تسویه {formatPrice(settlement.amount)}
-                          {budget?.category?.title ? ` · ${budget.category.title}` : ""}
-                        </p>
-                      );
-                    })}
-                  </div>
-                )}
-
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {debt.status !== "settled" && (
-                    <Button size="sm" variant="primary" onPress={() => setSettleTarget(debt)}>
-                      تسویه
-                    </Button>
-                  )}
-                  {typeof debt.sourceBudget === "object" && debt.sourceBudget?._id && (
-                    <Link
-                      href={`/budgets/${debt.sourceBudget._id}`}
-                      className="inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium text-accent hover:bg-accent/10"
-                    >
-                      تراکنش مبدأ
-                    </Link>
-                  )}
-                </div>
-              </article>
+              </Link>
             );
           })}
         </div>
       )}
-
-      <DebtSettleModal
-        debt={settleTarget}
-        open={Boolean(settleTarget)}
-        onOpenChange={(open) => {
-          if (!open) setSettleTarget(null);
-        }}
-        onSettled={() => {
-          setSettleTarget(null);
-          void load();
-        }}
-      />
     </div>
   );
 }
