@@ -113,7 +113,7 @@ export function ShellAccountMenu({
               onNavigate?.();
             }}
           >
-            ویرایش
+            تنظیم
           </Button>
         </div>
         <p

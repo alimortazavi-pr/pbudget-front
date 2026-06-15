@@ -13,7 +13,7 @@ import { Button, Modal } from "@heroui/react";
 import type { FormEvent } from "react";
 
 import * as profileApi from "@/common/api/profile";
-import { formatPrice, toEnglishDigits } from "@/common/utils";
+import { formatPrice, parsePriceInput } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { FormPriceInput } from "@/components/common/form/FormFields";
@@ -53,18 +53,22 @@ function BalanceModalDialog({
 
   useEffect(() => {
     if (!open) return;
-    setPrice(user?.budget != null ? String(user.budget) : "");
-  }, [open, user?.budget]);
+    setPrice("");
+  }, [open]);
 
   async function submit(e?: FormEvent) {
     e?.preventDefault();
+    const delta = parseInt(parsePriceInput(price, true), 10);
+    if (!price.trim() || Number.isNaN(delta) || delta === 0) {
+      showToast("مبلغ تغییر را وارد کنید (مثبت برای افزایش، منفی برای کاهش)");
+      return;
+    }
+
     setLoading(true);
     try {
-      const updated = await profileApi.changeUserBudget(
-        parseInt(toEnglishDigits(price), 10),
-      );
+      const updated = await profileApi.changeUserBudget(delta);
       dispatch(setProfile(updated));
-      showToast("موجودی به‌روز شد", "success");
+      showToast(`موجودی جدید: ${formatPrice(updated.budget ?? 0)} تومان`, "success");
       onOpenChange(false);
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
@@ -80,20 +84,30 @@ function BalanceModalDialog({
       <AppModalDialog>
         <form onSubmit={(e) => void submit(e)}>
           <AppModalHeader onClose={() => onOpenChange(false)}>
-            <Modal.Heading>ویرایش موجودی</Modal.Heading>
+            <Modal.Heading>تنظیم موجودی</Modal.Heading>
           </AppModalHeader>
           <Modal.Body>
             <p className="mb-3 text-sm text-muted">
-              موجودی فعلی: {formatPrice(user?.budget ?? 0)} — مقدار جدید را وارد کنید
+              موجودی فعلی: {formatPrice(user?.budget ?? 0)} تومان
             </p>
-            <FormPriceInput label="موجودی جدید" value={price} onChange={setPrice} />
+            <p className="mb-3 text-xs leading-6 text-muted">
+              مبلغ تغییر را وارد کنید — مثبت برای افزایش، منفی برای کاهش (مثل بات
+              تلگرام و صندوق‌ها).
+            </p>
+            <FormPriceInput
+              label="مبلغ افزایش/کاهش (تومان)"
+              value={price}
+              onChange={setPrice}
+              allowNegative
+              placeholder="مثلاً ۵۰۰۰۰۰ یا -۲۰۰۰۰۰"
+            />
           </Modal.Body>
           <Modal.Footer>
             <Button type="button" variant="ghost" onPress={() => onOpenChange(false)}>
               انصراف
             </Button>
             <Button type="submit" isPending={loading}>
-              ذخیره
+              اعمال تغییر
             </Button>
           </Modal.Footer>
         </form>

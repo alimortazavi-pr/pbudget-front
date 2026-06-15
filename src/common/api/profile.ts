@@ -34,9 +34,9 @@ export async function setPassword(password: string) {
   await axiosInstance.put("/users/profile/set-password", { password });
 }
 
-export async function changeUserBudget(price: number) {
+export async function changeUserBudget(delta: number) {
   const { data } = await axiosInstance.put("/users/profile/change-budget", {
-    price,
+    price: delta,
   });
   return normalizeProfile(data.user as Record<string, unknown>);
 }
