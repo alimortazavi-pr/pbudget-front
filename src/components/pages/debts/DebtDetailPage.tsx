@@ -53,11 +53,6 @@ function extractBudgets(debt: IDebt): IBudget[] {
   return Array.from(map.values());
 }
 
-<<<<<<< HEAD
-export function DebtDetailPage({ debtId: debtIdProp }: DebtDetailPageProps) {
-  const routeParams = useParams<{ id: string }>();
-  const debtId = debtIdProp ?? routeParams.id;
-=======
 function resolveBudgetTitle(budget: IBudget, categories: ICategory[]) {
   const category = budget.category as ICategory | string | null | undefined;
   if (category && typeof category === "object" && category.title) {
@@ -71,8 +66,9 @@ function resolveBudgetTitle(budget: IBudget, categories: ICategory[]) {
   return "بدون دسته";
 }
 
-export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
->>>>>>> 5af2882e49230829cfc11b9adf3559e0d110c7f5
+export function DebtDetailPage({ debtId: debtIdProp }: DebtDetailPageProps) {
+  const routeParams = useParams<{ id: string }>();
+  const debtId = debtIdProp ?? routeParams.id;
   const router = useRouter();
   const [debt, setDebt] = useState<IDebt | null>(null);
   const [loading, setLoading] = useState(true);
