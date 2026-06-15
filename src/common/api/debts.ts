@@ -68,6 +68,11 @@ export async function attachDebtSource(debtId: string, budgetId: string) {
   return data.debt;
 }
 
+export async function detachDebtSource(debtId: string) {
+  const { data } = await axiosInstance.delete<{ debt: IDebt }>(`/debts/${debtId}/source`);
+  return data.debt;
+}
+
 export async function settleDebt(
   debtId: string,
   payload: { budgetId: string; amount?: string },
@@ -77,6 +82,24 @@ export async function settleDebt(
     payload,
   );
   return data;
+}
+
+export async function settleDebtBulk(
+  debtId: string,
+  items: { budgetId: string; amount?: string }[],
+) {
+  const { data } = await axiosInstance.post<{ debt: IDebt }>(
+    `/debts/${debtId}/settle-bulk`,
+    { items },
+  );
+  return data.debt;
+}
+
+export async function removeDebtSettlement(debtId: string, budgetId: string) {
+  const { data } = await axiosInstance.delete<{ debt: IDebt }>(
+    `/debts/${debtId}/settlements/${budgetId}`,
+  );
+  return data.debt;
 }
 
 export async function fetchSettlementCandidates(debtId: string) {

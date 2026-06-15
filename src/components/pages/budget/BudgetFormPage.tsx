@@ -77,8 +77,15 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   function updateDebtLedger(patch: Partial<DebtLedgerValue>) {
     if (patch.mode === "settle-receivable") {
       setType(String(BudgetType.INCOME));
-    } else if (patch.mode === "settle-payable" || patch.mode === "create") {
+    } else if (patch.mode === "settle-payable") {
       setType(String(BudgetType.COST));
+    } else if (patch.mode === "create" || patch.debtType !== undefined) {
+      const nextDebtType = patch.debtType ?? debtLedger.debtType;
+      setType(
+        nextDebtType === String(DebtType.RECEIVABLE)
+          ? String(BudgetType.COST)
+          : String(BudgetType.INCOME),
+      );
     }
 
     setDebtLedger((current) => {

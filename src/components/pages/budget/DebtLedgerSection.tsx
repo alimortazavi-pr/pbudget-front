@@ -178,6 +178,12 @@ export function DebtLedgerSection({
                 options={persons}
                 placeholder="مثلاً علی، فروشگاه X"
               />
+
+              <p className="text-xs leading-6 text-muted">
+                {value.debtType === String(DebtType.RECEIVABLE)
+                  ? "طلب: تراکنش باید پرداختی (برداشت از حساب شما) باشد — وقتی به کسی وام داده‌اید."
+                  : "بدهی: تراکنش باید دریافتی (واریز به حساب شما) باشد — وقتی قرض گرفته‌اید یا نسیه خریده‌اید."}
+              </p>
             </div>
           )}
 

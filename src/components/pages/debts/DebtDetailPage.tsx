@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
-import { ArrowDown, ArrowUp, Profile2User, Trash } from "iconsax-reactjs";
+import { ArrowDown, ArrowUp, Link1, Profile2User, Trash } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 import * as debtsApi from "@/common/api/debts";
@@ -55,6 +55,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
   const [tab, setTab] = useState<TabId>("overview");
   const [settleOpen, setSettleOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [detachingId, setDetachingId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -97,6 +98,36 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
       showErrorToast(err, "خطا در حذف");
     } finally {
       setDeleting(false);
+    }
+  }
+
+  async function detachSource() {
+    if (!confirm("اتصال تراکنش مبدأ قطع شود؟")) return;
+
+    setDetachingId("source");
+    try {
+      await debtsApi.detachDebtSource(debtId);
+      showToast("اتصال مبدأ قطع شد", "success");
+      await load();
+    } catch (err) {
+      showErrorToast(err, "خطا در قطع اتصال");
+    } finally {
+      setDetachingId(null);
+    }
+  }
+
+  async function detachSettlement(budgetId: string) {
+    if (!confirm("این تسویه از طلب/بدهی جدا شود؟")) return;
+
+    setDetachingId(budgetId);
+    try {
+      await debtsApi.removeDebtSettlement(debtId, budgetId);
+      showToast("تسویه جدا شد", "success");
+      await load();
+    } catch (err) {
+      showErrorToast(err, "خطا در قطع اتصال");
+    } finally {
+      setDetachingId(null);
     }
   }
 
@@ -224,14 +255,27 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
                         <p className="mt-1 text-xs text-muted">{budget.category.title}</p>
                       ) : null}
                     </div>
-                    {budget?._id ? (
-                      <Link
-                        href={PATHS.BUDGET(budget._id)}
-                        className="text-sm font-medium text-accent"
-                      >
-                        مشاهده تراکنش
-                      </Link>
-                    ) : null}
+                    <div className="flex shrink-0 items-center gap-2">
+                      {budget?._id ? (
+                        <Link
+                          href={PATHS.BUDGET(budget._id)}
+                          className="text-sm font-medium text-accent"
+                        >
+                          مشاهده تراکنش
+                        </Link>
+                      ) : null}
+                      {budget?._id ? (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onPress={() => void detachSettlement(budget._id)}
+                          isPending={detachingId === budget._id}
+                          aria-label="جدا کردن تسویه"
+                        >
+                          <Link1 size={16} className="rotate-45" />
+                        </Button>
+                      ) : null}
+                    </div>
                   </div>
                 </article>
               );
@@ -267,7 +311,11 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
               {!hasSourceBudget && (
                 <AttachBudgetButton
                   title="وصل تراکنش مبدأ"
-                  description="یک تراکنش پرداختی قبلی را به عنوان مبدأ این طلب/بدهی انتخاب کنید."
+                  description={
+                    isReceivable
+                      ? "تراکنش پرداختی (برداشت از حساب شما) که با ایجاد این طلب مرتبط است را انتخاب کنید."
+                      : "تراکنش دریافتی (واریز به حساب شما) که با ایجاد این بدهی مرتبط است را انتخاب کنید."
+                  }
                   context={{ type: "debt-source", contextId: debtId }}
                   onAttach={async (budgetId) => {
                     await debtsApi.attachDebtSource(debtId, budgetId);
@@ -277,9 +325,33 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
                 />
               )}
               {debt.status !== "settled" && (
-                <Button size="sm" onPress={() => setSettleOpen(true)}>
-                  ثبت تسویه
-                </Button>
+                <>
+                  <AttachBudgetButton
+                    title="وصل تراکنش تسویه"
+                    description={
+                      isReceivable
+                        ? "یک یا چند تراکنش دریافتی (واریز) که طلب را تسویه کرده‌اند انتخاب کنید."
+                        : "یک یا چند تراکنش پرداختی (برداشت) که بدهی را پرداخت کرده‌اند انتخاب کنید."
+                    }
+                    context={{ type: "debt-settlement", contextId: debtId }}
+                    multiSelect
+                    onAttach={async (budgetId) => {
+                      await debtsApi.settleDebt(debtId, { budgetId });
+                      await load();
+                    }}
+                    onAttachMultiple={async (budgetIds) => {
+                      await debtsApi.settleDebtBulk(
+                        debtId,
+                        budgetIds.map((budgetId) => ({ budgetId })),
+                      );
+                      await load();
+                    }}
+                    attachLabel="وصل کردن"
+                  />
+                  <Button size="sm" onPress={() => setSettleOpen(true)}>
+                    ثبت تسویه
+                  </Button>
+                </>
               )}
             </div>
           </div>
@@ -295,6 +367,24 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
                 isSource={
                   typeof debt.sourceBudget === "object" &&
                   debt.sourceBudget?._id === budget._id
+                }
+                onDetach={
+                  typeof debt.sourceBudget === "object" &&
+                  debt.sourceBudget?._id === budget._id
+                    ? () => void detachSource()
+                    : debt.settlements.some(
+                          (s) =>
+                            (typeof s.budget === "object" ? s.budget?._id : s.budget) ===
+                            budget._id,
+                        )
+                      ? () => void detachSettlement(budget._id)
+                      : undefined
+                }
+                detaching={
+                  detachingId === budget._id ||
+                  (detachingId === "source" &&
+                    typeof debt.sourceBudget === "object" &&
+                    debt.sourceBudget?._id === budget._id)
                 }
               />
             ))
@@ -315,34 +405,58 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
   );
 }
 
-function BudgetRow({ budget, isSource }: { budget: IBudget; isSource?: boolean }) {
+function BudgetRow({
+  budget,
+  isSource,
+  onDetach,
+  detaching,
+}: {
+  budget: IBudget;
+  isSource?: boolean;
+  onDetach?: () => void;
+  detaching?: boolean;
+}) {
   const isIncome = budget.type === BudgetType.INCOME;
   const categoryTitle =
     typeof budget.category === "object" && budget.category ? budget.category.title : "";
 
   return (
-    <Link
-      href={PATHS.BUDGET(budget._id)}
-      className="block glass rounded-2xl p-4 transition hover:border-accent/40"
-    >
+    <div className="glass rounded-2xl p-4 transition hover:border-accent/40">
       <div className="flex items-center justify-between gap-3">
-        <div className="min-w-0">
+        <Link href={PATHS.BUDGET(budget._id)} className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <p className="truncate font-semibold">{categoryTitle || "بدون دسته"}</p>
             {isSource ? (
               <span className="rounded-md bg-accent/15 px-1.5 py-0.5 text-[10px] text-accent">
                 مبدأ
               </span>
-            ) : null}
+            ) : (
+              <span className="rounded-md bg-income-soft px-1.5 py-0.5 text-[10px] text-income">
+                تسویه
+              </span>
+            )}
           </div>
           {budget.description ? (
             <p className="mt-1 line-clamp-1 text-xs text-muted">{budget.description}</p>
           ) : null}
+        </Link>
+        <div className="flex shrink-0 items-center gap-2">
+          <p className={`font-bold ${isIncome ? "text-income" : "text-expense"}`}>
+            {formatPrice(budget.price)}
+          </p>
+          {onDetach ? (
+            <Button
+              size="sm"
+              variant="ghost"
+              onPress={onDetach}
+              isPending={detaching}
+              aria-label="قطع اتصال"
+            >
+              <Link1 size={16} className="rotate-45" />
+            </Button>
+          ) : null}
         </div>
-        <p className={`shrink-0 font-bold ${isIncome ? "text-income" : "text-expense"}`}>
-          {formatPrice(budget.price)}
-        </p>
       </div>
-    </Link>
+    </div>
   );
 }

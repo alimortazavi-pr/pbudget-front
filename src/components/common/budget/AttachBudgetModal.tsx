@@ -30,6 +30,7 @@ import { BudgetType } from "@/types/enums";
 export type AttachBudgetContext =
   | { type: "project"; contextId: string }
   | { type: "debt-source"; contextId: string }
+  | { type: "debt-settlement"; contextId: string }
   | { type: "occurrence"; contextId: string };
 
 type AttachBudgetModalProps = {
@@ -39,6 +40,8 @@ type AttachBudgetModalProps = {
   description: string;
   context: AttachBudgetContext;
   onAttach: (budgetId: string) => Promise<void>;
+  onAttachMultiple?: (budgetIds: string[]) => Promise<void>;
+  multiSelect?: boolean;
   attachLabel?: string;
 };
 
@@ -53,6 +56,8 @@ export function AttachBudgetModal({
   description,
   context,
   onAttach,
+  onAttachMultiple,
+  multiSelect = false,
   attachLabel = "انتخاب",
 }: AttachBudgetModalProps) {
   const categories = useAppSelector(categoriesSelector);
@@ -68,6 +73,8 @@ export function AttachBudgetModal({
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [attachingId, setAttachingId] = useState<string | null>(null);
+  const [attachingMultiple, setAttachingMultiple] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [budgets, setBudgets] = useState<IBudget[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
@@ -152,7 +159,10 @@ export function AttachBudgetModal({
   );
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      setSelectedIds(new Set());
+      return;
+    }
     setPage(1);
     void fetchPage(1, false);
   }, [open, filterKey, fetchPage]);
@@ -190,6 +200,15 @@ export function AttachBudgetModal({
     setYear(String(parseInt(year, 10) + delta));
   }
 
+  function toggleSelection(budgetId: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(budgetId)) next.delete(budgetId);
+      else next.add(budgetId);
+      return next;
+    });
+  }
+
   async function handleAttach(budgetId: string) {
     setAttachingId(budgetId);
     try {
@@ -200,6 +219,24 @@ export function AttachBudgetModal({
       showErrorToast(err, "خطا در وصل کردن تراکنش");
     } finally {
       setAttachingId(null);
+    }
+  }
+
+  async function handleAttachMultiple() {
+    if (!onAttachMultiple || selectedIds.size === 0) return;
+
+    setAttachingMultiple(true);
+    try {
+      await onAttachMultiple(Array.from(selectedIds));
+      showToast(
+        selectedIds.size === 1 ? "تراکنش وصل شد" : `${selectedIds.size} تراکنش وصل شد`,
+        "success",
+      );
+      onOpenChange(false);
+    } catch (err) {
+      showErrorToast(err, "خطا در وصل کردن تراکنش‌ها");
+    } finally {
+      setAttachingMultiple(false);
     }
   }
 
@@ -299,36 +336,73 @@ export function AttachBudgetModal({
                     typeof budget.category === "object" && budget.category
                       ? budget.category.title
                       : "بدون دسته";
+                  const isSelected = selectedIds.has(budget._id);
 
                   return (
                     <div
                       key={budget._id}
-                      className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface-secondary px-3 py-3"
+                      className={`flex items-center justify-between gap-3 rounded-xl border px-3 py-3 transition ${
+                        multiSelect && isSelected
+                          ? "border-accent bg-accent/10"
+                          : "border-border bg-surface-secondary"
+                      }`}
                     >
-                      <div className="min-w-0">
-                        <p className="truncate font-medium">{categoryTitle}</p>
-                        <p className="mt-1 text-xs text-muted">
-                          {formatJalaliDate(
-                            String(budget.year),
-                            String(budget.month),
-                            String(budget.day),
-                          )}
-                          {budget.description ? ` · ${budget.description}` : ""}
-                        </p>
-                      </div>
+                      {multiSelect ? (
+                        <button
+                          type="button"
+                          onClick={() => toggleSelection(budget._id)}
+                          className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 text-right"
+                        >
+                          <span
+                            className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border ${
+                              isSelected
+                                ? "border-accent bg-accent text-accent-foreground"
+                                : "border-border bg-surface"
+                            }`}
+                            aria-hidden
+                          >
+                            {isSelected ? "✓" : ""}
+                          </span>
+                          <div className="min-w-0">
+                            <p className="truncate font-medium">{categoryTitle}</p>
+                            <p className="mt-1 text-xs text-muted">
+                              {formatJalaliDate(
+                                String(budget.year),
+                                String(budget.month),
+                                String(budget.day),
+                              )}
+                              {budget.description ? ` · ${budget.description}` : ""}
+                            </p>
+                          </div>
+                        </button>
+                      ) : (
+                        <div className="min-w-0">
+                          <p className="truncate font-medium">{categoryTitle}</p>
+                          <p className="mt-1 text-xs text-muted">
+                            {formatJalaliDate(
+                              String(budget.year),
+                              String(budget.month),
+                              String(budget.day),
+                            )}
+                            {budget.description ? ` · ${budget.description}` : ""}
+                          </p>
+                        </div>
+                      )}
                       <div className="flex shrink-0 items-center gap-2">
                         <p
                           className={`text-sm font-bold ${isIncome ? "text-income" : "text-expense"}`}
                         >
                           {formatPrice(budget.price)}
                         </p>
-                        <Button
-                          size="sm"
-                          onPress={() => void handleAttach(budget._id)}
-                          isPending={attachingId === budget._id}
-                        >
-                          {attachLabel}
-                        </Button>
+                        {!multiSelect ? (
+                          <Button
+                            size="sm"
+                            onPress={() => void handleAttach(budget._id)}
+                            isPending={attachingId === budget._id}
+                          >
+                            {attachLabel}
+                          </Button>
+                        ) : null}
                       </div>
                     </div>
                   );
@@ -347,6 +421,22 @@ export function AttachBudgetModal({
             )}
           </div>
         </Modal.Body>
+        {multiSelect && onAttachMultiple ? (
+          <Modal.Footer className="border-t border-border/40">
+            <Button variant="ghost" onPress={() => onOpenChange(false)}>
+              انصراف
+            </Button>
+            <Button
+              onPress={() => void handleAttachMultiple()}
+              isDisabled={selectedIds.size === 0}
+              isPending={attachingMultiple}
+            >
+              {selectedIds.size > 0
+                ? `وصل کردن ${toPersianDigits(selectedIds.size)} تراکنش`
+                : "تراکنش انتخاب کنید"}
+            </Button>
+          </Modal.Footer>
+        ) : null}
       </AppModalDialog>
     </AppModal>
   );
@@ -358,6 +448,8 @@ type AttachBudgetButtonProps = {
   emptyMessage?: string;
   context: AttachBudgetContext;
   onAttach: (budgetId: string) => Promise<void>;
+  onAttachMultiple?: (budgetIds: string[]) => Promise<void>;
+  multiSelect?: boolean;
   attachLabel?: string;
 };
 
@@ -366,6 +458,8 @@ export function AttachBudgetButton({
   description,
   context,
   onAttach,
+  onAttachMultiple,
+  multiSelect,
   attachLabel,
 }: AttachBudgetButtonProps) {
   const [open, setOpen] = useState(false);
@@ -383,6 +477,8 @@ export function AttachBudgetButton({
         description={description}
         context={context}
         onAttach={onAttach}
+        onAttachMultiple={onAttachMultiple}
+        multiSelect={multiSelect}
         attachLabel={attachLabel}
       />
     </>
