@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import DateObject from "react-date-object";
 import persianCalendar from "react-date-object/calendars/persian";
 import persianLocale from "react-date-object/locales/persian_fa";
 import DatePicker from "react-multi-date-picker";
 
 import { DATE_PICKER_Z_INDEX } from "@/common/constants/overlay-z-index";
+import { useDatePickerOverlay } from "@/common/hooks/useDatePickerOverlay";
 
 import "react-multi-date-picker/styles/colors/teal.css";
 
@@ -28,13 +29,13 @@ export function FilterDatePicker({
   hideHint,
   inModal = false,
 }: FilterDatePickerProps) {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const [calendarOpen, setCalendarOpen] = useState(false);
-  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
-
-  useEffect(() => {
-    setPortalTarget(document.body);
-  }, []);
+  const {
+    wrapperRef,
+    calendarOpen,
+    setCalendarOpen,
+    usePortal,
+    resolvedPortalTarget,
+  } = useDatePickerOverlay(inModal);
 
   useEffect(() => {
     if (!inModal) return;
@@ -46,7 +47,7 @@ export function FilterDatePicker({
     return () => {
       dialog.classList.remove("pb-modal-date-open");
     };
-  }, [calendarOpen, inModal]);
+  }, [calendarOpen, inModal, wrapperRef]);
 
   const value =
     year && month
@@ -86,8 +87,8 @@ export function FilterDatePicker({
         }}
         format="YYYY/MM/DD"
         editable={false}
-        portal={inModal ? Boolean(portalTarget) : true}
-        portalTarget={inModal && portalTarget ? portalTarget : undefined}
+        portal={usePortal}
+        portalTarget={resolvedPortalTarget}
         fixMainPosition={inModal}
         zIndex={DATE_PICKER_Z_INDEX}
         calendarPosition={inModal ? "top-center" : "bottom-center"}

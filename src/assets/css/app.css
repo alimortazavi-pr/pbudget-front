@@ -206,6 +206,16 @@
     pointer-events: auto !important;
   }
 
+  .modal__dialog .rmdp-container,
+  .modal__dialog .rmdp-wrapper {
+    z-index: 100000 !important;
+    pointer-events: auto !important;
+  }
+
+  .modal__dialog .rmdp-container .rmdp-wrapper * {
+    pointer-events: auto !important;
+  }
+
   /* Modal: while calendar is open, underlying fields must not steal clicks */
   .modal__dialog.pb-modal-date-open .modal__body > *:not(.pb-filter-date) {
     pointer-events: none !important;

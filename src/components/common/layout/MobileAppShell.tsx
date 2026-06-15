@@ -16,7 +16,11 @@ import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { AppDrawer } from "./AppDrawer";
 import { ChangeAccountPopover } from "./ChangeAccountPopover";
 import { ShellSidebar } from "./ShellSidebar";
-import { CREATE_NAV_ITEM, PRIMARY_NAV_ITEMS } from "./shell-nav";
+import {
+  CREATE_NAV_ITEM,
+  MOBILE_TAB_SIDE_ITEMS,
+  PRIMARY_NAV_ITEMS,
+} from "./shell-nav";
 
 type MobileAppShellProps = {
   children: ReactNode;
@@ -27,9 +31,9 @@ type MobileAppShellProps = {
 
 const MOBILE_TAB_ITEMS = [
   PRIMARY_NAV_ITEMS[0],
-  PRIMARY_NAV_ITEMS[1],
+  MOBILE_TAB_SIDE_ITEMS[0],
   { ...CREATE_NAV_ITEM, label: "ثبت", fab: true as const },
-  PRIMARY_NAV_ITEMS[2],
+  MOBILE_TAB_SIDE_ITEMS[1],
   { href: "#more", label: "بیشتر", icon: Menu, isMore: true as const },
 ];
 

@@ -35,6 +35,12 @@ export const PRIMARY_NAV_ITEMS = [
   { href: PATHS.CATEGORIES, label: "دسته‌بندی‌ها", icon: Category },
 ] as const;
 
+/** Classic mobile tab bar — beside the center FAB */
+export const MOBILE_TAB_SIDE_ITEMS = [
+  { href: PATHS.TASKS, label: "برنامه روزانه", icon: Task },
+  { href: PATHS.NOTES, label: "یادداشت‌ها", icon: DocumentText },
+] as const;
+
 export const PLANNING_NAV_ITEMS = [
   { href: PATHS.TASKS, label: "برنامه روزانه", icon: Task },
   { href: PATHS.PROJECTS, label: "پروژه‌ها", icon: Briefcase },

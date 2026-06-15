@@ -332,7 +332,7 @@ export function FormDatePicker({
   inModal = false,
 }: FormDatePickerProps) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="pb-filter-date flex flex-col gap-2">
       <Label>{label}</Label>
       {hint && <p className="text-xs text-muted">{hint}</p>}
       <FilterDatePicker

@@ -11,6 +11,7 @@ import TimePicker from "react-multi-date-picker/plugins/time_picker";
 import "react-multi-date-picker/styles/colors/teal.css";
 
 import { DATE_PICKER_Z_INDEX } from "@/common/constants/overlay-z-index";
+import { useDatePickerOverlay } from "@/common/hooks/useDatePickerOverlay";
 
 export type ReminderDateTimeValue = {
   year: number;
@@ -57,6 +58,7 @@ export function ReminderDateTimePicker({
   onDraftChange,
 }: ReminderDateTimePickerProps) {
   const pickerRef = useRef<DatePickerRef>(null);
+  const { calendarOpen, setCalendarOpen } = useDatePickerOverlay(false);
   const [draft, setDraft] = useState<ReminderDateTimeValue>({
     year,
     month,
@@ -64,7 +66,6 @@ export function ReminderDateTimePicker({
     hour,
     minute,
   });
-  const [calendarOpen, setCalendarOpen] = useState(false);
 
   useEffect(() => {
     if (!calendarOpen) {
