@@ -101,24 +101,39 @@ export function FormCategoryComboBox({
   emptyMessage = "دسته‌ای یافت نشد",
   isDisabled,
 }: FormCategoryComboBoxProps) {
+  const isNeutralSelection = !selectedKey || selectedKey === "all";
+
   const selectedOption = useMemo(
     () => options.find((item) => item.id === selectedKey),
     [options, selectedKey],
   );
-  const [inputValue, setInputValue] = useState(selectedOption?.label ?? "");
+
+  const committedLabel = isNeutralSelection ? "" : (selectedOption?.label ?? "");
+
+  const [inputValue, setInputValue] = useState(committedLabel);
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
-    setInputValue(selectedOption?.label ?? "");
-  }, [selectedOption?.label, selectedKey]);
+    if (!isSearching) {
+      setInputValue(committedLabel);
+    }
+  }, [committedLabel, selectedKey, isSearching]);
 
   const filteredItems = useMemo(() => {
     const query = inputValue.trim().toLowerCase();
-    if (!query || inputValue === selectedOption?.label) return options;
+    if (!query) return options;
     return options.filter((item) => item.label.toLowerCase().includes(query));
-  }, [inputValue, options, selectedOption?.label]);
+  }, [inputValue, options]);
+
+  function handleFocus(event: FocusEvent<HTMLInputElement>) {
+    setIsSearching(true);
+    setInputValue("");
+    event.currentTarget.select();
+  }
 
   function resetInputToSelection() {
-    setInputValue(selectedOption?.label ?? "");
+    setIsSearching(false);
+    setInputValue(committedLabel);
   }
 
   return (
@@ -133,9 +148,10 @@ export function FormCategoryComboBox({
       onSelectionChange={(key) => {
         if (key == null) return;
         const nextKey = String(key);
-        const nextLabel = options.find((item) => item.id === nextKey)?.label ?? "";
+        const isNeutral = nextKey === "all";
         onSelectionChange?.(nextKey);
-        setInputValue(nextLabel);
+        setInputValue(isNeutral ? "" : options.find((item) => item.id === nextKey)?.label ?? "");
+        setIsSearching(false);
       }}
       items={filteredItems}
     >
@@ -145,6 +161,7 @@ export function FormCategoryComboBox({
           placeholder={placeholder}
           dir="rtl"
           className="text-start"
+          onFocus={handleFocus}
           onBlur={resetInputToSelection}
         />
         <ComboBox.Trigger />

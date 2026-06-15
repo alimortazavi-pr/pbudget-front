@@ -12,6 +12,7 @@ import type { IDebt, IDebtSummary } from "@/common/interfaces/debt.interface";
 import { formatJalaliDate, formatPrice, formatCount } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { CreateDebtModal } from "@/components/pages/debts/CreateDebtModal";
+import { SettlementProgressBar } from "@/components/common/ui/SettlementProgressBar";
 import { DebtType } from "@/types/enums";
 
 type FilterTab = "open" | "all" | "settled";
@@ -205,18 +206,10 @@ export function DebtsPage() {
                 </div>
 
                 <div className="mt-3">
-                  <div className="mb-1 flex justify-between text-xs text-muted">
-                    <span>پیشرفت تسویه</span>
-                    <span>{Math.round(progress)}٪</span>
-                  </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-surface-secondary">
-                    <div
-                      className={`h-full rounded-full transition-all ${
-                        isReceivable ? "bg-income" : "bg-expense"
-                      }`}
-                      style={{ width: `${progress}%` }}
-                    />
-                  </div>
+                  <SettlementProgressBar
+                    progress={progress}
+                    tone={isReceivable ? "receivable" : "payable"}
+                  />
                 </div>
               </Link>
             );
