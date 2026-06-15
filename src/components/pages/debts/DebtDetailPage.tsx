@@ -13,6 +13,7 @@ import type { IBudget } from "@/common/interfaces/budget.interface";
 import { formatJalaliDate, formatPrice, formatCount } from "@/common/utils";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { AttachBudgetButton } from "@/components/common/budget/AttachBudgetModal";
+import { SettlementProgressBar } from "@/components/common/ui/SettlementProgressBar";
 import { DebtSettleModal } from "@/components/pages/debts/DebtSettleModal";
 import { BudgetType, DebtType } from "@/types/enums";
 
@@ -191,16 +192,10 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
         </div>
 
         <div className="mt-4">
-          <div className="mb-1 flex justify-between text-xs text-muted">
-            <span>پیشرفت تسویه</span>
-            <span>{Math.round(progress)}٪</span>
-          </div>
-          <div className="h-2 overflow-hidden rounded-full bg-surface-secondary">
-            <div
-              className={`h-full rounded-full ${isReceivable ? "bg-income" : "bg-expense"}`}
-              style={{ width: `${progress}%` }}
-            />
-          </div>
+          <SettlementProgressBar
+            progress={progress}
+            tone={isReceivable ? "receivable" : "payable"}
+          />
         </div>
 
         {debt.description ? (
