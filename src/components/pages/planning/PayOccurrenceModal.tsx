@@ -72,7 +72,6 @@ export function PayOccurrenceModal({
   return (
     <AppModal open={open} onOpenChange={onOpenChange}>
       <Modal.Dialog className="max-w-lg">
-        <Modal.CloseTrigger />
         <AppModalHeader onClose={() => onOpenChange(false)}>
           <Modal.Heading>پرداخت {occurrence.plan.title}</Modal.Heading>
         </AppModalHeader>

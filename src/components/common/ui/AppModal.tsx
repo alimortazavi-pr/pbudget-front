@@ -89,23 +89,24 @@ export const modalSheetFooterClass =
 type ModalCloseButtonProps = {
   onPress: () => void;
   label?: string;
+  className?: string;
 };
 
-/** Close control — sits at the visual top-left in RTL headers */
+/** Close control — top-left in RTL (physical left), accent circle icon */
 export function ModalCloseButton({
   onPress,
   label = "بستن",
+  className = "",
 }: ModalCloseButtonProps) {
   return (
     <Button
       isIconOnly
       variant="ghost"
-      size="sm"
       aria-label={label}
       onPress={onPress}
-      className="shrink-0 text-muted"
+      className={`app-modal-close h-10 w-10 min-w-10 shrink-0 text-accent hover:bg-accent/10 ${className}`}
     >
-      <CloseCircle size={22} variant="Bold" />
+      <CloseCircle size={28} variant="Bold" />
     </Button>
   );
 }
@@ -123,10 +124,13 @@ export function AppModalHeader({
 }: AppModalHeaderProps) {
   return (
     <Modal.Header
-      className={`flex flex-row items-start gap-3 border-b border-border/40 px-5 py-4 ${className}`}
+      className={`relative border-b border-border/40 px-5 py-4 pe-5 ps-14 ${className}`}
     >
-      <div className="min-w-0 flex-1">{children}</div>
-      <ModalCloseButton onPress={onClose} />
+      <ModalCloseButton
+        onPress={onClose}
+        className="absolute left-4 top-3.5 z-10"
+      />
+      <div className="min-w-0 text-start">{children}</div>
     </Modal.Header>
   );
 }

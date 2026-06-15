@@ -77,7 +77,6 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
   return (
     <AppModal open={open} onOpenChange={onOpenChange}>
       <Modal.Dialog className="max-w-lg">
-        <Modal.CloseTrigger />
         <AppModalHeader onClose={() => onOpenChange(false)}>
           <Modal.Heading>ثبت طلب یا بدهی</Modal.Heading>
         </AppModalHeader>

@@ -91,7 +91,6 @@ export function CreateCheckModal({
   return (
     <AppModal open={open} onOpenChange={onOpenChange}>
       <Modal.Dialog className="max-w-lg">
-        <Modal.CloseTrigger />
         <AppModalHeader onClose={() => onOpenChange(false)}>
           <Modal.Heading>ثبت چک جدید</Modal.Heading>
         </AppModalHeader>

@@ -78,7 +78,6 @@ export function DebtSettleModal({
   return (
     <AppModal open={open} onOpenChange={onOpenChange}>
       <Modal.Dialog className="max-w-lg">
-        <Modal.CloseTrigger />
         <AppModalHeader onClose={() => onOpenChange(false)}>
           <Modal.Heading>تسویه {debt.person}</Modal.Heading>
         </AppModalHeader>

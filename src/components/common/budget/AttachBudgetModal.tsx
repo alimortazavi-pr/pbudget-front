@@ -127,8 +127,7 @@ export function AttachBudgetModal({
 
   return (
     <AppModal open={open} onOpenChange={onOpenChange} size="lg" mobileFull>
-      <Modal.Dialog className="flex max-h-[min(92dvh,760px)] flex-col">
-        <Modal.CloseTrigger />
+      <Modal.Dialog className="flex max-h-[min(92dvh,760px)] w-full flex-col overflow-hidden rounded-2xl border border-border/50 bg-surface sm:max-w-2xl">
         <AppModalHeader onClose={() => onOpenChange(false)}>
           <Modal.Heading>{title}</Modal.Heading>
           <p className="mt-1 text-sm text-muted">{description}</p>

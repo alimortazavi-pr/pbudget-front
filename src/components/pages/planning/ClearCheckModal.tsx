@@ -76,7 +76,6 @@ export function ClearCheckModal({
   return (
     <AppModal open={open} onOpenChange={onOpenChange}>
       <Modal.Dialog className="max-w-lg">
-        <Modal.CloseTrigger />
         <AppModalHeader onClose={() => onOpenChange(false)}>
           <Modal.Heading>{actionLabel}</Modal.Heading>
         </AppModalHeader>
