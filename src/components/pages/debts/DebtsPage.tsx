@@ -2,14 +2,16 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
-import { ArrowDown, ArrowUp, Profile2User } from "iconsax-reactjs";
+import { Add, ArrowDown, ArrowUp, Profile2User } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 import * as debtsApi from "@/common/api/debts";
 import type { IDebt, IDebtSummary } from "@/common/interfaces/debt.interface";
 import { formatJalaliDate, formatPrice, formatCount } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
+import { CreateDebtModal } from "@/components/pages/debts/CreateDebtModal";
 import { DebtType } from "@/types/enums";
 
 type FilterTab = "open" | "all" | "settled";
@@ -25,10 +27,12 @@ function statusLabel(status: IDebt["status"]) {
 }
 
 export function DebtsPage() {
+  const router = useRouter();
   const [summary, setSummary] = useState<IDebtSummary | null>(null);
   const [debts, setDebts] = useState<IDebt[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<FilterTab>("open");
+  const [createOpen, setCreateOpen] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -104,6 +108,14 @@ export function DebtsPage() {
         </div>
       )}
 
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-sm text-muted">فیلتر وضعیت</p>
+        <Button size="sm" onPress={() => setCreateOpen(true)}>
+          <Add size={18} />
+          طلب/بدهی جدید
+        </Button>
+      </div>
+
       <div className="flex gap-2">
         {(
           [
@@ -131,7 +143,15 @@ export function DebtsPage() {
         <div className="glass rounded-2xl p-10 text-center text-muted">در حال بارگذاری…</div>
       ) : sortedDebts.length === 0 ? (
         <div className="glass rounded-2xl p-10 text-center text-muted">
-          موردی برای نمایش نیست. هنگام ثبت تراکنش پرداختی، گزینه طلب/بدهی را فعال کنید.
+          <p>هنوز طلب یا بدهی ثبت نشده.</p>
+          <p className="mt-2 text-sm leading-7">
+            از دکمه «طلب/بدهی جدید» طرف حساب را اضافه کنید، یا هنگام ثبت تراکنش گزینه
+            «مرتبط با طلب یا بدهی» را فعال کنید.
+          </p>
+          <Button className="mt-4" onPress={() => setCreateOpen(true)}>
+            <Add size={18} />
+            ثبت طرف حساب
+          </Button>
         </div>
       ) : (
         <div className="space-y-3">
@@ -192,6 +212,12 @@ export function DebtsPage() {
           })}
         </div>
       )}
+
+      <CreateDebtModal
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        onCreated={(debtId) => router.push(PATHS.DEBT(debtId))}
+      />
     </div>
   );
 }

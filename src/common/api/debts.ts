@@ -39,6 +39,35 @@ export async function createDebt(payload: {
   return data;
 }
 
+export async function createStandaloneDebt(payload: {
+  type: string;
+  person: string;
+  amount: string;
+  category: string;
+  year: string;
+  month: string;
+  day: string;
+  description?: string;
+}) {
+  const { data } = await axiosInstance.post<{ debt: IDebt }>("/debts/standalone", payload);
+  return data.debt;
+}
+
+export async function fetchSourceCandidates(debtId: string) {
+  const { data } = await axiosInstance.get<{ budgets: IBudget[] }>(
+    `/debts/${debtId}/source-candidates`,
+  );
+  return data;
+}
+
+export async function attachDebtSource(debtId: string, budgetId: string) {
+  const { data } = await axiosInstance.post<{ debt: IDebt }>(
+    `/debts/${debtId}/attach-source`,
+    { budgetId },
+  );
+  return data.debt;
+}
+
 export async function settleDebt(
   debtId: string,
   payload: { budgetId: string; amount?: string },

@@ -11,6 +11,7 @@ import * as projectsApi from "@/common/api/projects";
 import type { IProjectDetail, IProjectItem, ProjectStatus as ProjectStatusType } from "@/common/interfaces/project.interface";
 import { formatJalaliDate, formatPrice, formatCount, toEnglishDigits } from "@/common/utils";
 import { showErrorToast, showToast } from "@/common/utils/toast";
+import { AttachBudgetPanel } from "@/components/common/budget/AttachBudgetPanel";
 import { FormInput, FormPriceInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
 import { BudgetType, ProjectItemType, ProjectStatus } from "@/types/enums";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
@@ -333,16 +334,30 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
 
       {tab === "transactions" && (
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-sm text-muted">
               {formatCount(data.budgets.length)} تراکنش مرتبط · در لیست اصلی هم نمایش داده می‌شوند
             </p>
-            <Link href={PATHS.CREATE_BUDGET}>
-              <Button size="sm" variant="secondary">
-                <Add size={16} />
-                تراکنش جدید
-              </Button>
-            </Link>
+            <div className="flex flex-wrap gap-2">
+              <AttachBudgetPanel
+                title="افزودن از تراکنش‌ها"
+                description="یک تراکنش قبلی را به این پروژه وصل کنید."
+                emptyMessage="تراکنش آزادی برای وصل کردن به پروژه نیست."
+                loadCandidates={() =>
+                  projectsApi.fetchProjectBudgetCandidates(projectId).then((res) => res.budgets)
+                }
+                onAttach={async (budgetId) => {
+                  await projectsApi.attachProjectBudget(projectId, budgetId);
+                  await load();
+                }}
+              />
+              <Link href={PATHS.CREATE_BUDGET}>
+                <Button size="sm" variant="secondary">
+                  <Add size={16} />
+                  تراکنش جدید
+                </Button>
+              </Link>
+            </div>
           </div>
           {data.budgets.length === 0 ? (
             <div className="glass rounded-2xl p-8 text-center text-muted">

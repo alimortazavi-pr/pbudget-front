@@ -4,6 +4,7 @@ import type {
   IPaymentPlan,
   IPaymentPlanDetail,
 } from "@/common/interfaces/payment-plan.interface";
+import type { IBudget } from "@/common/interfaces/budget.interface";
 
 export async function fetchMonthlyPayments(year: string, month: string) {
   const { data } = await axiosInstance.get<IMonthlyPaymentOverview>(
@@ -16,6 +17,29 @@ export async function fetchMonthlyPayments(year: string, month: string) {
 export async function fetchPaymentPlans() {
   const { data } = await axiosInstance.get<{ plans: IPaymentPlan[] }>("/payment-plans");
   return data.plans;
+}
+
+export async function fetchPaymentPlanPersons() {
+  const { data } = await axiosInstance.get<{ persons: string[] }>("/payment-plans/persons");
+  return data.persons;
+}
+
+export async function fetchPaymentPlanBudgetCandidates(planId: string) {
+  const { data } = await axiosInstance.get<{ budgets: IBudget[] }>(
+    `/payment-plans/${planId}/budget-candidates`,
+  );
+  return data;
+}
+
+export async function linkOccurrenceBudget(
+  occurrenceId: string,
+  payload: { budgetId: string; note?: string },
+) {
+  const { data } = await axiosInstance.post(
+    `/payment-plans/occurrences/${occurrenceId}/link-budget`,
+    payload,
+  );
+  return data;
 }
 
 export async function fetchPaymentPlan(id: string) {

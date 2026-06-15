@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Switch } from "@heroui/react";
 
 import * as debtsApi from "@/common/api/debts";
+import { useMergedPersons } from "@/common/hooks/useMergedPersons";
 import type { IDebt } from "@/common/interfaces/debt.interface";
 import { formatPrice } from "@/common/utils";
 import { FormPersonComboBox, FormSelect } from "@/components/common/form/FormFields";
@@ -75,16 +76,11 @@ export function DebtLedgerSection({
   value,
   onChange,
 }: DebtLedgerSectionProps) {
-  const [persons, setPersons] = useState<string[]>([]);
+  const persons = useMergedPersons(value.enabled);
   const [openDebts, setOpenDebts] = useState<IDebt[]>([]);
 
   const settleDebtType =
     value.mode === "settle-receivable" ? DebtType.RECEIVABLE : DebtType.PAYABLE;
-
-  useEffect(() => {
-    if (!value.enabled) return;
-    void debtsApi.fetchDebtPersons().then(setPersons).catch(() => setPersons([]));
-  }, [value.enabled]);
 
   useEffect(() => {
     if (!value.enabled || !isSettleMode(value.mode)) return;

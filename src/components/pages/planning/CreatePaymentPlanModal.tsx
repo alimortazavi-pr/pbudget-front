@@ -7,7 +7,8 @@ import * as paymentPlansApi from "@/common/api/payment-plans";
 import { getJalaliNow, toEnglishDigits } from "@/common/utils";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showErrorToast, showToast } from "@/common/utils/toast";
-import { FormCategoryComboBox, FormInput, FormPriceInput, FormTextArea } from "@/components/common/form/FormFields";
+import { FormCategoryComboBox, FormInput, FormPersonComboBox, FormPriceInput, FormTextArea } from "@/components/common/form/FormFields";
+import { useMergedPersons } from "@/common/hooks/useMergedPersons";
 import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
@@ -25,6 +26,7 @@ export function CreatePaymentPlanModal({
 }: CreatePaymentPlanModalProps) {
   const categories = useAppSelector(categoriesSelector);
   const categoryOptions = getCategorySelectOptions(categories ?? []);
+  const persons = useMergedPersons(open);
   const now = getJalaliNow();
 
   const [title, setTitle] = useState("");
@@ -89,10 +91,11 @@ export function CreatePaymentPlanModal({
           </p>
 
           <FormInput label="عنوان" value={title} onChange={(e) => setTitle(e.target.value)} />
-          <FormInput
+          <FormPersonComboBox
             label="طرف حساب (اختیاری)"
             value={person}
-            onChange={(e) => setPerson(e.target.value)}
+            onChange={setPerson}
+            options={persons}
           />
           <FormPriceInput
             label="مبلغ هر قسط (تومان)"

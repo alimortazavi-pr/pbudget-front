@@ -1,11 +1,6 @@
 import { axiosInstance } from "@/common/axiosInstance";
-import type {
-  IProject,
-  IProjectDetail,
-  IProjectItem,
-  ProjectItemType,
-  ProjectStatus,
-} from "@/common/interfaces/project.interface";
+import type { IBudget } from "@/common/interfaces/budget.interface";
+import type { IProject, IProjectDetail, IProjectItem, ProjectItemType, ProjectStatus } from "@/common/interfaces/project.interface";
 
 export async function fetchProjects() {
   const { data } = await axiosInstance.get<{ projects: IProject[] }>("/projects");
@@ -71,4 +66,19 @@ export async function updateProjectItem(
 
 export async function deleteProjectItem(projectId: string, itemId: string) {
   await axiosInstance.delete(`/projects/${projectId}/items/${itemId}`);
+}
+
+export async function fetchProjectBudgetCandidates(projectId: string) {
+  const { data } = await axiosInstance.get<{ budgets: IBudget[] }>(
+    `/projects/${projectId}/budget-candidates`,
+  );
+  return data;
+}
+
+export async function attachProjectBudget(projectId: string, budgetId: string) {
+  const { data } = await axiosInstance.post<{ budget: IBudget }>(
+    `/projects/${projectId}/attach-budget`,
+    { budgetId },
+  );
+  return data.budget;
 }

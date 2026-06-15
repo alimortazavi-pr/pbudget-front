@@ -21,12 +21,15 @@ import {
 } from "@/common/utils";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showErrorToast, showToast } from "@/common/utils/toast";
+import { AttachBudgetPanel } from "@/components/common/budget/AttachBudgetPanel";
 import {
   FormCategoryComboBox,
   FormInput,
+  FormPersonComboBox,
   FormPriceInput,
   FormTextArea,
 } from "@/components/common/form/FormFields";
+import { useMergedPersons } from "@/common/hooks/useMergedPersons";
 import { PayOccurrenceModal } from "@/components/pages/planning/PayOccurrenceModal";
 import { BudgetType } from "@/types/enums";
 import { useAppSelector } from "@/stores/hooks";
@@ -48,6 +51,7 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
   const router = useRouter();
   const categories = useAppSelector(categoriesSelector);
   const categoryOptions = getCategorySelectOptions(categories ?? []);
+  const persons = useMergedPersons(true);
 
   const [data, setData] = useState<IPaymentPlanDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -256,10 +260,11 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
-          <FormInput
+          <FormPersonComboBox
             label="شخص / طرف حساب"
             value={person}
-            onChange={(e) => setPerson(e.target.value)}
+            onChange={setPerson}
+            options={persons}
           />
           <FormPriceInput label="مبلغ هر قسط" value={amount} onChange={setAmount} />
           <FormCategoryComboBox
@@ -352,14 +357,29 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
                     رد شده{item.payNote ? ` · ${item.payNote}` : ""}
                   </p>
                 ) : (
-                  <div className="mt-3 flex gap-2">
-                    <Button size="sm" className="flex-1" onPress={() => setPayTarget(item)}>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <Button size="sm" className="flex-1 min-w-[7rem]" onPress={() => setPayTarget(item)}>
                       پرداخت شد
                     </Button>
+                    <AttachBudgetPanel
+                      title="وصل تراکنش"
+                      description="یک تراکنش پرداختی قبلی را به این قسط وصل کنید."
+                      emptyMessage="تراکنش پرداختی آزاد برای این قسط نیست."
+                      loadCandidates={() =>
+                        paymentPlansApi
+                          .fetchPaymentPlanBudgetCandidates(planId)
+                          .then((res) => res.budgets)
+                      }
+                      onAttach={async (budgetId) => {
+                        await paymentPlansApi.linkOccurrenceBudget(item._id, { budgetId });
+                        await load();
+                      }}
+                      attachLabel="وصل"
+                    />
                     <Button
                       size="sm"
                       variant="secondary"
-                      className="flex-1"
+                      className="flex-1 min-w-[7rem]"
                       onPress={() => void skipOccurrence(item)}
                     >
                       رد کردن
@@ -374,7 +394,7 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
 
       {tab === "transactions" && (
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-sm text-muted">
               {formatCount(data.budgets.length)} تراکنش از پرداخت اقساط
             </p>
@@ -385,6 +405,9 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
               </Button>
             </Link>
           </div>
+          <p className="text-xs leading-6 text-muted">
+            برای وصل کردن تراکنش‌های قبلی، در تب «اقساط» روی «وصل تراکنش» همان قسط بزنید.
+          </p>
           {data.budgets.length === 0 ? (
             <div className="glass rounded-2xl p-8 text-center text-muted">
               هنوز تراکنشی از پرداخت این برنامه ثبت نشده

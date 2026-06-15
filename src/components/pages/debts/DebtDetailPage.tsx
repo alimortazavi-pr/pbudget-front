@@ -12,6 +12,7 @@ import type { IDebt } from "@/common/interfaces/debt.interface";
 import type { IBudget } from "@/common/interfaces/budget.interface";
 import { formatJalaliDate, formatPrice, formatCount } from "@/common/utils";
 import { showErrorToast, showToast } from "@/common/utils/toast";
+import { AttachBudgetPanel } from "@/components/common/budget/AttachBudgetPanel";
 import { DebtSettleModal } from "@/components/pages/debts/DebtSettleModal";
 import { BudgetType, DebtType } from "@/types/enums";
 
@@ -72,6 +73,12 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
   }, [load]);
 
   const budgets = useMemo(() => (debt ? extractBudgets(debt) : []), [debt]);
+
+  const hasSourceBudget = useMemo(() => {
+    if (!debt?.sourceBudget) return false;
+    if (typeof debt.sourceBudget === "string") return Boolean(debt.sourceBudget);
+    return Boolean(debt.sourceBudget._id);
+  }, [debt]);
 
   const settledAmount = useMemo(() => {
     if (!debt) return 0;
@@ -252,9 +259,33 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
 
       {tab === "transactions" && (
         <div className="space-y-3">
-          <p className="text-sm text-muted">
-            {formatCount(budgets.length)} تراکنش مرتبط · تراکنش مبدأ و تسویه‌ها
-          </p>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm text-muted">
+              {formatCount(budgets.length)} تراکنش مرتبط · تراکنش مبدأ و تسویه‌ها
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {!hasSourceBudget && (
+                <AttachBudgetPanel
+                  title="وصل تراکنش مبدأ"
+                  description="یک تراکنش پرداختی قبلی را به عنوان مبدأ این طلب/بدهی انتخاب کنید."
+                  emptyMessage="تراکنش پرداختی آزاد برای وصل کردن نیست."
+                  loadCandidates={() =>
+                    debtsApi.fetchSourceCandidates(debtId).then((res) => res.budgets)
+                  }
+                  onAttach={async (budgetId) => {
+                    await debtsApi.attachDebtSource(debtId, budgetId);
+                    await load();
+                  }}
+                  attachLabel="وصل کردن"
+                />
+              )}
+              {debt.status !== "settled" && (
+                <Button size="sm" onPress={() => setSettleOpen(true)}>
+                  ثبت تسویه
+                </Button>
+              )}
+            </div>
+          </div>
           {budgets.length === 0 ? (
             <div className="glass rounded-2xl p-8 text-center text-muted">
               تراکنشی یافت نشد

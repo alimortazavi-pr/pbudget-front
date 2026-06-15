@@ -17,7 +17,7 @@ export interface IDebt {
   totalAmount: number;
   remainingAmount: number;
   status: DebtStatus;
-  sourceBudget: IBudget | string;
+  sourceBudget?: IBudget | string;
   category: ICategory | string;
   year: number;
   month: number;
