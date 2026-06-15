@@ -11,6 +11,8 @@ import { ExperienceProvider } from "./ExperienceProvider";
 import { PeriodProvider } from "./PeriodProvider";
 import { AppShell } from "@/components/common/layout/AppShell";
 import { PwaInstallPrompt } from "@/components/common/PwaInstallPrompt";
+import { NativeBridge } from "@/components/common/NativeBridge";
+import { NativeOfflineBanner } from "@/components/common/NativeOfflineBanner";
 
 export const ClientProvider: FC<PropsWithChildren> = ({ children }) => {
   return (
@@ -26,6 +28,8 @@ export const ClientProvider: FC<PropsWithChildren> = ({ children }) => {
                   </PeriodProvider>
                 </Suspense>
                 <PwaInstallPrompt />
+                <NativeOfflineBanner />
+                <NativeBridge />
               </RootProvider>
             </I18nProvider>
           </ExperienceProvider>

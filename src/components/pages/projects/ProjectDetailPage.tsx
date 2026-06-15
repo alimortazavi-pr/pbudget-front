@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Button, Switch } from "@heroui/react";
 import { Add, Edit2, Task, Trash, TaskSquare, Wallet } from "iconsax-reactjs";
 
@@ -19,7 +19,8 @@ import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { categoriesSelector, setCategories } from "@/stores/category";
 
 type ProjectDetailPageProps = {
-  projectId: string;
+  /** اختیاری؛ در static export شناسه از useParams خوانده می‌شود. */
+  projectId?: string;
 };
 
 type TabId = "overview" | "transactions" | "installments" | "notebook";
@@ -34,7 +35,9 @@ function itemTypeLabel(type: IProjectItem["type"]) {
   return type === ProjectItemType.TASK ? "تسک" : "یادداشت";
 }
 
-export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
+export function ProjectDetailPage({ projectId: projectIdProp }: ProjectDetailPageProps) {
+  const routeParams = useParams<{ id: string }>();
+  const projectId = projectIdProp ?? routeParams.id;
   const router = useRouter();
   const dispatch = useAppDispatch();
   const categories = useAppSelector(categoriesSelector);

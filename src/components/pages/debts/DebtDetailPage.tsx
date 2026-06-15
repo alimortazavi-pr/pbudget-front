@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
 import { ArrowDown, ArrowUp, Link1, Profile2User, Trash } from "iconsax-reactjs";
 
@@ -17,7 +17,8 @@ import { DebtSettleModal } from "@/components/pages/debts/DebtSettleModal";
 import { BudgetType, DebtType } from "@/types/enums";
 
 type DebtDetailPageProps = {
-  debtId: string;
+  /** اختیاری؛ در static export شناسه از useParams خوانده می‌شود. */
+  debtId?: string;
 };
 
 type TabId = "overview" | "transactions";
@@ -48,7 +49,9 @@ function extractBudgets(debt: IDebt): IBudget[] {
   return Array.from(map.values());
 }
 
-export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
+export function DebtDetailPage({ debtId: debtIdProp }: DebtDetailPageProps) {
+  const routeParams = useParams<{ id: string }>();
+  const debtId = debtIdProp ?? routeParams.id;
   const router = useRouter();
   const [debt, setDebt] = useState<IDebt | null>(null);
   const [loading, setLoading] = useState(true);

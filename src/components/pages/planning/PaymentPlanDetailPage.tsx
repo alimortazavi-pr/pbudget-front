@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Button, Switch } from "@heroui/react";
 import { Add, Calendar, TickCircle, Trash } from "iconsax-reactjs";
 
@@ -36,7 +36,8 @@ import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
 
 type PaymentPlanDetailPageProps = {
-  planId: string;
+  /** اختیاری؛ در static export شناسه از useParams خوانده می‌شود. */
+  planId?: string;
 };
 
 type TabId = "overview" | "installments" | "transactions";
@@ -47,7 +48,9 @@ function occurrenceStatusLabel(status: IPaymentPlanOccurrence["status"]) {
   return "در انتظار";
 }
 
-export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
+export function PaymentPlanDetailPage({ planId: planIdProp }: PaymentPlanDetailPageProps) {
+  const routeParams = useParams<{ id: string }>();
+  const planId = planIdProp ?? routeParams.id;
   const router = useRouter();
   const categories = useAppSelector(categoriesSelector);
   const categoryOptions = getCategorySelectOptions(categories ?? []);

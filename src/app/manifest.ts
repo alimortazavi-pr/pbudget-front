@@ -1,5 +1,8 @@
 import type { MetadataRoute } from "next";
 
+// برای static export، مانیفست باید در زمان بیلد به‌صورت ثابت تولید شود.
+export const dynamic = "force-static";
+
 import {
   APP_DESCRIPTION_FA,
   APP_NAME_FA,

@@ -1,10 +1,11 @@
 import { ProjectDetailPage } from "@/components/pages/projects/ProjectDetailPage";
 
-type PageProps = {
-  params: Promise<{ id: string }>;
-};
+// static export (Capacitor): شناسه واقعی سمت کلاینت از useParams خوانده می‌شود.
+export const dynamicParams = false;
+export function generateStaticParams() {
+  return [{ id: "_" }];
+}
 
-export default async function Page({ params }: PageProps) {
-  const { id } = await params;
-  return <ProjectDetailPage projectId={id} />;
+export default function Page() {
+  return <ProjectDetailPage />;
 }
