@@ -159,7 +159,10 @@ export function DebtsPage() {
             const isReceivable = debt.type === DebtType.RECEIVABLE;
             const progress =
               debt.totalAmount > 0
-                ? ((debt.totalAmount - debt.remainingAmount) / debt.totalAmount) * 100
+                ? Math.min(
+                    ((debt.totalAmount - debt.remainingAmount) / debt.totalAmount) * 100,
+                    100,
+                  )
                 : 0;
 
             return (
@@ -201,11 +204,19 @@ export function DebtsPage() {
                   </div>
                 </div>
 
-                <div className="mt-3 h-2 overflow-hidden rounded-full bg-surface-secondary">
-                  <div
-                    className={`h-full rounded-full ${isReceivable ? "bg-income" : "bg-expense"}`}
-                    style={{ width: `${Math.min(progress, 100)}%` }}
-                  />
+                <div className="mt-3">
+                  <div className="mb-1 flex justify-between text-xs text-muted">
+                    <span>پیشرفت تسویه</span>
+                    <span>{Math.round(progress)}٪</span>
+                  </div>
+                  <div className="h-2 overflow-hidden rounded-full bg-surface-secondary">
+                    <div
+                      className={`h-full rounded-full transition-all ${
+                        isReceivable ? "bg-income" : "bg-expense"
+                      }`}
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
                 </div>
               </Link>
             );

@@ -33,6 +33,12 @@
   .bg-expense-soft {
     background: color-mix(in oklch, var(--brand-rose) 14%, transparent);
   }
+  .bg-income {
+    background: var(--brand-teal-deep);
+  }
+  .bg-expense {
+    background: var(--brand-rose-deep);
+  }
   .glass {
     @apply border border-border/50 bg-surface/80 backdrop-blur-xl;
   }
