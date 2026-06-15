@@ -18,7 +18,7 @@ pnpm dev
 
 پورت dev: **7711**
 
-API پیش‌فرض: `https://api.pbudget.ir/v1` (همان بک‌اند فعلی)
+API پیش‌فرض: `https://api.pdesk.ir/v1` (دامنه legacy `api.pbudget.ir` همچنان به همان بک‌اند اشاره می‌کند)
 
 ## مسیرها
 

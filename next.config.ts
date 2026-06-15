@@ -13,6 +13,15 @@ const withSerwist = withSerwistInit({
   disable: process.env.NODE_ENV === "development",
 });
 
-const nextConfig: NextConfig = {};
+const nextConfig: NextConfig = {
+  // دسترسی dev از دامنه‌های واقعی (مثلاً تست روی pdesk.ir / pbudget.ir قبل از دیپلوی)
+  allowedDevOrigins: [
+    "pdesk.ir",
+    "www.pdesk.ir",
+    "pbudget.ir",
+    "www.pbudget.ir",
+    "budget.paradisecode.org",
+  ],
+};
 
 export default withSerwist(nextConfig);

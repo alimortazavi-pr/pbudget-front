@@ -1,5 +1,5 @@
 const PROD_API_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "https://api.pbudget.ir/v1";
+  process.env.NEXT_PUBLIC_API_URL ?? "https://api.pdesk.ir/v1";
 
 const DEV_API_URL =
   process.env.NEXT_PUBLIC_DEV_API_URL ?? "http://localhost:7701/v1";
