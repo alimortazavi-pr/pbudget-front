@@ -80,7 +80,7 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
         <AppModalHeader onClose={() => onOpenChange(false)}>
           <Modal.Heading>ثبت طلب یا بدهی</Modal.Heading>
         </AppModalHeader>
-        <Modal.Body className="max-h-[70vh] space-y-4 overflow-y-auto">
+        <Modal.Body className="max-h-[70vh] space-y-4 overflow-x-visible overflow-y-auto overscroll-contain">
           <p className="text-sm text-muted">
             مثل پروژه، ابتدا طرف حساب را ثبت کنید. بعداً می‌توانید تراکنش مبدأ یا تسویه را
             از لیست تراکنش‌ها وصل کنید.
@@ -119,6 +119,11 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
             onSelectionChange={(key) => setCategory(key)}
             options={categoryOptions}
           />
+          <FormTextArea
+            label="توضیحات"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
           <FormDatePicker
             label="تاریخ ثبت"
             year={year}
@@ -130,11 +135,6 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
               setMonth(value.month);
               setDay(value.day);
             }}
-          />
-          <FormTextArea
-            label="توضیحات"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
           />
         </Modal.Body>
         <Modal.Footer>

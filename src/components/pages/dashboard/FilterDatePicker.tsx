@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import DateObject from "react-date-object";
 import persianCalendar from "react-date-object/calendars/persian";
 import persianLocale from "react-date-object/locales/persian_fa";
@@ -15,7 +16,7 @@ type FilterDatePickerProps = {
   day: string;
   onChange: (value: { year: string; month: string; day: string }) => void;
   hideHint?: boolean;
-  /** Opens calendar above input — better inside scrollable modals */
+  /** Better positioning + click handling inside modals */
   inModal?: boolean;
 };
 
@@ -27,6 +28,26 @@ export function FilterDatePicker({
   hideHint,
   inModal = false,
 }: FilterDatePickerProps) {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    setPortalTarget(document.body);
+  }, []);
+
+  useEffect(() => {
+    if (!inModal) return;
+
+    const dialog = wrapperRef.current?.closest(".modal__dialog");
+    if (!dialog) return;
+
+    dialog.classList.toggle("pb-modal-date-open", calendarOpen);
+    return () => {
+      dialog.classList.remove("pb-modal-date-open");
+    };
+  }, [calendarOpen, inModal]);
+
   const value =
     year && month
       ? new DateObject({
@@ -47,7 +68,7 @@ export function FilterDatePicker({
   }
 
   return (
-    <div className="pb-filter-date space-y-2">
+    <div ref={wrapperRef} className="pb-filter-date relative z-[1] space-y-2">
       {!hideHint && (
         <p className="text-xs leading-5 text-muted">
           اگر تاریخ را در حالت ماهانه قرار داده باشید روز تاریخ محاسبه نمی‌شود
@@ -58,10 +79,19 @@ export function FilterDatePicker({
         locale={persianLocale}
         calendar={persianCalendar}
         onChange={handleChange}
+        onOpen={() => setCalendarOpen(true)}
+        onClose={() => {
+          setCalendarOpen(false);
+          return undefined;
+        }}
         format="YYYY/MM/DD"
-        portal
+        editable={false}
+        portal={inModal ? Boolean(portalTarget) : true}
+        portalTarget={inModal && portalTarget ? portalTarget : undefined}
+        fixMainPosition={inModal}
         zIndex={DATE_PICKER_Z_INDEX}
         calendarPosition={inModal ? "top-center" : "bottom-center"}
+        offsetY={inModal ? 8 : undefined}
         containerClassName="w-full"
         inputClass="pb-form-date-input"
         placeholder="تاریخ"

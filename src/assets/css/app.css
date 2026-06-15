@@ -202,6 +202,23 @@
     pointer-events: auto !important;
   }
 
+  body > .rmdp-container .rmdp-wrapper * {
+    pointer-events: auto !important;
+  }
+
+  /* Modal: while calendar is open, underlying fields must not steal clicks */
+  .modal__dialog.pb-modal-date-open .modal__body > *:not(.pb-filter-date) {
+    pointer-events: none !important;
+  }
+
+  .modal__dialog.pb-modal-date-open .modal__footer {
+    pointer-events: none !important;
+  }
+
+  .modal__dialog.pb-modal-date-open .pb-filter-date {
+    pointer-events: auto !important;
+  }
+
   .pb-form-date-input {
     @apply w-full min-h-11 rounded-xl bg-surface-secondary px-3 text-sm text-foreground;
     border: none;
