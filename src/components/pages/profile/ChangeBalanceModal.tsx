@@ -1,6 +1,13 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import {
+  cloneElement,
+  isValidElement,
+  useState,
+  type FormEvent,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 import { Button, Modal } from "@heroui/react";
 
 import * as profileApi from "@/common/api/profile";
@@ -12,7 +19,7 @@ import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { setProfile, userSelector } from "@/stores/profile";
 
 type ChangeBalanceModalProps = {
-  trigger: React.ReactNode;
+  trigger: ReactNode;
 };
 
 export function ChangeBalanceModal({ trigger }: ChangeBalanceModalProps) {
@@ -21,6 +28,11 @@ export function ChangeBalanceModal({ trigger }: ChangeBalanceModalProps) {
   const [open, setOpen] = useState(false);
   const [price, setPrice] = useState("");
   const [loading, setLoading] = useState(false);
+
+  function openModal() {
+    setPrice(user?.budget != null ? String(user.budget) : "");
+    setOpen(true);
+  }
 
   async function submit(e?: FormEvent) {
     e?.preventDefault();
@@ -39,11 +51,19 @@ export function ChangeBalanceModal({ trigger }: ChangeBalanceModalProps) {
     }
   }
 
+  const triggerNode = isValidElement(trigger)
+    ? cloneElement(trigger as ReactElement<{ onPress?: () => void }>, {
+        onPress: () => openModal(),
+      })
+    : (
+        <button type="button" className="cursor-pointer" onClick={() => openModal()}>
+          {trigger}
+        </button>
+      );
+
   return (
     <>
-      <span className="cursor-pointer" onClick={() => setOpen(true)}>
-        {trigger}
-      </span>
+      {triggerNode}
       <AppModal open={open} onOpenChange={setOpen}>
         <AppModalDialog>
           <form onSubmit={(e) => void submit(e)}>
