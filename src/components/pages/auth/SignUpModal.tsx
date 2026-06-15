@@ -31,7 +31,7 @@ export function SignUpModal({
 
   useEffect(() => {
     if (open) {
-      setFirstName(""); 
+      setFirstName("");
       setLastName("");
       setPassword("");
     }
