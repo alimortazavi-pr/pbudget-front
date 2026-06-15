@@ -1,7 +1,6 @@
 "use client";
 
-import { Button, Modal, useOverlayState } from "@heroui/react";
-import { CloseCircle } from "iconsax-reactjs";
+import { Modal, useOverlayState } from "@heroui/react";
 import { useEffect, type ReactNode } from "react";
 
 import { shouldCloseModalOnInteractOutside } from "@/common/utils/modal-overlay";
@@ -64,6 +63,21 @@ export function AppModal({
   );
 }
 
+type AppModalDialogProps = {
+  children: ReactNode;
+  className?: string;
+};
+
+/** Dialog shell with the standard HeroUI close trigger (top-left in RTL). */
+export function AppModalDialog({ children, className = "" }: AppModalDialogProps) {
+  return (
+    <Modal.Dialog className={className}>
+      <Modal.CloseTrigger />
+      {children}
+    </Modal.Dialog>
+  );
+}
+
 type AppModalSheetProps = {
   children: ReactNode;
   className?: string;
@@ -72,11 +86,11 @@ type AppModalSheetProps = {
 /** Dialog shell: full viewport on mobile, compact card on desktop */
 export function AppModalSheet({ children, className = "" }: AppModalSheetProps) {
   return (
-    <Modal.Dialog
+    <AppModalDialog
       className={`flex w-full min-h-0 max-h-[100dvh] flex-col rounded-none border-0 bg-surface p-0 max-sm:flex-1 sm:h-auto sm:max-h-[min(90dvh,720px)] sm:max-w-md sm:rounded-2xl sm:border sm:border-border/50 ${className}`}
     >
       {children}
-    </Modal.Dialog>
+    </AppModalDialog>
   );
 }
 
@@ -86,50 +100,18 @@ export const modalSheetBodyClass =
 export const modalSheetFooterClass =
   "shrink-0 border-t border-border/40 px-5 pt-4 pb-[max(1.25rem,env(safe-area-inset-bottom))]";
 
-type ModalCloseButtonProps = {
-  onPress: () => void;
-  label?: string;
-  className?: string;
-};
-
-/** Close control — top-left in RTL (physical left), accent circle icon */
-export function ModalCloseButton({
-  onPress,
-  label = "بستن",
-  className = "",
-}: ModalCloseButtonProps) {
-  return (
-    <Button
-      isIconOnly
-      variant="ghost"
-      aria-label={label}
-      onPress={onPress}
-      className={`app-modal-close h-10 w-10 min-w-10 shrink-0 text-accent hover:bg-accent/10 ${className}`}
-    >
-      <CloseCircle size={28} variant="Bold" />
-    </Button>
-  );
-}
-
 type AppModalHeaderProps = {
   children: ReactNode;
-  onClose: () => void;
   className?: string;
+  /** @deprecated Close is handled by Modal.CloseTrigger inside AppModalDialog */
+  onClose?: () => void;
 };
 
-export function AppModalHeader({
-  children,
-  onClose,
-  className = "",
-}: AppModalHeaderProps) {
+export function AppModalHeader({ children, className = "" }: AppModalHeaderProps) {
   return (
     <Modal.Header
-      className={`relative border-b border-border/40 px-5 py-4 pe-5 ps-14 ${className}`}
+      className={`border-b border-border/40 px-5 py-4 pe-5 ps-14 ${className}`}
     >
-      <ModalCloseButton
-        onPress={onClose}
-        className="absolute left-4 top-3.5 z-10"
-      />
       <div className="min-w-0 text-start">{children}</div>
     </Modal.Header>
   );

@@ -9,7 +9,7 @@ import * as authApi from "@/common/api/auth";
 import { PATHS } from "@/common/constants";
 import { saveDataToLocal } from "@/common/utils";
 import { useMediaQuery } from "@/common/hooks/useMediaQuery";
-import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { authenticate, setUsers, usersSelector } from "@/stores/auth";
 import { setProfile, userSelector } from "@/stores/profile";
@@ -58,7 +58,7 @@ export function ChangeAccountPopover() {
         onOpenChange={setOpen}
         placement={isDesktop ? "center" : "bottom"}
       >
-        <Modal.Dialog className={isDesktop ? "max-w-md" : "rounded-t-3xl"}>
+        <AppModalDialog className={isDesktop ? "max-w-md" : "rounded-t-3xl"}>
           <AppModalHeader onClose={() => setOpen(false)}>
             <Modal.Heading>تغییر حساب</Modal.Heading>
           </AppModalHeader>
@@ -93,7 +93,7 @@ export function ChangeAccountPopover() {
               افزودن اکانت
             </button>
           </Modal.Body>
-        </Modal.Dialog>
+        </AppModalDialog>
       </AppModal>
     </>
   );

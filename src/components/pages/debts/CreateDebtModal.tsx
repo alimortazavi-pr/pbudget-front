@@ -15,7 +15,7 @@ import {
   FormPriceInput,
   FormTextArea,
 } from "@/components/common/form/FormFields";
-import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
 import { DebtType } from "@/types/enums";
@@ -76,7 +76,7 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
 
   return (
     <AppModal open={open} onOpenChange={onOpenChange}>
-      <Modal.Dialog className="max-w-lg">
+      <AppModalDialog className="max-w-lg">
         <AppModalHeader onClose={() => onOpenChange(false)}>
           <Modal.Heading>ثبت طلب یا بدهی</Modal.Heading>
         </AppModalHeader>
@@ -145,7 +145,7 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
             ثبت
           </Button>
         </Modal.Footer>
-      </Modal.Dialog>
+      </AppModalDialog>
     </AppModal>
   );
 }

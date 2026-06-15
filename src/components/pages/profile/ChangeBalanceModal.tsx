@@ -6,7 +6,7 @@ import { Button, Modal } from "@heroui/react";
 import * as profileApi from "@/common/api/profile";
 import { toEnglishDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
-import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { FormPriceInput } from "@/components/common/form/FormFields";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { setProfile, userSelector } from "@/stores/profile";
@@ -45,7 +45,7 @@ export function ChangeBalanceModal({ trigger }: ChangeBalanceModalProps) {
         {trigger}
       </span>
       <AppModal open={open} onOpenChange={setOpen}>
-        <Modal.Dialog>
+        <AppModalDialog>
           <form onSubmit={(e) => void submit(e)}>
             <AppModalHeader onClose={() => setOpen(false)}>
               <Modal.Heading>ویرایش موجودی</Modal.Heading>
@@ -69,7 +69,7 @@ export function ChangeBalanceModal({ trigger }: ChangeBalanceModalProps) {
               </Button>
             </Modal.Footer>
           </form>
-        </Modal.Dialog>
+        </AppModalDialog>
       </AppModal>
     </>
   );

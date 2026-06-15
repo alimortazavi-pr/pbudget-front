@@ -16,7 +16,7 @@ import { JALALI_MONTHS } from "@/common/utils/jalali-date";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showToast } from "@/common/utils/toast";
 import { FormCategoryComboBox } from "@/components/common/form/FormFields";
-import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
 
 const DURATION_OPTIONS: Array<{ id: BudgetDuration; label: string; hint: string }> = [
@@ -171,7 +171,7 @@ export function BudgetExportModal({
 
   return (
     <AppModal open={open} onOpenChange={onOpenChange}>
-      <Modal.Dialog className="overflow-visible">
+      <AppModalDialog className="overflow-visible">
         <AppModalHeader onClose={() => onOpenChange(false)}>
           <div className="flex items-center gap-2">
             <Export size={22} className="text-accent" />
@@ -281,7 +281,7 @@ export function BudgetExportModal({
             دانلود خروجی
           </Button>
         </Modal.Footer>
-      </Modal.Dialog>
+      </AppModalDialog>
     </AppModal>
   );
 }

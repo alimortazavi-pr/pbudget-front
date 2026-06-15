@@ -21,7 +21,7 @@ import {
   formatJalaliYear,
 } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
-import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import {
   AppleNoteEditor,
   hasEditorContent,
@@ -478,7 +478,7 @@ export function NotesPage() {
       )}
 
       <AppModal open={categoryModalOpen} onOpenChange={setCategoryModalOpen}>
-        <Modal.Dialog>
+        <AppModalDialog>
           <form onSubmit={(e) => void saveCategory(e)}>
             <AppModalHeader onClose={() => setCategoryModalOpen(false)}>
               <Modal.Heading>
@@ -508,7 +508,7 @@ export function NotesPage() {
               </Button>
             </Modal.Footer>
           </form>
-        </Modal.Dialog>
+        </AppModalDialog>
       </AppModal>
     </div>
   );

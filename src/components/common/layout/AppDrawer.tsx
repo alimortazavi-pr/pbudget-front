@@ -4,7 +4,7 @@ import { Modal } from "@heroui/react";
 
 import {
   AppModal,
-  AppModalHeader,
+  AppModalDialog, AppModalHeader,
 } from "@/components/common/ui/AppModal";
 import { ShellAccountMenu } from "@/components/common/layout/ShellAccountMenu";
 
@@ -22,7 +22,7 @@ export function AppDrawer({ open, onOpenChange }: AppDrawerProps) {
       placement="bottom"
       backdropClassName="backdrop-blur-sm"
     >
-      <Modal.Dialog className="flex max-h-[100dvh] w-full min-h-0 flex-col rounded-none border-0 bg-surface p-0">
+      <AppModalDialog className="flex max-h-[100dvh] w-full min-h-0 flex-col rounded-none border-0 bg-surface p-0">
         <AppModalHeader onClose={() => onOpenChange(false)}>
           <Modal.Heading className="text-base font-bold">منو و حساب</Modal.Heading>
         </AppModalHeader>
@@ -32,7 +32,7 @@ export function AppDrawer({ open, onOpenChange }: AppDrawerProps) {
             onNavigate={() => onOpenChange(false)}
           />
         </div>
-      </Modal.Dialog>
+      </AppModalDialog>
     </AppModal>
   );
 }

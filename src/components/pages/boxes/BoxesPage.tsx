@@ -9,7 +9,7 @@ import type { IBox } from "@/common/interfaces/box.interface";
 import { formatPrice, formatPriceInput, getJalaliNow, parsePriceInput } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { FormInput } from "@/components/common/form/FormFields";
-import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { boxesSelector, setBoxes } from "@/stores/box";
 
@@ -178,7 +178,7 @@ export function BoxesPage() {
       )}
 
       <AppModal open={createOpen} onOpenChange={setCreateOpen}>
-        <Modal.Dialog>
+        <AppModalDialog>
           <form onSubmit={(e) => void saveBox(e)}>
             <AppModalHeader onClose={() => setCreateOpen(false)}>
               <Modal.Heading>{editBox ? "ویرایش صندوق" : "صندوق جدید"}</Modal.Heading>
@@ -195,7 +195,7 @@ export function BoxesPage() {
               </Button>
             </Modal.Footer>
           </form>
-        </Modal.Dialog>
+        </AppModalDialog>
       </AppModal>
     </div>
   );

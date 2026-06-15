@@ -13,7 +13,7 @@ import {
   FormPriceInput,
   FormTextArea,
 } from "@/components/common/form/FormFields";
-import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { CheckType } from "@/types/enums";
 
 type CreateCheckModalProps = {
@@ -90,7 +90,7 @@ export function CreateCheckModal({
 
   return (
     <AppModal open={open} onOpenChange={onOpenChange}>
-      <Modal.Dialog className="max-w-lg">
+      <AppModalDialog className="max-w-lg">
         <AppModalHeader onClose={() => onOpenChange(false)}>
           <Modal.Heading>ثبت چک جدید</Modal.Heading>
         </AppModalHeader>
@@ -154,7 +154,7 @@ export function CreateCheckModal({
             ثبت چک
           </Button>
         </Modal.Footer>
-      </Modal.Dialog>
+      </AppModalDialog>
     </AppModal>
   );
 }

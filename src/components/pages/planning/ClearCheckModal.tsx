@@ -9,7 +9,7 @@ import { getJalaliNow, toEnglishDigits } from "@/common/utils";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showToast } from "@/common/utils/toast";
 import { FormCategoryComboBox, FormPriceInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
-import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
 import { CheckType } from "@/types/enums";
@@ -75,7 +75,7 @@ export function ClearCheckModal({
 
   return (
     <AppModal open={open} onOpenChange={onOpenChange}>
-      <Modal.Dialog className="max-w-lg">
+      <AppModalDialog className="max-w-lg">
         <AppModalHeader onClose={() => onOpenChange(false)}>
           <Modal.Heading>{actionLabel}</Modal.Heading>
         </AppModalHeader>
@@ -109,7 +109,7 @@ export function ClearCheckModal({
             ثبت و ساخت تراکنش
           </Button>
         </Modal.Footer>
-      </Modal.Dialog>
+      </AppModalDialog>
     </AppModal>
   );
 }

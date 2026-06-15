@@ -8,7 +8,7 @@ import type { ICategory } from "@/common/interfaces/category.interface";
 import { getParentSelectOptions } from "@/common/utils/category-tree";
 import { showToast } from "@/common/utils/toast";
 import { FormInput, FormSelect } from "@/components/common/form/FormFields";
-import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { categoriesSelector, setCategories } from "@/stores/category";
 import { CategoryKind } from "@/types/enums";
@@ -66,7 +66,7 @@ export function CreateCategoryModal({
 
   return (
     <AppModal open={open} onOpenChange={onOpenChange}>
-      <Modal.Dialog>
+      <AppModalDialog>
         <form onSubmit={(e) => void save(e)}>
           <AppModalHeader onClose={() => onOpenChange(false)}>
             <Modal.Heading>ایجاد دسته‌بندی</Modal.Heading>
@@ -110,7 +110,7 @@ export function CreateCategoryModal({
             </Button>
           </Modal.Footer>
         </form>
-      </Modal.Dialog>
+      </AppModalDialog>
     </AppModal>
   );
 }

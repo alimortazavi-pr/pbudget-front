@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Button, Modal } from "@heroui/react";
 
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
-import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { FormCategoryComboBox } from "@/components/common/form/FormFields";
 import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
 import type { ICategory } from "@/common/interfaces/category.interface";
@@ -68,7 +68,7 @@ export function MoreFilterModal({
 
   return (
     <AppModal open={open} onOpenChange={onOpenChange}>
-      <Modal.Dialog className="overflow-visible">
+      <AppModalDialog className="overflow-visible">
         <AppModalHeader onClose={() => onOpenChange(false)}>
           <Modal.Heading>فیلتر تراکنش‌ها</Modal.Heading>
         </AppModalHeader>
@@ -100,7 +100,7 @@ export function MoreFilterModal({
             فیلتر
           </Button>
         </Modal.Footer>
-      </Modal.Dialog>
+      </AppModalDialog>
     </AppModal>
   );
 }

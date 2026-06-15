@@ -29,12 +29,17 @@ export async function fetchBudgetsForAttach(params: {
   month?: string;
   category?: string;
   q?: string;
+  page?: string;
+  limit?: string;
 }) {
-  const { data } = await axiosInstance.get<{ budgets: IBudget[] }>(
-    "/budgets/for-attach",
-    { params },
-  );
-  return data.budgets;
+  const { data } = await axiosInstance.get<{
+    budgets: IBudget[];
+    page: number;
+    limit: number;
+    total: number;
+    hasMore: boolean;
+  }>("/budgets/for-attach", { params });
+  return data;
 }
 
 export async function fetchBudgetById(id: string, token?: string) {

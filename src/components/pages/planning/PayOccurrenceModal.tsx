@@ -9,7 +9,7 @@ import { getJalaliNow, toEnglishDigits } from "@/common/utils";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showToast } from "@/common/utils/toast";
 import { FormCategoryComboBox, FormPriceInput, FormTextArea } from "@/components/common/form/FormFields";
-import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
 
@@ -71,7 +71,7 @@ export function PayOccurrenceModal({
 
   return (
     <AppModal open={open} onOpenChange={onOpenChange}>
-      <Modal.Dialog className="max-w-lg">
+      <AppModalDialog className="max-w-lg">
         <AppModalHeader onClose={() => onOpenChange(false)}>
           <Modal.Heading>پرداخت {occurrence.plan.title}</Modal.Heading>
         </AppModalHeader>
@@ -107,7 +107,7 @@ export function PayOccurrenceModal({
             ثبت پرداخت
           </Button>
         </Modal.Footer>
-      </Modal.Dialog>
+      </AppModalDialog>
     </AppModal>
   );
 }

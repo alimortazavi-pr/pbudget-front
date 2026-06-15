@@ -10,7 +10,7 @@ import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { FormCategoryComboBox, FormInput, FormPersonComboBox, FormPriceInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
 import { useMergedPersons } from "@/common/hooks/useMergedPersons";
-import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
 
@@ -106,7 +106,7 @@ export function CreatePaymentPlanModal({
 
   return (
     <AppModal open={open} onOpenChange={onOpenChange}>
-      <Modal.Dialog className="max-w-lg">
+      <AppModalDialog className="max-w-lg">
         <AppModalHeader onClose={() => onOpenChange(false)}>
           <Modal.Heading>برنامه پرداخت جدید</Modal.Heading>
         </AppModalHeader>
@@ -184,7 +184,7 @@ export function CreatePaymentPlanModal({
             ثبت
           </Button>
         </Modal.Footer>
-      </Modal.Dialog>
+      </AppModalDialog>
     </AppModal>
   );
 }

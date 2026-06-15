@@ -14,7 +14,7 @@ import {
   FormSelect,
   FormTextArea,
 } from "@/components/common/form/FormFields";
-import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 
 const PRIORITY_OPTIONS = [
   { id: "low", label: "کم" },
@@ -139,7 +139,7 @@ export function CreateRoutineModal({
 
   return (
     <AppModal open={open} onOpenChange={onOpenChange}>
-      <Modal.Dialog>
+      <AppModalDialog>
         <form onSubmit={(e) => void save(e)}>
           <AppModalHeader onClose={() => onOpenChange(false)}>
             <Modal.Heading>
@@ -267,7 +267,7 @@ export function CreateRoutineModal({
             </Button>
           </Modal.Footer>
         </form>
-      </Modal.Dialog>
+      </AppModalDialog>
     </AppModal>
   );
 }

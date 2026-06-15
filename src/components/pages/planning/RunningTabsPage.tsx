@@ -9,7 +9,7 @@ import type { IRunningTab } from "@/common/interfaces/running-tab.interface";
 import { formatPrice, formatCount, toEnglishDigits } from "@/common/utils";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { FormInput, FormPriceInput } from "@/components/common/form/FormFields";
-import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { chipClass } from "@/components/pages/planning/planning-shared";
 
 type FilterTab = "all" | "active" | "zero";
@@ -294,7 +294,7 @@ export function RunningTabsPage() {
       )}
 
       <AppModal open={createOpen} onOpenChange={setCreateOpen}>
-        <Modal.Dialog className="max-w-sm">
+        <AppModalDialog className="max-w-sm">
           <AppModalHeader onClose={() => setCreateOpen(false)}>
             <Modal.Heading>
               {editTab ? "ویرایش تعهد جاری" : "تعهد جاری جدید"}
@@ -321,7 +321,7 @@ export function RunningTabsPage() {
               {editTab ? "ذخیره" : "ثبت"}
             </Button>
           </Modal.Footer>
-        </Modal.Dialog>
+        </AppModalDialog>
       </AppModal>
     </div>
   );
