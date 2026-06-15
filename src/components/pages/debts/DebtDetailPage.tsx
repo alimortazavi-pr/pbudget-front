@@ -10,11 +10,14 @@ import { PATHS } from "@/common/constants";
 import * as debtsApi from "@/common/api/debts";
 import type { IDebt } from "@/common/interfaces/debt.interface";
 import type { IBudget } from "@/common/interfaces/budget.interface";
+import type { ICategory } from "@/common/interfaces/category.interface";
 import { formatJalaliDate, formatPrice, formatCount } from "@/common/utils";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { AttachBudgetButton } from "@/components/common/budget/AttachBudgetModal";
 import { SettlementProgressBar } from "@/components/common/ui/SettlementProgressBar";
 import { DebtSettleModal } from "@/components/pages/debts/DebtSettleModal";
+import { useAppSelector } from "@/stores/hooks";
+import { categoriesSelector } from "@/stores/category";
 import { BudgetType, DebtType } from "@/types/enums";
 
 type DebtDetailPageProps = {
@@ -47,6 +50,19 @@ function extractBudgets(debt: IDebt): IBudget[] {
   });
 
   return Array.from(map.values());
+}
+
+function resolveBudgetTitle(budget: IBudget, categories: ICategory[]) {
+  const category = budget.category as ICategory | string | null | undefined;
+  if (category && typeof category === "object" && category.title) {
+    return category.title;
+  }
+  if (typeof category === "string") {
+    const match = categories.find((item) => item._id === category);
+    if (match?.title) return match.title;
+  }
+  if (budget.description?.trim()) return budget.description.trim();
+  return "بدون دسته";
 }
 
 export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
@@ -411,16 +427,19 @@ function BudgetRow({
   onDetach?: () => void;
   detaching?: boolean;
 }) {
+  const categories = useAppSelector(categoriesSelector) ?? [];
   const isIncome = budget.type === BudgetType.INCOME;
-  const categoryTitle =
-    typeof budget.category === "object" && budget.category ? budget.category.title : "";
+  const title = resolveBudgetTitle(budget, categories);
+  const showDescription = Boolean(
+    budget.description?.trim() && budget.description.trim() !== title,
+  );
 
   return (
     <div className="glass rounded-2xl p-4 transition hover:border-accent/40">
       <div className="flex items-center justify-between gap-3">
         <Link href={PATHS.BUDGET(budget._id)} className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <p className="truncate font-semibold">{categoryTitle || "بدون دسته"}</p>
+            <p className="truncate font-semibold">{title}</p>
             {isSource ? (
               <span className="rounded-md bg-accent/15 px-1.5 py-0.5 text-[10px] text-accent">
                 مبدأ
@@ -431,7 +450,7 @@ function BudgetRow({
               </span>
             )}
           </div>
-          {budget.description ? (
+          {showDescription ? (
             <p className="mt-1 line-clamp-1 text-xs text-muted">{budget.description}</p>
           ) : null}
         </Link>
