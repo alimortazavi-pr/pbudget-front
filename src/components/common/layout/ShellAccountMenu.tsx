@@ -8,7 +8,7 @@ import { PATHS } from "@/common/constants";
 import { formatPrice } from "@/common/utils";
 import { storage } from "@/common/utils/storage";
 import { useTheme } from "@/components/providers/ThemeProvider";
-import { ChangeBalanceModal } from "@/components/pages/profile/ChangeBalanceModal";
+import { useBalanceModal } from "@/components/providers/BalanceModalProvider";
 import { ShellNavGroup } from "@/components/common/layout/ShellNavGroup";
 import {
   ACCOUNT_NAV_ITEMS,
@@ -36,6 +36,7 @@ export function ShellAccountMenu({
   const user = useAppSelector(userSelector);
   const { theme, toggleTheme } = useTheme();
   const { linked: telegramLinked } = useTelegramStatus();
+  const { openBalanceModal } = useBalanceModal();
 
   const accountNavItems = ACCOUNT_NAV_ITEMS.filter(
     (item) => item.label !== "بات تلگرام" || !telegramLinked,
@@ -103,13 +104,17 @@ export function ShellAccountMenu({
             <Wallet2 size={18} />
             موجودی کیف پول
           </div>
-          <ChangeBalanceModal
-            trigger={
-              <Button size="sm" variant="ghost" className="text-accent">
-                ویرایش
-              </Button>
-            }
-          />
+          <Button
+            size="sm"
+            variant="ghost"
+            className="text-accent"
+            onPress={() => {
+              openBalanceModal();
+              onNavigate?.();
+            }}
+          >
+            ویرایش
+          </Button>
         </div>
         <p
           className={

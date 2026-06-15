@@ -8,6 +8,7 @@ import { APP_NAME_FA } from "@/common/constants/brand";
 import { AuthBootstrap } from "@/components/common/layout/AuthBootstrap";
 import { MobileAppShell } from "@/components/common/layout/MobileAppShell";
 import { TimelineAppShell } from "@/components/common/layout/TimelineAppShell";
+import { BalanceModalProvider } from "@/components/providers/BalanceModalProvider";
 import { useExperience } from "@/components/providers/ExperienceProvider";
 
 const PAGE_TITLES: Record<string, string> = {
@@ -88,7 +89,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   };
 
   return (
-    <>
+    <BalanceModalProvider>
       <AuthBootstrap />
       {isTimeline ? (
         <TimelineAppShell {...shellProps}>{children}</TimelineAppShell>
@@ -104,6 +105,6 @@ export function AppShell({ children }: { children: ReactNode }) {
           {children}
         </MobileAppShell>
       )}
-    </>
+    </BalanceModalProvider>
   );
 }

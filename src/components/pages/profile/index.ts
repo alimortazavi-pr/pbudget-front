@@ -1,2 +1,2 @@
 export { ProfilePage } from "./ProfilePage";
-export { ChangeBalanceModal } from "./ChangeBalanceModal";
+export { useBalanceModal, BalanceModalProvider } from "@/components/providers/BalanceModalProvider";
