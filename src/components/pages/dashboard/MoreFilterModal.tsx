@@ -88,6 +88,7 @@ export function MoreFilterModal({
             year={date.year}
             month={date.month}
             day={date.day}
+            inModal
             onChange={setDate}
           />
         </Modal.Body>

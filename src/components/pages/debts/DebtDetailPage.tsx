@@ -12,7 +12,7 @@ import type { IDebt } from "@/common/interfaces/debt.interface";
 import type { IBudget } from "@/common/interfaces/budget.interface";
 import { formatJalaliDate, formatPrice, formatCount } from "@/common/utils";
 import { showErrorToast, showToast } from "@/common/utils/toast";
-import { AttachBudgetPanel } from "@/components/common/budget/AttachBudgetPanel";
+import { AttachBudgetButton } from "@/components/common/budget/AttachBudgetModal";
 import { DebtSettleModal } from "@/components/pages/debts/DebtSettleModal";
 import { BudgetType, DebtType } from "@/types/enums";
 
@@ -265,13 +265,10 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
             </p>
             <div className="flex flex-wrap gap-2">
               {!hasSourceBudget && (
-                <AttachBudgetPanel
+                <AttachBudgetButton
                   title="وصل تراکنش مبدأ"
                   description="یک تراکنش پرداختی قبلی را به عنوان مبدأ این طلب/بدهی انتخاب کنید."
-                  emptyMessage="تراکنش پرداختی آزاد برای وصل کردن نیست."
-                  loadCandidates={() =>
-                    debtsApi.fetchSourceCandidates(debtId).then((res) => res.budgets)
-                  }
+                  context={{ type: "debt-source", contextId: debtId }}
                   onAttach={async (budgetId) => {
                     await debtsApi.attachDebtSource(debtId, budgetId);
                     await load();

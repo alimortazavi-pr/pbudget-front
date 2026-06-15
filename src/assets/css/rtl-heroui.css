@@ -199,6 +199,7 @@ html[dir="rtl"] [data-slot="combo-box-popover"],
 html[dir="rtl"] [data-slot="popover"] {
   direction: rtl;
   text-align: start;
+  z-index: 100000;
 }
 
 /* --- Toast (HeroUI) --- */

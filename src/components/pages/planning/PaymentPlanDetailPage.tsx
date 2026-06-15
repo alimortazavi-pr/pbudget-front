@@ -21,7 +21,7 @@ import {
 } from "@/common/utils";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showErrorToast, showToast } from "@/common/utils/toast";
-import { AttachBudgetPanel } from "@/components/common/budget/AttachBudgetPanel";
+import { AttachBudgetButton } from "@/components/common/budget/AttachBudgetModal";
 import {
   FormCategoryComboBox,
   FormInput,
@@ -180,6 +180,14 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
             <h1 className="mt-1 text-2xl font-bold">{plan.title}</h1>
             {plan.person ? (
               <p className="mt-1 text-sm text-muted">{plan.person}</p>
+            ) : null}
+            {plan.project?.category?.title ? (
+              <Link
+                href={`${PATHS.PROJECTS}/${plan.project._id}`}
+                className="mt-1 inline-block text-sm text-primary"
+              >
+                پروژه: {plan.project.category.title}
+              </Link>
             ) : null}
           </div>
           <span
@@ -361,15 +369,10 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
                     <Button size="sm" className="flex-1 min-w-[7rem]" onPress={() => setPayTarget(item)}>
                       پرداخت شد
                     </Button>
-                    <AttachBudgetPanel
+                    <AttachBudgetButton
                       title="وصل تراکنش"
                       description="یک تراکنش پرداختی قبلی را به این قسط وصل کنید."
-                      emptyMessage="تراکنش پرداختی آزاد برای این قسط نیست."
-                      loadCandidates={() =>
-                        paymentPlansApi
-                          .fetchPaymentPlanBudgetCandidates(planId)
-                          .then((res) => res.budgets)
-                      }
+                      context={{ type: "occurrence", contextId: planId }}
                       onAttach={async (budgetId) => {
                         await paymentPlansApi.linkOccurrenceBudget(item._id, { budgetId });
                         await load();

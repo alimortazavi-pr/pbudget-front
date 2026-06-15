@@ -138,6 +138,7 @@ export function CreateCheckModal({
             year={dueYear}
             month={dueMonth}
             day={dueDay}
+            inModal
             onChange={handleDueDateChange}
           />
           <FormTextArea

@@ -59,6 +59,7 @@ export async function updatePaymentPlan(
     remindDaysBefore?: string;
     active?: boolean;
     description?: string;
+    projectId?: string;
   },
 ) {
   const { data } = await axiosInstance.patch<{ plan: IPaymentPlan }>(
@@ -80,6 +81,7 @@ export async function createPaymentPlan(payload: {
   remindOnMonthStart?: boolean;
   remindDaysBefore?: string;
   description?: string;
+  projectId?: string;
 }) {
   const { data } = await axiosInstance.post<{ plan: IPaymentPlan }>(
     "/payment-plans",

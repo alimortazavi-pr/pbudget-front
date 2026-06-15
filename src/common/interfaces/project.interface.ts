@@ -1,5 +1,6 @@
 import type { IBudget } from "./budget.interface";
 import type { ICategory } from "./category.interface";
+import type { IPaymentPlan } from "./payment-plan.interface";
 
 export type ProjectStatus = "active" | "completed" | "on_hold";
 export type ProjectItemType = "note" | "task";
@@ -41,4 +42,5 @@ export interface IProjectDetail {
   project: IProject;
   budgets: IBudget[];
   items: IProjectItem[];
+  paymentPlans: IPaymentPlan[];
 }

@@ -5,6 +5,8 @@ import persianCalendar from "react-date-object/calendars/persian";
 import persianLocale from "react-date-object/locales/persian_fa";
 import DatePicker from "react-multi-date-picker";
 
+import { DATE_PICKER_Z_INDEX } from "@/common/constants/overlay-z-index";
+
 import "react-multi-date-picker/styles/colors/teal.css";
 
 type FilterDatePickerProps = {
@@ -13,6 +15,8 @@ type FilterDatePickerProps = {
   day: string;
   onChange: (value: { year: string; month: string; day: string }) => void;
   hideHint?: boolean;
+  /** Opens calendar above input — better inside scrollable modals */
+  inModal?: boolean;
 };
 
 export function FilterDatePicker({
@@ -21,6 +25,7 @@ export function FilterDatePicker({
   day,
   onChange,
   hideHint,
+  inModal = false,
 }: FilterDatePickerProps) {
   const value =
     year && month
@@ -55,8 +60,8 @@ export function FilterDatePicker({
         onChange={handleChange}
         format="YYYY/MM/DD"
         portal
-        zIndex={10050}
-        calendarPosition="bottom-center"
+        zIndex={DATE_PICKER_Z_INDEX}
+        calendarPosition={inModal ? "top-center" : "bottom-center"}
         containerClassName="w-full"
         inputClass="pb-form-date-input"
         placeholder="تاریخ"

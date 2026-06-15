@@ -203,6 +203,7 @@ export function BudgetExportModal({
               year={date.year}
               month={date.month}
               day={date.day}
+              inModal
               onChange={setDate}
             />
           ) : null}

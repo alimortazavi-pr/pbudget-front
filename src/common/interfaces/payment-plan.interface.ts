@@ -1,4 +1,5 @@
 import type { IBudget } from "./budget.interface";
+import type { IProject } from "./project.interface";
 
 export type OccurrenceStatus = "pending" | "paid" | "skipped";
 
@@ -17,6 +18,7 @@ export interface IPaymentPlan {
   person?: string;
   amount: number;
   category?: { _id: string; title: string };
+  project?: Pick<IProject, "_id" | "category">;
   dueDayOfMonth: number;
   totalInstallments?: number;
   completedInstallments: number;

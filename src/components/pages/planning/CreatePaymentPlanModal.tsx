@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Modal, Switch } from "@heroui/react";
 
 import * as paymentPlansApi from "@/common/api/payment-plans";
+import * as projectsApi from "@/common/api/projects";
 import { getJalaliNow, toEnglishDigits } from "@/common/utils";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showErrorToast, showToast } from "@/common/utils/toast";
-import { FormCategoryComboBox, FormInput, FormPersonComboBox, FormPriceInput, FormTextArea } from "@/components/common/form/FormFields";
+import { FormCategoryComboBox, FormInput, FormPersonComboBox, FormPriceInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
 import { useMergedPersons } from "@/common/hooks/useMergedPersons";
 import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppSelector } from "@/stores/hooks";
@@ -17,12 +18,14 @@ type CreatePaymentPlanModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCreated: (planId?: string) => void;
+  defaultProjectId?: string;
 };
 
 export function CreatePaymentPlanModal({
   open,
   onOpenChange,
   onCreated,
+  defaultProjectId,
 }: CreatePaymentPlanModalProps) {
   const categories = useAppSelector(categoriesSelector);
   const categoryOptions = getCategorySelectOptions(categories ?? []);
@@ -37,7 +40,30 @@ export function CreatePaymentPlanModal({
   const [installments, setInstallments] = useState("");
   const [description, setDescription] = useState("");
   const [remindMonthStart, setRemindMonthStart] = useState(true);
+  const [projectId, setProjectId] = useState(defaultProjectId ?? "");
+  const [projectOptions, setProjectOptions] = useState<{ id: string; label: string }[]>([]);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!open || defaultProjectId) return;
+    void projectsApi
+      .fetchProjects()
+      .then((projects) =>
+        setProjectOptions(
+          projects.map((project) => ({
+            id: project._id,
+            label: project.category?.title ?? "پروژه",
+          })),
+        ),
+      )
+      .catch(() => undefined);
+  }, [open, defaultProjectId]);
+
+  useEffect(() => {
+    if (open && defaultProjectId) {
+      setProjectId(defaultProjectId);
+    }
+  }, [open, defaultProjectId]);
 
   async function handleSubmit() {
     if (!title.trim() || !amount.trim()) {
@@ -59,6 +85,7 @@ export function CreatePaymentPlanModal({
         remindOnMonthStart: remindMonthStart,
         remindDaysBefore: "3",
         description,
+        projectId: projectId || defaultProjectId || undefined,
       });
       showToast("برنامه پرداخت ثبت شد", "success");
       onCreated(result.plan._id);
@@ -127,6 +154,16 @@ export function CreatePaymentPlanModal({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
+
+          {!defaultProjectId && projectOptions.length > 0 && (
+            <FormSelect
+              label="پروژه (اختیاری)"
+              placeholder="بدون پروژه"
+              selectedKey={projectId || undefined}
+              onSelectionChange={(key) => setProjectId(String(key ?? ""))}
+              options={[{ id: "", label: "بدون پروژه" }, ...projectOptions]}
+            />
+          )}
 
           <div className="flex items-center justify-between rounded-xl border border-border/60 bg-surface-secondary/60 p-3">
             <div>

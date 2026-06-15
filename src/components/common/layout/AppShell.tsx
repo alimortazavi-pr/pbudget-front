@@ -19,6 +19,7 @@ const PAGE_TITLES: Record<string, string> = {
   [PATHS.DEBTS]: "طلب و بدهی",
   [PATHS.INSTALLMENTS]: "اقساط",
   [PATHS.CHECKS]: "چک‌ها",
+  [PATHS.COMMITMENTS]: "تعهدات جاری",
   [PATHS.NOTES]: "یادداشت‌ها",
   [PATHS.PROJECTS]: "پروژه‌ها",
   [PATHS.TASKS]: "برنامه روزانه",
@@ -72,6 +73,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       pathname === PATHS.DEBTS ||
       pathname === PATHS.INSTALLMENTS ||
       pathname === PATHS.CHECKS ||
+      pathname === PATHS.COMMITMENTS ||
       pathname === PATHS.NOTES ||
       pathname === PATHS.PROJECTS ||
       pathname === PATHS.TASKS ||
@@ -79,7 +81,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       isInstallmentDetail ||
       isDebtDetail,
     showPeriodBar: !(
-      [PATHS.INSTALLMENTS, PATHS.CHECKS, PATHS.NOTES, PATHS.TASKS] as string[]
+      [PATHS.INSTALLMENTS, PATHS.CHECKS, PATHS.COMMITMENTS, PATHS.NOTES, PATHS.TASKS] as string[]
     ).includes(pathname) &&
       !isInstallmentDetail &&
       !isDebtDetail,

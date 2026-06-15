@@ -10,6 +10,8 @@ import TimePicker from "react-multi-date-picker/plugins/time_picker";
 
 import "react-multi-date-picker/styles/colors/teal.css";
 
+import { DATE_PICKER_Z_INDEX } from "@/common/constants/overlay-z-index";
+
 export type ReminderDateTimeValue = {
   year: number;
   month: number;
@@ -101,8 +103,8 @@ export function ReminderDateTimePicker({
           <TimePicker key="time" position="bottom" hideSeconds mStep={5} />,
         ]}
         portal
-        zIndex={10050}
-        calendarPosition="bottom-center"
+        zIndex={DATE_PICKER_Z_INDEX}
+        calendarPosition="top-center"
         containerClassName="w-full"
         inputClass="pb-form-date-input"
         placeholder="تاریخ و ساعت"

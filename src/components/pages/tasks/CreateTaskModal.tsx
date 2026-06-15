@@ -145,6 +145,7 @@ export function CreateTaskModal({
                 year={year}
                 month={month}
                 day={day}
+                inModal
                 onChange={({ year: y, month: m, day: d }) => {
                   setYear(y);
                   setMonth(m);

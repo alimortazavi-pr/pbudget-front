@@ -13,6 +13,7 @@ export const PATHS = {
   INSTALLMENT_PLAN: (id: string) => `/installments/${id}`,
   CHECKS: "/checks",
   NOTES: "/notes",
+  COMMITMENTS: "/commitments",
   PROJECTS: "/projects",
   PROJECT: (id: string) => `/projects/${id}`,
   TASKS: "/tasks",

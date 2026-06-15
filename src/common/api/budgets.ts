@@ -1,5 +1,5 @@
 import { axiosInstance } from "@/common/axiosInstance";
-import type { IBudgetsSummary } from "@/common/interfaces/budget.interface";
+import type { IBudget, IBudgetsSummary } from "@/common/interfaces/budget.interface";
 
 export type BudgetDuration = "daily" | "monthly" | "yearly" | "all";
 export type BudgetExportType = "excel" | "html";
@@ -19,6 +19,22 @@ export async function fetchBudgets(params: Record<string, string>, token?: strin
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
   });
   return data;
+}
+
+export async function fetchBudgetsForAttach(params: {
+  context: string;
+  contextId: string;
+  duration: string;
+  year?: string;
+  month?: string;
+  category?: string;
+  q?: string;
+}) {
+  const { data } = await axiosInstance.get<{ budgets: IBudget[] }>(
+    "/budgets/for-attach",
+    { params },
+  );
+  return data.budgets;
 }
 
 export async function fetchBudgetById(id: string, token?: string) {

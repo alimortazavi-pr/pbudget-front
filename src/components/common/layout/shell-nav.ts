@@ -12,6 +12,7 @@ import {
   Messages2,
   MoneyRecive,
   Profile,
+  Wallet,
 } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
@@ -40,6 +41,7 @@ export const PLANNING_NAV_ITEMS = [
   { href: PATHS.DEBTS, label: "طلب و بدهی", icon: Card },
   { href: PATHS.INSTALLMENTS, label: "اقساط", icon: Calendar },
   { href: PATHS.CHECKS, label: "چک‌ها", icon: MoneyRecive },
+  { href: PATHS.COMMITMENTS, label: "تعهدات جاری", icon: Wallet },
   { href: PATHS.NOTES, label: "یادداشت‌ها", icon: DocumentText },
 ] as const;
 

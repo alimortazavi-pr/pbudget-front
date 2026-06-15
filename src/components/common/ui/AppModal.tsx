@@ -4,6 +4,8 @@ import { Button, Modal, useOverlayState } from "@heroui/react";
 import { CloseCircle } from "iconsax-reactjs";
 import { useEffect, type ReactNode } from "react";
 
+import { shouldCloseModalOnInteractOutside } from "@/common/utils/modal-overlay";
+
 type AppModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -40,6 +42,7 @@ export function AppModal({
     <Modal state={state}>
       <Modal.Backdrop
         isDismissable={isDismissable}
+        shouldCloseOnInteractOutside={shouldCloseModalOnInteractOutside}
         className={backdropClassName}
       >
         <Modal.Container

@@ -319,6 +319,7 @@ type FormDatePickerProps = {
   day: string;
   onChange: (value: { year: string; month: string; day: string }) => void;
   hint?: string;
+  inModal?: boolean;
 };
 
 export function FormDatePicker({
@@ -328,6 +329,7 @@ export function FormDatePicker({
   day,
   onChange,
   hint,
+  inModal = false,
 }: FormDatePickerProps) {
   return (
     <div className="flex flex-col gap-2">
@@ -339,6 +341,7 @@ export function FormDatePicker({
         day={day}
         onChange={onChange}
         hideHint
+        inModal={inModal}
       />
     </div>
   );

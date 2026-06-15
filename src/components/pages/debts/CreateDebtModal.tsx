@@ -125,6 +125,7 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
             year={year}
             month={month}
             day={day}
+            inModal
             onChange={(value) => {
               setYear(value.year);
               setMonth(value.month);

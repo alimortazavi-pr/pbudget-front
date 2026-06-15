@@ -4,15 +4,16 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button, Switch } from "@heroui/react";
-import { Add, Edit2, Task, Trash, TaskSquare } from "iconsax-reactjs";
+import { Add, Edit2, Task, Trash, TaskSquare, Wallet } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 import * as projectsApi from "@/common/api/projects";
 import type { IProjectDetail, IProjectItem, ProjectStatus as ProjectStatusType } from "@/common/interfaces/project.interface";
 import { formatJalaliDate, formatPrice, formatCount, toEnglishDigits } from "@/common/utils";
 import { showErrorToast, showToast } from "@/common/utils/toast";
-import { AttachBudgetPanel } from "@/components/common/budget/AttachBudgetPanel";
+import { AttachBudgetButton } from "@/components/common/budget/AttachBudgetModal";
 import { FormInput, FormPriceInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
+import { CreatePaymentPlanModal } from "@/components/pages/planning/CreatePaymentPlanModal";
 import { BudgetType, ProjectItemType, ProjectStatus } from "@/types/enums";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { categoriesSelector, setCategories } from "@/stores/category";
@@ -21,7 +22,7 @@ type ProjectDetailPageProps = {
   projectId: string;
 };
 
-type TabId = "overview" | "transactions" | "notebook";
+type TabId = "overview" | "transactions" | "installments" | "notebook";
 
 const STATUS_OPTIONS = [
   { id: ProjectStatus.ACTIVE, label: "فعال" },
@@ -51,6 +52,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
   const [itemType, setItemType] = useState<ProjectItemType>(ProjectItemType.NOTE);
   const [itemContent, setItemContent] = useState("");
   const [itemSaving, setItemSaving] = useState(false);
+  const [createPlanOpen, setCreatePlanOpen] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -259,6 +261,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
           [
             { id: "overview" as const, label: "تنظیمات" },
             { id: "transactions" as const, label: "تراکنش‌ها" },
+            { id: "installments" as const, label: "وام و اقساط" },
             { id: "notebook" as const, label: "دفترچه و تسک‌ها" },
           ] as const
         ).map((item) => (
@@ -339,13 +342,10 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
               {formatCount(data.budgets.length)} تراکنش مرتبط · در لیست اصلی هم نمایش داده می‌شوند
             </p>
             <div className="flex flex-wrap gap-2">
-              <AttachBudgetPanel
+              <AttachBudgetButton
                 title="افزودن از تراکنش‌ها"
                 description="یک تراکنش قبلی را به این پروژه وصل کنید."
-                emptyMessage="تراکنش آزادی برای وصل کردن به پروژه نیست."
-                loadCandidates={() =>
-                  projectsApi.fetchProjectBudgetCandidates(projectId).then((res) => res.budgets)
-                }
+                context={{ type: "project", contextId: projectId }}
                 onAttach={async (budgetId) => {
                   await projectsApi.attachProjectBudget(projectId, budgetId);
                   await load();
@@ -392,6 +392,52 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
                 </Link>
               );
             })
+          )}
+        </div>
+      )}
+
+      {tab === "installments" && (
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm text-muted">
+              {formatCount(data.paymentPlans?.length ?? 0)} برنامه پرداخت مرتبط با این پروژه
+            </p>
+            <Button size="sm" onPress={() => setCreatePlanOpen(true)}>
+              <Add size={16} />
+              وام / قسط جدید
+            </Button>
+          </div>
+
+          {(data.paymentPlans ?? []).length === 0 ? (
+            <p className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted">
+              هنوز برنامه پرداختی به این پروژه وصل نشده.
+            </p>
+          ) : (
+            (data.paymentPlans ?? []).map((plan) => (
+              <Link
+                key={plan._id}
+                href={`${PATHS.INSTALLMENTS}/${plan._id}`}
+                className="glass flex items-center justify-between gap-3 rounded-2xl p-4 transition hover:border-accent/40"
+              >
+                <div className="min-w-0">
+                  <p className="font-semibold">{plan.title}</p>
+                  <p className="mt-1 text-xs text-muted">
+                    {formatPrice(plan.amount)} · روز {plan.dueDayOfMonth}
+                    {plan.person ? ` · ${plan.person}` : ""}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Wallet size={18} className="text-accent" />
+                  <span
+                    className={`rounded-lg px-2 py-1 text-xs font-semibold ${
+                      plan.active ? "bg-income-soft text-income" : "bg-surface-secondary text-muted"
+                    }`}
+                  >
+                    {plan.active ? "فعال" : "غیرفعال"}
+                  </span>
+                </div>
+              </Link>
+            ))
           )}
         </div>
       )}
@@ -502,6 +548,16 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
           )}
         </div>
       )}
+
+      <CreatePaymentPlanModal
+        open={createPlanOpen}
+        onOpenChange={setCreatePlanOpen}
+        defaultProjectId={projectId}
+        onCreated={() => {
+          void load();
+          setTab("installments");
+        }}
+      />
     </div>
   );
 }
