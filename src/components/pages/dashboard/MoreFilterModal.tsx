@@ -5,7 +5,7 @@ import { Button, Modal } from "@heroui/react";
 
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
-import { FormSelect } from "@/components/common/form/FormFields";
+import { FormCategoryComboBox } from "@/components/common/form/FormFields";
 import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
 import type { ICategory } from "@/common/interfaces/category.interface";
 
@@ -73,7 +73,7 @@ export function MoreFilterModal({
           <Modal.Heading>فیلتر تراکنش‌ها</Modal.Heading>
         </AppModalHeader>
         <Modal.Body className="space-y-4 overflow-visible">
-          <FormSelect
+          <FormCategoryComboBox
             label="دسته‌بندی"
             placeholder="همه دسته‌بندی‌ها"
             selectedKey={category || "all"}

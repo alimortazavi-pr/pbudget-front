@@ -11,7 +11,7 @@ import {
   TextField,
 } from "@heroui/react";
 import type { ChangeEvent, ComponentProps, FocusEvent } from "react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { formatPriceInput, parsePriceInput } from "@/common/utils/price-input";
 import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
 import { scrollFieldIntoView } from "@/common/utils/scroll";
@@ -76,6 +76,92 @@ export function FormPersonComboBox({
             </ListBoxItem>
           )}
         </ListBox>
+      </ComboBox.Popover>
+    </ComboBox>
+  );
+}
+
+type FormCategoryComboBoxProps = {
+  label: string;
+  placeholder?: string;
+  selectedKey?: string;
+  onSelectionChange?: (key: string) => void;
+  options: FormSelectOption[];
+  emptyMessage?: string;
+  isDisabled?: boolean;
+};
+
+export function FormCategoryComboBox({
+  label,
+  placeholder = "جستجو یا انتخاب دسته‌بندی",
+  selectedKey,
+  onSelectionChange,
+  options,
+  emptyMessage = "دسته‌ای یافت نشد",
+  isDisabled,
+}: FormCategoryComboBoxProps) {
+  const selectedOption = useMemo(
+    () => options.find((item) => item.id === selectedKey),
+    [options, selectedKey],
+  );
+  const [inputValue, setInputValue] = useState(selectedOption?.label ?? "");
+
+  useEffect(() => {
+    setInputValue(selectedOption?.label ?? "");
+  }, [selectedOption?.label, selectedKey]);
+
+  const filteredItems = useMemo(() => {
+    const query = inputValue.trim().toLowerCase();
+    if (!query || inputValue === selectedOption?.label) return options;
+    return options.filter((item) => item.label.toLowerCase().includes(query));
+  }, [inputValue, options, selectedOption?.label]);
+
+  function resetInputToSelection() {
+    setInputValue(selectedOption?.label ?? "");
+  }
+
+  return (
+    <ComboBox
+      fullWidth
+      variant="secondary"
+      menuTrigger="focus"
+      isDisabled={isDisabled}
+      selectedKey={selectedKey ?? null}
+      inputValue={inputValue}
+      onInputChange={setInputValue}
+      onSelectionChange={(key) => {
+        if (key == null) return;
+        const nextKey = String(key);
+        const nextLabel = options.find((item) => item.id === nextKey)?.label ?? "";
+        onSelectionChange?.(nextKey);
+        setInputValue(nextLabel);
+      }}
+      items={filteredItems}
+    >
+      <Label className="mb-1.5 text-sm font-medium">{label}</Label>
+      <ComboBox.InputGroup>
+        <Input
+          placeholder={placeholder}
+          onBlur={resetInputToSelection}
+        />
+        <ComboBox.Trigger />
+      </ComboBox.InputGroup>
+      <ComboBox.Popover>
+        {filteredItems.length === 0 ? (
+          <p className="px-3 py-6 text-center text-sm text-muted">{emptyMessage}</p>
+        ) : (
+          <ListBox
+            aria-label={label}
+            className="max-h-64 overflow-y-auto p-1"
+            items={filteredItems}
+          >
+            {(item) => (
+              <ListBoxItem id={item.id} textValue={item.label}>
+                {item.label}
+              </ListBoxItem>
+            )}
+          </ListBox>
+        )}
       </ComboBox.Popover>
     </ComboBox>
   );
@@ -240,8 +326,8 @@ export function FormDatePicker({
   hint,
 }: FormDatePickerProps) {
   return (
-    <div className="space-y-2">
-      <Label className="text-sm font-medium">{label}</Label>
+    <div className="flex flex-col gap-2">
+      <Label>{label}</Label>
       {hint && <p className="text-xs text-muted">{hint}</p>}
       <FilterDatePicker
         year={year}

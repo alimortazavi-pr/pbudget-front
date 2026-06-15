@@ -7,7 +7,7 @@ import * as paymentPlansApi from "@/common/api/payment-plans";
 import { getJalaliNow, toEnglishDigits } from "@/common/utils";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showToast } from "@/common/utils/toast";
-import { FormInput, FormPriceInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
+import { FormCategoryComboBox, FormInput, FormPriceInput, FormTextArea } from "@/components/common/form/FormFields";
 import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
@@ -99,9 +99,9 @@ export function CreatePaymentPlanModal({
             value={amount}
             onChange={setAmount}
           />
-          <FormSelect
+          <FormCategoryComboBox
             label="دسته‌بندی پیش‌فرض"
-            placeholder="برای ثبت خودکار تراکنش"
+            placeholder="جستجو یا انتخاب دسته‌بندی"
             selectedKey={category || undefined}
             onSelectionChange={(key) => setCategory(key)}
             options={categoryOptions}

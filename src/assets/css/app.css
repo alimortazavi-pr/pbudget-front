@@ -191,6 +191,18 @@
     direction: rtl;
   }
 
+  .pb-form-date-input {
+    @apply w-full min-h-11 rounded-xl bg-surface-secondary px-3 text-sm text-foreground;
+    border: none;
+    outline: none;
+    box-shadow: none;
+  }
+
+  .pb-form-date-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px color-mix(in oklch, var(--accent) 35%, transparent);
+  }
+
   .pb-analysis-hero {
     background:
       radial-gradient(ellipse 90% 70% at 100% 0%, color-mix(in oklch, white 16%, transparent), transparent),

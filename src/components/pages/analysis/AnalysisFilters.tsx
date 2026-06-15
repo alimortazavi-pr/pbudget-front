@@ -16,7 +16,7 @@ import {
   JALALI_MONTHS,
   moment,
 } from "@/common/utils/jalali-date";
-import { FormSelect } from "@/components/common/form/FormFields";
+import { FormCategoryComboBox, FormSelect } from "@/components/common/form/FormFields";
 import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
 
 const DURATION_OPTIONS: Array<{ id: AnalyticsDuration; label: string }> = [
@@ -185,8 +185,9 @@ export function AnalysisFilters({
       )}
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <FormSelect
+        <FormCategoryComboBox
           label="دسته‌بندی"
+          placeholder="همه دسته‌ها"
           selectedKey={category || ""}
           onSelectionChange={(key) => onChange({ category: key === "all" ? "" : key })}
           options={[

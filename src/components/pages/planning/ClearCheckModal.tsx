@@ -8,7 +8,7 @@ import type { ICheck } from "@/common/interfaces/check.interface";
 import { getJalaliNow, toEnglishDigits } from "@/common/utils";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showToast } from "@/common/utils/toast";
-import { FormPriceInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
+import { FormCategoryComboBox, FormPriceInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
 import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
@@ -87,9 +87,9 @@ export function ClearCheckModal({
 
           <FormPriceInput label="مبلغ (تومان)" value={amount} onChange={setAmount} />
 
-          <FormSelect
+          <FormCategoryComboBox
             label="دسته‌بندی"
-            placeholder="انتخاب دسته"
+            placeholder="جستجو یا انتخاب دسته‌بندی"
             selectedKey={category || undefined}
             onSelectionChange={(key) => setCategory(key)}
             options={categoryOptions}

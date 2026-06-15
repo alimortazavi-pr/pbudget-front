@@ -1,6 +1,6 @@
 export enum BudgetType {
-  INCOME = 1,
-  COST = 2,
+  INCOME = 0,
+  COST = 1,
 }
 
 export enum DebtType {

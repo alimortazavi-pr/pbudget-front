@@ -184,11 +184,15 @@ html[dir="rtl"] .toast-region--top-end {
 
 html[dir="rtl"] .toast {
   direction: rtl;
-  flex-direction: row-reverse;
   text-align: start;
+  gap: 0.625rem;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 html[dir="rtl"] .toast__content {
+  flex: 1;
+  min-width: 0;
   align-items: flex-start;
   text-align: start;
 }
@@ -197,6 +201,7 @@ html[dir="rtl"] .toast__title,
 html[dir="rtl"] .toast__description {
   text-align: start;
   width: 100%;
+  word-break: break-word;
 }
 
 html[dir="rtl"] .toast__close-button {

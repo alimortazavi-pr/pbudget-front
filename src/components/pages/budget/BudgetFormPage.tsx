@@ -10,8 +10,8 @@ import * as debtsApi from "@/common/api/debts";
 import type { IBudget } from "@/common/interfaces/budget.interface";
 import { getJalaliNow, toEnglishDigits } from "@/common/utils";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
-import { showToast } from "@/common/utils/toast";
-import { FormDatePicker, FormInput, FormPriceInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
+import { showErrorToast, showToast } from "@/common/utils/toast";
+import { FormCategoryComboBox, FormDatePicker, FormPriceInput, FormTextArea } from "@/components/common/form/FormFields";
 import {
   DebtLedgerSection,
   type DebtLedgerMode,
@@ -140,7 +140,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
       }
       router.push(`/?duration=monthly&year=${year}&month=${month}`);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showErrorToast(err);
     } finally {
       setLoading(false);
     }
@@ -205,9 +205,9 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
             onChange={handleDateChange}
           />
 
-          <FormSelect
+          <FormCategoryComboBox
             label="دسته‌بندی"
-            placeholder="یک دسته انتخاب کنید"
+            placeholder="جستجو یا انتخاب دسته‌بندی"
             selectedKey={category || undefined}
             onSelectionChange={(key) => setCategory(key)}
             options={categoryOptions}

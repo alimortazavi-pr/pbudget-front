@@ -15,7 +15,7 @@ import type { ICategory } from "@/common/interfaces/category.interface";
 import { JALALI_MONTHS } from "@/common/utils/jalali-date";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showToast } from "@/common/utils/toast";
-import { FormSelect } from "@/components/common/form/FormFields";
+import { FormCategoryComboBox } from "@/components/common/form/FormFields";
 import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
 import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
 
@@ -186,7 +186,7 @@ export function BudgetExportModal({
             کاربر است. بازه انتخابی: <strong className="text-foreground">{periodPreview}</strong>
           </div>
 
-          <FormSelect
+          <FormCategoryComboBox
             label="دسته‌بندی"
             placeholder="همه دسته‌بندی‌ها"
             selectedKey={category || "all"}

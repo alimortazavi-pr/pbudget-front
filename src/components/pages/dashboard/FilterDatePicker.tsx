@@ -58,7 +58,7 @@ export function FilterDatePicker({
         zIndex={10050}
         calendarPosition="bottom-center"
         containerClassName="w-full"
-        inputClass="w-full min-h-11 rounded-xl border border-border bg-field-background px-3 text-sm text-foreground outline-none"
+        inputClass="pb-form-date-input"
         placeholder="تاریخ"
       />
     </div>

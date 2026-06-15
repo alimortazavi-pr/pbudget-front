@@ -1,6 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 import type { IBudget, IBudgetState } from "@/common/interfaces/budget.interface";
+import { BudgetType } from "@/types/enums";
 
 const initialState: IBudgetState = {
   budgets: null,
@@ -27,7 +28,7 @@ const budgetSlice = createSlice({
     deleteBudget(state, action: PayloadAction<IBudget>) {
       if (!state.budgets) return;
       state.budgets = state.budgets.filter((b) => b._id !== action.payload._id);
-      if (action.payload.type === 1) {
+      if (action.payload.type === BudgetType.INCOME) {
         state.totalIncomePrice =
           (state.totalIncomePrice ?? 0) - action.payload.price;
       } else {

@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { DocumentFilter } from "iconsax-reactjs";
 
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
-import { FormSelect } from "@/components/common/form/FormFields";
+import { FormCategoryComboBox } from "@/components/common/form/FormFields";
 import { MoreFilterModal } from "@/components/pages/dashboard/MoreFilterModal";
 import type { ICategory } from "@/common/interfaces/category.interface";
 
@@ -42,7 +42,7 @@ export function DashboardFilterSection({
     <>
       <div className="glass flex items-end gap-2 rounded-2xl p-3 lg:gap-4 lg:p-5">
         <div className="min-w-0 flex-1">
-          <FormSelect
+          <FormCategoryComboBox
             label="فیلتر بر اساس دسته‌بندی"
             placeholder="همه دسته‌بندی‌ها"
             selectedKey={category || "all"}

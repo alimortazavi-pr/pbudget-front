@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import { BASE_API_URL, SERVER_BASE_API_URL } from "../constants";
+import { getApiErrorMessage } from "../utils/api-error";
 import { forceAuthLogout } from "../utils/force-auth-logout";
 import { toEnglishDigits } from "../utils/persian-digits";
 import { storage } from "../utils/storage";
@@ -56,6 +57,12 @@ if (!isServer) {
       if (error.response?.status === 401) {
         forceAuthLogout();
       }
+
+      const friendlyMessage = getApiErrorMessage(error);
+      if (error instanceof Error) {
+        error.message = friendlyMessage;
+      }
+
       return Promise.reject(error);
     },
   );
