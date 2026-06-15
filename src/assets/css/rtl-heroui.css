@@ -95,18 +95,61 @@ html[dir="rtl"] .select__trigger:has(.select__indicator) {
   padding-inline-start: 0.75rem !important;
 }
 
-/* ComboBox (در صورت استفاده) */
-html[dir="rtl"] [data-slot="combo-box-trigger"] {
-  display: flex !important;
+/* ComboBox */
+html[dir="rtl"] [data-slot="combo-box"] {
+  direction: rtl;
+}
+
+html[dir="rtl"] [data-slot="combo-box-input-group"] {
+  display: flex;
+  width: 100%;
   align-items: center;
   direction: rtl;
 }
 
-html[dir="rtl"] .combo-box__indicator,
+html[dir="rtl"] [data-slot="combo-box-input-group"] [data-slot="input"] {
+  direction: rtl;
+  text-align: start;
+  unicode-bidi: plaintext;
+}
+
+html[dir="rtl"] [data-slot="combo-box-trigger"] {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  inset-inline-end: 0;
+  inset-inline-start: auto;
+}
+
+html[dir="rtl"] [data-slot="combo-box-trigger-default-icon"],
 html[dir="rtl"] [data-slot="combo-box-indicator"] {
   position: static !important;
-  margin-inline-start: auto;
   flex-shrink: 0;
+}
+
+html[dir="rtl"] [data-slot="combo-box-popover"] {
+  direction: rtl;
+  text-align: start;
+}
+
+html[dir="rtl"] [data-slot="combo-box-popover"] [data-slot="list-box"] {
+  direction: rtl;
+}
+
+html[dir="rtl"] [data-slot="combo-box-popover"] [data-slot="list-box-item"] {
+  direction: rtl;
+  text-align: start;
+  justify-content: flex-start;
+}
+
+html[dir="rtl"] .combo-box__popover {
+  direction: rtl;
+  text-align: start;
+}
+
+html[dir="rtl"] .combo-box__popover [data-slot="list-box-item"] {
+  direction: rtl;
+  text-align: start;
 }
 
 html[dir="rtl"] [data-slot="autocomplete-clear-button"] {
@@ -152,6 +195,7 @@ html[dir="rtl"] [data-slot="breadcrumbs"] {
 
 html[dir="rtl"] [data-slot="autocomplete-popover"],
 html[dir="rtl"] [data-slot="select-popover"],
+html[dir="rtl"] [data-slot="combo-box-popover"],
 html[dir="rtl"] [data-slot="popover"] {
   direction: rtl;
   text-align: start;

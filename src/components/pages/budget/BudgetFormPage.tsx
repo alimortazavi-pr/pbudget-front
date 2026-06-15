@@ -8,12 +8,13 @@ import { Add } from "iconsax-reactjs";
 import * as budgetsApi from "@/common/api/budgets";
 import * as debtsApi from "@/common/api/debts";
 import type { IBudget } from "@/common/interfaces/budget.interface";
-import { getJalaliNow, toEnglishDigits } from "@/common/utils";
+import { getJalaliNow, normalizeJalaliPart, toEnglishDigits } from "@/common/utils";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { FormCategoryComboBox, FormDatePicker, FormPriceInput, FormTextArea } from "@/components/common/form/FormFields";
 import {
   DebtLedgerSection,
+  LinkedDebtSummary,
   type DebtLedgerMode,
   type DebtLedgerValue,
 } from "@/components/pages/budget/DebtLedgerSection";
@@ -43,13 +44,20 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   const categories = useAppSelector(categoriesSelector);
   const categoryOptions = getCategorySelectOptions(categories ?? []);
   const now = getJalaliNow();
+  const defaultYear = String(now.jYear());
+  const defaultMonth = String(now.jMonth() + 1);
+  const defaultDay = String(now.jDate());
 
   const [price, setPrice] = useState(String(budget?.price ?? ""));
   const [type, setType] = useState(String(budget?.type ?? BudgetType.COST));
   const [category, setCategory] = useState(budget?.category?._id ?? "");
-  const [year, setYear] = useState(budget?.year ?? String(now.jYear()));
-  const [month, setMonth] = useState(budget?.month ?? String(now.jMonth() + 1));
-  const [day, setDay] = useState(budget?.day ?? String(now.jDate()));
+  const [year, setYear] = useState(() =>
+    normalizeJalaliPart(budget?.year, defaultYear),
+  );
+  const [month, setMonth] = useState(() =>
+    normalizeJalaliPart(budget?.month, defaultMonth),
+  );
+  const [day, setDay] = useState(() => normalizeJalaliPart(budget?.day, defaultDay));
   const selectedCategory = useMemo(
     () => (categories ?? []).find((item) => item._id === category),
     [categories, category],
@@ -86,20 +94,22 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
     e?.preventDefault();
     const payload = {
       price: toEnglishDigits(price),
-      type,
+      type: String(type),
       category,
-      year,
-      month,
-      day,
+      year: String(year),
+      month: String(month),
+      day: String(day),
       description,
     };
 
-    if (!payload.price || !payload.category) {
-      showToast("مبلغ و دسته‌بندی الزامی است");
+    if (!payload.price || !payload.category || !payload.year || !payload.month || !payload.day) {
+      showToast("مبلغ، دسته‌بندی و تاریخ الزامی است");
       return;
     }
 
-    if (!budget && debtLedger.enabled) {
+    const canAttachDebt = !budget?.debt;
+
+    if (debtLedger.enabled && canAttachDebt) {
       if (debtLedger.mode === "create" && !debtLedger.person.trim()) {
         showToast("نام طرف حساب الزامی است");
         return;
@@ -114,7 +124,26 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
     try {
       if (budget) {
         await budgetsApi.updateBudget(budget._id, payload);
-        showToast("تراکنش ویرایش شد", "success");
+
+        if (debtLedger.enabled && canAttachDebt) {
+          if (debtLedger.mode === "create") {
+            await debtsApi.createDebt({
+              sourceBudgetId: budget._id,
+              type: debtLedger.debtType,
+              person: debtLedger.person.trim(),
+              amount: toEnglishDigits(price),
+            });
+            showToast("تراکنش ویرایش و طلب/بدهی ثبت شد", "success");
+          } else {
+            await debtsApi.settleDebt(debtLedger.settleDebtId, {
+              budgetId: budget._id,
+              amount: toEnglishDigits(price),
+            });
+            showToast("تراکنش ویرایش و طلب/بدهی تسویه شد", "success");
+          }
+        } else {
+          showToast("تراکنش ویرایش شد", "success");
+        }
       } else {
         const res = await budgetsApi.createBudget(payload);
 
@@ -227,12 +256,14 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
             onChange={(e) => setDescription(e.target.value)}
           />
 
-          {!budget && (
+          {!budget?.debt ? (
             <DebtLedgerSection
               amount={price}
               value={debtLedger}
               onChange={updateDebtLedger}
             />
+          ) : (
+            <LinkedDebtSummary debt={budget.debt} />
           )}
 
           <div className="border-t border-border/50 pt-4">

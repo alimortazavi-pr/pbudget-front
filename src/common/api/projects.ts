@@ -29,6 +29,7 @@ export async function createProject(payload: {
 export async function updateProject(
   id: string,
   payload: {
+    title?: string;
     totalAmount?: string;
     status?: ProjectStatus;
     description?: string;

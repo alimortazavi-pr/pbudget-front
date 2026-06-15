@@ -11,6 +11,15 @@ export function padJalaliPart(value: string | number): string {
   return n.length === 1 ? `0${n}` : n;
 }
 
+/** API may return numbers; DTO expects strings. */
+export function normalizeJalaliPart(
+  value: string | number | null | undefined,
+  fallback: string,
+): string {
+  if (value === null || value === undefined || value === "") return fallback;
+  return String(value);
+}
+
 /** نمایش ماه و سال: خرداد ۱۴۰۵ */
 export function formatJalaliMonthYear(year: string, month: string) {
   const monthIndex = parseInt(month, 10) - 1;

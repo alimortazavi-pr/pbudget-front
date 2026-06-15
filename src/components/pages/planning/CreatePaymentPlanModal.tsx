@@ -6,7 +6,7 @@ import { Button, Modal, Switch } from "@heroui/react";
 import * as paymentPlansApi from "@/common/api/payment-plans";
 import { getJalaliNow, toEnglishDigits } from "@/common/utils";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
-import { showToast } from "@/common/utils/toast";
+import { showErrorToast, showToast } from "@/common/utils/toast";
 import { FormCategoryComboBox, FormInput, FormPriceInput, FormTextArea } from "@/components/common/form/FormFields";
 import { AppModal, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppSelector } from "@/stores/hooks";
@@ -69,7 +69,7 @@ export function CreatePaymentPlanModal({
       setInstallments("");
       setDescription("");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showErrorToast(err);
     } finally {
       setSubmitting(false);
     }

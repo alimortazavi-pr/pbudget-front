@@ -61,13 +61,14 @@ export function FormPersonComboBox({
     >
       <Label className="mb-1.5 text-sm font-medium">{label}</Label>
       <ComboBox.InputGroup>
-        <Input placeholder={placeholder} />
+        <Input placeholder={placeholder} dir="rtl" className="text-start" />
         <ComboBox.Trigger />
       </ComboBox.InputGroup>
       <ComboBox.Popover>
         <ListBox
           aria-label={label}
-          className="max-h-56 overflow-y-auto p-1"
+          className="max-h-56 overflow-y-auto p-1 text-start"
+          dir="rtl"
           items={mergedItems}
         >
           {(item) => (
@@ -142,6 +143,8 @@ export function FormCategoryComboBox({
       <ComboBox.InputGroup>
         <Input
           placeholder={placeholder}
+          dir="rtl"
+          className="text-start"
           onBlur={resetInputToSelection}
         />
         <ComboBox.Trigger />
@@ -152,7 +155,8 @@ export function FormCategoryComboBox({
         ) : (
           <ListBox
             aria-label={label}
-            className="max-h-64 overflow-y-auto p-1"
+            className="max-h-64 overflow-y-auto p-1 text-start"
+            dir="rtl"
             items={filteredItems}
           >
             {(item) => (

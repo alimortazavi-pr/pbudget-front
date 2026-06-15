@@ -33,6 +33,43 @@ function isSettleMode(mode: DebtLedgerMode) {
   return mode === "settle-receivable" || mode === "settle-payable";
 }
 
+type LinkedDebtSummaryProps = {
+  debt: IDebt;
+};
+
+export function LinkedDebtSummary({ debt }: LinkedDebtSummaryProps) {
+  const isReceivable = debt.type === DebtType.RECEIVABLE;
+  const statusLabel =
+    debt.status === "settled"
+      ? "تسویه‌شده"
+      : debt.status === "partial"
+        ? "تسویه جزئی"
+        : "باز";
+
+  return (
+    <div className="space-y-2 rounded-2xl border border-border/60 bg-surface-secondary/60 p-4">
+      <p className="text-sm font-medium">مرتبط با طلب یا بدهی</p>
+      <div
+        className={`rounded-xl px-3 py-3 text-sm ${
+          isReceivable ? "bg-income-soft/50 text-income" : "bg-expense-soft/50 text-expense"
+        }`}
+      >
+        <p className="font-semibold">
+          {isReceivable ? "طلب" : "بدهی"} · {debt.person}
+        </p>
+        <p className="mt-1 text-xs opacity-90">
+          مانده {formatPrice(debt.remainingAmount)} از {formatPrice(debt.totalAmount)} ·{" "}
+          {statusLabel}
+        </p>
+      </div>
+      <p className="text-xs leading-6 text-muted">
+        این تراکنش منبع ثبت این {isReceivable ? "طلب" : "بدهی"} است. برای تسویه یا ویرایش
+        جزئیات به صفحه طلب و بدهی بروید.
+      </p>
+    </div>
+  );
+}
+
 export function DebtLedgerSection({
   amount,
   value,

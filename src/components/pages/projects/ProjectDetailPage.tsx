@@ -10,9 +10,11 @@ import { PATHS } from "@/common/constants";
 import * as projectsApi from "@/common/api/projects";
 import type { IProjectDetail, IProjectItem, ProjectStatus as ProjectStatusType } from "@/common/interfaces/project.interface";
 import { formatJalaliDate, formatPrice, formatCount, toEnglishDigits } from "@/common/utils";
-import { showToast } from "@/common/utils/toast";
+import { showErrorToast, showToast } from "@/common/utils/toast";
 import { FormInput, FormPriceInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
 import { BudgetType, ProjectItemType, ProjectStatus } from "@/types/enums";
+import { useAppDispatch, useAppSelector } from "@/stores/hooks";
+import { categoriesSelector, setCategories } from "@/stores/category";
 
 type ProjectDetailPageProps = {
   projectId: string;
@@ -32,11 +34,15 @@ function itemTypeLabel(type: IProjectItem["type"]) {
 
 export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const categories = useAppSelector(categoriesSelector);
   const [data, setData] = useState<IProjectDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<TabId>("overview");
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
+  const [title, setTitle] = useState("");
   const [totalAmount, setTotalAmount] = useState("");
   const [status, setStatus] = useState<ProjectStatusType>(ProjectStatus.ACTIVE);
   const [description, setDescription] = useState("");
@@ -50,6 +56,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
     try {
       const detail = await projectsApi.fetchProject(projectId);
       setData(detail);
+      setTitle(detail.project.category?.title ?? "");
       setTotalAmount(String(detail.project.totalAmount));
       setStatus(detail.project.status);
       setDescription(detail.project.description ?? "");
@@ -76,9 +83,15 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
 
   async function saveOverview() {
     if (!data) return;
+    if (!title.trim()) {
+      showToast("نام پروژه الزامی است");
+      return;
+    }
+
     setSaving(true);
     try {
       const updated = await projectsApi.updateProject(projectId, {
+        title: title.trim(),
         totalAmount: toEnglishDigits(totalAmount),
         status,
         description: description.trim(),
@@ -86,9 +99,21 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
       setData((current) =>
         current ? { ...current, project: { ...current.project, ...updated } } : current,
       );
+
+      const categoryId = updated.category?._id;
+      if (categoryId && categories) {
+        dispatch(
+          setCategories(
+            categories.map((cat) =>
+              cat._id === categoryId ? { ...cat, title: title.trim() } : cat,
+            ),
+          ),
+        );
+      }
+
       showToast("ذخیره شد", "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showErrorToast(err);
     } finally {
       setSaving(false);
     }
@@ -153,12 +178,15 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
 
   async function removeProject() {
     if (!confirm("پروژه حذف شود؟ تراکنش‌ها باقی می‌مانند.")) return;
+    setDeleting(true);
     try {
       await projectsApi.deleteProject(projectId);
       showToast("پروژه حذف شد", "success");
       router.push(PATHS.PROJECTS);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showErrorToast(err);
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -182,7 +210,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-sm text-muted">پروژه</p>
-            <h1 className="mt-1 text-2xl font-bold">{project.category?.title}</h1>
+            <h1 className="mt-1 text-2xl font-bold">{title || project.category?.title}</h1>
           </div>
           <Link href={`${PATHS.TASKS}?projectId=${projectId}&duration=daily`}>
             <Button size="sm" variant="secondary">
@@ -250,6 +278,12 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
 
       {tab === "overview" && (
         <div className="glass space-y-4 rounded-2xl p-4">
+          <FormInput
+            label="نام پروژه"
+            placeholder="مثلاً طراحی سایت شرکت X"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
           <FormPriceInput
             label="مبلغ کل قرارداد (تومان)"
             value={totalAmount}
@@ -266,15 +300,34 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
-          <div className="flex flex-col gap-2 border-t border-border/50 pt-4">
-            <Button onPress={() => void saveOverview()} isPending={saving}>
+
+          <div className="border-t border-border/50 pt-4">
+            <Button
+              className="w-full"
+              size="lg"
+              onPress={() => void saveOverview()}
+              isPending={saving}
+            >
               ذخیره تغییرات
             </Button>
-            <Button variant="danger" onPress={() => void removeProject()}>
+          </div>
+
+          <section className="rounded-2xl border border-dashed border-danger/35 bg-danger/5 p-4">
+            <p className="text-sm font-medium text-danger">منطقه خطر</p>
+            <p className="mt-1 text-xs leading-6 text-muted">
+              با حذف پروژه، تراکنش‌های مرتبط با دسته این پروژه باقی می‌مانند؛ فقط
+              دفترچه و آمار پروژه حذف می‌شود.
+            </p>
+            <Button
+              className="mt-3"
+              variant="danger"
+              onPress={() => void removeProject()}
+              isPending={deleting}
+            >
               <Trash size={18} />
               حذف پروژه
             </Button>
-          </div>
+          </section>
         </div>
       )}
 
