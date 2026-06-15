@@ -14,7 +14,7 @@ export async function fetchMonthlyPayments(year: string, month: string) {
 
 export async function fetchPaymentPlans() {
   const { data } = await axiosInstance.get<{ plans: IPaymentPlan[] }>("/payment-plans");
-  return data;
+  return data.plans;
 }
 
 export async function createPaymentPlan(payload: {

@@ -2,16 +2,17 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "@heroui/react";
-import { Add, TickCircle } from "iconsax-reactjs";
+import { Add, TickCircle, Trash } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 import * as paymentPlansApi from "@/common/api/payment-plans";
 import type {
   IMonthlyPaymentOverview,
+  IPaymentPlan,
   IPaymentPlanOccurrence,
 } from "@/common/interfaces/payment-plan.interface";
 import { formatJalaliMonthYear, formatPrice, formatCount } from "@/common/utils";
-import { showToast } from "@/common/utils/toast";
+import { showErrorToast, showToast } from "@/common/utils/toast";
 import { CreatePaymentPlanModal } from "@/components/pages/planning/CreatePaymentPlanModal";
 import { PayOccurrenceModal } from "@/components/pages/planning/PayOccurrenceModal";
 import { PeriodNavigator } from "@/components/pages/planning/PeriodNavigator";
@@ -22,8 +23,10 @@ export function InstallmentsPage() {
 
   const [loading, setLoading] = useState(true);
   const [monthlyData, setMonthlyData] = useState<IMonthlyPaymentOverview | null>(null);
+  const [plans, setPlans] = useState<IPaymentPlan[]>([]);
   const [createPlanOpen, setCreatePlanOpen] = useState(false);
   const [payTarget, setPayTarget] = useState<IPaymentPlanOccurrence | null>(null);
+  const [deletingPlanId, setDeletingPlanId] = useState<string | null>(null);
 
   const periodLabel = useMemo(
     () => formatJalaliMonthYear(year, month),
@@ -33,10 +36,14 @@ export function InstallmentsPage() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await paymentPlansApi.fetchMonthlyPayments(year, month);
+      const [data, planList] = await Promise.all([
+        paymentPlansApi.fetchMonthlyPayments(year, month),
+        paymentPlansApi.fetchPaymentPlans(),
+      ]);
       setMonthlyData(data);
+      setPlans(planList);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در بارگذاری");
+      showErrorToast(err, "خطا در بارگذاری");
     } finally {
       setLoading(false);
     }
@@ -45,6 +52,27 @@ export function InstallmentsPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  async function removePlan(plan: IPaymentPlan) {
+    if (
+      !confirm(
+        `برنامه «${plan.title}» حذف شود؟\nاقساط در انتظار این برنامه هم حذف می‌شوند؛ پرداخت‌های ثبت‌شده باقی می‌مانند.`,
+      )
+    ) {
+      return;
+    }
+
+    setDeletingPlanId(plan._id);
+    try {
+      await paymentPlansApi.deletePaymentPlan(plan._id);
+      showToast("برنامه پرداخت حذف شد", "success");
+      await load();
+    } catch (err) {
+      showErrorToast(err, "خطا در حذف برنامه");
+    } finally {
+      setDeletingPlanId(null);
+    }
+  }
 
   return (
     <div className="space-y-5 pb-6">
@@ -89,6 +117,41 @@ export function InstallmentsPage() {
         برنامه پرداخت جدید
       </Button>
 
+      {!loading && plans.length > 0 && (
+        <section className="space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-sm font-semibold">برنامه‌های پرداخت</h2>
+            <span className="text-xs text-muted">{formatCount(plans.length)} برنامه</span>
+          </div>
+          {plans.map((plan) => (
+            <article key={plan._id} className="glass rounded-2xl p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-semibold">{plan.title}</p>
+                  <p className="mt-1 text-xs leading-6 text-muted">
+                    {formatPrice(plan.amount)} · روز {plan.dueDayOfMonth} هر ماه
+                    {plan.person ? ` · ${plan.person}` : ""}
+                    {plan.totalInstallments
+                      ? ` · ${formatCount(plan.completedInstallments)}/${formatCount(plan.totalInstallments)} قسط`
+                      : ""}
+                  </p>
+                </div>
+                <Button
+                  isIconOnly
+                  size="sm"
+                  variant="danger"
+                  aria-label={`حذف ${plan.title}`}
+                  isPending={deletingPlanId === plan._id}
+                  onPress={() => void removePlan(plan)}
+                >
+                  <Trash size={16} />
+                </Button>
+              </div>
+            </article>
+          ))}
+        </section>
+      )}
+
       {loading ? (
         <p className="text-center text-sm text-muted">در حال بارگذاری…</p>
       ) : !monthlyData?.occurrences.length ? (
@@ -96,7 +159,8 @@ export function InstallmentsPage() {
           قسطی برای این ماه ثبت نشده. یک برنامه پرداخت ماهانه بسازید.
         </p>
       ) : (
-        <div className="space-y-3">
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold">اقساط {periodLabel}</h2>
           {monthlyData.occurrences.map((item) => (
             <div key={item._id} className="glass rounded-2xl p-4">
               <div className="flex items-start justify-between gap-3">
@@ -139,9 +203,7 @@ export function InstallmentsPage() {
                       void paymentPlansApi
                         .skipOccurrence(item._id)
                         .then(() => load())
-                        .catch((err) =>
-                          showToast(err instanceof Error ? err.message : "خطا"),
-                        )
+                        .catch((err) => showErrorToast(err))
                     }
                   >
                     رد کردن
@@ -150,7 +212,7 @@ export function InstallmentsPage() {
               )}
             </div>
           ))}
-        </div>
+        </section>
       )}
 
       <CreatePaymentPlanModal

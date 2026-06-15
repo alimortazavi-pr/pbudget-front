@@ -69,6 +69,9 @@ export function AppShell({ children }: { children: ReactNode }) {
       pathname === PATHS.PROJECTS ||
       pathname === PATHS.TASKS ||
       pathname.startsWith("/projects/"),
+    showPeriodBar: !(
+      [PATHS.INSTALLMENTS, PATHS.CHECKS, PATHS.NOTES, PATHS.TASKS] as string[]
+    ).includes(pathname),
   };
 
   return (
