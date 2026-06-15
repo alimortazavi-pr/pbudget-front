@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const API_ERROR_TRANSLATIONS: Record<string, string> = {
+  "Internal server error": "خطای سرور — لطفاً دوباره تلاش کنید",
   "Please enter the 'Type (0 or 1)' correctly": "نوع تراکنش (دریافتی/پرداختی) نامعتبر است",
   "Please enter the 'type (0 or 1)' correctly": "نوع تراکنش (دریافتی/پرداختی) نامعتبر است",
   "remindDaysBefore must not be greater than 30": "تعداد روز یادآوری باید بین ۰ تا ۳۰ باشد",
