@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
 import { ArrowDown, ArrowUp, Link1, Profile2User, Trash } from "iconsax-reactjs";
 
@@ -21,8 +21,7 @@ import { categoriesSelector } from "@/stores/category";
 import { BudgetType, DebtType } from "@/types/enums";
 
 type DebtDetailPageProps = {
-  /** اختیاری؛ در static export شناسه از useParams خوانده می‌شود. */
-  debtId?: string;
+  debtId: string;
 };
 
 type TabId = "overview" | "transactions";
@@ -66,9 +65,7 @@ function resolveBudgetTitle(budget: IBudget, categories: ICategory[]) {
   return "بدون دسته";
 }
 
-export function DebtDetailPage({ debtId: debtIdProp }: DebtDetailPageProps) {
-  const routeParams = useParams<{ id: string }>();
-  const debtId = debtIdProp ?? routeParams.id;
+export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
   const router = useRouter();
   const [debt, setDebt] = useState<IDebt | null>(null);
   const [loading, setLoading] = useState(true);

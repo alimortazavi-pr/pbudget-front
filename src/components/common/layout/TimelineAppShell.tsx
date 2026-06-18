@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
 import { Add, ArrowRight2, Menu } from "iconsax-reactjs";
-import { useState, type ReactNode } from "react";
+import { Suspense, useState, type ReactNode } from "react";
 
 import { PATHS } from "@/common/constants";
 import { APP_NAME_FA } from "@/common/constants/brand";
@@ -16,6 +16,7 @@ import {
   TimelineSidebar,
 } from "@/components/common/layout/TimelineSidebar";
 import { PeriodScopeBar } from "@/components/pages/timeline/PeriodScopeBar";
+import { PeriodProvider } from "@/components/providers/PeriodProvider";
 
 type TimelineAppShellProps = {
   children: ReactNode;
@@ -83,9 +84,13 @@ export function TimelineAppShell({
 
         <div className="pb-main-shell">
           {showPeriodBar && !isHome && (
-            <div className="px-4 pt-14 lg:mx-auto lg:max-w-6xl lg:px-10 lg:pt-6">
-              <PeriodScopeBar compact />
-            </div>
+            <Suspense fallback={<div className="h-10 px-4 pt-14 lg:px-10 lg:pt-6" />}>
+              <PeriodProvider>
+                <div className="px-4 pt-14 lg:mx-auto lg:max-w-6xl lg:px-10 lg:pt-6">
+                  <PeriodScopeBar compact />
+                </div>
+              </PeriodProvider>
+            </Suspense>
           )}
           <main
             className={`pb-main-content px-4 ${

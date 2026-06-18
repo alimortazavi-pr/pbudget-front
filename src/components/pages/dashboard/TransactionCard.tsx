@@ -11,7 +11,7 @@ import type { IBudget } from "@/common/interfaces/budget.interface";
 import { formatBudgetDateTime, formatJalaliDate, formatPrice } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
-import { deleteBudget } from "@/stores/budget";
+import { bumpBudgetRevision, deleteBudget } from "@/stores/budget";
 import { setProfile, userSelector } from "@/stores/profile";
 import { BudgetType, DebtType } from "@/types/enums";
 
@@ -35,6 +35,7 @@ export function TransactionCard({ budget }: TransactionCardProps) {
       if (user && res.userBudget !== undefined) {
         dispatch(setProfile({ ...user, budget: res.userBudget }));
       }
+      dispatch(bumpBudgetRevision());
       showToast("تراکنش حذف شد", "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا در حذف");

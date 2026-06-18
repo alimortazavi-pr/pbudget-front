@@ -18,6 +18,7 @@ import { showToast } from "@/common/utils/toast";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { FormPriceInput } from "@/components/common/form/FormFields";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
+import { bumpBudgetRevision } from "@/stores/budget";
 import { setProfile, userSelector } from "@/stores/profile";
 
 type BalanceModalContextValue = {
@@ -68,6 +69,7 @@ function BalanceModalDialog({
     try {
       const updated = await profileApi.changeUserBudget(delta);
       dispatch(setProfile(updated));
+      dispatch(bumpBudgetRevision());
       showToast(`موجودی جدید: ${formatPrice(updated.budget ?? 0)} تومان`, "success");
       onOpenChange(false);
     } catch (err) {

@@ -11,6 +11,8 @@ import type { ICheck } from "@/common/interfaces/check.interface";
 import type { IPaymentPlanOccurrence } from "@/common/interfaces/payment-plan.interface";
 import type { ITask } from "@/common/interfaces/task.interface";
 import type { PeriodDuration } from "@/common/constants/experience";
+import { useAppSelector } from "@/stores/hooks";
+import { budgetRevisionSelector } from "@/stores/budget";
 
 type UseTimelineDataArgs = {
   duration: PeriodDuration;
@@ -57,6 +59,7 @@ function taskDuration(duration: PeriodDuration): "daily" | "monthly" | "yearly" 
 }
 
 export function useTimelineData(args: UseTimelineDataArgs) {
+  const budgetRevision = useAppSelector(budgetRevisionSelector);
   const [loading, setLoading] = useState(true);
   const [budgets, setBudgets] = useState<IBudget[]>([]);
   const [income, setIncome] = useState(0);
@@ -152,7 +155,7 @@ export function useTimelineData(args: UseTimelineDataArgs) {
 
   useEffect(() => {
     void load();
-  }, [load, queryKey]);
+  }, [load, queryKey, budgetRevision]);
 
   const checkPendingCount = checks.filter((c) => c.status === "pending").length;
   const installmentPendingCount = installments.length;

@@ -10,6 +10,13 @@ export interface IBudgetState {
   budgets: IBudget[] | null;
   totalCostPrice: number | null;
   totalIncomePrice: number | null;
+  /** Incremented after budget mutations to trigger list refetches. */
+  revision: number;
+}
+
+export interface IBudgetMutationResult {
+  budget: IBudget;
+  userBudget: number;
 }
 
 export interface IBudget {

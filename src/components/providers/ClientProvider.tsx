@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, PropsWithChildren, Suspense } from "react";
+import { FC, PropsWithChildren } from "react";
 import { I18nProvider } from "react-aria";
 import { SerwistProvider } from "@serwist/next/react";
 
@@ -8,11 +8,8 @@ import ReduxProvider from "./ReduxProvider";
 import RootProvider from "./RootProvider";
 import { ThemeProvider } from "./ThemeProvider";
 import { ExperienceProvider } from "./ExperienceProvider";
-import { PeriodProvider } from "./PeriodProvider";
 import { AppShell } from "@/components/common/layout/AppShell";
 import { PwaInstallPrompt } from "@/components/common/PwaInstallPrompt";
-import { NativeBridge } from "@/components/common/NativeBridge";
-import { NativeOfflineBanner } from "@/components/common/NativeOfflineBanner";
 
 export const ClientProvider: FC<PropsWithChildren> = ({ children }) => {
   return (
@@ -22,14 +19,8 @@ export const ClientProvider: FC<PropsWithChildren> = ({ children }) => {
           <ExperienceProvider>
             <I18nProvider locale="fa-IR">
               <RootProvider>
-                <Suspense fallback={null}>
-                  <PeriodProvider>
-                    <AppShell>{children}</AppShell>
-                  </PeriodProvider>
-                </Suspense>
+                <AppShell>{children}</AppShell>
                 <PwaInstallPrompt />
-                <NativeOfflineBanner />
-                <NativeBridge />
               </RootProvider>
             </I18nProvider>
           </ExperienceProvider>

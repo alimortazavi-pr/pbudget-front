@@ -16,6 +16,7 @@ import { showToast } from "@/common/utils/toast";
 import * as tasksApi from "@/common/api/tasks";
 import { TransactionCard } from "@/components/pages/dashboard/TransactionCard";
 import {
+  PeriodProvider,
   usePeriod,
   usePeriodBootstrap,
 } from "@/components/providers/PeriodProvider";
@@ -30,6 +31,14 @@ import { useTimelineData } from "@/components/pages/timeline/useTimelineData";
 type DrawerKind = "finance" | "tasks" | "due" | null;
 
 export function TimelineHomePage() {
+  return (
+    <PeriodProvider>
+      <TimelineHomePageContent />
+    </PeriodProvider>
+  );
+}
+
+function TimelineHomePageContent() {
   usePeriodBootstrap();
   const period = usePeriod();
   const user = useAppSelector(userSelector);

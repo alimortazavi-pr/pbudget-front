@@ -7,6 +7,7 @@ const initialState: IBudgetState = {
   budgets: null,
   totalCostPrice: null,
   totalIncomePrice: null,
+  revision: 0,
 };
 
 const budgetSlice = createSlice({
@@ -36,14 +37,19 @@ const budgetSlice = createSlice({
           (state.totalCostPrice ?? 0) - action.payload.price;
       }
     },
+    bumpBudgetRevision(state) {
+      state.revision += 1;
+    },
   },
 });
 
 export const budgetReducer = budgetSlice.reducer;
-export const { setBudgets, deleteBudget } = budgetSlice.actions;
+export const { setBudgets, deleteBudget, bumpBudgetRevision } = budgetSlice.actions;
 export const budgetsSelector = (state: { budget: IBudgetState }) =>
   state.budget.budgets;
 export const totalIncomeSelector = (state: { budget: IBudgetState }) =>
   state.budget.totalIncomePrice;
 export const totalCostSelector = (state: { budget: IBudgetState }) =>
   state.budget.totalCostPrice;
+export const budgetRevisionSelector = (state: { budget: IBudgetState }) =>
+  state.budget.revision;

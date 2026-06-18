@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@heroui/react";
 import { CloseCircle } from "iconsax-reactjs";
-import { Capacitor } from "@capacitor/core";
 
 import { APP_NAME_FA } from "@/common/constants/brand";
 
@@ -23,7 +22,6 @@ export function PwaInstallPrompt() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (Capacitor.isNativePlatform()) return;
     if (window.matchMedia("(display-mode: standalone)").matches) return;
     if (localStorage.getItem(SEEN_KEY) === "1") return;
 

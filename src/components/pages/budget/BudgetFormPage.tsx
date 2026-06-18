@@ -19,8 +19,10 @@ import {
   type DebtLedgerValue,
 } from "@/components/pages/budget/DebtLedgerSection";
 import { CreateCategoryModal } from "@/components/pages/categories/CreateCategoryModal";
-import { useAppSelector } from "@/stores/hooks";
+import { useAppDispatch, useAppSelector } from "@/stores/hooks";
+import { bumpBudgetRevision } from "@/stores/budget";
 import { categoriesSelector } from "@/stores/category";
+import { setProfile, userSelector } from "@/stores/profile";
 import { BudgetType, CategoryKind, DebtType } from "@/types/enums";
 
 type BudgetFormPageProps = {
@@ -41,6 +43,8 @@ function isSettleDebtMode(mode: DebtLedgerMode) {
 
 export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(userSelector);
   const categories = useAppSelector(categoriesSelector);
   const categoryOptions = getCategorySelectOptions(categories ?? []);
   const now = getJalaliNow();
@@ -129,8 +133,11 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
 
     setLoading(true);
     try {
+      let userBudget: number | undefined;
+
       if (budget) {
-        await budgetsApi.updateBudget(budget._id, payload);
+        const res = await budgetsApi.updateBudget(budget._id, payload);
+        userBudget = res.userBudget;
 
         if (debtLedger.enabled && canAttachDebt) {
           if (debtLedger.mode === "create") {
@@ -153,6 +160,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
         }
       } else {
         const res = await budgetsApi.createBudget(payload);
+        userBudget = res.userBudget;
 
         if (debtLedger.enabled) {
           if (debtLedger.mode === "create") {
@@ -174,6 +182,11 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
           showToast("تراکنش ثبت شد", "success");
         }
       }
+
+      if (user && userBudget !== undefined) {
+        dispatch(setProfile({ ...user, budget: userBudget }));
+      }
+      dispatch(bumpBudgetRevision());
       router.push(`/?duration=monthly&year=${year}&month=${month}`);
     } catch (err) {
       showErrorToast(err);

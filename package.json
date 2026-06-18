@@ -7,18 +7,9 @@
     "build": "next build --webpack",
     "start": "next start -p 7711",
     "lint": "eslint",
-    "icons": "node scripts/generate-icons.mjs",
-    "native:build": "cross-env CAPACITOR_BUILD=1 NODE_ENV=production next build --webpack"
+    "icons": "node scripts/generate-icons.mjs"
   },
   "dependencies": {
-    "@capacitor/app": "^8.1.0",
-    "@capacitor/core": "^8.4.0",
-    "@capacitor/haptics": "^8.0.2",
-    "@capacitor/keyboard": "^8.0.3",
-    "@capacitor/network": "^8.0.1",
-    "@capacitor/preferences": "^8.0.1",
-    "@capacitor/splash-screen": "^8.0.1",
-    "@capacitor/status-bar": "^8.0.2",
     "@heroui/react": "^3.1.0",
     "@heroui/styles": "^3.1.0",
     "@reduxjs/toolkit": "^2.12.0",
@@ -45,7 +36,6 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "serwist": "^9.5.11",

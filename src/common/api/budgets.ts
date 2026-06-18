@@ -1,5 +1,9 @@
 import { axiosInstance } from "@/common/axiosInstance";
-import type { IBudget, IBudgetsSummary } from "@/common/interfaces/budget.interface";
+import type {
+  IBudget,
+  IBudgetMutationResult,
+  IBudgetsSummary,
+} from "@/common/interfaces/budget.interface";
 
 export type BudgetDuration = "daily" | "monthly" | "yearly" | "all";
 export type BudgetExportType = "excel" | "html";
@@ -50,17 +54,17 @@ export async function fetchBudgetById(id: string, token?: string) {
 }
 
 export async function createBudget(payload: Record<string, string>) {
-  const { data } = await axiosInstance.post("/budgets", payload);
+  const { data } = await axiosInstance.post<IBudgetMutationResult>("/budgets", payload);
   return data;
 }
 
 export async function updateBudget(id: string, payload: Record<string, string>) {
-  const { data } = await axiosInstance.put(`/budgets/${id}`, payload);
+  const { data } = await axiosInstance.put<IBudgetMutationResult>(`/budgets/${id}`, payload);
   return data;
 }
 
 export async function softDeleteBudget(id: string) {
-  const { data } = await axiosInstance.delete(`/budgets/${id}/soft`);
+  const { data } = await axiosInstance.delete<{ userBudget: number }>(`/budgets/${id}/soft`);
   return data;
 }
 

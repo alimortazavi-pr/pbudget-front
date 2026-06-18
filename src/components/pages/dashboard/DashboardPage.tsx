@@ -18,6 +18,7 @@ import type { IBudget, IBudgetsSummary } from "@/common/interfaces/budget.interf
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import {
   budgetsSelector,
+  budgetRevisionSelector,
   setBudgets,
   totalCostSelector,
   totalIncomeSelector,
@@ -39,6 +40,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
   const totalCost = useAppSelector(totalCostSelector);
   const categories = useAppSelector(categoriesSelector);
   const user = useAppSelector(userSelector);
+  const budgetRevision = useAppSelector(budgetRevisionSelector);
 
   const [loading, setLoading] = useState(!initialData);
   const [exportOpen, setExportOpen] = useState(false);
@@ -103,7 +105,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
     return () => {
       cancelled = true;
     };
-  }, [dispatch, queryString]);
+  }, [dispatch, queryString, budgetRevision]);
 
   const filteredBudgets = budgets ?? [];
 
