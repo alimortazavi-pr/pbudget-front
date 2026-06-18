@@ -2,11 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import * as analyticsApi from "@/common/api/analytics";
 import * as boxesApi from "@/common/api/boxes";
 import * as budgetsApi from "@/common/api/budgets";
+import { useHydratedSearchParams } from "@/common/hooks/useHydratedSearchParams";
 import type {
   AnalyticsDuration,
   AnalyticsReport,
@@ -39,7 +40,7 @@ const AnalysisCharts = dynamic(
 
 export function AnalysisPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const { hydrated, get } = useHydratedSearchParams();
   const categories = useAppSelector(categoriesSelector);
   const user = useAppSelector(userSelector);
 
@@ -47,17 +48,14 @@ export function AnalysisPage() {
   const [loading, setLoading] = useState(true);
   const [usedFallback, setUsedFallback] = useState(false);
 
-  const duration = (searchParams.get("duration") ??
-    "monthly") as AnalyticsDuration;
-  const year =
-    searchParams.get("year") ?? String(getJalaliNow().jYear());
-  const month =
-    searchParams.get("month") ?? String(getJalaliNow().jMonth() + 1);
-  const day =
-    searchParams.get("day") ?? String(getJalaliNow().jDate());
-  const category = searchParams.get("category") ?? "";
-  const type = (searchParams.get("type") ?? "all") as AnalyticsTypeFilter;
-  const compare = searchParams.get("compare") === "true";
+  const now = getJalaliNow();
+  const duration = (hydrated ? get("duration", "monthly") : "monthly") as AnalyticsDuration;
+  const year = hydrated ? get("year", String(now.jYear())) : String(now.jYear());
+  const month = hydrated ? get("month", String(now.jMonth() + 1)) : String(now.jMonth() + 1);
+  const day = hydrated ? get("day", String(now.jDate())) : String(now.jDate());
+  const category = hydrated ? get("category", "") : "";
+  const type = (hydrated ? get("type", "all") : "all") as AnalyticsTypeFilter;
+  const compare = hydrated && get("compare") === "true";
 
   const queryKey = useMemo(
     () =>
@@ -67,7 +65,7 @@ export function AnalysisPage() {
 
   const updateQuery = useCallback(
     (patch: Record<string, string | boolean>) => {
-      const params = new URLSearchParams(searchParams.toString());
+      const params = new URLSearchParams(window.location.search);
       Object.entries(patch).forEach(([key, value]) => {
         if (typeof value === "boolean") {
           if (value) params.set(key, "true");
@@ -79,10 +77,12 @@ export function AnalysisPage() {
       });
       router.replace(`/analysis?${params.toString()}`, { scroll: false });
     },
-    [router, searchParams],
+    [router],
   );
 
   useEffect(() => {
+    if (!hydrated) return;
+
     let cancelled = false;
 
     async function loadFallback() {
@@ -163,6 +163,7 @@ export function AnalysisPage() {
       cancelled = true;
     };
   }, [
+    hydrated,
     queryKey,
     duration,
     year,

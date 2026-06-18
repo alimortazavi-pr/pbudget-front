@@ -9,10 +9,11 @@ import {
   type FC,
   type PropsWithChildren,
 } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import moment from "moment-jalali";
 
 import type { PeriodDuration } from "@/common/constants/experience";
+import { useHydratedSearchParams } from "@/common/hooks/useHydratedSearchParams";
 import {
   formatJalaliDate,
   formatJalaliMonthYear,
@@ -56,13 +57,13 @@ function parseDuration(value: string | null): PeriodDuration {
 export const PeriodProvider: FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const { hydrated, get } = useHydratedSearchParams();
   const now = getJalaliNow();
 
-  const duration = parseDuration(searchParams.get("duration"));
-  const year = searchParams.get("year") ?? String(now.jYear());
-  const month = searchParams.get("month") ?? String(now.jMonth() + 1);
-  const day = searchParams.get("day") ?? String(now.jDate());
+  const duration = parseDuration(hydrated ? get("duration", "monthly") : "monthly");
+  const year = hydrated ? get("year", String(now.jYear())) : String(now.jYear());
+  const month = hydrated ? get("month", String(now.jMonth() + 1)) : String(now.jMonth() + 1);
+  const day = hydrated ? get("day", String(now.jDate())) : String(now.jDate());
 
   const periodLabel = useMemo(() => {
     if (duration === "all") return "همه زمان‌ها";
@@ -78,7 +79,9 @@ export const PeriodProvider: FC<PropsWithChildren> = ({ children }) => {
       month: string;
       day: string;
     }>) => {
-      const params = new URLSearchParams(searchParams.toString());
+      const params = new URLSearchParams(
+        typeof window !== "undefined" ? window.location.search : "",
+      );
       Object.entries(patch).forEach(([key, value]) => {
         if (value) params.set(key, value);
       });
@@ -91,7 +94,7 @@ export const PeriodProvider: FC<PropsWithChildren> = ({ children }) => {
       const qs = params.toString();
       router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
     },
-    [pathname, router, searchParams],
+    [pathname, router],
   );
 
   const goToToday = useCallback(() => {
@@ -191,10 +194,10 @@ export function usePeriod() {
 /** Ensures period query params exist on first timeline visit */
 export function usePeriodBootstrap() {
   const { duration, year, month, day, updatePeriod } = usePeriod();
-  const searchParams = useSearchParams();
+  const { hydrated, get } = useHydratedSearchParams();
 
   useEffect(() => {
-    if (searchParams.get("duration")) return;
+    if (!hydrated || get("duration")) return;
     updatePeriod({ duration, year, month, day });
-  }, [day, duration, month, searchParams, updatePeriod, year]);
+  }, [day, duration, get, hydrated, month, updatePeriod, year]);
 }

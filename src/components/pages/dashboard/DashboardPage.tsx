@@ -1,11 +1,12 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@heroui/react";
 import { ArrowLeft2, ArrowRight2, Export, Filter } from "iconsax-reactjs";
 
 import * as budgetsApi from "@/common/api/budgets";
+import { useHydratedSearchParams } from "@/common/hooks/useHydratedSearchParams";
 import { getJalaliNow, JALALI_MONTHS, toPersianDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { BudgetExportModal } from "@/components/pages/dashboard/BudgetExportModal";
@@ -33,7 +34,7 @@ type DashboardPageProps = {
 export function DashboardPage({ initialData }: DashboardPageProps) {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const { hydrated, get } = useHydratedSearchParams();
 
   const budgets = useAppSelector(budgetsSelector);
   const totalIncome = useAppSelector(totalIncomeSelector);
@@ -46,11 +47,12 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
   const [exportOpen, setExportOpen] = useState(false);
   const hasLoadedOnce = useRef(Boolean(initialData));
 
-  const duration = searchParams.get("duration") ?? "monthly";
-  const year = searchParams.get("year") ?? String(getJalaliNow().jYear());
-  const month = searchParams.get("month") ?? String(getJalaliNow().jMonth() + 1);
-  const day = searchParams.get("day") ?? String(getJalaliNow().jDate());
-  const category = searchParams.get("category") ?? "";
+  const now = getJalaliNow();
+  const duration = hydrated ? get("duration", "monthly") : "monthly";
+  const year = hydrated ? get("year", String(now.jYear())) : String(now.jYear());
+  const month = hydrated ? get("month", String(now.jMonth() + 1)) : String(now.jMonth() + 1);
+  const day = hydrated ? get("day", String(now.jDate())) : String(now.jDate());
+  const category = hydrated ? get("category", "") : "";
 
   const queryString = useMemo(() => {
     const params = new URLSearchParams();
@@ -64,14 +66,14 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
 
   const updateQuery = useCallback(
     (patch: Record<string, string>) => {
-      const params = new URLSearchParams(searchParams.toString());
+      const params = new URLSearchParams(window.location.search);
       Object.entries(patch).forEach(([k, v]) => {
         if (v) params.set(k, v);
         else params.delete(k);
       });
       router.replace(`/?${params.toString()}`, { scroll: false });
     },
-    [router, searchParams],
+    [router],
   );
 
   useEffect(() => {

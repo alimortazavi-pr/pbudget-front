@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Button, Checkbox, Input, Label, Modal, TextField } from "@heroui/react";
 import { Add, Edit2, Note, Trash } from "iconsax-reactjs";
 
@@ -28,6 +28,7 @@ import {
   linesFromNote,
 } from "@/components/pages/planning/AppleNoteEditor";
 import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
+import { useHydratedSearchParams } from "@/common/hooks/useHydratedSearchParams";
 import { chipClass } from "@/components/pages/planning/planning-shared";
 import { PeriodNavigator } from "@/components/pages/planning/PeriodNavigator";
 import { usePeriodQuery } from "@/components/pages/planning/usePeriodQuery";
@@ -54,7 +55,7 @@ function periodPayload(
 
 export function NotesPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const { get } = useHydratedSearchParams();
   const {
     year,
     month,
@@ -66,9 +67,8 @@ export function NotesPage() {
     shiftYear,
   } = usePeriodQuery(PATHS.NOTES);
 
-  const noteDuration =
-    (searchParams.get("duration") as NoteDuration) || "monthly";
-  const categoryFilter = searchParams.get("categoryId") ?? "";
+  const noteDuration = (get("duration", "monthly") as NoteDuration);
+  const categoryFilter = get("categoryId", "");
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -210,7 +210,7 @@ export function NotesPage() {
   }
 
   function setCategoryFilter(value?: string) {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(window.location.search);
     if (!value) {
       params.delete("categoryId");
     } else {

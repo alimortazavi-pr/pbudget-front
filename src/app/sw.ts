@@ -1,4 +1,4 @@
-import { defaultCache } from "@serwist/next/worker";
+import { defaultCache, PAGES_CACHE_NAME } from "@serwist/next/worker";
 import type { PrecacheEntry, SerwistGlobalConfig } from "serwist";
 import { NetworkOnly, Serwist } from "serwist";
 
@@ -52,3 +52,20 @@ const serwist = new Serwist({
 });
 
 serwist.addEventListeners();
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys
+          .filter(
+            (key) =>
+              key === PAGES_CACHE_NAME.html ||
+              key === PAGES_CACHE_NAME.rsc ||
+              key === PAGES_CACHE_NAME.rscPrefetch,
+          )
+          .map((key) => caches.delete(key)),
+      ),
+    ),
+  );
+});

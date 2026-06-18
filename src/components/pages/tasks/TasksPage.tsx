@@ -1,11 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
-import { useSearchParams } from "next/navigation";
 import { Button, Input, Label, Switch, TextField } from "@heroui/react";
 import { Add, Edit2, Task, Trash } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
+import { useHydratedSearchParams } from "@/common/hooks/useHydratedSearchParams";
 import * as tasksApi from "@/common/api/tasks";
 import * as projectsApi from "@/common/api/projects";
 import type { IProject } from "@/common/interfaces/project.interface";
@@ -61,7 +61,7 @@ function getProjectTitle(task: ITask) {
 }
 
 export function TasksPage() {
-  const searchParams = useSearchParams();
+  const { get } = useHydratedSearchParams();
   const {
     year,
     month,
@@ -73,9 +73,9 @@ export function TasksPage() {
     shiftYear,
   } = usePeriodQuery(PATHS.TASKS);
 
-  const duration = (searchParams.get("duration") as TaskDuration) || "daily";
-  const section = searchParams.get("section") === "routines" ? "routines" : "schedule";
-  const projectFilter = searchParams.get("projectId") ?? "";
+  const duration = (get("duration", "daily") as TaskDuration);
+  const section = get("section") === "routines" ? "routines" : "schedule";
+  const projectFilter = get("projectId", "");
   const [statusFilter, setStatusFilter] = useState<TaskStatusFilter>("all");
 
   const [loading, setLoading] = useState(true);
