@@ -21,6 +21,8 @@ export interface IProject {
   status: ProjectStatus;
   description: string;
   fixedIncome: boolean;
+  trackWorkTime?: boolean;
+  hourlyRate?: number;
   deleted: boolean;
   createdAt?: string;
   updatedAt?: string;

@@ -50,6 +50,8 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
   const [status, setStatus] = useState<ProjectStatusType>(ProjectStatus.ACTIVE);
   const [description, setDescription] = useState("");
   const [fixedIncome, setFixedIncome] = useState(false);
+  const [trackWorkTime, setTrackWorkTime] = useState(true);
+  const [hourlyRate, setHourlyRate] = useState("");
 
   const [itemType, setItemType] = useState<ProjectItemType>(ProjectItemType.NOTE);
   const [itemContent, setItemContent] = useState("");
@@ -66,6 +68,10 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
       setStatus(detail.project.status);
       setDescription(detail.project.description ?? "");
       setFixedIncome(detail.project.fixedIncome ?? false);
+      setTrackWorkTime(detail.project.trackWorkTime !== false);
+      setHourlyRate(
+        detail.project.hourlyRate ? String(detail.project.hourlyRate) : "",
+      );
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا در بارگذاری");
     } finally {
@@ -76,6 +82,12 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    if (!trackWorkTime && tab === "work") {
+      setTab("overview");
+    }
+  }, [trackWorkTime, tab]);
 
   const stats = data?.project.stats;
   const notes = useMemo(
@@ -102,6 +114,8 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
         status,
         description: description.trim(),
         fixedIncome,
+        trackWorkTime,
+        hourlyRate: trackWorkTime && !fixedIncome ? toEnglishDigits(hourlyRate) : "0",
       });
       setData((current) =>
         current ? { ...current, project: { ...current.project, ...updated } } : current,
@@ -197,6 +211,15 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
     }
   }
 
+  const showWorkTime = trackWorkTime;
+  const detailTabs = [
+    { id: "overview" as const, label: "تنظیمات" },
+    { id: "transactions" as const, label: "تراکنش‌ها" },
+    { id: "installments" as const, label: "وام و اقساط" },
+    ...(showWorkTime ? [{ id: "work" as const, label: "ساعات کاری" }] : []),
+    { id: "notebook" as const, label: "دفترچه و تسک‌ها" },
+  ] as const;
+
   if (loading || !data) {
     return (
       <div className="glass rounded-2xl p-10 text-center text-muted">در حال بارگذاری…</div>
@@ -220,12 +243,14 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
             <h1 className="mt-1 text-2xl font-bold">{title || project.category?.title}</h1>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Link href={PATHS.PROJECT_ATTENDANCE(projectId)}>
-              <Button size="sm" className="bg-income text-white">
-                <Clock size={16} />
-                حضور و غیاب
-              </Button>
-            </Link>
+            {showWorkTime ? (
+              <Link href={PATHS.PROJECT_ATTENDANCE(projectId)}>
+                <Button size="sm" className="bg-income text-white">
+                  <Clock size={16} />
+                  حضور و غیاب
+                </Button>
+              </Link>
+            ) : null}
             <Link href={`${PATHS.TASKS}?projectId=${projectId}&duration=daily`}>
               <Button size="sm" variant="secondary">
                 <TaskSquare size={16} />
@@ -269,15 +294,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
       </section>
 
       <div className="flex gap-2 overflow-x-auto">
-        {(
-          [
-            { id: "overview" as const, label: "تنظیمات" },
-            { id: "transactions" as const, label: "تراکنش‌ها" },
-            { id: "installments" as const, label: "وام و اقساط" },
-            { id: "work" as const, label: "ساعات کاری" },
-            { id: "notebook" as const, label: "دفترچه و تسک‌ها" },
-          ] as const
-        ).map((item) => (
+        {detailTabs.map((item) => (
           <button
             key={item.id}
             type="button"
@@ -320,17 +337,48 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
 
           <div className="flex items-center justify-between rounded-xl bg-surface-secondary p-3">
             <div>
-              <p className="text-sm font-medium">درآمد ثابت (حقوق ماهانه)</p>
+              <p className="text-sm font-medium">ثبت ساعت کاری (ورود و خروج)</p>
               <p className="mt-1 text-xs text-muted">
-                برای پروژه‌هایی با حقوق ثابت — ساعت موظف ماهانه معمولاً ثابت است.
+                اگر این پروژه نیاز به حضور و غیاب ندارد، خاموش کنید.
               </p>
             </div>
-            <Switch isSelected={fixedIncome} onChange={setFixedIncome} size="sm">
+            <Switch isSelected={trackWorkTime} onChange={setTrackWorkTime} size="sm">
               <Switch.Control>
                 <Switch.Thumb />
               </Switch.Control>
             </Switch>
           </div>
+
+          {trackWorkTime ? (
+            <>
+              <div className="flex items-center justify-between rounded-xl bg-surface-secondary p-3">
+                <div>
+                  <p className="text-sm font-medium">درآمد ثابت (حقوق ماهانه)</p>
+                  <p className="mt-1 text-xs text-muted">
+                    برای پروژه‌هایی با حقوق ثابت — ساعت موظف ماهانه معمولاً ثابت است.
+                  </p>
+                </div>
+                <Switch isSelected={fixedIncome} onChange={setFixedIncome} size="sm">
+                  <Switch.Control>
+                    <Switch.Thumb />
+                  </Switch.Control>
+                </Switch>
+              </div>
+
+              {!fixedIncome ? (
+                <FormPriceInput
+                  label="نرخ ساعتی کار (تومان)"
+                  value={hourlyRate}
+                  onChange={setHourlyRate}
+                />
+              ) : null}
+              {!fixedIncome && hourlyRate ? (
+                <p className="text-xs leading-6 text-muted">
+                  با ثبت ساعات ماه، مبلغ قابل دریافت بر اساس این نرخ محاسبه می‌شود.
+                </p>
+              ) : null}
+            </>
+          ) : null}
 
           <div className="border-t border-border/50 pt-4">
             <Button
@@ -469,7 +517,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
         </div>
       )}
 
-      {tab === "work" && (
+      {tab === "work" && showWorkTime && (
         <ProjectWorkTimeTab
           projectId={projectId}
           projectTitle={title || project.category?.title || "پروژه"}

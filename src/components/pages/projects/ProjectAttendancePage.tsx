@@ -28,6 +28,7 @@ import {
   formatDurationMinutes,
   formatDurationShort,
   formatJalaliMonthYear,
+  formatPrice,
   getJalaliDaysInMonth,
   getJalaliNow,
   hoursInputToMinutes,
@@ -57,6 +58,8 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
   const [month, setMonth] = useState(now.jMonth() + 1);
   const [projectTitle, setProjectTitle] = useState("پروژه");
   const [fixedIncome, setFixedIncome] = useState(false);
+  const [trackWorkTime, setTrackWorkTime] = useState(true);
+  const [hourlyRate, setHourlyRate] = useState(0);
   const [data, setData] = useState<IProjectWorkSessions | null>(null);
   const [report, setReport] = useState<IWorkTimeReport | null>(null);
   const [alerts, setAlerts] = useState<IWorkTimeAlert[]>([]);
@@ -72,14 +75,24 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [projectDetail, sessions, workReport, workAlerts] = await Promise.all([
-        projectsApi.fetchProject(projectId),
+      const projectDetail = await projectsApi.fetchProject(projectId);
+      setProjectTitle(projectDetail.project.category?.title ?? "پروژه");
+      setFixedIncome(projectDetail.project.fixedIncome ?? false);
+      setTrackWorkTime(projectDetail.project.trackWorkTime !== false);
+      setHourlyRate(projectDetail.project.hourlyRate ?? 0);
+
+      if (projectDetail.project.trackWorkTime === false) {
+        setData(null);
+        setReport(null);
+        setAlerts([]);
+        return;
+      }
+
+      const [sessions, workReport, workAlerts] = await Promise.all([
         workTimeApi.fetchProjectWorkSessions(projectId, year, month),
         workTimeApi.fetchProjectWorkTimeReport(projectId, year, month),
         workTimeApi.fetchProjectWorkTimeAlerts(projectId, year, month),
       ]);
-      setProjectTitle(projectDetail.project.category?.title ?? "پروژه");
-      setFixedIncome(projectDetail.project.fixedIncome ?? false);
       setData(sessions);
       setReport(workReport);
       setAlerts(workAlerts);
@@ -203,7 +216,34 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
     return budget.description || "تراکنش مرتبط";
   }
 
+  const expectedEarnings = useMemo(() => {
+    if (!hourlyRate || !data?.monthWorkedMinutes) return null;
+    return Math.round((data.monthWorkedMinutes / 60) * hourlyRate);
+  }, [hourlyRate, data?.monthWorkedMinutes]);
+
   const isActive = Boolean(data?.activeSession);
+
+  if (!loading && !trackWorkTime) {
+    return (
+      <div className="space-y-5 pb-6">
+        <section className="rounded-3xl bg-gradient-to-br from-slate-600 to-slate-700 p-5 text-white shadow-lg">
+          <h1 className="text-2xl font-bold">{projectTitle}</h1>
+          <p className="mt-2 text-sm leading-7 text-white/80">
+            این پروژه نیاز به ثبت ساعت کاری ندارد.
+          </p>
+          <Link
+            href={PATHS.PROJECT(projectId)}
+            className="mt-3 inline-flex text-sm font-medium text-white/90 underline-offset-2 hover:underline"
+          >
+            بازگشت به پروژه
+          </Link>
+        </section>
+        <div className="glass rounded-2xl p-8 text-center text-sm text-muted">
+          از تنظیمات پروژه می‌توانید «ثبت ساعت کاری» را فعال کنید.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-5 pb-6">
@@ -297,6 +337,23 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
                   className="h-full rounded-full bg-accent transition-all"
                   style={{ width: `${progress}%` }}
                 />
+              </div>
+            ) : null}
+            {!fixedIncome && hourlyRate > 0 ? (
+              <div className="rounded-xl border border-income/30 bg-income-soft/30 p-3 text-sm">
+                <p className="text-muted">
+                  نرخ ساعتی:{" "}
+                  <span className="font-semibold text-foreground">
+                    {formatPrice(hourlyRate)}
+                  </span>
+                </p>
+                <p className="mt-2 font-bold text-income">
+                  مبلغ قابل دریافت این ماه:{" "}
+                  {expectedEarnings ? formatPrice(expectedEarnings) : "—"}
+                </p>
+                <p className="mt-1 text-xs text-muted">
+                  بر اساس {formatDurationMinutes(data.monthWorkedMinutes)} کارکرد ثبت‌شده
+                </p>
               </div>
             ) : null}
           </section>

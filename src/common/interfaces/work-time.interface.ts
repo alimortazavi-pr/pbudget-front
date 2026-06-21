@@ -78,11 +78,14 @@ export interface IWorkProjectAnalysis {
   projectId: string;
   title: string;
   fixedIncome: boolean;
+  trackWorkTime: boolean;
   workedMinutes: number;
   targetMinutes: number | null;
   completionPercent: number | null;
   receivedAmount: number;
   incomePerHour: number | null;
+  hourlyRate: number | null;
+  expectedEarnings: number | null;
   sessionCount: number;
 }
 

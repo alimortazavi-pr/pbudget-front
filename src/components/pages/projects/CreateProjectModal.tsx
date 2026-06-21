@@ -30,6 +30,8 @@ function resetFormState() {
     totalAmount: "",
     description: "",
     fixedIncome: false,
+    trackWorkTime: true,
+    hourlyRate: "",
   };
 }
 
@@ -47,6 +49,8 @@ export function CreateProjectModal({
   const [totalAmount, setTotalAmount] = useState("");
   const [description, setDescription] = useState("");
   const [fixedIncome, setFixedIncome] = useState(false);
+  const [trackWorkTime, setTrackWorkTime] = useState(true);
+  const [hourlyRate, setHourlyRate] = useState("");
   const [saving, setSaving] = useState(false);
 
   const projectCategoryOptions = useMemo(() => {
@@ -73,6 +77,8 @@ export function CreateProjectModal({
     setTotalAmount("");
     setDescription("");
     setFixedIncome(false);
+    setTrackWorkTime(true);
+    setHourlyRate("");
   }, [open, hasExistingCategories, projectCategoryOptions]);
 
   function closeModal() {
@@ -82,6 +88,8 @@ export function CreateProjectModal({
     setTotalAmount(next.totalAmount);
     setDescription(next.description);
     setFixedIncome(next.fixedIncome);
+    setTrackWorkTime(next.trackWorkTime);
+    setHourlyRate(next.hourlyRate);
     onOpenChange(false);
   }
 
@@ -119,6 +127,9 @@ export function CreateProjectModal({
         totalAmount: toEnglishDigits(totalAmount),
         description: description.trim() || undefined,
         fixedIncome,
+        trackWorkTime,
+        hourlyRate:
+          trackWorkTime && !fixedIncome ? toEnglishDigits(hourlyRate) : undefined,
       });
 
       showToast("پروژه ایجاد شد", "success");
@@ -193,15 +204,37 @@ export function CreateProjectModal({
             />
             <div className="flex items-center justify-between rounded-xl bg-surface-secondary p-3">
               <div>
-                <p className="text-sm font-medium">درآمد ثابت</p>
-                <p className="mt-1 text-xs text-muted">مثل حقوق ماهانه با ساعت موظف ثابت</p>
+                <p className="text-sm font-medium">ثبت ساعت کاری</p>
+                <p className="mt-1 text-xs text-muted">ورود/خروج و حضور و غیاب</p>
               </div>
-              <Switch isSelected={fixedIncome} onChange={setFixedIncome} size="sm">
+              <Switch isSelected={trackWorkTime} onChange={setTrackWorkTime} size="sm">
                 <Switch.Control>
                   <Switch.Thumb />
                 </Switch.Control>
               </Switch>
             </div>
+            {trackWorkTime ? (
+              <>
+                <div className="flex items-center justify-between rounded-xl bg-surface-secondary p-3">
+                  <div>
+                    <p className="text-sm font-medium">درآمد ثابت</p>
+                    <p className="mt-1 text-xs text-muted">مثل حقوق ماهانه با ساعت موظف ثابت</p>
+                  </div>
+                  <Switch isSelected={fixedIncome} onChange={setFixedIncome} size="sm">
+                    <Switch.Control>
+                      <Switch.Thumb />
+                    </Switch.Control>
+                  </Switch>
+                </div>
+                {!fixedIncome ? (
+                  <FormPriceInput
+                    label="نرخ ساعتی کار (تومان)"
+                    value={hourlyRate}
+                    onChange={setHourlyRate}
+                  />
+                ) : null}
+              </>
+            ) : null}
           </Modal.Body>
           <Modal.Footer>
             <Button type="button" variant="ghost" onPress={closeModal}>

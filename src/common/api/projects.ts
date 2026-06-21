@@ -17,6 +17,8 @@ export async function createProject(payload: {
   totalAmount: string;
   description?: string;
   fixedIncome?: boolean;
+  trackWorkTime?: boolean;
+  hourlyRate?: string;
 }) {
   const { data } = await axiosInstance.post<{ project: IProject }>("/projects", payload);
   return data.project;
@@ -30,6 +32,8 @@ export async function updateProject(
     status?: ProjectStatus;
     description?: string;
     fixedIncome?: boolean;
+    trackWorkTime?: boolean;
+    hourlyRate?: string;
   },
 ) {
   const { data } = await axiosInstance.patch<{ project: IProject }>(

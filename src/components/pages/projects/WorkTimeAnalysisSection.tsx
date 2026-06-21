@@ -53,6 +53,11 @@ export function WorkTimeAnalysisSection({
         )
       : null;
 
+  const totalExpectedEarnings = report.projectAnalysis.reduce(
+    (sum, row) => sum + (row.expectedEarnings ?? 0),
+    0,
+  );
+
   const isProjectScope = scope === "project";
   const title = report.projectTitle ?? report.periodLabel;
 
@@ -110,6 +115,17 @@ export function WorkTimeAnalysisSection({
           </p>
         </div>
       </div>
+
+      {totalExpectedEarnings > 0 ? (
+        <section className="glass rounded-2xl border border-income/30 bg-income-soft/20 p-4">
+          <p className="text-sm text-muted">
+            {isProjectScope ? "مبلغ قابل دریافت این ماه" : "مجموع مبلغ قابل دریافت (پروژه‌های ساعتی)"}
+          </p>
+          <p className="mt-2 text-2xl font-bold text-income">
+            {formatPrice(totalExpectedEarnings)}
+          </p>
+        </section>
+      ) : null}
 
       {progress !== null ? (
         <div className="h-2 overflow-hidden rounded-full bg-surface-secondary">
@@ -177,9 +193,13 @@ export function WorkTimeAnalysisSection({
                   ? ` / ${formatDurationMinutes(row.targetMinutes)}`
                   : ""}
               </p>
-              {row.incomePerHour ? (
+              {row.expectedEarnings ? (
+                <p className="mt-1 font-bold text-income">
+                  قابل دریافت: {formatPrice(row.expectedEarnings)}
+                </p>
+              ) : row.incomePerHour ? (
                 <p className="mt-1 font-medium text-income">
-                  {formatPrice(row.incomePerHour)} / ساعت
+                  {formatPrice(row.incomePerHour)} / ساعت (واقعی)
                 </p>
               ) : null}
             </Link>
@@ -203,9 +223,18 @@ export function WorkTimeAnalysisSection({
             {" · "}
             {formatCount(report.projectAnalysis[0].sessionCount)} جلسه
           </p>
-          {report.projectAnalysis[0].incomePerHour ? (
+          {report.projectAnalysis[0].hourlyRate ? (
+            <p className="mt-1 text-muted">
+              نرخ قرارداد: {formatPrice(report.projectAnalysis[0].hourlyRate)} / ساعت
+            </p>
+          ) : null}
+          {report.projectAnalysis[0].expectedEarnings ? (
+            <p className="mt-1 font-bold text-income">
+              قابل دریافت این ماه: {formatPrice(report.projectAnalysis[0].expectedEarnings)}
+            </p>
+          ) : report.projectAnalysis[0].incomePerHour ? (
             <p className="mt-1 font-medium text-income">
-              {formatPrice(report.projectAnalysis[0].incomePerHour)} / ساعت
+              {formatPrice(report.projectAnalysis[0].incomePerHour)} / ساعت (واقعی)
             </p>
           ) : null}
         </article>
