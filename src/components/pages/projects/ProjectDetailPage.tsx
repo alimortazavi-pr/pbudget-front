@@ -50,7 +50,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
   const [status, setStatus] = useState<ProjectStatusType>(ProjectStatus.ACTIVE);
   const [description, setDescription] = useState("");
   const [fixedIncome, setFixedIncome] = useState(false);
-  const [trackWorkTime, setTrackWorkTime] = useState(true);
+  const [trackWorkTime, setTrackWorkTime] = useState(false);
   const [hourlyRate, setHourlyRate] = useState("");
 
   const [itemType, setItemType] = useState<ProjectItemType>(ProjectItemType.NOTE);
@@ -68,7 +68,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
       setStatus(detail.project.status);
       setDescription(detail.project.description ?? "");
       setFixedIncome(detail.project.fixedIncome ?? false);
-      setTrackWorkTime(detail.project.trackWorkTime !== false);
+      setTrackWorkTime(detail.project.trackWorkTime === true);
       setHourlyRate(
         detail.project.hourlyRate ? String(detail.project.hourlyRate) : "",
       );
@@ -211,7 +211,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
     }
   }
 
-  const showWorkTime = trackWorkTime;
+  const showWorkTime = trackWorkTime === true;
   const detailTabs = [
     { id: "overview" as const, label: "تنظیمات" },
     { id: "transactions" as const, label: "تراکنش‌ها" },

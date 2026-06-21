@@ -30,7 +30,7 @@ function resetFormState() {
     totalAmount: "",
     description: "",
     fixedIncome: false,
-    trackWorkTime: true,
+    trackWorkTime: false,
     hourlyRate: "",
   };
 }
@@ -49,7 +49,7 @@ export function CreateProjectModal({
   const [totalAmount, setTotalAmount] = useState("");
   const [description, setDescription] = useState("");
   const [fixedIncome, setFixedIncome] = useState(false);
-  const [trackWorkTime, setTrackWorkTime] = useState(true);
+  const [trackWorkTime, setTrackWorkTime] = useState(false);
   const [hourlyRate, setHourlyRate] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -77,7 +77,7 @@ export function CreateProjectModal({
     setTotalAmount("");
     setDescription("");
     setFixedIncome(false);
-    setTrackWorkTime(true);
+    setTrackWorkTime(false);
     setHourlyRate("");
   }, [open, hasExistingCategories, projectCategoryOptions]);
 

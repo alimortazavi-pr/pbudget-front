@@ -161,7 +161,7 @@ export function ProjectsPage() {
                           درآمد ثابت
                         </span>
                       ) : null}
-                      {project.trackWorkTime === false ? (
+                      {!project.trackWorkTime ? (
                         <span className="rounded-lg bg-surface-secondary px-2 py-0.5 text-xs text-muted">
                           بدون ساعت کاری
                         </span>

@@ -101,7 +101,9 @@ export function WorkTimeAnalysisSection({
           </p>
         </div>
         <div className="glass rounded-2xl p-4">
-          <p className="text-sm text-muted">ساعت موظف</p>
+          <p className="text-sm text-muted">
+            {isProjectScope ? "ساعت موظف پروژه" : "جمع ساعت موظف پروژه‌ها"}
+          </p>
           <p className="mt-2 text-xl font-bold">
             {report.globalTargetMinutes
               ? formatDurationMinutes(report.globalTargetMinutes)

@@ -9,7 +9,6 @@ import {
   Clock,
   DocumentDownload,
   Login,
-  Setting2,
 } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
@@ -25,13 +24,9 @@ import {
   formatJalaliMonthYear,
   getJalaliDaysInMonth,
   getJalaliNow,
-  hoursInputToMinutes,
-  minutesToHoursInput,
-  toEnglishDigits,
   toPersianDigits,
 } from "@/common/utils";
 import { showErrorToast, showToast } from "@/common/utils/toast";
-import { FormInput } from "@/components/common/form/FormFields";
 import { WorkTimeAnalysisSection } from "@/components/pages/projects/WorkTimeAnalysisSection";
 import { WorkTimeInsightsPanels } from "@/components/pages/projects/WorkTimeInsightsPanels";
 import { moment } from "@/common/utils/jalali-date";
@@ -45,10 +40,7 @@ export function WorkAttendancePage() {
   const [alerts, setAlerts] = useState<IWorkTimeAlert[]>([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
-  const [globalTargetHours, setGlobalTargetHours] = useState("");
-  const [savingTarget, setSavingTarget] = useState(false);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
-  const [targetSectionEl, setTargetSectionEl] = useState<HTMLElement | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -61,11 +53,6 @@ export function WorkAttendancePage() {
       setData(dashboard);
       setReport(workReport);
       setAlerts(workAlerts);
-      setGlobalTargetHours(
-        dashboard.globalTarget.requiredMinutes
-          ? minutesToHoursInput(dashboard.globalTarget.requiredMinutes)
-          : "",
-      );
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا در بارگذاری");
     } finally {
@@ -92,24 +79,6 @@ export function WorkAttendancePage() {
     setSelectedDay(null);
   }
 
-  async function saveGlobalTarget() {
-    const minutes = hoursInputToMinutes(toEnglishDigits(globalTargetHours));
-    if (!minutes) {
-      showToast("ساعت موظف ماه را وارد کنید");
-      return;
-    }
-    setSavingTarget(true);
-    try {
-      await workTimeApi.upsertMonthlyTarget({ year, month, requiredMinutes: minutes });
-      showToast("ساعت موظف ذخیره شد", "success");
-      await load();
-    } catch (err) {
-      showErrorToast(err);
-    } finally {
-      setSavingTarget(false);
-    }
-  }
-
   async function handleExport() {
     setExporting(true);
     try {
@@ -132,14 +101,10 @@ export function WorkAttendancePage() {
       } catch (err) {
         showErrorToast(err);
       }
-      return;
-    }
-    if (alert.action === "set-target") {
-      targetSectionEl?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   }
 
-  const globalProgress =
+  const aggregatedProgress =
     data?.globalTarget.requiredMinutes && data.globalTarget.requiredMinutes > 0
       ? Math.min(
           (data.globalTarget.workedMinutes / data.globalTarget.requiredMinutes) * 100,
@@ -153,7 +118,8 @@ export function WorkAttendancePage() {
         <p className="text-sm font-medium text-white/80">نمای کلی</p>
         <h1 className="mt-1 text-2xl font-bold">تحلیل حضور و غیاب</h1>
         <p className="mt-2 text-sm leading-7 text-white/80">
-          تحلیل کلی همه پروژه‌ها — برای ثبت ورود و خروج، وارد صفحه حضور و غیاب هر پروژه شوید.
+          فقط پروژه‌هایی که ثبت ساعت کاری‌شان را روشن کرده‌اید اینجا می‌آیند. ساعت
+          موظف هر پروژه را در صفحه حضور و غیاب همان پروژه تعریف کنید.
         </p>
         <Link
           href={PATHS.PROJECTS}
@@ -198,50 +164,27 @@ export function WorkAttendancePage() {
             />
           ) : null}
 
-          <section
-            id="work-target-section"
-            ref={setTargetSectionEl}
-            className="glass space-y-3 rounded-2xl p-4"
-          >
-            <div className="flex items-center gap-2">
-              <Setting2 size={18} className="text-accent" />
-              <h2 className="font-semibold">ساعت موظف این ماه (کلی)</h2>
-            </div>
-            <p className="text-xs leading-6 text-muted">
-              برای تحلیل آینده — مجموع ساعتی که باید در این ماه کار کنید.
+          <section className="glass rounded-2xl p-4 text-sm">
+            <p>
+              کارکرد این ماه (همه پروژه‌های فعال):{" "}
+              <span className="font-bold">
+                {formatDurationMinutes(data.globalTarget.workedMinutes)}
+              </span>
             </p>
-            <div className="flex flex-wrap items-end gap-2">
-              <div className="min-w-[140px] flex-1">
-                <FormInput
-                  label="ساعت موظف"
-                  placeholder="مثلاً ۱۶۰"
-                  value={globalTargetHours}
-                  onChange={(e) => setGlobalTargetHours(e.target.value)}
-                />
-              </div>
-              <Button onPress={() => void saveGlobalTarget()} isPending={savingTarget}>
-                ذخیره
-              </Button>
-            </div>
-            <div className="rounded-xl bg-surface-secondary p-3 text-sm">
-              <p>
-                کارکرد این ماه:{" "}
-                <span className="font-bold">
-                  {formatDurationMinutes(data.globalTarget.workedMinutes)}
-                </span>
+            {data.globalTarget.requiredMinutes ? (
+              <p className="mt-1 text-muted">
+                جمع ساعت موظف پروژه‌ها:{" "}
+                {formatDurationMinutes(data.globalTarget.requiredMinutes)}
+                {aggregatedProgress !== null
+                  ? ` · ${toPersianDigits(String(Math.round(aggregatedProgress)))}٪`
+                  : ""}
               </p>
-              {data.globalTarget.requiredMinutes ? (
-                <p className="mt-1 text-muted">
-                  هدف: {formatDurationMinutes(data.globalTarget.requiredMinutes)}
-                  {globalProgress !== null ? ` · ${toPersianDigits(String(Math.round(globalProgress)))}٪` : ""}
-                </p>
-              ) : null}
-            </div>
-            {globalProgress !== null ? (
-              <div className="h-2 overflow-hidden rounded-full bg-surface-secondary">
+            ) : null}
+            {aggregatedProgress !== null ? (
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-surface-secondary">
                 <div
                   className="h-full rounded-full bg-accent transition-all"
-                  style={{ width: `${globalProgress}%` }}
+                  style={{ width: `${aggregatedProgress}%` }}
                 />
               </div>
             ) : null}
@@ -267,10 +210,10 @@ export function WorkAttendancePage() {
           ) : null}
 
           <section className="space-y-3">
-            <h2 className="text-sm font-semibold text-muted">پروژه‌ها</h2>
+            <h2 className="text-sm font-semibold text-muted">پروژه‌های با ثبت ساعت</h2>
             {data.projects.length === 0 ? (
               <div className="glass rounded-2xl p-8 text-center text-muted">
-                پروژه فعالی برای ثبت ساعت وجود ندارد
+                هیچ پروژه‌ای برای ثبت ساعت فعال نیست — از تنظیمات پروژه، «ثبت ساعت کاری» را روشن کنید.
               </div>
             ) : (
               data.projects.map((row) => {
@@ -346,7 +289,7 @@ export function WorkAttendancePage() {
           <section className="glass space-y-3 rounded-2xl p-4">
             <h2 className="font-semibold">تقویم کارکرد ماه</h2>
             <p className="text-xs text-muted">
-              روی هر روز بزنید تا جزئیات را ببینید — مجموع همه پروژه‌ها
+              روی هر روز بزنید تا جزئیات را ببینید — مجموع پروژه‌های فعال
             </p>
             <div className="grid grid-cols-7 gap-1.5 text-center text-xs text-muted">
               {["ش", "ی", "د", "س", "چ", "پ", "ج"].map((label) => (

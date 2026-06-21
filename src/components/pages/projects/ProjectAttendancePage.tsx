@@ -59,7 +59,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
   const [month, setMonth] = useState(now.jMonth() + 1);
   const [projectTitle, setProjectTitle] = useState("پروژه");
   const [fixedIncome, setFixedIncome] = useState(false);
-  const [trackWorkTime, setTrackWorkTime] = useState(true);
+  const [trackWorkTime, setTrackWorkTime] = useState(false);
   const [hourlyRate, setHourlyRate] = useState(0);
   const [data, setData] = useState<IProjectWorkSessions | null>(null);
   const [report, setReport] = useState<IWorkTimeReport | null>(null);
@@ -79,10 +79,10 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
       const projectDetail = await projectsApi.fetchProject(projectId);
       setProjectTitle(projectDetail.project.category?.title ?? "پروژه");
       setFixedIncome(projectDetail.project.fixedIncome ?? false);
-      setTrackWorkTime(projectDetail.project.trackWorkTime !== false);
+      setTrackWorkTime(projectDetail.project.trackWorkTime === true);
       setHourlyRate(projectDetail.project.hourlyRate ?? 0);
 
-      if (projectDetail.project.trackWorkTime === false) {
+      if (projectDetail.project.trackWorkTime !== true) {
         setData(null);
         setReport(null);
         setAlerts([]);
