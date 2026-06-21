@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
-import { Add, Briefcase } from "iconsax-reactjs";
+import { Add, Briefcase, Clock } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 import * as projectsApi from "@/common/api/projects";
@@ -97,16 +97,24 @@ export function ProjectsPage() {
         </div>
       )}
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm text-muted">{formatCount(projects.length)} پروژه</p>
-        <Button
-          size="sm"
-          className="bg-accent text-accent-foreground"
-          onPress={() => setCreateOpen(true)}
-        >
-          <Add size={18} />
-          پروژه جدید
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Link href={PATHS.WORK_ATTENDANCE}>
+            <Button size="sm" variant="secondary">
+              <Clock size={18} />
+              حضور و غیاب
+            </Button>
+          </Link>
+          <Button
+            size="sm"
+            className="bg-accent text-accent-foreground"
+            onPress={() => setCreateOpen(true)}
+          >
+            <Add size={18} />
+            پروژه جدید
+          </Button>
+        </div>
       </div>
 
       {loading ? (
@@ -148,6 +156,11 @@ export function ProjectsPage() {
                       >
                         {statusLabel(project.status)}
                       </span>
+                      {project.fixedIncome ? (
+                        <span className="rounded-lg bg-income-soft px-2 py-0.5 text-xs font-medium text-income">
+                          درآمد ثابت
+                        </span>
+                      ) : null}
                     </div>
                     {project.description ? (
                       <p className="mt-1 line-clamp-2 text-sm text-muted">

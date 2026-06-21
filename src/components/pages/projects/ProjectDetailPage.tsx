@@ -14,6 +14,7 @@ import { showErrorToast, showToast } from "@/common/utils/toast";
 import { AttachBudgetButton } from "@/components/common/budget/AttachBudgetModal";
 import { FormInput, FormPriceInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
 import { CreatePaymentPlanModal } from "@/components/pages/planning/CreatePaymentPlanModal";
+import { ProjectWorkTimeTab } from "@/components/pages/projects/ProjectWorkTimeTab";
 import { BudgetType, ProjectItemType, ProjectStatus } from "@/types/enums";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { categoriesSelector, setCategories } from "@/stores/category";
@@ -22,7 +23,7 @@ type ProjectDetailPageProps = {
   projectId: string;
 };
 
-type TabId = "overview" | "transactions" | "installments" | "notebook";
+type TabId = "overview" | "transactions" | "installments" | "notebook" | "work";
 
 const STATUS_OPTIONS = [
   { id: ProjectStatus.ACTIVE, label: "فعال" },
@@ -48,6 +49,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
   const [totalAmount, setTotalAmount] = useState("");
   const [status, setStatus] = useState<ProjectStatusType>(ProjectStatus.ACTIVE);
   const [description, setDescription] = useState("");
+  const [fixedIncome, setFixedIncome] = useState(false);
 
   const [itemType, setItemType] = useState<ProjectItemType>(ProjectItemType.NOTE);
   const [itemContent, setItemContent] = useState("");
@@ -63,6 +65,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
       setTotalAmount(String(detail.project.totalAmount));
       setStatus(detail.project.status);
       setDescription(detail.project.description ?? "");
+      setFixedIncome(detail.project.fixedIncome ?? false);
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا در بارگذاری");
     } finally {
@@ -98,6 +101,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
         totalAmount: toEnglishDigits(totalAmount),
         status,
         description: description.trim(),
+        fixedIncome,
       });
       setData((current) =>
         current ? { ...current, project: { ...current.project, ...updated } } : current,
@@ -262,6 +266,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
             { id: "overview" as const, label: "تنظیمات" },
             { id: "transactions" as const, label: "تراکنش‌ها" },
             { id: "installments" as const, label: "وام و اقساط" },
+            { id: "work" as const, label: "ساعات کاری" },
             { id: "notebook" as const, label: "دفترچه و تسک‌ها" },
           ] as const
         ).map((item) => (
@@ -304,6 +309,20 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
+
+          <div className="flex items-center justify-between rounded-xl bg-surface-secondary p-3">
+            <div>
+              <p className="text-sm font-medium">درآمد ثابت (حقوق ماهانه)</p>
+              <p className="mt-1 text-xs text-muted">
+                برای پروژه‌هایی با حقوق ثابت — ساعت موظف ماهانه معمولاً ثابت است.
+              </p>
+            </div>
+            <Switch isSelected={fixedIncome} onChange={setFixedIncome} size="sm">
+              <Switch.Control>
+                <Switch.Thumb />
+              </Switch.Control>
+            </Switch>
+          </div>
 
           <div className="border-t border-border/50 pt-4">
             <Button
@@ -440,6 +459,14 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
             ))
           )}
         </div>
+      )}
+
+      {tab === "work" && (
+        <ProjectWorkTimeTab
+          projectId={projectId}
+          projectTitle={title || project.category?.title || "پروژه"}
+          fixedIncome={project.fixedIncome ?? false}
+        />
       )}
 
       {tab === "notebook" && (

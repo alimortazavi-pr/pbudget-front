@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { Button, Modal } from "@heroui/react";
+import { Button, Modal, Switch } from "@heroui/react";
 
 import * as categoriesApi from "@/common/api/categories";
 import * as projectsApi from "@/common/api/projects";
@@ -29,6 +29,7 @@ function resetFormState() {
     categoryId: "",
     totalAmount: "",
     description: "",
+    fixedIncome: false,
   };
 }
 
@@ -45,6 +46,7 @@ export function CreateProjectModal({
   const [categoryId, setCategoryId] = useState("");
   const [totalAmount, setTotalAmount] = useState("");
   const [description, setDescription] = useState("");
+  const [fixedIncome, setFixedIncome] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const projectCategoryOptions = useMemo(() => {
@@ -70,6 +72,7 @@ export function CreateProjectModal({
     setTitle("");
     setTotalAmount("");
     setDescription("");
+    setFixedIncome(false);
   }, [open, hasExistingCategories, projectCategoryOptions]);
 
   function closeModal() {
@@ -78,6 +81,7 @@ export function CreateProjectModal({
     setCategoryId(next.categoryId);
     setTotalAmount(next.totalAmount);
     setDescription(next.description);
+    setFixedIncome(next.fixedIncome);
     onOpenChange(false);
   }
 
@@ -114,6 +118,7 @@ export function CreateProjectModal({
         categoryId: resolvedCategoryId,
         totalAmount: toEnglishDigits(totalAmount),
         description: description.trim() || undefined,
+        fixedIncome,
       });
 
       showToast("پروژه ایجاد شد", "success");
@@ -186,6 +191,17 @@ export function CreateProjectModal({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
+            <div className="flex items-center justify-between rounded-xl bg-surface-secondary p-3">
+              <div>
+                <p className="text-sm font-medium">درآمد ثابت</p>
+                <p className="mt-1 text-xs text-muted">مثل حقوق ماهانه با ساعت موظف ثابت</p>
+              </div>
+              <Switch isSelected={fixedIncome} onChange={setFixedIncome} size="sm">
+                <Switch.Control>
+                  <Switch.Thumb />
+                </Switch.Control>
+              </Switch>
+            </div>
           </Modal.Body>
           <Modal.Footer>
             <Button type="button" variant="ghost" onPress={closeModal}>

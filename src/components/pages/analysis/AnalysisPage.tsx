@@ -7,17 +7,23 @@ import { useRouter } from "next/navigation";
 import * as analyticsApi from "@/common/api/analytics";
 import * as boxesApi from "@/common/api/boxes";
 import * as budgetsApi from "@/common/api/budgets";
+import * as workTimeApi from "@/common/api/work-time";
 import { useHydratedSearchParams } from "@/common/hooks/useHydratedSearchParams";
 import type {
   AnalyticsDuration,
   AnalyticsReport,
   AnalyticsTypeFilter,
 } from "@/common/interfaces/analytics.interface";
+import type {
+  IWorkTimeAlert,
+  IWorkTimeReport,
+} from "@/common/interfaces/work-time.interface";
 import { buildClientAnalyticsReport } from "@/common/utils/analytics-fallback";
 import { getJalaliNow } from "@/common/utils/jalali-date";
 import { showToast } from "@/common/utils/toast";
 import { AnalysisFilters } from "@/components/pages/analysis/AnalysisFilters";
 import { AnalysisInsightsPanel } from "@/components/pages/analysis/AnalysisInsightsPanel";
+import { WorkTimeAnalysisSection } from "@/components/pages/projects/WorkTimeAnalysisSection";
 import { AnalysisKpiCards } from "@/components/pages/analysis/AnalysisKpiCards";
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
@@ -45,6 +51,8 @@ export function AnalysisPage() {
   const user = useAppSelector(userSelector);
 
   const [report, setReport] = useState<AnalyticsReport | null>(null);
+  const [workReport, setWorkReport] = useState<IWorkTimeReport | null>(null);
+  const [workAlerts, setWorkAlerts] = useState<IWorkTimeAlert[]>([]);
   const [loading, setLoading] = useState(true);
   const [usedFallback, setUsedFallback] = useState(false);
 
@@ -121,19 +129,49 @@ export function AnalysisPage() {
     async function load() {
       setLoading(true);
       setUsedFallback(false);
+      setWorkReport(null);
+      setWorkAlerts([]);
 
       try {
-        const data = await analyticsApi.fetchAnalyticsReport({
-          duration,
-          year,
-          month,
-          day,
-          category: category || undefined,
-          type,
-          compare,
-        });
-        if (!cancelled) {
-          setReport(data);
+        const requests: Promise<unknown>[] = [
+          analyticsApi.fetchAnalyticsReport({
+            duration,
+            year,
+            month,
+            day,
+            category: category || undefined,
+            type,
+            compare,
+          }),
+        ];
+
+        if (duration === "monthly") {
+          requests.push(
+            workTimeApi.fetchWorkTimeReport(parseInt(year, 10), parseInt(month, 10)),
+            workTimeApi.fetchWorkTimeAlerts(parseInt(year, 10), parseInt(month, 10)),
+          );
+        }
+
+        const results = await Promise.allSettled(requests);
+        const analyticsResult = results[0];
+
+        if (analyticsResult.status === "fulfilled") {
+          if (!cancelled) {
+            setReport(analyticsResult.value as AnalyticsReport);
+          }
+        } else {
+          throw analyticsResult.reason;
+        }
+
+        if (duration === "monthly" && results[1]?.status === "fulfilled") {
+          if (!cancelled) {
+            setWorkReport(results[1].value as IWorkTimeReport);
+          }
+        }
+        if (duration === "monthly" && results[2]?.status === "fulfilled") {
+          if (!cancelled) {
+            setWorkAlerts(results[2].value as IWorkTimeAlert[]);
+          }
         }
       } catch {
         try {
@@ -239,6 +277,10 @@ export function AnalysisPage() {
             insights={report.insights}
             periodLabel={report.filters.periodLabel}
           />
+
+          {duration === "monthly" && workReport ? (
+            <WorkTimeAnalysisSection report={workReport} alerts={workAlerts} />
+          ) : null}
         </>
       )}
     </div>

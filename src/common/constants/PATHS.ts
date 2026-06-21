@@ -16,6 +16,7 @@ export const PATHS = {
   COMMITMENTS: "/commitments",
   PROJECTS: "/projects",
   PROJECT: (id: string) => `/projects/${id}`,
+  WORK_ATTENDANCE: "/projects/attendance",
   TASKS: "/tasks",
   /** @deprecated use INSTALLMENTS */
   PLANNING: "/planning",

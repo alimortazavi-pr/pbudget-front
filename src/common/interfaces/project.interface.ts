@@ -20,6 +20,7 @@ export interface IProject {
   totalAmount: number;
   status: ProjectStatus;
   description: string;
+  fixedIncome: boolean;
   deleted: boolean;
   createdAt?: string;
   updatedAt?: string;
