@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button, Switch } from "@heroui/react";
-import { Add, Edit2, Task, Trash, TaskSquare, Wallet } from "iconsax-reactjs";
+import { Add, Edit2, Task, Trash, TaskSquare, Wallet, Clock } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 import * as projectsApi from "@/common/api/projects";
@@ -219,12 +219,20 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
             <p className="text-sm text-muted">پروژه</p>
             <h1 className="mt-1 text-2xl font-bold">{title || project.category?.title}</h1>
           </div>
-          <Link href={`${PATHS.TASKS}?projectId=${projectId}&duration=daily`}>
-            <Button size="sm" variant="secondary">
-              <TaskSquare size={16} />
-              برنامه روزانه پروژه
-            </Button>
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link href={PATHS.PROJECT_ATTENDANCE(projectId)}>
+              <Button size="sm" className="bg-income text-white">
+                <Clock size={16} />
+                حضور و غیاب
+              </Button>
+            </Link>
+            <Link href={`${PATHS.TASKS}?projectId=${projectId}&duration=daily`}>
+              <Button size="sm" variant="secondary">
+                <TaskSquare size={16} />
+                برنامه روزانه پروژه
+              </Button>
+            </Link>
+          </div>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
           <div className="rounded-xl bg-surface-secondary p-3">

@@ -69,6 +69,30 @@ export async function upsertMonthlyTarget(payload: {
   return data.target;
 }
 
+export async function fetchProjectWorkTimeReport(
+  projectId: string,
+  year: number,
+  month: number,
+) {
+  const { data } = await axiosInstance.get<IWorkTimeReport>(
+    `/work-time/projects/${projectId}/report`,
+    { params: { year, month } },
+  );
+  return data;
+}
+
+export async function fetchProjectWorkTimeAlerts(
+  projectId: string,
+  year: number,
+  month: number,
+) {
+  const { data } = await axiosInstance.get<{ alerts: IWorkTimeAlert[] }>(
+    `/work-time/projects/${projectId}/alerts`,
+    { params: { year, month } },
+  );
+  return data.alerts;
+}
+
 export async function fetchProjectWorkSessions(
   projectId: string,
   year: number,

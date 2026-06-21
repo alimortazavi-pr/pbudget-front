@@ -196,9 +196,9 @@ export function ProjectWorkTimeTab({
             <Add size={16} />
             ثبت دستی
           </Button>
-          <Link href={PATHS.WORK_ATTENDANCE}>
+          <Link href={PATHS.PROJECT_ATTENDANCE(projectId)}>
             <Button variant="ghost" size="sm">
-              همه پروژه‌ها
+              صفحه کامل حضور و غیاب
             </Button>
           </Link>
         </div>

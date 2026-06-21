@@ -126,4 +126,7 @@ export interface IWorkTimeReport {
   projectAnalysis: IWorkProjectAnalysis[];
   insights: IWorkTimeInsight[];
   comparison?: IWorkTimeMonthComparison;
+  projectId?: string;
+  projectTitle?: string;
+  fixedIncome?: boolean;
 }

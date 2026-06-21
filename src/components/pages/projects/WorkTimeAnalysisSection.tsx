@@ -10,6 +10,7 @@ import type { IWorkTimeReport } from "@/common/interfaces/work-time.interface";
 import {
   formatDurationMinutes,
   formatPrice,
+  formatCount,
   toPersianDigits,
 } from "@/common/utils";
 import { WorkTimeInsightsPanels } from "@/components/pages/projects/WorkTimeInsightsPanels";
@@ -33,6 +34,7 @@ type WorkTimeAnalysisSectionProps = {
   report: IWorkTimeReport;
   alerts: import("@/common/interfaces/work-time.interface").IWorkTimeAlert[];
   compact?: boolean;
+  scope?: "global" | "project";
   onAlertAction?: (alert: import("@/common/interfaces/work-time.interface").IWorkTimeAlert) => void;
 };
 
@@ -40,6 +42,7 @@ export function WorkTimeAnalysisSection({
   report,
   alerts,
   compact = false,
+  scope = "global",
   onAlertAction,
 }: WorkTimeAnalysisSectionProps) {
   const progress =
@@ -50,26 +53,44 @@ export function WorkTimeAnalysisSection({
         )
       : null;
 
+  const isProjectScope = scope === "project";
+  const title = report.projectTitle ?? report.periodLabel;
+
   return (
     <section className="space-y-4">
       {!compact ? (
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <p className="text-sm text-muted">تحلیل ساعات کاری</p>
-            <h2 className="text-xl font-bold">{report.periodLabel}</h2>
+            <p className="text-sm text-muted">
+              {isProjectScope ? "تحلیل کارکرد پروژه" : "تحلیل ساعات کاری"}
+            </p>
+            <h2 className="text-xl font-bold">
+              {isProjectScope ? title : report.periodLabel}
+            </h2>
           </div>
-          <Link href={PATHS.WORK_ATTENDANCE}>
-            <Button size="sm" variant="secondary">
-              <Chart size={16} />
-              حضور و غیاب
-            </Button>
-          </Link>
+          {isProjectScope && report.projectId ? (
+            <Link href={PATHS.WORK_ATTENDANCE}>
+              <Button size="sm" variant="secondary">
+                <Chart size={16} />
+                تحلیل کلی
+              </Button>
+            </Link>
+          ) : (
+            <Link href={PATHS.WORK_ATTENDANCE}>
+              <Button size="sm" variant="secondary">
+                <Chart size={16} />
+                حضور و غیاب
+              </Button>
+            </Link>
+          )}
         </div>
       ) : null}
 
       <div className="grid gap-3 sm:grid-cols-3">
         <div className="glass rounded-2xl p-4">
-          <p className="text-sm text-muted">کارکرد ماه</p>
+          <p className="text-sm text-muted">
+            {isProjectScope ? "کارکرد این پروژه" : "کارکرد ماه"}
+          </p>
           <p className="mt-2 text-xl font-bold">
             {formatDurationMinutes(report.globalWorkedMinutes)}
           </p>
@@ -136,10 +157,14 @@ export function WorkTimeAnalysisSection({
         onAlertAction={onAlertAction}
       />
 
-      {report.projectAnalysis.length > 0 ? (
+      {report.projectAnalysis.length > 0 && !isProjectScope ? (
         <div className="grid gap-2 sm:grid-cols-2">
           {report.projectAnalysis.slice(0, 6).map((row) => (
-            <article key={row.projectId} className="glass rounded-2xl p-4 text-sm">
+            <Link
+              key={row.projectId}
+              href={PATHS.PROJECT_ATTENDANCE(row.projectId)}
+              className="block glass rounded-2xl p-4 text-sm transition hover:border-accent/40"
+            >
               <div className="flex items-center justify-between gap-2">
                 <p className="font-semibold">{row.title}</p>
                 <span className="text-xs text-muted">
@@ -157,12 +182,36 @@ export function WorkTimeAnalysisSection({
                   {formatPrice(row.incomePerHour)} / ساعت
                 </p>
               ) : null}
-            </article>
+            </Link>
           ))}
         </div>
       ) : null}
 
-      <WorkTimeAnalysisCharts report={report} />
+      {isProjectScope && report.projectAnalysis[0] ? (
+        <article className="glass rounded-2xl p-4 text-sm">
+          <div className="flex items-center justify-between gap-2">
+            <p className="font-semibold">{report.projectAnalysis[0].title}</p>
+            <span className="text-xs text-muted">
+              {report.projectAnalysis[0].fixedIncome ? "ثابت" : "ساعتی"}
+            </span>
+          </div>
+          <p className="mt-2 text-muted">
+            {formatDurationMinutes(report.projectAnalysis[0].workedMinutes)}
+            {report.projectAnalysis[0].targetMinutes
+              ? ` / ${formatDurationMinutes(report.projectAnalysis[0].targetMinutes)}`
+              : ""}
+            {" · "}
+            {formatCount(report.projectAnalysis[0].sessionCount)} جلسه
+          </p>
+          {report.projectAnalysis[0].incomePerHour ? (
+            <p className="mt-1 font-medium text-income">
+              {formatPrice(report.projectAnalysis[0].incomePerHour)} / ساعت
+            </p>
+          ) : null}
+        </article>
+      ) : null}
+
+      <WorkTimeAnalysisCharts report={report} scope={scope} />
     </section>
   );
 }

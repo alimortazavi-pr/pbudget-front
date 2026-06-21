@@ -4,13 +4,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Button } from "@heroui/react";
 import {
-  Add,
   ArrowLeft2,
   ArrowRight2,
   Clock,
   DocumentDownload,
   Login,
-  Logout,
   Setting2,
 } from "iconsax-reactjs";
 
@@ -34,7 +32,6 @@ import {
 } from "@/common/utils";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { FormInput } from "@/components/common/form/FormFields";
-import { ManualWorkSessionModal } from "@/components/pages/projects/ManualWorkSessionModal";
 import { WorkTimeAnalysisSection } from "@/components/pages/projects/WorkTimeAnalysisSection";
 import { WorkTimeInsightsPanels } from "@/components/pages/projects/WorkTimeInsightsPanels";
 import { moment } from "@/common/utils/jalali-date";
@@ -48,8 +45,6 @@ export function WorkAttendancePage() {
   const [alerts, setAlerts] = useState<IWorkTimeAlert[]>([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
-  const [actionProjectId, setActionProjectId] = useState<string | null>(null);
-  const [manualProjectId, setManualProjectId] = useState<string | null>(null);
   const [globalTargetHours, setGlobalTargetHours] = useState("");
   const [savingTarget, setSavingTarget] = useState(false);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
@@ -97,32 +92,6 @@ export function WorkAttendancePage() {
     setSelectedDay(null);
   }
 
-  async function handleClockIn(projectId: string) {
-    setActionProjectId(projectId);
-    try {
-      await workTimeApi.clockIn(projectId);
-      showToast("ورود ثبت شد", "success");
-      await load();
-    } catch (err) {
-      showErrorToast(err);
-    } finally {
-      setActionProjectId(null);
-    }
-  }
-
-  async function handleClockOut(projectId: string) {
-    setActionProjectId(projectId);
-    try {
-      await workTimeApi.clockOut(projectId);
-      showToast("خروج ثبت شد", "success");
-      await load();
-    } catch (err) {
-      showErrorToast(err);
-    } finally {
-      setActionProjectId(null);
-    }
-  }
-
   async function saveGlobalTarget() {
     const minutes = hoursInputToMinutes(toEnglishDigits(globalTargetHours));
     if (!minutes) {
@@ -156,15 +125,12 @@ export function WorkAttendancePage() {
 
   async function handleAlertAction(alert: IWorkTimeAlert) {
     if (alert.action === "clock-out" && alert.projectId) {
-      setActionProjectId(alert.projectId);
       try {
         await workTimeApi.clockOut(alert.projectId);
         showToast("خروج ثبت شد", "success");
         await load();
       } catch (err) {
         showErrorToast(err);
-      } finally {
-        setActionProjectId(null);
       }
       return;
     }
@@ -184,11 +150,10 @@ export function WorkAttendancePage() {
   return (
     <div className="space-y-5 pb-6">
       <section className="rounded-3xl bg-gradient-to-br from-emerald-600 to-teal-700 p-5 text-white shadow-lg">
-        <p className="text-sm font-medium text-white/80">ثبت ساعات کاری</p>
-        <h1 className="mt-1 text-2xl font-bold">حضور و غیاب</h1>
+        <p className="text-sm font-medium text-white/80">نمای کلی</p>
+        <h1 className="mt-1 text-2xl font-bold">تحلیل حضور و غیاب</h1>
         <p className="mt-2 text-sm leading-7 text-white/80">
-          برای هر پروژه ورود و خروج بزنید، روزها را دستی ثبت کنید و ساعت موظف ماه را
-          تعریف کنید.
+          تحلیل کلی همه پروژه‌ها — برای ثبت ورود و خروج، وارد صفحه حضور و غیاب هر پروژه شوید.
         </p>
         <Link
           href={PATHS.PROJECTS}
@@ -286,8 +251,18 @@ export function WorkAttendancePage() {
             <section className="rounded-2xl border border-accent/40 bg-accent/10 p-4">
               <p className="text-sm font-medium text-accent">جلسه باز</p>
               <p className="mt-1 text-xs text-muted">
-                یک پروژه در حال ثبت زمان است — برای پایان، خروج را بزنید.
+                یک پروژه در حال ثبت زمان است — برای پایان، از صفحه حضور و غیاب همان پروژه خروج بزنید.
               </p>
+              {data.activeSession.project ? (
+                <Link
+                  href={PATHS.PROJECT_ATTENDANCE(String(data.activeSession.project))}
+                  className="mt-3 inline-block"
+                >
+                  <Button size="sm" variant="secondary">
+                    رفتن به حضور و غیاب پروژه
+                  </Button>
+                </Link>
+              ) : null}
             </section>
           ) : null}
 
@@ -350,33 +325,12 @@ export function WorkAttendancePage() {
                     ) : null}
 
                     <div className="mt-4 flex flex-wrap gap-2">
-                      {isActive ? (
-                        <Button
-                          className="bg-expense text-white"
-                          onPress={() => void handleClockOut(row.project._id)}
-                          isPending={actionProjectId === row.project._id}
-                        >
-                          <Logout size={16} />
-                          خروج
-                        </Button>
-                      ) : (
-                        <Button
-                          className="bg-income text-white"
-                          onPress={() => void handleClockIn(row.project._id)}
-                          isPending={actionProjectId === row.project._id}
-                          isDisabled={Boolean(data.activeSession)}
-                        >
+                      <Link href={PATHS.PROJECT_ATTENDANCE(row.project._id)}>
+                        <Button className="bg-income text-white">
                           <Login size={16} />
-                          ورود
+                          حضور و غیاب پروژه
                         </Button>
-                      )}
-                      <Button
-                        variant="secondary"
-                        onPress={() => setManualProjectId(row.project._id)}
-                      >
-                        <Add size={16} />
-                        ثبت دستی
-                      </Button>
+                      </Link>
                       <Link href={PATHS.PROJECT(row.project._id)}>
                         <Button variant="ghost" size="sm">
                           جزئیات پروژه
@@ -444,26 +398,12 @@ export function WorkAttendancePage() {
             <WorkTimeAnalysisSection
               report={report}
               alerts={[]}
-              compact
+              scope="global"
               onAlertAction={(alert) => void handleAlertAction(alert)}
             />
           ) : null}
         </>
       )}
-
-      {manualProjectId ? (
-        <ManualWorkSessionModal
-          open={Boolean(manualProjectId)}
-          onOpenChange={(open) => {
-            if (!open) setManualProjectId(null);
-          }}
-          projectId={manualProjectId}
-          defaultYear={year}
-          defaultMonth={month}
-          defaultDay={selectedDay ?? undefined}
-          onSaved={() => void load()}
-        />
-      ) : null}
     </div>
   );
 }

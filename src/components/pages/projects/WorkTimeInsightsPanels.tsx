@@ -23,9 +23,14 @@ const insightClass: Record<IWorkTimeInsight["type"], string> = {
 
 function alertActionLabel(action: IWorkTimeAlert["action"]) {
   if (action === "clock-out") return "ثبت خروج";
-  if (action === "open-project") return "رفتن به پروژه";
+  if (action === "open-project") return "حضور و غیاب پروژه";
   if (action === "set-target") return "تعریف ساعت موظف";
   return "مشاهده حضور و غیاب";
+}
+
+function attendanceHref(alert: IWorkTimeAlert) {
+  if (alert.projectId) return PATHS.PROJECT_ATTENDANCE(alert.projectId);
+  return PATHS.WORK_ATTENDANCE;
 }
 
 type WorkTimeInsightsPanelsProps = {
@@ -54,13 +59,13 @@ export function WorkTimeInsightsPanels({
               <p className="font-semibold">{alert.title}</p>
               <p className="mt-1 leading-6 opacity-90">{alert.message}</p>
               {alert.action === "open-project" && alert.projectId ? (
-                <Link href={PATHS.PROJECT(alert.projectId)} className="mt-2 inline-block">
+                <Link href={attendanceHref(alert)} className="mt-2 inline-block">
                   <Button size="sm" variant="secondary">
                     {alertActionLabel(alert.action)}
                   </Button>
                 </Link>
               ) : alert.action === "view-attendance" ? (
-                <Link href={PATHS.WORK_ATTENDANCE} className="mt-2 inline-block">
+                <Link href={attendanceHref(alert)} className="mt-2 inline-block">
                   <Button size="sm" variant="secondary">
                     {alertActionLabel(alert.action)}
                   </Button>

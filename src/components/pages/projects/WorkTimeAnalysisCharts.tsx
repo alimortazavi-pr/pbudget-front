@@ -19,6 +19,7 @@ import {
 
 type WorkTimeAnalysisChartsProps = {
   report: IWorkTimeReport;
+  scope?: "global" | "project";
 };
 
 function DurationTooltip({
@@ -57,7 +58,11 @@ function IncomeTooltip({
   );
 }
 
-export function WorkTimeAnalysisCharts({ report }: WorkTimeAnalysisChartsProps) {
+export function WorkTimeAnalysisCharts({
+  report,
+  scope = "global",
+}: WorkTimeAnalysisChartsProps) {
+  const isProjectScope = scope === "project";
   const weeklyData = report.weeklyTotals.map((week) => ({
     name: week.label,
     minutes: week.minutes,
@@ -86,7 +91,9 @@ export function WorkTimeAnalysisCharts({ report }: WorkTimeAnalysisChartsProps) 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <section className="glass rounded-2xl p-4 lg:p-5">
-        <h3 className="font-bold">کارکرد هفتگی</h3>
+        <h3 className="font-bold">
+          {isProjectScope ? "کارکرد روزانه" : "کارکرد هفتگی"}
+        </h3>
         <p className="mb-4 text-sm text-muted">{report.periodLabel}</p>
         {weeklyData.length === 0 ? (
           <p className="py-8 text-center text-sm text-muted">داده‌ای برای نمودار نیست</p>
@@ -108,30 +115,36 @@ export function WorkTimeAnalysisCharts({ report }: WorkTimeAnalysisChartsProps) 
         )}
       </section>
 
-      <section className="glass rounded-2xl p-4 lg:p-5">
-        <h3 className="font-bold">ساعت کار به تفکیک پروژه</h3>
-        <p className="mb-4 text-sm text-muted">کارکرد در مقابل هدف (ساعت)</p>
-        {projectHoursData.length === 0 ? (
-          <p className="py-8 text-center text-sm text-muted">هنوز ساعتی ثبت نشده</p>
-        ) : (
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={projectHoursData} layout="vertical" margin={{ left: 8 }}>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis type="number" tick={{ fontSize: 12 }} />
-                <YAxis type="category" dataKey="name" width={90} tick={{ fontSize: 11 }} />
-                <Tooltip />
-                <Bar dataKey="workedHours" fill="#0ea5e9" radius={[0, 6, 6, 0]} name="کارکرد" />
-                <Bar dataKey="targetHours" fill="#94a3b8" radius={[0, 6, 6, 0]} name="هدف" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        )}
-      </section>
+      {!isProjectScope ? (
+        <section className="glass rounded-2xl p-4 lg:p-5">
+          <h3 className="font-bold">ساعت کار به تفکیک پروژه</h3>
+          <p className="mb-4 text-sm text-muted">کارکرد در مقابل هدف (ساعت)</p>
+          {projectHoursData.length === 0 ? (
+            <p className="py-8 text-center text-sm text-muted">هنوز ساعتی ثبت نشده</p>
+          ) : (
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={projectHoursData} layout="vertical" margin={{ left: 8 }}>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                  <XAxis type="number" tick={{ fontSize: 12 }} />
+                  <YAxis type="category" dataKey="name" width={90} tick={{ fontSize: 11 }} />
+                  <Tooltip />
+                  <Bar dataKey="workedHours" fill="#0ea5e9" radius={[0, 6, 6, 0]} name="کارکرد" />
+                  <Bar dataKey="targetHours" fill="#94a3b8" radius={[0, 6, 6, 0]} name="هدف" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </section>
+      ) : null}
 
       {incomeData.length > 0 ? (
-        <section className="glass rounded-2xl p-4 lg:col-span-2 lg:p-5">
-          <h3 className="font-bold">درآمد ساعتی پروژه‌ها</h3>
+        <section
+          className={`glass rounded-2xl p-4 lg:p-5 ${isProjectScope ? "" : "lg:col-span-2"}`}
+        >
+          <h3 className="font-bold">
+            {isProjectScope ? "درآمد ساعتی این پروژه" : "درآمد ساعتی پروژه‌ها"}
+          </h3>
           <p className="mb-4 text-sm text-muted">
             برای پروژه‌های ساعتی از دریافتی ماه تقسیم بر ساعت کار محاسبه شده
           </p>

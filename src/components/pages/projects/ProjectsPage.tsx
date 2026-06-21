@@ -103,7 +103,7 @@ export function ProjectsPage() {
           <Link href={PATHS.WORK_ATTENDANCE}>
             <Button size="sm" variant="secondary">
               <Clock size={18} />
-              حضور و غیاب
+              تحلیل کلی حضور و غیاب
             </Button>
           </Link>
           <Button
