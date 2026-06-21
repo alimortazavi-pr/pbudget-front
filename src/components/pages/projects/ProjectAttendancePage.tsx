@@ -9,6 +9,7 @@ import {
   ArrowRight2,
   Clock,
   Edit2,
+  Login,
   Logout,
   Setting2,
   Trash,
