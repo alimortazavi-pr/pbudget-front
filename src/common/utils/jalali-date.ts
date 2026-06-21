@@ -79,6 +79,20 @@ export const JALALI_MONTHS = [
 /** شنبه = 0 … جمعه = 6 */
 export const JALALI_WEEKDAYS_SHORT = ["ش", "ی", "د", "س", "چ", "پ", "ج"] as const;
 
+/** سال کبیسه جلالی (چرخه ۳۳ ساله) */
+export function isJalaliLeapYear(year: number): boolean {
+  const rem = ((year % 33) + 33) % 33;
+  return [1, 5, 9, 13, 17, 22, 26, 30].includes(rem);
+}
+
+/** تعداد روز ماه جلالی — بدون وابستگی به jDaysInMonth (سازگار با SSR) */
+export function getJalaliDaysInMonth(year: number, month: number): number {
+  if (month >= 1 && month <= 6) return 31;
+  if (month >= 7 && month <= 11) return 30;
+  if (month === 12) return isJalaliLeapYear(year) ? 30 : 29;
+  return 30;
+}
+
 export function formatHourLabel(hour: number) {
   return toPersianDigits(`${String(hour).padStart(2, "0")}:00`);
 }

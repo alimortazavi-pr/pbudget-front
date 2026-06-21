@@ -25,6 +25,7 @@ import {
   formatDurationMinutes,
   formatDurationShort,
   formatJalaliMonthYear,
+  getJalaliDaysInMonth,
   getJalaliNow,
   hoursInputToMinutes,
   minutesToHoursInput,
@@ -81,9 +82,7 @@ export function WorkAttendancePage() {
     void load();
   }, [load]);
 
-  const daysInMonth = useMemo(() => {
-    return moment(`${year}/${month}/1`, "jYYYY/jM/jD").jDaysInMonth();
-  }, [year, month]);
+  const daysInMonth = useMemo(() => getJalaliDaysInMonth(year, month), [year, month]);
 
   const dailyMap = useMemo(() => {
     const map = new Map<number, number>();
