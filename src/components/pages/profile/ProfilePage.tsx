@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
+import Link from "next/link";
 import { Button, Modal } from "@heroui/react";
+import { ShieldTick } from "iconsax-reactjs";
 
 import * as authApi from "@/common/api/auth";
 import * as profileApi from "@/common/api/profile";
+import { PATHS } from "@/common/constants";
 import { saveDataToLocal } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { AppModal, AppModalHeader, AppModalSheet, modalSheetBodyClass, modalSheetFooterClass, modalSheetFormClass } from "@/components/common/ui/AppModal";
@@ -193,6 +196,26 @@ export function ProfilePage() {
       </form>
 
       <ExperienceModeSection />
+
+      {user?.isAdmin && (
+        <div className="glass rounded-2xl p-5">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-bold">پنل ادمین</h2>
+              <p className="mt-1 text-sm text-muted">
+                مدیریت کاربران، دیتابیس، بکاپ و مانیتورینگ
+              </p>
+            </div>
+            <Link
+              href={PATHS.ADMIN}
+              className="inline-flex items-center gap-2 rounded-xl bg-surface-secondary px-4 py-2.5 text-sm font-medium hover:bg-surface-secondary/80"
+            >
+              <ShieldTick size={18} variant="Bold" />
+              ورود به پنل
+            </Link>
+          </div>
+        </div>
+      )}
 
       <TelegramConnectSection />
 

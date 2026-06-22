@@ -32,8 +32,18 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { experienceMode, mounted } = useExperience();
   const isTimeline = mounted && experienceMode === "timeline";
   const isAuthPage = pathname === PATHS.GET_STARTED;
+  const isAdminPage = pathname.startsWith("/admin");
 
   if (isAuthPage) {
+    return (
+      <>
+        <AuthBootstrap />
+        {children}
+      </>
+    );
+  }
+
+  if (isAdminPage) {
     return (
       <>
         <AuthBootstrap />

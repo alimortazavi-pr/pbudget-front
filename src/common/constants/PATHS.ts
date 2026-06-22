@@ -26,4 +26,10 @@ export const PATHS = {
   TASKS: "/tasks",
   /** @deprecated use INSTALLMENTS */
   PLANNING: "/planning",
+  ADMIN: "/admin",
+  ADMIN_USERS: "/admin/users",
+  ADMIN_DATABASE: "/admin/database",
+  ADMIN_BACKUP: "/admin/backup",
+  ADMIN_AUDIT: "/admin/audit",
+  ADMIN_CONTENT: "/admin/content",
 } as const;

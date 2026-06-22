@@ -10,6 +10,7 @@ export interface IProfile {
   budget: number;
   isVerifiedMobile: boolean;
   hasPassword?: boolean;
+  isAdmin?: boolean;
 }
 
 export interface IEditProfileForm {
