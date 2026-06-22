@@ -33,12 +33,19 @@ export function CategoriesPage() {
   const [isProjectKind, setIsProjectKind] = useState(false);
   const [color, setColor] = useState<string>(DEFAULT_CATEGORY_COLORS[0]);
   const [monthlyLimit, setMonthlyLimit] = useState("");
+  const [search, setSearch] = useState("");
   const [saving, setSaving] = useState(false);
 
   const categoryRows = useMemo(() => {
     if (!categories?.length) return [];
     return flattenCategoryTreeForList(buildCategoryTree(categories));
   }, [categories]);
+
+  const filteredCategoryRows = useMemo(() => {
+    const query = search.trim();
+    if (!query) return categoryRows;
+    return categoryRows.filter(({ category }) => category.title.includes(query));
+  }, [categoryRows, search]);
 
   const parentOptions = useMemo(
     () => getParentSelectOptions(categories ?? [], editItem?._id),
@@ -141,14 +148,21 @@ export function CategoriesPage() {
         </Button>
       </div>
 
-      {!categoryRows.length ? (
+      <FormInput
+        label="جستجو"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="نام دسته‌بندی…"
+      />
+
+      {!filteredCategoryRows.length ? (
         <div className="rounded-2xl border border-dashed border-border p-10 text-center">
           <Category size={36} className="mx-auto mb-3 text-muted" />
-          <p>دسته‌بندی‌ای وجود ندارد</p>
+          <p>{search.trim() ? "دسته‌ای با این نام پیدا نشد" : "دسته‌بندی‌ای وجود ندارد"}</p>
         </div>
       ) : (
         <div className="pb-card-grid">
-          {categoryRows.map(({ category, depth }, index) => (
+          {filteredCategoryRows.map(({ category, depth }, index) => (
             <div
               key={category._id}
               className="flex items-center justify-between rounded-2xl border border-border/50 bg-surface px-4 py-3 lg:ms-0"

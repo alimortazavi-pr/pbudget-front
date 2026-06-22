@@ -10,6 +10,7 @@ import * as budgetsApi from "@/common/api/budgets";
 import * as debtsApi from "@/common/api/debts";
 import * as paymentCardsApi from "@/common/api/payment-cards";
 import { PATHS } from "@/common/constants";
+import { formatCardNumberDisplay } from "@/common/utils/payment-card";
 import type { IBudget } from "@/common/interfaces/budget.interface";
 import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
 import { getJalaliNow, normalizeJalaliPart, toEnglishDigits, formatPrice } from "@/common/utils";
@@ -92,7 +93,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
     () =>
       paymentCards.map((card) => ({
         id: card._id,
-        label: [card.title, card.lastFour ? `•••• ${card.lastFour}` : ""]
+        label: [card.title, formatCardNumberDisplay(card.lastFour, true)]
           .filter(Boolean)
           .join(" · "),
       })),

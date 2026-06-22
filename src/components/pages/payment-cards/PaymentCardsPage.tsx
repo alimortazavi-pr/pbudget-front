@@ -7,6 +7,11 @@ import { Add, Card, Edit2, Trash } from "iconsax-reactjs";
 import * as paymentCardsApi from "@/common/api/payment-cards";
 import { DEFAULT_CATEGORY_COLORS } from "@/common/constants/category-colors";
 import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
+import {
+  formatCardNumberDisplay,
+  normalizeCardNumber,
+  paymentCardSubtitle,
+} from "@/common/utils/payment-card";
 import { showToast } from "@/common/utils/toast";
 import { FormInput } from "@/components/common/form/FormFields";
 import { CategoryColorPicker } from "@/components/common/form/CategoryColorPicker";
@@ -57,7 +62,7 @@ export function PaymentCardsPage() {
       const payload = {
         title: title.trim(),
         bankName: bankName.trim(),
-        lastFour: lastFour.trim(),
+        lastFour: normalizeCardNumber(lastFour),
         color,
       };
 
@@ -120,9 +125,8 @@ export function PaymentCardsPage() {
                 <div>
                   <p className="font-bold">{card.title}</p>
                   <p className="text-sm text-muted">
-                    {[card.bankName, card.lastFour ? `•••• ${card.lastFour}` : ""]
-                      .filter(Boolean)
-                      .join(" · ") || "بدون جزئیات بانک"}
+                    {paymentCardSubtitle(card.bankName, card.lastFour) ||
+                      "بدون جزئیات بانک"}
                   </p>
                 </div>
               </div>
@@ -148,7 +152,14 @@ export function PaymentCardsPage() {
             <Modal.Body className="space-y-4">
               <FormInput label="نام کارت" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="مثلاً کارت ملی" />
               <FormInput label="بانک — اختیاری" value={bankName} onChange={(e) => setBankName(e.target.value)} />
-              <FormInput label="۴ رقم آخر — اختیاری" value={lastFour} onChange={(e) => setLastFour(e.target.value)} inputMode="numeric" maxLength={4} />
+              <FormInput
+                label="شماره کارت — اختیاری"
+                value={formatCardNumberDisplay(lastFour)}
+                onChange={(e) => setLastFour(normalizeCardNumber(e.target.value))}
+                inputMode="numeric"
+                placeholder="۱۶ رقم"
+                maxLength={19}
+              />
               <CategoryColorPicker value={color} onChange={setColor} />
             </Modal.Body>
             <Modal.Footer>

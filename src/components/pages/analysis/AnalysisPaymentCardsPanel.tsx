@@ -1,6 +1,7 @@
 "use client";
 
 import type { AnalyticsReport } from "@/common/interfaces/analytics.interface";
+import { paymentCardSubtitle } from "@/common/utils/payment-card";
 import { formatPrice } from "@/common/utils";
 
 type AnalysisPaymentCardsPanelProps = {
@@ -31,9 +32,8 @@ export function AnalysisPaymentCardsPanel({ report }: AnalysisPaymentCardsPanelP
               <div>
                 <p className="font-medium">{row.title}</p>
                 <p className="text-xs text-muted">
-                  {[row.bankName, row.lastFour ? `•••• ${row.lastFour}` : ""]
-                    .filter(Boolean)
-                    .join(" · ") || `${row.count} تراکنش`}
+                  {paymentCardSubtitle(row.bankName, row.lastFour) ||
+                    `${row.count} تراکنش`}
                 </p>
               </div>
             </div>

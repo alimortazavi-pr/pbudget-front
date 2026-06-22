@@ -11,6 +11,7 @@ import type {
 } from "@/common/interfaces/analytics.interface";
 import type { ICategory } from "@/common/interfaces/category.interface";
 import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
+import { formatCardNumberDisplay } from "@/common/utils/payment-card";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { toPersianDigits } from "@/common/utils";
 import {
@@ -83,7 +84,7 @@ export function AnalysisFilters({
     () =>
       paymentCards.map((card) => ({
         id: card._id,
-        label: [card.title, card.lastFour ? `•••• ${card.lastFour}` : ""]
+        label: [card.title, formatCardNumberDisplay(card.lastFour, true)]
           .filter(Boolean)
           .join(" · "),
       })),
