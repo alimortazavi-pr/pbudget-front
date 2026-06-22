@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Button, Input } from "@heroui/react";
+import { Button } from "@heroui/react";
 import { DocumentDownload, DocumentUpload, Mobile } from "iconsax-reactjs";
 
 import * as adminApi from "@/common/api/admin";
@@ -109,17 +109,17 @@ export function AdminAppPage() {
             </div>
           </dl>
           {info?.downloadUrl ? (
-            <Button
-              as="a"
+            <a
               href={info.downloadUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-6"
-              variant="secondary"
-              startContent={<DocumentDownload size={18} />}
+              className="mt-6 inline-block"
             >
-              لینک مستقیم APK
-            </Button>
+              <Button variant="secondary">
+                <DocumentDownload size={18} />
+                لینک مستقیم APK
+              </Button>
+            </a>
           ) : null}
         </div>
 
@@ -133,21 +133,27 @@ export function AdminAppPage() {
             به‌روز می‌شود.
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
-            <Input
-              label="نام نسخه"
-              value={versionName}
-              onValueChange={setVersionName}
-              placeholder="1.0.1"
-              dir="ltr"
-            />
-            <Input
-              label="کد نسخه (versionCode)"
-              value={versionCode}
-              onValueChange={setVersionCode}
-              placeholder="2"
-              inputMode="numeric"
-              dir="ltr"
-            />
+            <div>
+              <label className="mb-1 block text-sm text-muted">نام نسخه</label>
+              <input
+                value={versionName}
+                onChange={(e) => setVersionName(e.target.value)}
+                placeholder="1.0.1"
+                dir="ltr"
+                className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm text-muted">کد نسخه (versionCode)</label>
+              <input
+                value={versionCode}
+                onChange={(e) => setVersionCode(e.target.value)}
+                placeholder="2"
+                inputMode="numeric"
+                dir="ltr"
+                className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
+              />
+            </div>
           </div>
           <input
             ref={apkInputRef}
@@ -158,12 +164,11 @@ export function AdminAppPage() {
           />
           <Button
             className="mt-4"
-            color="primary"
-            isLoading={uploading}
             onPress={() => apkInputRef.current?.click()}
-            startContent={!uploading ? <DocumentUpload size={18} /> : undefined}
+            isDisabled={uploading}
           >
-            انتخاب و آپلود APK
+            <DocumentUpload size={18} />
+            {uploading ? "در حال آپلود…" : "انتخاب و آپلود APK"}
           </Button>
         </div>
       </section>

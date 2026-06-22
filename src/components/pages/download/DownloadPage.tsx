@@ -142,17 +142,26 @@ export function DownloadPage() {
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Button
-              as="a"
-              href={apkAvailable ? apkUrl : undefined}
-              download={apkAvailable ? "pdesk.apk" : undefined}
-              isDisabled={!apkAvailable}
-              size="lg"
-              className="min-h-14 bg-accent px-8 text-base font-bold text-accent-foreground shadow-lg shadow-accent/25"
-            >
-              <DocumentDownload size={22} />
-              {apkAvailable ? "دانلود مستقیم APK" : "به‌زودی در دسترس"}
-            </Button>
+            {apkAvailable ? (
+              <a href={apkUrl} download="pdesk.apk" className="inline-flex">
+                <Button
+                  size="lg"
+                  className="min-h-14 bg-accent px-8 text-base font-bold text-accent-foreground shadow-lg shadow-accent/25"
+                >
+                  <DocumentDownload size={22} />
+                  دانلود مستقیم APK
+                </Button>
+              </a>
+            ) : (
+              <Button
+                isDisabled
+                size="lg"
+                className="min-h-14 bg-accent px-8 text-base font-bold text-accent-foreground shadow-lg shadow-accent/25"
+              >
+                <DocumentDownload size={22} />
+                به‌زودی در دسترس
+              </Button>
+            )}
             <p className="text-center text-xs text-muted sm:text-start">
               نسخه {toPersianDigits(appVersion)} · اندروید ۷ به بالا
             </p>
