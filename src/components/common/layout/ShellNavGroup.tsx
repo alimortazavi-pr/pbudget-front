@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import type { ComponentType, ReactNode } from "react";
 
 import type { ShellNavItem } from "./shell-nav";
+import { isShellNavActive } from "./shell-nav";
 
 type ShellNavGroupProps = {
   title: string;
@@ -19,9 +20,7 @@ type IconComponent = ComponentType<{
 }>;
 
 function isActive(pathname: string, href: string) {
-  if (href.includes("#")) return false;
-  if (href === "/") return pathname === "/";
-  return pathname === href || pathname.startsWith(`${href}/`);
+  return isShellNavActive(pathname, href);
 }
 
 export function ShellNavGroup({

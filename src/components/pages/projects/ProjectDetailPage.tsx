@@ -275,15 +275,21 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
         </div>
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
           <div className="rounded-xl bg-surface-secondary p-3">
-            <p className="text-xs text-muted">کل قرارداد</p>
+            <p className="text-xs text-muted">
+              {project.fixedIncome ? "حقوق ماهانه" : "کل قرارداد"}
+            </p>
             <p className="mt-1 font-bold">{formatPrice(project.totalAmount)}</p>
           </div>
           <div className="rounded-xl bg-income-soft/50 p-3">
-            <p className="text-xs text-muted">دریافت‌شده</p>
+            <p className="text-xs text-muted">
+              {project.fixedIncome ? "دریافت این ماه" : "دریافت‌شده"}
+            </p>
             <p className="mt-1 font-bold text-income">{formatPrice(received)}</p>
           </div>
           <div className="rounded-xl bg-expense-soft/50 p-3">
-            <p className="text-xs text-muted">باقی‌مانده</p>
+            <p className="text-xs text-muted">
+              {project.fixedIncome ? "باقی این ماه" : "باقی‌مانده"}
+            </p>
             <p className="mt-1 font-bold text-expense">{formatPrice(remaining)}</p>
           </div>
           <div className="rounded-xl bg-surface-secondary p-3">
@@ -295,7 +301,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
         </div>
         <div className="mt-4">
           <div className="mb-1 flex justify-between text-xs text-muted">
-            <span>پیشرفت دریافت</span>
+            <span>{project.fixedIncome ? "پیشرفت دریافت این ماه" : "پیشرفت دریافت"}</span>
             <span>{Math.round(progress)}٪ · هزینه {formatPrice(spent)}</span>
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-surface-secondary">
@@ -345,7 +351,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
             onChange={(e) => setTitle(e.target.value)}
           />
           <FormPriceInput
-            label="مبلغ کل قرارداد (تومان)"
+            label={fixedIncome ? "حقوق ماهانه (تومان)" : "مبلغ کل قرارداد (تومان)"}
             value={totalAmount}
             onChange={setTotalAmount}
           />

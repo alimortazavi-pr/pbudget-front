@@ -193,7 +193,7 @@ export function CreateProjectModal({
             )}
 
             <FormPriceInput
-              label="مبلغ کل قرارداد (تومان)"
+              label={fixedIncome ? "حقوق ماهانه (تومان)" : "مبلغ کل قرارداد (تومان)"}
               value={totalAmount}
               onChange={setTotalAmount}
             />

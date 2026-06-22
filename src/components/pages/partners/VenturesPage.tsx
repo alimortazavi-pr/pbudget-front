@@ -127,8 +127,8 @@ export function VenturesPage() {
         </div>
       )}
 
-      <AppModal open={createOpen} onOpenChange={setCreateOpen} mobileFull>
-        <AppModalDialog>
+      <AppModal open={createOpen} onOpenChange={setCreateOpen}>
+        <AppModalDialog className="sm:max-w-md">
           <AppModalHeader onClose={() => setCreateOpen(false)}>
             <Modal.Heading>کسب‌وکار جدید</Modal.Heading>
             <p className="mt-1 text-sm text-muted">

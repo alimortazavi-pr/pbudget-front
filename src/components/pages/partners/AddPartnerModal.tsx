@@ -260,9 +260,22 @@ export function AddPartnerModal({
             ) : null}
 
             {exists && !telegramSent && hasTelegram === false ? (
-              <p className="rounded-xl bg-warning/10 px-3 py-2 text-sm text-warning-foreground">
-                تلگرام این کاربر فعال نیست — لینک را دستی برایش بفرستید
-              </p>
+              <div className="space-y-2 rounded-xl bg-warning/10 px-3 py-2 text-sm text-warning-foreground">
+                <p>تلگرام این کاربر فعال نیست — لینک را دستی برایش بفرستید</p>
+                {inviteLink ? (
+                  <>
+                    <p className="break-all text-xs font-medium text-foreground">{inviteLink}</p>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="w-full"
+                      onPress={() => void copyInviteLink()}
+                    >
+                      کپی لینک دعوت
+                    </Button>
+                  </>
+                ) : null}
+              </div>
             ) : null}
 
             <Button className="w-full" size="lg" onPress={closeModal}>

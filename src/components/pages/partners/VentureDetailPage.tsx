@@ -17,10 +17,13 @@ type VentureDetailPageProps = {
   ventureId: string;
 };
 
+type TabId = "overview" | "partners" | "transactions" | "settings";
+
 export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
   const router = useRouter();
   const [venture, setVenture] = useState<IVenture | null>(null);
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState<TabId>("overview");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [saving, setSaving] = useState(false);
@@ -89,6 +92,13 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
 
   const isPartner = venture.accessRole === "partner";
 
+  const tabs = [
+    { id: "overview" as const, label: "خلاصه" },
+    { id: "partners" as const, label: "شرکا" },
+    { id: "transactions" as const, label: "تراکنش‌ها" },
+    ...(!isPartner ? [{ id: "settings" as const, label: "تنظیمات" }] : []),
+  ];
+
   return (
     <div className="space-y-5 pb-6">
       <section className="glass rounded-3xl p-5">
@@ -101,49 +111,76 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
         ) : null}
       </section>
 
-      {!isPartner ? (
-      <div className="glass space-y-4 rounded-2xl p-4">
-        <FormInput
-          label="نام کسب‌وکار"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <FormTextArea
-          label="توضیحات"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        <Button className="w-full" size="lg" onPress={() => void save()} isPending={saving}>
-          ذخیره تغییرات
-        </Button>
+      <div className="flex gap-2 overflow-x-auto">
+        {tabs.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => setTab(item.id)}
+            className={`shrink-0 cursor-pointer rounded-xl px-4 py-2 text-sm font-medium transition ${
+              tab === item.id
+                ? "bg-accent text-accent-foreground"
+                : "bg-surface-secondary text-muted"
+            }`}
+          >
+            {item.label}
+          </button>
+        ))}
       </div>
-      ) : (
+
+      {tab === "overview" ? (
         <div className="glass rounded-2xl p-4">
-          <p className="text-sm text-muted">{description || "بدون توضیحات"}</p>
+          <p className="text-sm leading-7 text-muted">
+            {description || "بدون توضیحات"}
+          </p>
         </div>
-      )}
+      ) : null}
 
-      <PartnersSection
-        contextType="venture"
-        contextId={ventureId}
-        readOnly={isPartner}
-      />
+      {tab === "partners" ? (
+        <div className="glass rounded-2xl p-4">
+          <PartnersSection
+            contextType="venture"
+            contextId={ventureId}
+            readOnly={isPartner}
+          />
+        </div>
+      ) : null}
 
-      <VentureBudgetSection ventureId={ventureId} readOnly={isPartner} />
+      {tab === "transactions" ? (
+        <VentureBudgetSection ventureId={ventureId} readOnly={isPartner} />
+      ) : null}
 
-      {!isPartner ? (
-      <section className="rounded-2xl border border-dashed border-danger/35 bg-danger/5 p-4">
-        <p className="text-sm font-medium text-danger">منطقه خطر</p>
-        <Button
-          variant="danger"
-          className="mt-3"
-          onPress={() => void remove()}
-          isPending={deleting}
-        >
-          <Trash size={16} />
-          حذف کسب‌وکار
-        </Button>
-      </section>
+      {tab === "settings" && !isPartner ? (
+        <div className="space-y-4">
+          <div className="glass space-y-4 rounded-2xl p-4">
+            <FormInput
+              label="نام کسب‌وکار"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+            <FormTextArea
+              label="توضیحات"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+            <Button className="w-full" size="lg" onPress={() => void save()} isPending={saving}>
+              ذخیره تغییرات
+            </Button>
+          </div>
+
+          <section className="rounded-2xl border border-dashed border-danger/35 bg-danger/5 p-4">
+            <p className="text-sm font-medium text-danger">منطقه خطر</p>
+            <Button
+              variant="danger"
+              className="mt-3"
+              onPress={() => void remove()}
+              isPending={deleting}
+            >
+              <Trash size={16} />
+              حذف کسب‌وکار
+            </Button>
+          </section>
+        </div>
       ) : null}
     </div>
   );

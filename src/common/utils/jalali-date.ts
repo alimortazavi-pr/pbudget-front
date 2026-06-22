@@ -49,6 +49,16 @@ export function formatJalaliDateSlashed(
   );
 }
 
+/** شنبه=۰ … جمعه=۶ (مطابق JALALI_WEEKDAYS_SHORT) */
+export function getJalaliWeekdayIndex(year: number, month: number, day: number) {
+  const m = moment(`${year}/${month}/${day}`, "jYYYY/jM/jD");
+  return (m.day() + 1) % 7;
+}
+
+export function getJalaliFirstWeekdayIndex(year: number, month: number) {
+  return getJalaliWeekdayIndex(year, month, 1);
+}
+
 /** نمایش تاریخ-زمان ISO به جلالی */
 export function formatIsoDateTimeJalali(iso: string) {
   return toPersianDigits(moment(iso).format("jYYYY/jMM/jDD HH:mm"));

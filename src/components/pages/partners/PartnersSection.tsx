@@ -221,6 +221,13 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
                 />
               ) : null}
 
+              {partner.inviteLink && partner.status === "pending" ? (
+                <div className="rounded-xl bg-warning/10 px-3 py-2 text-xs">
+                  <p className="font-medium text-warning-foreground">لینک دعوت</p>
+                  <p className="mt-1 break-all text-foreground">{partner.inviteLink}</p>
+                </div>
+              ) : null}
+
               <div className="flex flex-wrap gap-2 border-t border-border/40 pt-3">
                 {partner.inviteLink && partner.status === "pending" && !readOnly ? (
                   <>

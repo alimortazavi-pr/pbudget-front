@@ -183,15 +183,15 @@ export function ProjectsPage() {
 
                 <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
                   <div className="rounded-xl bg-surface-secondary p-2">
-                    <p className="text-muted">کل</p>
+                    <p className="text-muted">{project.fixedIncome ? "حقوق" : "کل"}</p>
                     <p className="mt-1 font-semibold">{formatPrice(project.totalAmount)}</p>
                   </div>
                   <div className="rounded-xl bg-income-soft/50 p-2">
-                    <p className="text-muted">دریافت</p>
+                    <p className="text-muted">{project.fixedIncome ? "این ماه" : "دریافت"}</p>
                     <p className="mt-1 font-semibold text-income">{formatPrice(received)}</p>
                   </div>
                   <div className="rounded-xl bg-expense-soft/50 p-2">
-                    <p className="text-muted">مانده</p>
+                    <p className="text-muted">{project.fixedIncome ? "مانده ماه" : "مانده"}</p>
                     <p className="mt-1 font-semibold text-expense">{formatPrice(remaining)}</p>
                   </div>
                 </div>

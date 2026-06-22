@@ -78,3 +78,26 @@ export type ShellNavItem = {
   icon: (typeof PRIMARY_NAV_ITEMS)[number]["icon"];
   external?: boolean;
 };
+
+/** مسیرهایی که نباید والد را active کنند (مثلاً /projects نسبت به /projects/attendance) */
+const NAV_ACTIVE_EXCLUSIONS: Record<string, readonly string[]> = {
+  [PATHS.PROJECTS]: [PATHS.WORK_ATTENDANCE],
+};
+
+export function isShellNavActive(pathname: string, href: string) {
+  if (href.includes("#")) return false;
+  if (href === "/") return pathname === "/";
+  if (pathname === href) return true;
+  if (!pathname.startsWith(`${href}/`)) return false;
+
+  const exclusions = NAV_ACTIVE_EXCLUSIONS[href];
+  if (
+    exclusions?.some(
+      (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+    )
+  ) {
+    return false;
+  }
+
+  return true;
+}
