@@ -43,8 +43,12 @@ export function AuthBootstrap() {
         const { user } = await authApi.checkAuth(authData.token);
         dispatch(authenticate({ token: authData.token }));
         dispatch(setProfile(user));
-        dispatch(setUsers(authData.users));
-        saveDataToLocal({ token: authData.token, users: authData.users });
+        const nextUsers = authData.users.map((u) =>
+          u._id === user._id ? { ...user, token: authData.token } : u,
+        );
+        dispatch(setUsers(nextUsers));
+        saveDataToLocal({ token: authData.token, users: nextUsers });
+        dispatch(setDidTryAutoLogin(true));
       } catch {
         storage.clearAuthData();
         dispatch(setDidTryAutoLogin(true));

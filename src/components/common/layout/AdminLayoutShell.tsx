@@ -16,7 +16,7 @@ import { APP_NAME_FA } from "@/common/constants/brand";
 import { AuthBootstrap } from "@/components/common/layout/AuthBootstrap";
 import { ADMIN_NAV } from "@/components/common/layout/admin-nav";
 import { useAppSelector } from "@/stores/hooks";
-import { isAuthSelector } from "@/stores/auth";
+import { didTryAutoLoginSelector, isAuthSelector } from "@/stores/auth";
 import { userSelector } from "@/stores/profile";
 import { forceAuthLogout } from "@/common/utils/force-auth-logout";
 
@@ -54,14 +54,15 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const isAuth = useAppSelector(isAuthSelector);
+  const didTryAutoLogin = useAppSelector(didTryAutoLoginSelector);
   const user = useAppSelector(userSelector);
 
   useEffect(() => {
-    if (!isAuth) return;
+    if (!didTryAutoLogin || !isAuth) return;
     if (user && !user.isAdmin) {
       router.replace(PATHS.HOME);
     }
-  }, [isAuth, user, router]);
+  }, [didTryAutoLogin, isAuth, user, router]);
 
   const pageTitle =
     ADMIN_NAV.find((item) =>
@@ -70,7 +71,14 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
         : pathname.startsWith(item.href),
     )?.label ?? "پنل ادمین";
 
-  if (!isAuth || !user?.isAdmin) {
+  const isCheckingAccess =
+    !didTryAutoLogin || !isAuth || (isAuth && !user);
+
+  if (isCheckingAccess || !user?.isAdmin) {
+    if (didTryAutoLogin && isAuth && user && !user.isAdmin) {
+      return null;
+    }
+
     return (
       <>
         <AuthBootstrap />

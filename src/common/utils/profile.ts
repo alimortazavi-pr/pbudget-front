@@ -10,5 +10,6 @@ export function normalizeProfile(user: Record<string, unknown>): IProfile {
     isVerifiedMobile: Boolean(user.isVerifiedMobile ?? user.mobileActive),
     hasPassword:
       user.hasPassword !== undefined ? Boolean(user.hasPassword) : undefined,
+    isAdmin: Boolean(user.isAdmin),
   };
 }
