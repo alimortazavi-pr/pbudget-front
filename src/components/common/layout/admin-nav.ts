@@ -4,6 +4,7 @@ import {
   Data,
   DocumentText,
   Home2,
+  Mobile,
   People,
   ShieldSearch,
 } from "iconsax-reactjs";
@@ -25,6 +26,11 @@ export const ADMIN_NAV = [
     href: PATHS.ADMIN_CONTENT,
     label: "مدیریت محتوا",
     icon: DocumentText,
+  },
+  {
+    href: PATHS.ADMIN_APP,
+    label: "اپ اندروید",
+    icon: Mobile,
   },
   {
     href: PATHS.ADMIN_DATABASE,

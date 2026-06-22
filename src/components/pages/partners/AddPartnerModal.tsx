@@ -145,8 +145,8 @@ export function AddPartnerModal({
         : "شریک اضافه شد";
 
   return (
-    <AppModal open={open} onOpenChange={onOpenChange} mobileFull>
-      <AppModalDialog>
+    <AppModal open={open} onOpenChange={onOpenChange}>
+      <AppModalDialog className="max-w-lg">
         <AppModalHeader onClose={closeModal}>
           <Modal.Heading>افزودن شریک</Modal.Heading>
           <p className="mt-1 text-sm text-muted">{stepDescription}</p>

@@ -1,0 +1,172 @@
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Button, Input } from "@heroui/react";
+import { DocumentDownload, DocumentUpload, Mobile } from "iconsax-reactjs";
+
+import * as adminApi from "@/common/api/admin";
+import type { AdminAndroidAppInfo } from "@/common/interfaces/admin";
+import { formatBytes } from "@/common/utils/admin-format";
+import { toPersianDigits } from "@/common/utils";
+import { showToast } from "@/common/utils/toast";
+
+export function AdminAppPage() {
+  const [info, setInfo] = useState<AdminAndroidAppInfo | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [versionName, setVersionName] = useState("1.0.0");
+  const [versionCode, setVersionCode] = useState("1");
+  const apkInputRef = useRef<HTMLInputElement>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await adminApi.fetchAdminAndroidAppInfo();
+      setInfo(data);
+      if (data.versionName) setVersionName(data.versionName);
+      if (data.versionCode) setVersionCode(String(data.versionCode));
+    } catch {
+      showToast("بارگذاری اطلاعات اپ ناموفق بود", "danger");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const handleUpload = async (file: File | undefined) => {
+    if (!file) return;
+    if (!file.name.toLowerCase().endsWith(".apk")) {
+      showToast("فقط فایل APK مجاز است", "danger");
+      return;
+    }
+
+    const code = Number(versionCode);
+    if (!versionName.trim() || !Number.isFinite(code) || code < 1) {
+      showToast("نسخه و کد نسخه را درست وارد کنید", "danger");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const result = await adminApi.uploadAdminAndroidApk(file, versionName.trim(), code);
+      setInfo(result);
+      showToast(result.message || "APK آپلود شد", "success");
+      void load();
+    } catch {
+      showToast("آپلود APK ناموفق بود", "danger");
+    } finally {
+      setUploading(false);
+      if (apkInputRef.current) apkInputRef.current.value = "";
+    }
+  };
+
+  if (loading && !info) {
+    return <div className="glass h-64 animate-pulse rounded-2xl" />;
+  }
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-bold">اپ اندروید</h3>
+        <p className="text-sm text-muted">
+          آپلود APK برای صفحه دانلود عمومی — کاربران از pdesk.ir/download دریافت می‌کنند
+        </p>
+      </div>
+
+      <section className="grid gap-4 lg:grid-cols-2">
+        <div className="glass rounded-2xl p-6">
+          <div className="mb-4 flex items-center gap-2">
+            <Mobile size={22} className="text-accent" variant="Bold" />
+            <h4 className="font-bold">وضعیت فعلی</h4>
+          </div>
+          <dl className="space-y-3 text-sm">
+            <div className="flex justify-between gap-4">
+              <dt className="text-muted">در دسترس</dt>
+              <dd>{info?.available ? "بله" : "خیر — APK آپلود نشده"}</dd>
+            </div>
+            <div className="flex justify-between gap-4">
+              <dt className="text-muted">نسخه</dt>
+              <dd dir="ltr">{info?.versionName ?? "—"}</dd>
+            </div>
+            <div className="flex justify-between gap-4">
+              <dt className="text-muted">کد نسخه</dt>
+              <dd>{info?.versionCode ? toPersianDigits(info.versionCode) : "—"}</dd>
+            </div>
+            <div className="flex justify-between gap-4">
+              <dt className="text-muted">حجم</dt>
+              <dd>{info?.byteSize ? formatBytes(info.byteSize) : "—"}</dd>
+            </div>
+            <div className="flex justify-between gap-4">
+              <dt className="text-muted">آخرین به‌روزرسانی</dt>
+              <dd>
+                {info?.updatedAt
+                  ? new Date(info.updatedAt).toLocaleString("fa-IR")
+                  : "—"}
+              </dd>
+            </div>
+          </dl>
+          {info?.downloadUrl ? (
+            <Button
+              as="a"
+              href={info.downloadUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6"
+              variant="secondary"
+              startContent={<DocumentDownload size={18} />}
+            >
+              لینک مستقیم APK
+            </Button>
+          ) : null}
+        </div>
+
+        <div className="glass rounded-2xl p-6">
+          <div className="mb-4 flex items-center gap-2">
+            <DocumentUpload size={22} className="text-accent" variant="Bold" />
+            <h4 className="font-bold">آپلود نسخه جدید</h4>
+          </div>
+          <p className="mb-4 text-sm text-muted">
+            فایل release امضاشده را انتخاب کنید. پس از آپلود، لینک دانلود و نسخه صفحه عمومی
+            به‌روز می‌شود.
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Input
+              label="نام نسخه"
+              value={versionName}
+              onValueChange={setVersionName}
+              placeholder="1.0.1"
+              dir="ltr"
+            />
+            <Input
+              label="کد نسخه (versionCode)"
+              value={versionCode}
+              onValueChange={setVersionCode}
+              placeholder="2"
+              inputMode="numeric"
+              dir="ltr"
+            />
+          </div>
+          <input
+            ref={apkInputRef}
+            type="file"
+            accept=".apk,application/vnd.android.package-archive"
+            className="hidden"
+            onChange={(e) => void handleUpload(e.target.files?.[0])}
+          />
+          <Button
+            className="mt-4"
+            color="primary"
+            isLoading={uploading}
+            onPress={() => apkInputRef.current?.click()}
+            startContent={!uploading ? <DocumentUpload size={18} /> : undefined}
+          >
+            انتخاب و آپلود APK
+          </Button>
+        </div>
+      </section>
+    </div>
+  );
+}

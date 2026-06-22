@@ -8,21 +8,35 @@ import { Add } from "iconsax-reactjs";
 
 import * as budgetsApi from "@/common/api/budgets";
 import * as debtsApi from "@/common/api/debts";
+import * as partnersApi from "@/common/api/partners";
 import * as paymentCardsApi from "@/common/api/payment-cards";
 import { PATHS } from "@/common/constants";
-import { formatCardNumberDisplay } from "@/common/utils/payment-card";
+import { resolveDefaultPaymentCardId } from "@/common/utils/default-payment-card";
+import { formatCardNumberForDisplay } from "@/common/utils/payment-card";
 import type { IBudget } from "@/common/interfaces/budget.interface";
 import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
 import { getJalaliNow, normalizeJalaliPart, toEnglishDigits, formatPrice } from "@/common/utils";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { FormCategoryComboBox, FormDatePicker, FormPriceInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
+import { BudgetMoreToggle } from "@/components/pages/budget/BudgetMoreToggle";
 import {
   DebtLedgerSection,
   LinkedDebtSummary,
   type DebtLedgerMode,
   type DebtLedgerValue,
 } from "@/components/pages/budget/DebtLedgerSection";
+import {
+  ProjectLedgerSection,
+  resolveProjectId,
+  type ProjectLedgerValue,
+} from "@/components/pages/budget/ProjectLedgerSection";
+import {
+  LinkedVentureSummary,
+  VentureLedgerSection,
+  resolveVentureId,
+  type VentureLedgerValue,
+} from "@/components/pages/budget/VentureLedgerSection";
 import { CreateCategoryModal } from "@/components/pages/categories/CreateCategoryModal";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { bumpBudgetRevision } from "@/stores/budget";
@@ -54,6 +68,10 @@ function resolveBudgetPaymentCardId(
   return paymentCard._id;
 }
 
+function buildMoreHint(parts: string[]) {
+  return parts.length ? parts.join(" · ") : null;
+}
+
 export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -64,6 +82,9 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   const defaultYear = String(now.jYear());
   const defaultMonth = String(now.jMonth() + 1);
   const defaultDay = String(now.jDate());
+  const existingProjectId = resolveProjectId(budget?.project);
+  const existingVentureId = resolveVentureId(budget?.venture);
+  const existingPaymentCardId = resolveBudgetPaymentCardId(budget?.paymentCard);
 
   const [price, setPrice] = useState(String(budget?.price ?? ""));
   const [type, setType] = useState(String(budget?.type ?? BudgetType.COST));
@@ -84,16 +105,31 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   const [loading, setLoading] = useState(false);
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [debtLedger, setDebtLedger] = useState<DebtLedgerValue>(initialDebtLedger);
-  const [paymentCards, setPaymentCards] = useState<IPaymentCard[]>([]);
-  const [paymentCardId, setPaymentCardId] = useState(() =>
-    resolveBudgetPaymentCardId(budget?.paymentCard),
+  const [projectLedger, setProjectLedger] = useState<ProjectLedgerValue>(() => ({
+    enabled: Boolean(existingProjectId) && !existingVentureId,
+    projectId: existingProjectId,
+  }));
+  const [ventureLedger, setVentureLedger] = useState<VentureLedgerValue>({
+    enabled: false,
+    ventureId: "",
+  });
+  const [moreOpen, setMoreOpen] = useState(
+    () =>
+      Boolean(
+        budget?.debt ||
+          existingPaymentCardId ||
+          existingProjectId ||
+          existingVentureId,
+      ),
   );
+  const [paymentCards, setPaymentCards] = useState<IPaymentCard[]>([]);
+  const [paymentCardId, setPaymentCardId] = useState(() => existingPaymentCardId);
 
   const paymentCardOptions = useMemo(
     () =>
       paymentCards.map((card) => ({
         id: card._id,
-        label: [card.title, formatCardNumberDisplay(card.lastFour, true)]
+        label: [card.title, formatCardNumberForDisplay(card.lastFour, true)]
           .filter(Boolean)
           .join(" · "),
       })),
@@ -105,6 +141,15 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
       setPaymentCards([]);
     });
   }, []);
+
+  useEffect(() => {
+    if (budget || !paymentCards.length || type !== String(BudgetType.COST)) return;
+
+    setPaymentCardId((current) => {
+      if (current) return current;
+      return resolveDefaultPaymentCardId(paymentCards, user?._id);
+    });
+  }, [budget, paymentCards, type, user?._id]);
 
   const [categorySpendHint, setCategorySpendHint] = useState<string | null>(null);
 
@@ -140,6 +185,45 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
       .catch(() => setCategorySpendHint(null));
   }, [category, selectedCategory?.monthlyLimit, type]);
 
+  const projectBlockedForVenture =
+    Boolean(existingProjectId) ||
+    Boolean(projectLedger.enabled && projectLedger.projectId) ||
+    isProjectCategory;
+
+  const moreHint = buildMoreHint(
+    [
+      paymentCardId ? "کارت مبدا" : "",
+      debtLedger.enabled ? "طلب/بدهی" : "",
+      projectLedger.enabled || isProjectCategory ? "پروژه" : "",
+      ventureLedger.enabled || existingVentureId ? "کسب‌وکار" : "",
+      budget?.debt ? "طلب/بدهی" : "",
+    ].filter(Boolean),
+  );
+
+  function updateProjectLedger(patch: Partial<ProjectLedgerValue>) {
+    setProjectLedger((current) => {
+      const next = { ...current, ...patch };
+      if (patch.enabled === false) {
+        next.projectId = "";
+      }
+      return next;
+    });
+    if (patch.enabled) {
+      setVentureLedger((current) =>
+        current.enabled ? { enabled: false, ventureId: "" } : current,
+      );
+    }
+  }
+
+  function updateVentureLedger(patch: Partial<VentureLedgerValue>) {
+    setVentureLedger((current) => ({ ...current, ...patch }));
+    if (patch.enabled) {
+      setProjectLedger((current) =>
+        current.enabled ? { enabled: false, projectId: "" } : current,
+      );
+    }
+  }
+
   function handleDateChange(value: { year: string; month: string; day: string }) {
     setYear(value.year);
     setMonth(value.month);
@@ -171,7 +255,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
 
   async function submit(e?: FormEvent) {
     e?.preventDefault();
-    const payload = {
+    const payload: Record<string, string> = {
       price: toEnglishDigits(price),
       type: String(type),
       category,
@@ -182,6 +266,23 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
       paymentCardId: paymentCardId || "",
     };
 
+    if (projectLedger.enabled && projectLedger.projectId) {
+      payload.projectId = projectLedger.projectId;
+    }
+
+    if (ventureLedger.enabled && projectBlockedForVenture) {
+      showToast("تراکنش نمی‌تواند هم‌زمان به پروژه و کسب‌وکار مشترک وصل شود");
+      return;
+    }
+
+    if (ventureLedger.enabled && !existingVentureId) {
+      if (!ventureLedger.ventureId) {
+        setMoreOpen(true);
+        showToast("کسب‌وکار مورد نظر را انتخاب کنید");
+        return;
+      }
+    }
+
     if (!payload.price || !payload.category || !payload.year || !payload.month || !payload.day) {
       showToast("مبلغ، دسته‌بندی و تاریخ الزامی است");
       return;
@@ -191,10 +292,12 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
 
     if (debtLedger.enabled && canAttachDebt) {
       if (debtLedger.mode === "create" && !debtLedger.person.trim()) {
+        setMoreOpen(true);
         showToast("نام طرف حساب الزامی است");
         return;
       }
       if (isSettleDebtMode(debtLedger.mode) && !debtLedger.settleDebtId) {
+        setMoreOpen(true);
         showToast("طلب یا بدهی مورد نظر را انتخاب کنید");
         return;
       }
@@ -203,10 +306,12 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
     setLoading(true);
     try {
       let userBudget: number | undefined;
+      let savedBudgetId = budget?._id ?? "";
 
       if (budget) {
         const res = await budgetsApi.updateBudget(budget._id, payload);
         userBudget = res.userBudget;
+        savedBudgetId = budget._id;
 
         if (debtLedger.enabled && canAttachDebt) {
           if (debtLedger.mode === "create") {
@@ -230,6 +335,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
       } else {
         const res = await budgetsApi.createBudget(payload);
         userBudget = res.userBudget;
+        savedBudgetId = res.budget._id;
 
         if (debtLedger.enabled) {
           if (debtLedger.mode === "create") {
@@ -250,6 +356,18 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
         } else {
           showToast("تراکنش ثبت شد", "success");
         }
+      }
+
+      if (
+        ventureLedger.enabled &&
+        ventureLedger.ventureId &&
+        !existingVentureId &&
+        savedBudgetId
+      ) {
+        await partnersApi.attachVentureBudget(
+          ventureLedger.ventureId,
+          savedBudgetId,
+        );
       }
 
       if (user && userBudget !== undefined) {
@@ -332,37 +450,6 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
             emptyMessage="دسته‌ای ثبت نشده"
           />
 
-          <FormSelect
-            label={
-              type === String(BudgetType.COST)
-                ? "کارت پرداخت (مبدا)"
-                : "کارت دریافت (مقصد)"
-            }
-            placeholder="بدون کارت"
-            selectedKey={paymentCardId || "none"}
-            onSelectionChange={(key) =>
-              setPaymentCardId(key === "none" ? "" : key)
-            }
-            options={[{ id: "none", label: "بدون کارت" }, ...paymentCardOptions]}
-            emptyMessage="کارتی ثبت نشده"
-          />
-          {paymentCards.length === 0 ? (
-            <p className="text-xs text-muted">
-              هنوز کارتی ثبت نکرده‌اید. از{" "}
-              <Link href={PATHS.PAYMENT_CARDS} className="text-accent underline">
-                کارت‌های من
-              </Link>{" "}
-              اضافه کنید.
-            </p>
-          ) : null}
-
-          {isProjectCategory && (
-            <p className="rounded-xl bg-accent/10 px-3 py-2 text-xs leading-6 text-accent">
-              این تراکنش به پروژه مرتبط با دسته «{selectedCategory?.title}» وصل می‌شود و
-              در صفحه پروژه‌ها هم نمایش داده می‌شود.
-            </p>
-          )}
-
           {categorySpendHint ? (
             <p
               className={`rounded-xl px-3 py-2 text-xs leading-6 ${
@@ -381,15 +468,70 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
             onChange={(e) => setDescription(e.target.value)}
           />
 
-          {!budget?.debt ? (
-            <DebtLedgerSection
-              amount={price}
-              value={debtLedger}
-              onChange={updateDebtLedger}
-            />
-          ) : (
-            <LinkedDebtSummary debt={budget.debt} />
-          )}
+          <BudgetMoreToggle
+            open={moreOpen}
+            onToggle={() => setMoreOpen((current) => !current)}
+            hint={moreOpen ? null : moreHint}
+          />
+
+          {moreOpen ? (
+            <div className="space-y-4">
+              <FormSelect
+                label={
+                  type === String(BudgetType.COST)
+                    ? "کارت پرداخت (مبدا)"
+                    : "کارت دریافت (مقصد)"
+                }
+                placeholder="بدون کارت"
+                selectedKey={paymentCardId || "none"}
+                onSelectionChange={(key) =>
+                  setPaymentCardId(key === "none" ? "" : key)
+                }
+                options={[{ id: "none", label: "بدون کارت" }, ...paymentCardOptions]}
+                emptyMessage="کارتی ثبت نشده"
+              />
+              {paymentCards.length === 0 ? (
+                <p className="text-xs text-muted">
+                  هنوز کارتی ثبت نکرده‌اید. از{" "}
+                  <Link href={PATHS.PAYMENT_CARDS} className="text-accent underline">
+                    کارت‌های من
+                  </Link>{" "}
+                  اضافه کنید.
+                </p>
+              ) : null}
+
+              {!budget?.debt ? (
+                <DebtLedgerSection
+                  amount={price}
+                  value={debtLedger}
+                  onChange={updateDebtLedger}
+                />
+              ) : (
+                <LinkedDebtSummary debt={budget.debt} />
+              )}
+
+              {existingVentureId ? (
+                <LinkedVentureSummary
+                  venture={budget?.venture ?? existingVentureId}
+                />
+              ) : (
+                <VentureLedgerSection
+                  value={ventureLedger}
+                  onChange={updateVentureLedger}
+                  projectBlocked={projectBlockedForVenture}
+                />
+              )}
+
+              {!existingVentureId ? (
+                <ProjectLedgerSection
+                  value={projectLedger}
+                  onChange={updateProjectLedger}
+                  isProjectCategory={isProjectCategory}
+                  categoryTitle={selectedCategory?.title}
+                />
+              ) : null}
+            </div>
+          ) : null}
 
           <div className="border-t border-border/50 pt-4">
             <Button

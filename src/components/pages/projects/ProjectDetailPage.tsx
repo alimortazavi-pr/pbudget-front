@@ -16,9 +16,11 @@ import { FormInput, FormPriceInput, FormSelect, FormTextArea } from "@/component
 import { CreatePaymentPlanModal } from "@/components/pages/planning/CreatePaymentPlanModal";
 import { ProjectWorkTimeTab } from "@/components/pages/projects/ProjectWorkTimeTab";
 import { PartnersSection } from "@/components/pages/partners/PartnersSection";
-import { BudgetType, ProjectItemType, ProjectStatus } from "@/types/enums";
+import { PartnerBudgetCard } from "@/components/pages/partners/PartnerBudgetCard";
+import { ProjectItemType, ProjectStatus } from "@/types/enums";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { categoriesSelector, setCategories } from "@/stores/category";
+import { userSelector } from "@/stores/profile";
 
 type ProjectDetailPageProps = {
   projectId: string;
@@ -40,6 +42,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const categories = useAppSelector(categoriesSelector);
+  const currentUser = useAppSelector(userSelector);
   const [data, setData] = useState<IProjectDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<TabId>("overview");
@@ -477,34 +480,13 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
               هنوز تراکنشی با دسته این پروژه ثبت نشده
             </div>
           ) : (
-            data.budgets.map((budget) => {
-              const isIncome = budget.type === BudgetType.INCOME;
-              return (
-                <Link
-                  key={budget._id}
-                  href={PATHS.BUDGET(budget._id)}
-                  className="block glass rounded-2xl p-4"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="font-medium">
-                        {isIncome ? "دریافت" : "پرداخت"}
-                        {budget.description ? ` · ${budget.description}` : ""}
-                      </p>
-                      <p className="mt-1 text-xs text-muted">
-                        {formatJalaliDate(budget.year, budget.month, budget.day)}
-                      </p>
-                    </div>
-                    <p
-                      className={`font-bold ${isIncome ? "text-income" : "text-expense"}`}
-                    >
-                      {isIncome ? "+" : "-"}
-                      {formatPrice(budget.price)}
-                    </p>
-                  </div>
-                </Link>
-              );
-            })
+            data.budgets.map((budget) => (
+              <PartnerBudgetCard
+                key={budget._id}
+                budget={budget}
+                currentUserId={currentUser?._id}
+              />
+            ))
           )}
         </div>
       )}

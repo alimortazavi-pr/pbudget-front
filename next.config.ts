@@ -22,6 +22,19 @@ const nextConfig: NextConfig = {
     "www.pbudget.ir",
     "budget.paradisecode.org",
   ],
+  async rewrites() {
+    const apiRoot = (
+      process.env.INTERNAL_API_URL ??
+      process.env.NEXT_PUBLIC_API_URL ??
+      "https://api.pdesk.ir/v1"
+    ).replace(/\/v1\/?$/, "");
+    return [
+      {
+        source: "/downloads/:path*",
+        destination: `${apiRoot}/downloads/:path*`,
+      },
+    ];
+  },
 };
 
 export default withSerwist(nextConfig);

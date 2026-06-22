@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Input, Label, TextField } from "@heroui/react";
@@ -153,6 +154,13 @@ export function GetStartedPage() {
             >
               ادامه
             </Button>
+
+            <Link
+              href={PATHS.DOWNLOAD}
+              className="mt-6 block text-center text-sm text-accent underline-offset-4 hover:underline"
+            >
+              دانلود اپ اندروید
+            </Link>
           </form>
         </div>
       </div>

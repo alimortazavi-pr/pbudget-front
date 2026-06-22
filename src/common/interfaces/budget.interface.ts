@@ -1,6 +1,7 @@
 import type { ICategory } from "./category.interface";
 import type { IDebt } from "./debt.interface";
 import type { IPaymentCard } from "./payment-card.interface";
+import type { IVenture } from "./partner.interface";
 
 export interface IProjectRef {
   _id: string;
@@ -20,6 +21,15 @@ export interface IBudgetMutationResult {
   userBudget: number;
 }
 
+export interface IBudgetPerformer {
+  userId: string;
+  displayName: string;
+  partnerId: string | null;
+  isOwner: boolean;
+  sharePercent: number;
+  shareAmount: number;
+}
+
 export interface IBudget {
   _id: string;
   user: string;
@@ -34,7 +44,9 @@ export interface IBudget {
   createdAt: string;
   debt?: IDebt | null;
   project?: IProjectRef | string | null;
+  venture?: IVenture | string | null;
   paymentCard?: IPaymentCard | string | null;
+  performer?: IBudgetPerformer;
 }
 
 export interface ICreateAndEditBudgetForm {
@@ -46,6 +58,7 @@ export interface ICreateAndEditBudgetForm {
   day: string;
   description: string;
   paymentCardId?: string;
+  projectId?: string;
 }
 
 export interface IBudgetsSummary {

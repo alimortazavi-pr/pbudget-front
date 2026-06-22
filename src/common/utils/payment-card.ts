@@ -1,5 +1,8 @@
 import { toEnglishDigits, toPersianDigits } from "@/common/utils";
 
+/** Left-to-right embed — keeps grouped card digits in order inside RTL UI */
+const LTR_EMBED = "\u200E";
+
 export function normalizeCardNumber(value: string, maxLength = 16) {
   return toEnglishDigits(value).replace(/\D/g, "").slice(0, maxLength);
 }
@@ -27,11 +30,17 @@ export function formatCardNumberDisplay(value?: string | null, maskMiddle = fals
   return toPersianDigits(digits);
 }
 
+/** همان formatCardNumberDisplay با جهت LTR برای نمایش در UI راست‌به‌چپ */
+export function formatCardNumberForDisplay(value?: string | null, maskMiddle = false) {
+  const formatted = formatCardNumberDisplay(value, maskMiddle);
+  return formatted ? `${LTR_EMBED}${formatted}` : "";
+}
+
 export function paymentCardSubtitle(
   bankName?: string,
   cardNumber?: string | null,
   maskMiddle = false,
 ) {
-  const formatted = formatCardNumberDisplay(cardNumber, maskMiddle);
+  const formatted = formatCardNumberForDisplay(cardNumber, maskMiddle);
   return [bankName?.trim(), formatted].filter(Boolean).join(" · ");
 }

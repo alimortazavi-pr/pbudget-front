@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 import { PATHS } from "@/common/constants";
+import { isPublicPath } from "@/common/constants/public-routes";
 import * as authApi from "@/common/api/auth";
 import * as categoriesApi from "@/common/api/categories";
 import { saveDataToLocal, storage } from "@/common/utils";
@@ -28,7 +29,7 @@ export function AuthBootstrap() {
   useEffect(() => {
     if (didTry) return;
 
-    const isPublic = pathname === PATHS.GET_STARTED;
+    const isPublic = isPublicPath(pathname);
 
     async function bootstrap() {
       const authData = storage.getAuthData();

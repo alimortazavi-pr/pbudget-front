@@ -22,6 +22,7 @@ const ACTION_LABELS: Record<string, string> = {
   "content.budget.update": "ویرایش تراکنش",
   "content.category.update": "ویرایش دسته",
   "content.project.update": "ویرایش پروژه",
+  "app.android.upload": "آپلود APK اندروید",
 };
 
 export function AdminAuditPage() {

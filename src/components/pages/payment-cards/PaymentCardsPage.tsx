@@ -2,11 +2,15 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import { Button, Modal } from "@heroui/react";
-import { Add, Card, Edit2, Trash } from "iconsax-reactjs";
+import { Add, Card, Edit2, Star1, Trash } from "iconsax-reactjs";
 
 import * as paymentCardsApi from "@/common/api/payment-cards";
 import { DEFAULT_CATEGORY_COLORS } from "@/common/constants/category-colors";
 import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
+import {
+  getDefaultPaymentCardId,
+  setDefaultPaymentCardId,
+} from "@/common/utils/default-payment-card";
 import {
   formatCardNumberDisplay,
   normalizeCardNumber,
@@ -16,9 +20,13 @@ import { showToast } from "@/common/utils/toast";
 import { FormInput } from "@/components/common/form/FormFields";
 import { CategoryColorPicker } from "@/components/common/form/CategoryColorPicker";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
+import { useAppSelector } from "@/stores/hooks";
+import { userSelector } from "@/stores/profile";
 
 export function PaymentCardsPage() {
+  const user = useAppSelector(userSelector);
   const [cards, setCards] = useState<IPaymentCard[]>([]);
+  const [defaultCardId, setDefaultCardId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [editItem, setEditItem] = useState<IPaymentCard | null>(null);
@@ -29,11 +37,22 @@ export function PaymentCardsPage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    setDefaultCardId(getDefaultPaymentCardId(user?._id));
     void paymentCardsApi.fetchPaymentCards().then((data) => {
       setCards(data);
       setLoading(false);
     });
-  }, []);
+  }, [user?._id]);
+
+  function toggleDefaultCard(card: IPaymentCard) {
+    const nextId = defaultCardId === card._id ? null : card._id;
+    setDefaultPaymentCardId(nextId, user?._id);
+    setDefaultCardId(nextId);
+    showToast(
+      nextId ? "کارت به‌عنوان مبدا پیش‌فرض تنظیم شد" : "مبدا پیش‌فرض حذف شد",
+      "success",
+    );
+  }
 
   function openCreate() {
     setEditItem(null);
@@ -87,6 +106,10 @@ export function PaymentCardsPage() {
     try {
       await paymentCardsApi.softDeletePaymentCard(card._id);
       setCards((prev) => prev.filter((item) => item._id !== card._id));
+      if (defaultCardId === card._id) {
+        setDefaultPaymentCardId(null, user?._id);
+        setDefaultCardId(null);
+      }
       showToast("حذف شد", "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
@@ -98,7 +121,10 @@ export function PaymentCardsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-bold">کارت‌های من</h2>
-          <p className="text-sm text-muted">مبدا پرداخت یا مقصد دریافت تراکنش‌ها</p>
+          <p className="text-sm text-muted">
+            مبدا پرداخت یا مقصد دریافت تراکنش‌ها. با ستاره، کارت مبدا پیش‌فرض را
+            انتخاب کنید.
+          </p>
         </div>
         <Button className="bg-accent text-accent-foreground" onPress={openCreate}>
           <Add size={18} />
@@ -123,7 +149,14 @@ export function PaymentCardsPage() {
                   style={{ backgroundColor: card.color || "#3b82f6" }}
                 />
                 <div>
-                  <p className="font-bold">{card.title}</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-bold">{card.title}</p>
+                    {defaultCardId === card._id ? (
+                      <span className="rounded-full bg-accent/15 px-2 py-0.5 text-xs font-medium text-accent">
+                        مبدا پیش‌فرض
+                      </span>
+                    ) : null}
+                  </div>
                   <p className="text-sm text-muted">
                     {paymentCardSubtitle(card.bankName, card.lastFour) ||
                       "بدون جزئیات بانک"}
@@ -131,6 +164,22 @@ export function PaymentCardsPage() {
                 </div>
               </div>
               <div className="flex gap-1">
+                <Button
+                  isIconOnly
+                  size="sm"
+                  variant={defaultCardId === card._id ? "primary" : "ghost"}
+                  aria-label={
+                    defaultCardId === card._id
+                      ? "حذف مبدا پیش‌فرض"
+                      : "تنظیم به‌عنوان مبدا پیش‌فرض"
+                  }
+                  onPress={() => toggleDefaultCard(card)}
+                >
+                  <Star1
+                    size={16}
+                    variant={defaultCardId === card._id ? "Bold" : "Linear"}
+                  />
+                </Button>
                 <Button isIconOnly size="sm" variant="ghost" onPress={() => openEdit(card)}>
                   <Edit2 size={16} />
                 </Button>

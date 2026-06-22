@@ -1,6 +1,7 @@
 import { axiosInstance } from "@/common/axiosInstance";
 import type {
   AdminActivitySeries,
+  AdminAndroidAppInfo,
   AdminAuditListResponse,
   AdminBackupInfo,
   AdminBackupRun,
@@ -303,6 +304,28 @@ export async function updateAdminProject(
   const { data } = await axiosInstance.patch<AdminProjectItem>(
     `/admin/content/projects/${id}`,
     patch,
+  );
+  return data;
+}
+
+export async function fetchAdminAndroidAppInfo() {
+  const { data } = await axiosInstance.get<AdminAndroidAppInfo>("/admin/app/android");
+  return data;
+}
+
+export async function uploadAdminAndroidApk(
+  file: File,
+  versionName: string,
+  versionCode: number,
+) {
+  const form = new FormData();
+  form.append("file", file);
+  form.append("versionName", versionName);
+  form.append("versionCode", String(versionCode));
+  const { data } = await axiosInstance.post<{ message: string } & AdminAndroidAppInfo>(
+    "/admin/app/android/upload",
+    form,
+    { headers: { "Content-Type": "multipart/form-data" } },
   );
   return data;
 }

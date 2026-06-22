@@ -207,3 +207,13 @@ export interface AdminContentListResponse<T> {
 export type AdminImportMode = "merge" | "replace";
 
 export type AdminExportFormat = "ejson" | "json" | "csv";
+
+export interface AdminAndroidAppInfo {
+  versionName: string;
+  versionCode: number;
+  filename: string;
+  byteSize: number;
+  updatedAt: string | null;
+  available: boolean;
+  downloadUrl: string;
+}

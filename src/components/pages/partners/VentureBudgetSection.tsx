@@ -15,7 +15,11 @@ import {
   AppModal,
   AppModalDialog,
   AppModalHeader,
+  modalSheetBodyClass,
 } from "@/components/common/ui/AppModal";
+import { PartnerBudgetCard } from "@/components/pages/partners/PartnerBudgetCard";
+import { useAppSelector } from "@/stores/hooks";
+import { userSelector } from "@/stores/profile";
 
 type VentureBudgetSectionProps = {
   ventureId: string;
@@ -26,6 +30,7 @@ export function VentureBudgetSection({
   ventureId,
   readOnly = false,
 }: VentureBudgetSectionProps) {
+  const currentUser = useAppSelector(userSelector);
   const [budgets, setBudgets] = useState<IBudget[]>([]);
   const [loading, setLoading] = useState(true);
   const [attachOpen, setAttachOpen] = useState(false);
@@ -111,46 +116,25 @@ export function VentureBudgetSection({
         </div>
       ) : (
         <div className="space-y-2">
-          {budgets.map((budget) => {
-            const isIncome = budget.type === BudgetType.INCOME;
-            return (
-              <Link
-                key={budget._id}
-                href={PATHS.BUDGET(budget._id)}
-                className="block glass rounded-2xl p-4"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-medium">
-                      {isIncome ? "دریافت" : "پرداخت"}
-                      {budget.description ? ` · ${budget.description}` : ""}
-                    </p>
-                    <p className="mt-1 text-xs text-muted">
-                      {formatJalaliDate(budget.year, budget.month, budget.day)}
-                    </p>
-                  </div>
-                  <p
-                    className={`font-bold ${isIncome ? "text-income" : "text-expense"}`}
-                  >
-                    {isIncome ? "+" : "-"}
-                    {formatPrice(budget.price)}
-                  </p>
-                </div>
-              </Link>
-            );
-          })}
+          {budgets.map((budget) => (
+            <PartnerBudgetCard
+              key={budget._id}
+              budget={budget}
+              currentUserId={currentUser?._id}
+            />
+          ))}
         </div>
       )}
 
-      <AppModal open={attachOpen} onOpenChange={setAttachOpen} mobileFull>
-        <AppModalDialog>
+      <AppModal open={attachOpen} onOpenChange={setAttachOpen}>
+        <AppModalDialog className="flex max-h-[min(90dvh,640px)] max-w-lg flex-col overflow-hidden">
           <AppModalHeader onClose={() => setAttachOpen(false)}>
             <Modal.Heading>وصل کردن تراکنش</Modal.Heading>
             <p className="mt-1 text-sm text-muted">
               تراکنش‌های آزاد را به این کسب‌وکار وصل کنید
             </p>
           </AppModalHeader>
-          <Modal.Body className="space-y-2">
+          <Modal.Body className={`${modalSheetBodyClass} space-y-2`}>
             {candidatesLoading ? (
               <p className="py-8 text-center text-sm text-muted">در حال بارگذاری…</p>
             ) : candidates.length === 0 ? (
@@ -163,25 +147,32 @@ export function VentureBudgetSection({
                 return (
                   <div
                     key={budget._id}
-                    className="flex items-center justify-between gap-3 rounded-xl bg-surface-secondary p-3"
+                    className="flex items-center gap-3 rounded-xl border border-border/50 bg-surface-secondary px-3 py-3"
                   >
-                    <div>
-                      <p className="text-sm font-medium">
+                    <div className="min-w-0 flex-1 text-start">
+                      <p className="truncate text-sm font-medium">
                         {isIncome ? "دریافت" : "پرداخت"}
                         {budget.description ? ` · ${budget.description}` : ""}
                       </p>
                       <p className="mt-0.5 text-xs text-muted">
-                        {formatJalaliDate(budget.year, budget.month, budget.day)} ·{" "}
-                        {formatPrice(budget.price)}
+                        {formatJalaliDate(budget.year, budget.month, budget.day)}
                       </p>
                     </div>
-                    <Button
-                      size="sm"
-                      onPress={() => void attach(budget._id)}
-                      isPending={attachingId === budget._id}
-                    >
-                      وصل کردن
-                    </Button>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <p
+                        className={`text-sm font-bold ${isIncome ? "text-income" : "text-expense"}`}
+                      >
+                        {isIncome ? "+" : "-"}
+                        {formatPrice(budget.price)}
+                      </p>
+                      <Button
+                        size="sm"
+                        onPress={() => void attach(budget._id)}
+                        isPending={attachingId === budget._id}
+                      >
+                        وصل کردن
+                      </Button>
+                    </div>
                   </div>
                 );
               })

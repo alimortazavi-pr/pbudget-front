@@ -2,6 +2,7 @@ export const PATHS = {
   HOME: "/",
   ANALYSIS: "/analysis",
   GET_STARTED: "/get-started",
+  DOWNLOAD: "/download",
   CREATE_BUDGET: "/create-budget",
   BUDGET: (id: string) => `/budgets/${id}`,
   BOXES: "/boxes",
@@ -32,4 +33,5 @@ export const PATHS = {
   ADMIN_BACKUP: "/admin/backup",
   ADMIN_AUDIT: "/admin/audit",
   ADMIN_CONTENT: "/admin/content",
+  ADMIN_APP: "/admin/app",
 } as const;
