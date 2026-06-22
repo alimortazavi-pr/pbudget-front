@@ -18,6 +18,7 @@ import {
 } from "recharts";
 
 import type { AnalyticsReport } from "@/common/interfaces/analytics.interface";
+import { resolveCategoryColor } from "@/common/constants/category-colors";
 import { formatPrice, toPersianDigits } from "@/common/utils";
 import {
   CHART_COLORS,
@@ -75,20 +76,36 @@ function CustomTooltip({
 export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
   const expensePieData = useMemo(
     () =>
-      report.topExpenses.slice(0, 8).map((item) => ({
+      report.topExpenses.slice(0, 8).map((item, index) => ({
         name: item.title,
         value: item.amount,
+        fill: resolveCategoryColor(item.color, index),
       })),
     [report.topExpenses],
   );
 
   const incomePieData = useMemo(
     () =>
-      report.topIncomes.slice(0, 8).map((item) => ({
+      report.topIncomes.slice(0, 8).map((item, index) => ({
         name: item.title,
         value: item.amount,
+        fill: resolveCategoryColor(item.color, index),
       })),
     [report.topIncomes],
+  );
+
+  const paymentCardBarData = useMemo(
+    () =>
+      (report.byPaymentCard ?? [])
+        .filter((item) => item.cost > 0 || item.income > 0)
+        .slice(0, 8)
+        .map((item) => ({
+          name:
+            item.title.length > 12 ? `${item.title.slice(0, 12)}…` : item.title,
+          cost: item.cost,
+          income: item.income,
+        })),
+    [report.byPaymentCard],
   );
 
   const cashFlowData = useMemo(() => {
@@ -311,11 +328,8 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
                     outerRadius={95}
                     paddingAngle={2}
                   >
-                    {expensePieData.map((_, index) => (
-                      <Cell
-                        key={`expense-${index}`}
-                        fill={CHART_COLORS.palette[index % CHART_COLORS.palette.length]}
-                      />
+                    {expensePieData.map((item, index) => (
+                      <Cell key={`expense-${index}`} fill={item.fill} />
                     ))}
                   </Pie>
                   <Tooltip
@@ -348,11 +362,8 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
                     outerRadius={95}
                     paddingAngle={2}
                   >
-                    {incomePieData.map((_, index) => (
-                      <Cell
-                        key={`income-${index}`}
-                        fill={CHART_COLORS.palette[index % CHART_COLORS.palette.length]}
-                      />
+                    {incomePieData.map((item, index) => (
+                      <Cell key={`income-${index}`} fill={item.fill} />
                     ))}
                   </Pie>
                   <Tooltip
@@ -390,6 +401,24 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
           <p className="py-12 text-center text-sm text-muted">داده‌ای موجود نیست</p>
         )}
       </ChartCard>
+
+      {paymentCardBarData.length > 0 && (
+        <ChartCard title="تراکنش‌ها بر اساس کارت" subtitle="پرداخت و دریافت در این بازه">
+          <div className="pb-chart-canvas h-72 w-full min-h-[18rem]" dir="ltr">
+            <ResponsiveContainer width="100%" height="100%" minHeight={288}>
+              <BarChart data={paymentCardBarData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.2)" />
+                <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                <YAxis tickFormatter={formatChartPrice} tick={{ fontSize: 11 }} />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Bar dataKey="cost" name="پرداخت" fill={CHART_COLORS.cost} radius={[6, 6, 0, 0]} />
+                <Bar dataKey="income" name="دریافت" fill={CHART_COLORS.income} radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </ChartCard>
+      )}
 
       <div className="grid gap-4 xl:grid-cols-2">
         {boxData.length > 0 && (
@@ -439,21 +468,23 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
       <div className="grid gap-4 xl:grid-cols-2">
         <CategoryTable
           title="پرتکرارترین هزینه‌ها"
-          rows={report.topExpenses.map((item) => ({
+          rows={report.topExpenses.map((item, index) => ({
             title: item.title,
             amount: item.amount,
             share: item.share,
             count: item.count,
+            color: resolveCategoryColor(item.color, index),
           }))}
           amountLabel="هزینه"
         />
         <CategoryTable
           title="بیشترین درآمدها"
-          rows={report.topIncomes.map((item) => ({
+          rows={report.topIncomes.map((item, index) => ({
             title: item.title,
             amount: item.amount,
             share: item.share,
             count: item.count,
+            color: resolveCategoryColor(item.color, index),
           }))}
           amountLabel="درآمد"
         />
@@ -468,7 +499,13 @@ function CategoryTable({
   amountLabel,
 }: {
   title: string;
-  rows: Array<{ title: string; amount: number; share: number; count: number }>;
+  rows: Array<{
+    title: string;
+    amount: number;
+    share: number;
+    count: number;
+    color?: string;
+  }>;
   amountLabel: string;
 }) {
   return (
@@ -490,7 +527,17 @@ function CategoryTable({
             <tbody>
               {rows.map((row) => (
                 <tr key={row.title} className="border-b border-border/30">
-                  <td className="py-2.5 font-medium">{row.title}</td>
+                  <td className="py-2.5 font-medium">
+                    <span className="inline-flex items-center gap-2">
+                      {row.color ? (
+                        <span
+                          className="h-2.5 w-2.5 rounded-full"
+                          style={{ backgroundColor: row.color }}
+                        />
+                      ) : null}
+                      {row.title}
+                    </span>
+                  </td>
                   <td className="py-2.5">{formatPrice(row.amount)}</td>
                   <td className="py-2.5">{toPersianDigits(row.share.toFixed(1))}٪</td>
                   <td className="py-2.5">{toPersianDigits(row.count)}</td>

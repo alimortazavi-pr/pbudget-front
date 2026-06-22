@@ -23,12 +23,42 @@ export type AnalyticsCategoryRow = {
   categoryId: string;
   title: string;
   parentTitle: string | null;
+  color: string | null;
+  monthlyLimit: number;
+  limitRemaining: number | null;
+  overLimitAmount: number;
+  percentOfLimit: number | null;
   income: number;
   cost: number;
   net: number;
   count: number;
   shareOfCost: number;
   shareOfIncome: number;
+};
+
+export type AnalyticsPaymentCardRow = {
+  cardId: string;
+  title: string;
+  bankName: string;
+  lastFour: string;
+  color: string | null;
+  income: number;
+  cost: number;
+  net: number;
+  count: number;
+};
+
+export type AnalyticsCategoryBudgetRow = {
+  categoryId: string;
+  title: string;
+  color: string | null;
+  monthlyLimit: number;
+  spent: number;
+  remaining: number;
+  overLimitAmount: number;
+  percentOfLimit: number;
+  isOverLimit: boolean;
+  isRollup?: boolean;
 };
 
 export type AnalyticsReport = {
@@ -38,6 +68,7 @@ export type AnalyticsReport = {
     month: string;
     day: string;
     category: string | null;
+    paymentCard: string | null;
     type: AnalyticsTypeFilter;
     compare: boolean;
     periodLabel: string;
@@ -74,6 +105,8 @@ export type AnalyticsReport = {
     share: number;
   }>;
   byCategory: AnalyticsCategoryRow[];
+  byPaymentCard: AnalyticsPaymentCardRow[];
+  categoryBudgets: AnalyticsCategoryBudgetRow[];
   monthlyTrends: AnalyticsTrendPoint[];
   dailyTrends: AnalyticsTrendPoint[];
   topExpenses: Array<{
@@ -82,6 +115,7 @@ export type AnalyticsReport = {
     amount: number;
     share: number;
     count: number;
+    color: string | null;
   }>;
   topIncomes: Array<{
     categoryId: string;
@@ -89,6 +123,7 @@ export type AnalyticsReport = {
     amount: number;
     share: number;
     count: number;
+    color: string | null;
   }>;
   insights: AnalyticsInsight[];
 };

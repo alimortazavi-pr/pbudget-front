@@ -1,5 +1,6 @@
 import type { ICategory } from "./category.interface";
 import type { IDebt } from "./debt.interface";
+import type { IPaymentCard } from "./payment-card.interface";
 
 export interface IProjectRef {
   _id: string;
@@ -33,6 +34,7 @@ export interface IBudget {
   createdAt: string;
   debt?: IDebt | null;
   project?: IProjectRef | string | null;
+  paymentCard?: IPaymentCard | string | null;
 }
 
 export interface ICreateAndEditBudgetForm {
@@ -43,6 +45,7 @@ export interface ICreateAndEditBudgetForm {
   month: string;
   day: string;
   description: string;
+  paymentCardId?: string;
 }
 
 export interface IBudgetsSummary {

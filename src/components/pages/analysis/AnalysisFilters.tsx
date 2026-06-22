@@ -2,13 +2,15 @@
 
 import { Button } from "@heroui/react";
 import { ArrowLeft2, ArrowRight2 } from "iconsax-reactjs";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
+import * as paymentCardsApi from "@/common/api/payment-cards";
 import type {
   AnalyticsDuration,
   AnalyticsTypeFilter,
 } from "@/common/interfaces/analytics.interface";
 import type { ICategory } from "@/common/interfaces/category.interface";
+import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { toPersianDigits } from "@/common/utils";
 import {
@@ -46,6 +48,7 @@ type AnalysisFiltersProps = {
   month: string;
   day: string;
   category: string;
+  paymentCard: string;
   type: AnalyticsTypeFilter;
   compare: boolean;
   categories: ICategory[];
@@ -58,6 +61,7 @@ export function AnalysisFilters({
   month,
   day,
   category,
+  paymentCard,
   type,
   compare,
   categories,
@@ -66,6 +70,24 @@ export function AnalysisFilters({
   const categoryOptions = useMemo(
     () => getCategorySelectOptions(categories),
     [categories],
+  );
+  const [paymentCards, setPaymentCards] = useState<IPaymentCard[]>([]);
+
+  useEffect(() => {
+    void paymentCardsApi.fetchPaymentCards().then(setPaymentCards).catch(() => {
+      setPaymentCards([]);
+    });
+  }, []);
+
+  const paymentCardOptions = useMemo(
+    () =>
+      paymentCards.map((card) => ({
+        id: card._id,
+        label: [card.title, card.lastFour ? `•••• ${card.lastFour}` : ""]
+          .filter(Boolean)
+          .join(" · "),
+      })),
+    [paymentCards],
   );
 
   const periodTitle = useMemo(() => {
@@ -184,7 +206,7 @@ export function AnalysisFilters({
         />
       )}
 
-      <div className="grid gap-3 lg:grid-cols-2">
+      <div className="grid gap-3 lg:grid-cols-3">
         <FormCategoryComboBox
           label="دسته‌بندی"
           placeholder="همه دسته‌ها"
@@ -194,6 +216,19 @@ export function AnalysisFilters({
             { id: "", label: "همه دسته‌ها" },
             ...categoryOptions,
           ]}
+        />
+        <FormSelect
+          label="کارت"
+          placeholder="همه کارت‌ها"
+          selectedKey={paymentCard || "all"}
+          onSelectionChange={(key) =>
+            onChange({ paymentCard: key === "all" ? "" : key })
+          }
+          options={[
+            { id: "all", label: "همه کارت‌ها" },
+            ...paymentCardOptions,
+          ]}
+          emptyMessage="کارتی ثبت نشده"
         />
         <FormSelect
           label="نوع تراکنش"

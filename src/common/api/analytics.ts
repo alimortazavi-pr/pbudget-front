@@ -11,6 +11,7 @@ export type AnalyticsReportParams = {
   month: string;
   day: string;
   category?: string;
+  paymentCard?: string;
   type?: AnalyticsTypeFilter;
   compare?: boolean;
 };
@@ -23,6 +24,7 @@ export async function fetchAnalyticsReport(params: AnalyticsReportParams) {
       month: params.month,
       day: params.day,
       category: params.category || undefined,
+      paymentCard: params.paymentCard || undefined,
       type: params.type ?? "all",
       compare: params.compare ? "true" : "false",
     },

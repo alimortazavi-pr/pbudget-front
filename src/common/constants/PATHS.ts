@@ -5,6 +5,7 @@ export const PATHS = {
   CREATE_BUDGET: "/create-budget",
   BUDGET: (id: string) => `/budgets/${id}`,
   BOXES: "/boxes",
+  PAYMENT_CARDS: "/payment-cards",
   PROFILE: "/profile",
   CATEGORIES: "/profile/categories",
   DEBTS: "/debts",

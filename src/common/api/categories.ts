@@ -16,6 +16,8 @@ export async function createCategory(payload: {
   title: string;
   parentId?: string | null;
   kind?: "default" | "project";
+  color?: string;
+  monthlyLimit?: string | number;
 }) {
   const { data } = await axiosInstance.post("/categories", payload);
   return normalizeCategory(data.category as ICategory);
@@ -23,7 +25,13 @@ export async function createCategory(payload: {
 
 export async function updateCategory(
   id: string,
-  payload: { title: string; parentId?: string | null; kind?: "default" | "project" },
+  payload: {
+    title: string;
+    parentId?: string | null;
+    kind?: "default" | "project";
+    color?: string;
+    monthlyLimit?: string | number;
+  },
 ) {
   const { data } = await axiosInstance.put(`/categories/${id}`, payload);
   return normalizeCategory(data.category as ICategory);

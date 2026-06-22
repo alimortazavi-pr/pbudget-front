@@ -23,6 +23,8 @@ import { getJalaliNow } from "@/common/utils/jalali-date";
 import { showToast } from "@/common/utils/toast";
 import { AnalysisFilters } from "@/components/pages/analysis/AnalysisFilters";
 import { AnalysisInsightsPanel } from "@/components/pages/analysis/AnalysisInsightsPanel";
+import { AnalysisBudgetLimitsPanel } from "@/components/pages/analysis/AnalysisBudgetLimitsPanel";
+import { AnalysisPaymentCardsPanel } from "@/components/pages/analysis/AnalysisPaymentCardsPanel";
 import { WorkTimeAnalysisSection } from "@/components/pages/projects/WorkTimeAnalysisSection";
 import { AnalysisKpiCards } from "@/components/pages/analysis/AnalysisKpiCards";
 import { useAppSelector } from "@/stores/hooks";
@@ -62,13 +64,14 @@ export function AnalysisPage() {
   const month = hydrated ? get("month", String(now.jMonth() + 1)) : String(now.jMonth() + 1);
   const day = hydrated ? get("day", String(now.jDate())) : String(now.jDate());
   const category = hydrated ? get("category", "") : "";
+  const paymentCard = hydrated ? get("paymentCard", "") : "";
   const type = (hydrated ? get("type", "all") : "all") as AnalyticsTypeFilter;
   const compare = hydrated && get("compare") === "true";
 
   const queryKey = useMemo(
     () =>
-      [duration, year, month, day, category, type, compare].join("|"),
-    [duration, year, month, day, category, type, compare],
+      [duration, year, month, day, category, paymentCard, type, compare].join("|"),
+    [duration, year, month, day, category, paymentCard, type, compare],
   );
 
   const updateQuery = useCallback(
@@ -140,6 +143,7 @@ export function AnalysisPage() {
             month,
             day,
             category: category || undefined,
+            paymentCard: paymentCard || undefined,
             type,
             compare,
           }),
@@ -208,6 +212,7 @@ export function AnalysisPage() {
     month,
     day,
     category,
+    paymentCard,
     type,
     compare,
     user?.budget,
@@ -232,6 +237,7 @@ export function AnalysisPage() {
         month={month}
         day={day}
         category={category}
+        paymentCard={paymentCard}
         type={type}
         compare={compare}
         categories={categories ?? []}
@@ -262,6 +268,11 @@ export function AnalysisPage() {
           <AnalysisKpiCards report={report} />
 
           <AnalysisCharts report={report} duration={duration} />
+
+          <div className="grid gap-4 xl:grid-cols-2">
+            <AnalysisBudgetLimitsPanel report={report} />
+            <AnalysisPaymentCardsPanel report={report} />
+          </div>
 
           {report.comparison && (
             <section className="glass rounded-2xl border border-border/50 p-4 text-sm lg:p-5">

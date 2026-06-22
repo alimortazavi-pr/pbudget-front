@@ -8,6 +8,8 @@ import { Edit2, Trash } from "iconsax-reactjs";
 import { PATHS } from "@/common/constants";
 import * as budgetsApi from "@/common/api/budgets";
 import type { IBudget } from "@/common/interfaces/budget.interface";
+import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
+import { resolveCategoryColor } from "@/common/constants/category-colors";
 import { formatBudgetDateTime, formatJalaliDate, formatPrice } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
@@ -19,6 +21,16 @@ type TransactionCardProps = {
   budget: IBudget;
 };
 
+function resolvePaymentCardLabel(
+  paymentCard?: IBudget["paymentCard"],
+): string | null {
+  if (!paymentCard || typeof paymentCard === "string") return null;
+  const card = paymentCard as IPaymentCard;
+  return [card.title, card.lastFour ? `•••• ${card.lastFour}` : ""]
+    .filter(Boolean)
+    .join(" · ");
+}
+
 export function TransactionCard({ budget }: TransactionCardProps) {
   const dispatch = useAppDispatch();
   const user = useAppSelector(userSelector);
@@ -26,6 +38,8 @@ export function TransactionCard({ budget }: TransactionCardProps) {
   const [deleting, setDeleting] = useState(false);
   const isIncome = budget.type === BudgetType.INCOME;
   const debt = budget.debt;
+  const categoryColor = resolveCategoryColor(budget.category?.color);
+  const paymentCardLabel = resolvePaymentCardLabel(budget.paymentCard);
 
   async function handleDelete() {
     setDeleting(true);
@@ -51,9 +65,17 @@ export function TransactionCard({ budget }: TransactionCardProps) {
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate font-medium">{budget.category?.title}</p>
+          <div className="flex items-center gap-2">
+            <span
+              className="h-2.5 w-2.5 shrink-0 rounded-full"
+              style={{ backgroundColor: categoryColor }}
+              aria-hidden
+            />
+            <p className="truncate font-medium">{budget.category?.title}</p>
+          </div>
           <p className="mt-0.5 text-xs text-muted">
             {formatJalaliDate(budget.year, budget.month, budget.day)}
+            {paymentCardLabel ? ` · ${paymentCardLabel}` : ""}
           </p>
           {debt && (
             <span

@@ -1,17 +1,21 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useMemo, useState, type FormEvent } from "react";
+import Link from "next/link";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Button } from "@heroui/react";
 import { Add } from "iconsax-reactjs";
 
 import * as budgetsApi from "@/common/api/budgets";
 import * as debtsApi from "@/common/api/debts";
+import * as paymentCardsApi from "@/common/api/payment-cards";
+import { PATHS } from "@/common/constants";
 import type { IBudget } from "@/common/interfaces/budget.interface";
-import { getJalaliNow, normalizeJalaliPart, toEnglishDigits } from "@/common/utils";
+import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
+import { getJalaliNow, normalizeJalaliPart, toEnglishDigits, formatPrice } from "@/common/utils";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showErrorToast, showToast } from "@/common/utils/toast";
-import { FormCategoryComboBox, FormDatePicker, FormPriceInput, FormTextArea } from "@/components/common/form/FormFields";
+import { FormCategoryComboBox, FormDatePicker, FormPriceInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
 import {
   DebtLedgerSection,
   LinkedDebtSummary,
@@ -39,6 +43,14 @@ const initialDebtLedger: DebtLedgerValue = {
 
 function isSettleDebtMode(mode: DebtLedgerMode) {
   return mode === "settle-receivable" || mode === "settle-payable";
+}
+
+function resolveBudgetPaymentCardId(
+  paymentCard?: IBudget["paymentCard"],
+): string {
+  if (!paymentCard) return "";
+  if (typeof paymentCard === "string") return paymentCard;
+  return paymentCard._id;
 }
 
 export function BudgetFormPage({ budget }: BudgetFormPageProps) {
@@ -71,6 +83,61 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   const [loading, setLoading] = useState(false);
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [debtLedger, setDebtLedger] = useState<DebtLedgerValue>(initialDebtLedger);
+  const [paymentCards, setPaymentCards] = useState<IPaymentCard[]>([]);
+  const [paymentCardId, setPaymentCardId] = useState(() =>
+    resolveBudgetPaymentCardId(budget?.paymentCard),
+  );
+
+  const paymentCardOptions = useMemo(
+    () =>
+      paymentCards.map((card) => ({
+        id: card._id,
+        label: [card.title, card.lastFour ? `•••• ${card.lastFour}` : ""]
+          .filter(Boolean)
+          .join(" · "),
+      })),
+    [paymentCards],
+  );
+
+  useEffect(() => {
+    void paymentCardsApi.fetchPaymentCards().then(setPaymentCards).catch(() => {
+      setPaymentCards([]);
+    });
+  }, []);
+
+  const [categorySpendHint, setCategorySpendHint] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (
+      type !== String(BudgetType.COST) ||
+      !category ||
+      !selectedCategory?.monthlyLimit
+    ) {
+      setCategorySpendHint(null);
+      return;
+    }
+
+    const limit = selectedCategory.monthlyLimit;
+    const now = getJalaliNow();
+
+    void budgetsApi
+      .fetchBudgets({
+        duration: "monthly",
+        year: String(now.jYear()),
+        month: String(now.jMonth() + 1),
+        category,
+      })
+      .then((data) => {
+        const spent = data.totalCostPrice;
+        const remaining = limit - spent;
+        setCategorySpendHint(
+          remaining >= 0
+            ? `سقف ${formatPrice(limit)} · خرج این ماه ${formatPrice(spent)} · مانده ${formatPrice(remaining)}`
+            : `سقف ${formatPrice(limit)} · خرج این ماه ${formatPrice(spent)} · ${formatPrice(Math.abs(remaining))} بیش از سقف`,
+        );
+      })
+      .catch(() => setCategorySpendHint(null));
+  }, [category, selectedCategory?.monthlyLimit, type]);
 
   function handleDateChange(value: { year: string; month: string; day: string }) {
     setYear(value.year);
@@ -111,6 +178,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
       month: String(month),
       day: String(day),
       description,
+      paymentCardId: paymentCardId || "",
     };
 
     if (!payload.price || !payload.category || !payload.year || !payload.month || !payload.day) {
@@ -263,12 +331,48 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
             emptyMessage="دسته‌ای ثبت نشده"
           />
 
+          <FormSelect
+            label={
+              type === String(BudgetType.COST)
+                ? "کارت پرداخت (مبدا)"
+                : "کارت دریافت (مقصد)"
+            }
+            placeholder="بدون کارت"
+            selectedKey={paymentCardId || "none"}
+            onSelectionChange={(key) =>
+              setPaymentCardId(key === "none" ? "" : key)
+            }
+            options={[{ id: "none", label: "بدون کارت" }, ...paymentCardOptions]}
+            emptyMessage="کارتی ثبت نشده"
+          />
+          {paymentCards.length === 0 ? (
+            <p className="text-xs text-muted">
+              هنوز کارتی ثبت نکرده‌اید. از{" "}
+              <Link href={PATHS.PAYMENT_CARDS} className="text-accent underline">
+                کارت‌های من
+              </Link>{" "}
+              اضافه کنید.
+            </p>
+          ) : null}
+
           {isProjectCategory && (
             <p className="rounded-xl bg-accent/10 px-3 py-2 text-xs leading-6 text-accent">
               این تراکنش به پروژه مرتبط با دسته «{selectedCategory?.title}» وصل می‌شود و
               در صفحه پروژه‌ها هم نمایش داده می‌شود.
             </p>
           )}
+
+          {categorySpendHint ? (
+            <p
+              className={`rounded-xl px-3 py-2 text-xs leading-6 ${
+                categorySpendHint.includes("بیش از سقف")
+                  ? "bg-expense-soft text-expense"
+                  : "bg-surface-secondary text-muted"
+              }`}
+            >
+              {categorySpendHint}
+            </p>
+          ) : null}
 
           <FormTextArea
             label="توضیحات"

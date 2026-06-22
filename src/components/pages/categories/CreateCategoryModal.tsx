@@ -3,11 +3,13 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { Button, Modal, Switch } from "@heroui/react";
 
+import { DEFAULT_CATEGORY_COLORS } from "@/common/constants/category-colors";
 import * as categoriesApi from "@/common/api/categories";
 import type { ICategory } from "@/common/interfaces/category.interface";
 import { getParentSelectOptions } from "@/common/utils/category-tree";
 import { showToast } from "@/common/utils/toast";
-import { FormInput, FormSelect } from "@/components/common/form/FormFields";
+import { FormInput, FormPriceInput, FormSelect } from "@/components/common/form/FormFields";
+import { CategoryColorPicker } from "@/components/common/form/CategoryColorPicker";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { categoriesSelector, setCategories } from "@/stores/category";
@@ -29,6 +31,8 @@ export function CreateCategoryModal({
   const [title, setTitle] = useState("");
   const [parentId, setParentId] = useState("");
   const [isProjectKind, setIsProjectKind] = useState(false);
+  const [color, setColor] = useState<string>(DEFAULT_CATEGORY_COLORS[0]);
+  const [monthlyLimit, setMonthlyLimit] = useState("");
   const [saving, setSaving] = useState(false);
 
   const parentOptions = useMemo(
@@ -49,6 +53,8 @@ export function CreateCategoryModal({
         title: title.trim(),
         parentId: parentId || null,
         kind: isProjectKind ? CategoryKind.PROJECT : CategoryKind.DEFAULT,
+        color,
+        monthlyLimit: monthlyLimit || 0,
       });
       dispatch(setCategories([...(categories ?? []), created]));
       showToast("دسته‌بندی ایجاد شد", "success");
@@ -56,6 +62,8 @@ export function CreateCategoryModal({
       setTitle("");
       setParentId("");
       setIsProjectKind(false);
+      setColor(DEFAULT_CATEGORY_COLORS[0]);
+      setMonthlyLimit("");
       onOpenChange(false);
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
@@ -84,6 +92,13 @@ export function CreateCategoryModal({
               selectedKey={parentId || "none"}
               onSelectionChange={(key) => setParentId(key === "none" ? "" : key)}
               options={parentOptions}
+            />
+            <CategoryColorPicker value={color} onChange={setColor} />
+            <FormPriceInput
+              label="سقف ماهانه (تومان)"
+              value={monthlyLimit}
+              onChange={setMonthlyLimit}
+              placeholder="۰ = بدون محدودیت"
             />
             <div className="flex items-center justify-between rounded-xl border border-border/50 bg-surface-secondary px-3 py-3">
               <div>

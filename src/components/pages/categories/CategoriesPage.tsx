@@ -5,7 +5,9 @@ import { Button, Modal, Switch } from "@heroui/react";
 import { Add, Category, Edit2, Trash } from "iconsax-reactjs";
 
 import * as categoriesApi from "@/common/api/categories";
+import { DEFAULT_CATEGORY_COLORS } from "@/common/constants/category-colors";
 import type { ICategory } from "@/common/interfaces/category.interface";
+import { resolveCategoryColor } from "@/common/constants/category-colors";
 import {
   buildCategoryTree,
   collectDescendantIdSet,
@@ -14,7 +16,8 @@ import {
   getParentSelectOptions,
 } from "@/common/utils/category-tree";
 import { showToast } from "@/common/utils/toast";
-import { FormInput, FormSelect } from "@/components/common/form/FormFields";
+import { FormInput, FormPriceInput, FormSelect } from "@/components/common/form/FormFields";
+import { CategoryColorPicker } from "@/components/common/form/CategoryColorPicker";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { categoriesSelector, setCategories } from "@/stores/category";
@@ -28,6 +31,8 @@ export function CategoriesPage() {
   const [title, setTitle] = useState("");
   const [parentId, setParentId] = useState("");
   const [isProjectKind, setIsProjectKind] = useState(false);
+  const [color, setColor] = useState<string>(DEFAULT_CATEGORY_COLORS[0]);
+  const [monthlyLimit, setMonthlyLimit] = useState("");
   const [saving, setSaving] = useState(false);
 
   const categoryRows = useMemo(() => {
@@ -51,6 +56,8 @@ export function CategoriesPage() {
     setTitle("");
     setParentId("");
     setIsProjectKind(false);
+    setColor(DEFAULT_CATEGORY_COLORS[0]);
+    setMonthlyLimit("");
     setOpen(true);
   }
 
@@ -59,6 +66,8 @@ export function CategoriesPage() {
     setTitle(cat.title);
     setParentId(getCategoryParentId(cat) ?? "");
     setIsProjectKind(cat.kind === CategoryKind.PROJECT);
+    setColor(cat.color || DEFAULT_CATEGORY_COLORS[0]);
+    setMonthlyLimit(cat.monthlyLimit ? String(cat.monthlyLimit) : "");
     setOpen(true);
   }
 
@@ -72,6 +81,8 @@ export function CategoriesPage() {
         title: title.trim(),
         parentId: parentId || null,
         kind: isProjectKind ? CategoryKind.PROJECT : CategoryKind.DEFAULT,
+        color,
+        monthlyLimit: monthlyLimit.trim() || "0",
       };
 
       if (editItem) {
@@ -137,13 +148,20 @@ export function CategoriesPage() {
         </div>
       ) : (
         <div className="pb-card-grid">
-          {categoryRows.map(({ category, depth }) => (
+          {categoryRows.map(({ category, depth }, index) => (
             <div
               key={category._id}
               className="flex items-center justify-between rounded-2xl border border-border/50 bg-surface px-4 py-3 lg:ms-0"
               style={depth > 0 ? { marginInlineStart: depth * 16 } : undefined}
             >
-              <div className="min-w-0">
+              <div className="flex min-w-0 items-center gap-3">
+                <span
+                  className="h-3 w-3 shrink-0 rounded-full"
+                  style={{
+                    backgroundColor: resolveCategoryColor(category.color, index),
+                  }}
+                />
+                <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="font-medium">{category.title}</span>
                   {category.kind === CategoryKind.PROJECT ? (
@@ -151,10 +169,16 @@ export function CategoriesPage() {
                       پروژه
                     </span>
                   ) : null}
+                  {category.monthlyLimit && category.monthlyLimit > 0 ? (
+                    <span className="rounded-md bg-surface-secondary px-1.5 py-0.5 text-[10px] text-muted">
+                      سقف {category.monthlyLimit.toLocaleString("fa-IR")}
+                    </span>
+                  ) : null}
                 </div>
                 {depth > 0 ? (
                   <p className="text-xs text-muted">زیردسته</p>
                 ) : null}
+                </div>
               </div>
               <div className="flex shrink-0 gap-1">
                 <Button
@@ -200,6 +224,15 @@ export function CategoriesPage() {
                 onSelectionChange={(key) => setParentId(key === "none" ? "" : key)}
                 options={parentOptions}
               />
+              <CategoryColorPicker value={color} onChange={setColor} />
+              <FormPriceInput
+                label="سقف خرج ماهانه (اختیاری)"
+                value={monthlyLimit}
+                onChange={setMonthlyLimit}
+              />
+              <p className="text-xs text-muted">
+                ۰ یعنی بدون محدودیت — عبور از سقف مجاز است ولی مانده منفی می‌شود
+              </p>
               <div className="flex items-center justify-between rounded-xl border border-border/50 bg-surface-secondary px-3 py-3">
                 <div>
                   <p className="text-sm font-medium">نوع پروژه</p>

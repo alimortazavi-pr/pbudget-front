@@ -34,6 +34,7 @@ export const PRIMARY_NAV_ITEMS = [
   { href: PATHS.HOME, label: "خانه", icon: Home2 },
   { href: PATHS.ANALYSIS, label: "تحلیل مالی", icon: Chart },
   { href: PATHS.BOXES, label: "صندوق‌ها", icon: Box1 },
+  { href: PATHS.PAYMENT_CARDS, label: "کارت‌های من", icon: Card },
   { href: PATHS.CATEGORIES, label: "دسته‌بندی‌ها", icon: Category },
 ] as const;
 
