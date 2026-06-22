@@ -13,6 +13,7 @@ import {
   Messages2,
   MoneyRecive,
   Profile,
+  Profile2User,
   Wallet,
 } from "iconsax-reactjs";
 
@@ -45,6 +46,8 @@ export const MOBILE_TAB_SIDE_ITEMS = [
 export const PLANNING_NAV_ITEMS = [
   { href: PATHS.TASKS, label: "برنامه روزانه", icon: Task },
   { href: PATHS.PROJECTS, label: "پروژه‌ها", icon: Briefcase },
+  { href: PATHS.VENTURES, label: "کسب‌وکار و شرکا", icon: Profile2User },
+  { href: PATHS.INVITES, label: "دعوت‌های همکاری", icon: Messages2 },
   { href: PATHS.WORK_ATTENDANCE, label: "تحلیل حضور و غیاب", icon: Clock },
   { href: PATHS.DEBTS, label: "طلب و بدهی", icon: Card },
   { href: PATHS.INSTALLMENTS, label: "اقساط", icon: Calendar },

@@ -49,6 +49,11 @@ export function formatJalaliDateSlashed(
   );
 }
 
+/** نمایش تاریخ-زمان ISO به جلالی */
+export function formatIsoDateTimeJalali(iso: string) {
+  return toPersianDigits(moment(iso).format("jYYYY/jMM/jDD HH:mm"));
+}
+
 /** زمان ثبت + تاریخ تراکنش: ۱۰:۴۰ - ۱۴۰۵/۰۳/۱۸ */
 export function formatBudgetDateTime(
   year: string,

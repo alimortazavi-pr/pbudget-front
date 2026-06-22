@@ -18,6 +18,10 @@ export const PATHS = {
   PROJECT: (id: string) => `/projects/${id}`,
   PROJECT_ATTENDANCE: (id: string) => `/projects/${id}/attendance`,
   WORK_ATTENDANCE: "/projects/attendance",
+  VENTURES: "/ventures",
+  VENTURE: (id: string) => `/ventures/${id}`,
+  INVITES: "/invites",
+  PARTNER_INVITE: (token: string) => `/partner-invite/${token}`,
   TASKS: "/tasks",
   /** @deprecated use INSTALLMENTS */
   PLANNING: "/planning",

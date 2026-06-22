@@ -166,6 +166,11 @@ export function ProjectsPage() {
                           بدون ساعت کاری
                         </span>
                       ) : null}
+                      {project.accessRole === "partner" ? (
+                        <span className="rounded-lg bg-accent/15 px-2 py-0.5 text-xs font-medium text-accent">
+                          مشترک
+                        </span>
+                      ) : null}
                     </div>
                     {project.description ? (
                       <p className="mt-1 line-clamp-2 text-sm text-muted">

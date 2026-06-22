@@ -13,6 +13,7 @@ import { BudgetExportModal } from "@/components/pages/dashboard/BudgetExportModa
 import { BudgetStats } from "@/components/pages/dashboard/BudgetStats";
 import { DashboardFilterSection } from "@/components/pages/dashboard/DashboardFilterSection";
 import { DashboardHero } from "@/components/pages/dashboard/DashboardHero";
+import { PendingInvitesBanner } from "@/components/pages/partners/PendingInvitesBanner";
 import { TransactionCard } from "@/components/pages/dashboard/TransactionCard";
 import { TransactionListSkeleton } from "@/components/pages/dashboard/TransactionListSkeleton";
 import type { IBudget, IBudgetsSummary } from "@/common/interfaces/budget.interface";
@@ -144,6 +145,10 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         income={totalIncome ?? 0}
         expense={totalCost ?? 0}
       />
+
+      <div className="px-4 pb-2">
+        <PendingInvitesBanner compact />
+      </div>
 
       <BudgetStats
         count={filteredBudgets.length}

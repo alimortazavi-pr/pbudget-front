@@ -1,6 +1,9 @@
 import type { IBudget } from "./budget.interface";
 import type { ICategory } from "./category.interface";
 import type { IPaymentPlan } from "./payment-plan.interface";
+import type { AccessRole, PartnerPermissionLevel } from "./partner.interface";
+
+export type { AccessRole, PartnerPermissionLevel };
 
 export type ProjectStatus = "active" | "completed" | "on_hold";
 export type ProjectItemType = "note" | "task";
@@ -27,6 +30,8 @@ export interface IProject {
   createdAt?: string;
   updatedAt?: string;
   stats?: IProjectStats;
+  accessRole?: AccessRole;
+  permissionLevel?: PartnerPermissionLevel;
 }
 
 export interface IProjectItem {
@@ -46,4 +51,6 @@ export interface IProjectDetail {
   budgets: IBudget[];
   items: IProjectItem[];
   paymentPlans: IPaymentPlan[];
+  accessRole?: AccessRole;
+  permissionLevel?: PartnerPermissionLevel;
 }

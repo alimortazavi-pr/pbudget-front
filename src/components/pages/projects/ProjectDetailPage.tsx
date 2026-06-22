@@ -15,6 +15,7 @@ import { AttachBudgetButton } from "@/components/common/budget/AttachBudgetModal
 import { FormInput, FormPriceInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
 import { CreatePaymentPlanModal } from "@/components/pages/planning/CreatePaymentPlanModal";
 import { ProjectWorkTimeTab } from "@/components/pages/projects/ProjectWorkTimeTab";
+import { PartnersSection } from "@/components/pages/partners/PartnersSection";
 import { BudgetType, ProjectItemType, ProjectStatus } from "@/types/enums";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { categoriesSelector, setCategories } from "@/stores/category";
@@ -23,7 +24,7 @@ type ProjectDetailPageProps = {
   projectId: string;
 };
 
-type TabId = "overview" | "transactions" | "installments" | "notebook" | "work";
+type TabId = "overview" | "transactions" | "installments" | "notebook" | "work" | "partners";
 
 const STATUS_OPTIONS = [
   { id: ProjectStatus.ACTIVE, label: "فعال" },
@@ -217,6 +218,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
     { id: "transactions" as const, label: "تراکنش‌ها" },
     { id: "installments" as const, label: "وام و اقساط" },
     ...(showWorkTime ? [{ id: "work" as const, label: "ساعات کاری" }] : []),
+    { id: "partners" as const, label: "شرکا" },
     { id: "notebook" as const, label: "دفترچه و تسک‌ها" },
   ] as const;
 
@@ -227,6 +229,11 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
   }
 
   const project = data.project;
+  const isPartner =
+    data.accessRole === "partner" || project.accessRole === "partner";
+  const permissionLevel = data.permissionLevel ?? project.permissionLevel ?? "owner";
+  const isEditorPartner = isPartner && permissionLevel === "editor";
+  const canEditContent = !isPartner || isEditorPartner;
   const received = stats?.receivedAmount ?? 0;
   const spent = stats?.spentAmount ?? 0;
   const remaining = stats?.remainingAmount ?? 0;
@@ -241,6 +248,13 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
           <div>
             <p className="text-sm text-muted">پروژه</p>
             <h1 className="mt-1 text-2xl font-bold">{title || project.category?.title}</h1>
+            {isPartner ? (
+              <p className="mt-2 rounded-lg bg-accent/10 px-2 py-1 text-xs text-accent">
+                {isEditorPartner
+                  ? "دسترسی مشترک — ویرایشگر"
+                  : "دسترسی مشترک — فقط مشاهده"}
+              </p>
+            ) : null}
           </div>
           <div className="flex flex-wrap gap-2">
             {showWorkTime ? (
@@ -312,6 +326,18 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
 
       {tab === "overview" && (
         <div className="glass space-y-4 rounded-2xl p-4">
+          {isPartner ? (
+            <div className="space-y-3">
+              <p className="text-sm text-muted">
+                {description || "بدون توضیحات"}
+              </p>
+              <p className="text-sm">
+                وضعیت:{" "}
+                {STATUS_OPTIONS.find((item) => item.id === status)?.label ?? status}
+              </p>
+            </div>
+          ) : (
+            <>
           <FormInput
             label="نام پروژه"
             placeholder="مثلاً طراحی سایت شرکت X"
@@ -407,6 +433,8 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
               حذف پروژه
             </Button>
           </section>
+            </>
+          )}
         </div>
       )}
 
@@ -417,6 +445,8 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
               {formatCount(data.budgets.length)} تراکنش مرتبط · در لیست اصلی هم نمایش داده می‌شوند
             </p>
             <div className="flex flex-wrap gap-2">
+              {canEditContent ? (
+              <>
               <AttachBudgetButton
                 title="افزودن از تراکنش‌ها"
                 description="یک تراکنش قبلی را به این پروژه وصل کنید."
@@ -432,6 +462,8 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
                   تراکنش جدید
                 </Button>
               </Link>
+              </>
+              ) : null}
             </div>
           </div>
           {data.budgets.length === 0 ? (
@@ -477,10 +509,12 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
             <p className="text-sm text-muted">
               {formatCount(data.paymentPlans?.length ?? 0)} برنامه پرداخت مرتبط با این پروژه
             </p>
+            {!isPartner ? (
             <Button size="sm" onPress={() => setCreatePlanOpen(true)}>
               <Add size={16} />
               وام / قسط جدید
             </Button>
+            ) : null}
           </div>
 
           {(data.paymentPlans ?? []).length === 0 ? (
@@ -517,6 +551,16 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
         </div>
       )}
 
+      {tab === "partners" && (
+        <div className="glass rounded-2xl p-4">
+          <PartnersSection
+            contextType="project"
+            contextId={projectId}
+            readOnly={isPartner}
+          />
+        </div>
+      )}
+
       {tab === "work" && showWorkTime && (
         <ProjectWorkTimeTab
           projectId={projectId}
@@ -527,6 +571,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
 
       {tab === "notebook" && (
         <div className="space-y-4">
+          {canEditContent ? (
           <div className="glass space-y-4 rounded-2xl p-4">
             <div className="flex gap-2">
               {(
@@ -564,12 +609,14 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
               افزودن
             </Button>
           </div>
+          ) : null}
 
           {tasks.length > 0 && (
             <section className="space-y-2">
               <h3 className="text-sm font-semibold text-muted">تسک‌ها</h3>
               {tasks.map((item) => (
                 <article key={item._id} className="glass flex items-start gap-3 rounded-2xl p-4">
+                  {canEditContent ? (
                   <Switch
                     isSelected={item.done}
                     onChange={() => void toggleTask(item)}
@@ -580,6 +627,9 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
                       <Switch.Thumb />
                     </Switch.Control>
                   </Switch>
+                  ) : (
+                    <span className="text-xs text-muted">{item.done ? "✓" : "○"}</span>
+                  )}
                   <div className="min-w-0 flex-1">
                     <p
                       className={`text-sm leading-7 ${
@@ -589,6 +639,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
                       {item.content}
                     </p>
                   </div>
+                  {canEditContent ? (
                   <Button
                     isIconOnly
                     size="sm"
@@ -597,6 +648,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
                   >
                     <Trash size={16} />
                   </Button>
+                  ) : null}
                 </article>
               ))}
             </section>
@@ -609,6 +661,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
                 <article key={item._id} className="glass rounded-2xl p-4">
                   <div className="flex items-start justify-between gap-3">
                     <p className="text-sm leading-7 whitespace-pre-wrap">{item.content}</p>
+                    {canEditContent ? (
                     <Button
                       isIconOnly
                       size="sm"
@@ -617,6 +670,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
                     >
                       <Trash size={16} />
                     </Button>
+                    ) : null}
                   </div>
                   <p className="mt-2 text-xs text-muted">{itemTypeLabel(item.type)}</p>
                 </article>
