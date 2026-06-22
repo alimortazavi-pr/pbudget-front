@@ -7,7 +7,6 @@ export function categoryAccentStyle(color?: string | null, index = 0) {
     borderInlineStartWidth: "3px",
     borderInlineStartStyle: "solid" as const,
     borderInlineStartColor: resolved,
-    backgroundColor: `color-mix(in srgb, ${resolved} 11%, var(--surface))`,
-    borderColor: `color-mix(in srgb, ${resolved} 24%, var(--border))`,
+    borderColor: `color-mix(in srgb, ${resolved} 32%, var(--border))`,
   };
 }

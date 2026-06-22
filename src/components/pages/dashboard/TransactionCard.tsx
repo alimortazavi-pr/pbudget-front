@@ -9,6 +9,7 @@ import { PATHS } from "@/common/constants";
 import * as budgetsApi from "@/common/api/budgets";
 import type { IBudget } from "@/common/interfaces/budget.interface";
 import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
+import { resolveCategoryColor } from "@/common/constants/category-colors";
 import { categoryAccentStyle } from "@/common/utils/category-accent";
 import { paymentCardSubtitle } from "@/common/utils/payment-card";
 import { formatBudgetDateTime, formatJalaliDate, formatPrice } from "@/common/utils";
@@ -38,6 +39,7 @@ export function TransactionCard({ budget }: TransactionCardProps) {
   const [deleting, setDeleting] = useState(false);
   const isIncome = budget.type === BudgetType.INCOME;
   const debt = budget.debt;
+  const categoryColor = resolveCategoryColor(budget.category?.color);
   const categoryStyle = categoryAccentStyle(budget.category?.color);
   const paymentCardLabel = resolvePaymentCardLabel(budget.paymentCard);
 
@@ -66,7 +68,14 @@ export function TransactionCard({ budget }: TransactionCardProps) {
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate font-medium">{budget.category?.title}</p>
+          <div className="flex items-center gap-2">
+            <span
+              className="h-2.5 w-2.5 shrink-0 rounded-full"
+              style={{ backgroundColor: categoryColor }}
+              aria-hidden
+            />
+            <p className="truncate font-medium">{budget.category?.title}</p>
+          </div>
           <p className="mt-0.5 text-xs text-muted">
             {formatJalaliDate(budget.year, budget.month, budget.day)}
             {paymentCardLabel ? ` · ${paymentCardLabel}` : ""}
