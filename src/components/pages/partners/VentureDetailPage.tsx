@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
-import { CloseCircle, Maximize, Trash } from "iconsax-reactjs";
+import { Trash } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 import * as partnersApi from "@/common/api/partners";
@@ -37,7 +37,6 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
   const [description, setDescription] = useState("");
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [boardFullscreen, setBoardFullscreen] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -166,23 +165,7 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
       ) : null}
 
       {tab === "board" ? (
-        <div
-          className={
-            boardFullscreen
-              ? "fixed inset-0 z-50 overflow-auto bg-background p-4 sm:p-6"
-              : "glass rounded-2xl p-4"
-          }
-        >
-          <div className="mb-4 flex items-center justify-end">
-            <Button
-              size="sm"
-              variant="secondary"
-              onPress={() => setBoardFullscreen((value) => !value)}
-            >
-              {boardFullscreen ? <CloseCircle size={16} /> : <Maximize size={16} />}
-              {boardFullscreen ? "خروج از تمام‌صفحه" : "تمام‌صفحه"}
-            </Button>
-          </div>
+        <div className="glass rounded-2xl p-4">
           <ContextPlanningBoard
             contextType="venture"
             contextId={ventureId}

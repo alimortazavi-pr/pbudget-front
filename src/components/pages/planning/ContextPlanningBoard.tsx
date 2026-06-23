@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@heroui/react";
-import { Add, CloseCircle, Trash } from "iconsax-reactjs";
+import { Add, CloseCircle, Maximize, Trash } from "iconsax-reactjs";
 
 import * as boardApi from "@/common/api/context-board";
 import type {
@@ -13,6 +13,7 @@ import type { PartnerContextType } from "@/common/interfaces/partner.interface";
 import { formatJalaliDate } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { FormInput } from "@/components/common/form/FormFields";
+import { FullscreenOverlay } from "@/components/common/ui/FullscreenOverlay";
 
 type ContextPlanningBoardProps = {
   contextType: PartnerContextType;
@@ -61,6 +62,7 @@ export function ContextPlanningBoard({
 }: ContextPlanningBoardProps) {
   const [columns, setColumns] = useState<IContextBoardColumn[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fullscreen, setFullscreen] = useState(false);
   const [newColumnTitle, setNewColumnTitle] = useState("");
   const [addingColumn, setAddingColumn] = useState(false);
   const [addingCardColumnId, setAddingCardColumnId] = useState<string | null>(null);
@@ -165,10 +167,7 @@ export function ContextPlanningBoard({
     }
   }
 
-  async function handleDrop(
-    targetColumnId: string,
-    targetIndex?: number,
-  ) {
+  async function handleDrop(targetColumnId: string, targetIndex?: number) {
     if (readOnly || !dragState) {
       return;
     }
@@ -176,8 +175,7 @@ export function ContextPlanningBoard({
     const { cardId, sourceColumnId } = dragState;
     const targetColumn = columns.find((column) => column._id === targetColumnId);
     const index =
-      targetIndex ??
-      (targetColumn ? targetColumn.cards.length : 0);
+      targetIndex ?? (targetColumn ? targetColumn.cards.length : 0);
 
     const nextColumns = reorderColumns(
       columns,
@@ -234,23 +232,19 @@ export function ContextPlanningBoard({
     );
   }
 
-  if (loading) {
+  function renderBoard(expanded: boolean) {
     return (
-      <div className="glass rounded-2xl p-8 text-center text-muted">
-        در حال بارگذاری بورد…
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-4">
-      <h2 className="text-lg font-bold">بورد برنامه‌ریزی</h2>
-
-      <div className="flex gap-3 overflow-x-auto pb-2">
+      <div
+        className={`flex gap-3 overflow-x-auto pb-2 ${
+          expanded ? "min-h-0 flex-1 items-stretch px-1" : ""
+        }`}
+      >
         {columns.map((column) => (
           <section
             key={column._id}
-            className={`flex w-72 shrink-0 flex-col rounded-2xl border bg-surface-secondary/50 p-3 transition ${
+            className={`flex shrink-0 flex-col rounded-2xl border bg-surface-secondary/50 p-3 transition ${
+              expanded ? "w-80 min-h-full" : "w-72"
+            } ${
               dragOverColumnId === column._id
                 ? "border-accent ring-2 ring-accent/30"
                 : "border-border/50"
@@ -274,7 +268,11 @@ export function ContextPlanningBoard({
               </span>
             </div>
 
-            <div className="flex min-h-24 flex-1 flex-col gap-2">
+            <div
+              className={`flex flex-1 flex-col gap-2 ${
+                expanded ? "min-h-[calc(100vh-12rem)] overflow-y-auto" : "min-h-24"
+              }`}
+            >
               {column.cards.map((card, index) => (
                 <div
                   key={card._id}
@@ -375,7 +373,11 @@ export function ContextPlanningBoard({
         ))}
 
         {!readOnly ? (
-          <section className="flex w-72 shrink-0 flex-col rounded-2xl border border-dashed border-border/70 bg-background/40 p-3">
+          <section
+            className={`flex shrink-0 flex-col rounded-2xl border border-dashed border-border/70 bg-background/40 p-3 ${
+              expanded ? "w-80" : "w-72"
+            }`}
+          >
             <FormInput
               label="ستون جدید"
               placeholder="مثلاً بررسی"
@@ -395,6 +397,58 @@ export function ContextPlanningBoard({
           </section>
         ) : null}
       </div>
-    </div>
+    );
+  }
+
+  function renderToolbar(expanded: boolean) {
+    return (
+      <div
+        className={`flex items-center justify-between gap-3 ${
+          expanded ? "border-b border-border/50 px-5 py-4" : ""
+        }`}
+      >
+        <h2 className={expanded ? "text-xl font-bold" : "text-lg font-bold"}>
+          بورد برنامه‌ریزی
+        </h2>
+        <Button
+          size="sm"
+          variant="secondary"
+          onPress={() => setFullscreen((value) => !value)}
+        >
+          {expanded ? <CloseCircle size={16} /> : <Maximize size={16} />}
+          {expanded ? "خروج از تمام‌صفحه" : "تمام‌صفحه"}
+        </Button>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="glass rounded-2xl p-8 text-center text-muted">
+        در حال بارگذاری بورد…
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="space-y-4">
+        {renderToolbar(false)}
+        {renderBoard(false)}
+      </div>
+
+      <FullscreenOverlay
+        open={fullscreen}
+        onClose={() => setFullscreen(false)}
+        title="بورد برنامه‌ریزی"
+      >
+        <div className="flex h-full min-h-0 flex-col">
+          {renderToolbar(true)}
+          <div className="min-h-0 flex-1 overflow-hidden p-5 pt-4">
+            {renderBoard(true)}
+          </div>
+        </div>
+      </FullscreenOverlay>
+    </>
   );
 }
