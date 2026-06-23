@@ -15,6 +15,7 @@ export interface IContextBoardColumn {
   _id: string;
   title: string;
   position: number;
+  color?: string;
   cards: IContextBoardCard[];
 }
 

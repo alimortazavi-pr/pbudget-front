@@ -26,17 +26,18 @@ export async function createBoardColumn(
   contextType: PartnerContextType,
   contextId: string,
   title: string,
+  color?: string,
 ) {
   const { data } = await axiosInstance.post<{ column: IContextBoardColumn }>(
     `${boardBase(contextType, contextId)}/columns`,
-    { title },
+    { title, color },
   );
   return data.column;
 }
 
 export async function updateBoardColumn(
   columnId: string,
-  payload: { title?: string; position?: number },
+  payload: { title?: string; position?: number; color?: string },
 ) {
   const { data } = await axiosInstance.patch<{ column: IContextBoardColumn }>(
     `/context-board/columns/${columnId}`,

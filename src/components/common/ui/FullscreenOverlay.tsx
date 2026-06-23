@@ -50,7 +50,7 @@ export function FullscreenOverlay({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[10000] flex flex-col bg-background"
+      className="fixed inset-0 z-[10000] flex h-dvh flex-col bg-background"
       role="dialog"
       aria-modal="true"
       aria-label={title ?? "تمام‌صفحه"}
