@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@heroui/react";
+import { Chart, TrendDown, TrendUp } from "iconsax-reactjs";
 
 import * as categoriesApi from "@/common/api/categories";
 import * as partnersApi from "@/common/api/partners";
@@ -104,7 +105,7 @@ export function PartnerSettlementPanel({
   }
 
   if (loading) {
-    return <p className="text-sm text-muted">در حال محاسبه تسویه…</p>;
+    return <p className="text-sm text-muted">در حال محاسبه سهم‌ها…</p>;
   }
 
   if (!settlement) {
@@ -116,69 +117,119 @@ export function PartnerSettlementPanel({
   );
 
   return (
-    <section className="space-y-3 rounded-2xl border border-border/50 bg-surface-secondary/40 p-4">
-      <div>
-        <h3 className="font-bold">تسویه و تقسیم سود</h3>
-        {settlement.hasFinancials === false ? (
-          <p className="mt-1 text-xs leading-6 text-muted">{settlement.note}</p>
-        ) : (
-          <p className="mt-1 text-xs text-muted">
-            سود خالص {formatPrice(settlement.profitAmount)} · دریافت{" "}
-            {formatPrice(settlement.receivedAmount)} · هزینه{" "}
-            {formatPrice(settlement.spentAmount)}
-          </p>
-        )}
+    <section className="overflow-hidden rounded-2xl border border-border/60 bg-background">
+      <div className="border-b border-border/50 px-4 py-4 sm:px-5">
+        <div className="flex items-center gap-3">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-surface-secondary text-accent">
+            <Chart size={20} />
+          </div>
+          <div>
+            <h3 className="text-base font-bold">تقسیم درآمد و هزینه</h3>
+            <p className="mt-0.5 text-xs text-muted">
+              سهم هر نفر از کل تراکنش‌های مرتبط
+            </p>
+          </div>
+        </div>
       </div>
 
-      {settlement.partners.length === 0 ? (
-        <p className="text-sm text-muted">
-          سهم شرکا را ثبت کنید تا تقسیم خودکار نمایش داده شود.
+      {settlement.hasFinancials === false ? (
+        <p className="px-4 py-5 text-sm leading-6 text-muted sm:px-5">
+          {settlement.note}
         </p>
       ) : (
-        <div className="space-y-2">
-          {settlement.partners.map((row) => (
-            <div
-              key={`${row.partnerId ?? "owner"}-${row.displayName}`}
-              className="rounded-xl bg-background/60 p-3"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="font-medium">
-                    {row.displayName}
-                    {row.isOwner ? " (شما)" : ""}
-                  </p>
-                  <p className="mt-0.5 text-xs text-muted">سهم {row.sharePercent}٪</p>
-                </div>
-                {settlement.hasFinancials !== false ? (
-                  <p
-                    className={`font-bold ${row.profitShare >= 0 ? "text-income" : "text-expense"}`}
-                  >
-                    {formatPrice(row.profitShare)}
-                  </p>
-                ) : null}
-              </div>
-              {settlement.hasFinancials !== false ? (
-                <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted">
-                  <span>دریافت {formatPrice(row.receivedShare)}</span>
-                  <span>هزینه {formatPrice(row.spentShare)}</span>
-                </div>
-              ) : null}
+        <>
+          <div className="grid grid-cols-3 gap-px border-b border-border/50 bg-border/40">
+            <div className="bg-background px-3 py-3 text-center sm:px-4">
+              <p className="text-[11px] text-muted">دریافت</p>
+              <p className="mt-1 text-sm font-bold text-income sm:text-base">
+                {formatPrice(settlement.receivedAmount)}
+              </p>
             </div>
-          ))}
-        </div>
+            <div className="bg-background px-3 py-3 text-center sm:px-4">
+              <p className="text-[11px] text-muted">هزینه</p>
+              <p className="mt-1 text-sm font-bold text-expense sm:text-base">
+                {formatPrice(settlement.spentAmount)}
+              </p>
+            </div>
+            <div className="bg-background px-3 py-3 text-center sm:px-4">
+              <p className="text-[11px] text-muted">سود خالص</p>
+              <p
+                className={`mt-1 text-sm font-bold sm:text-base ${
+                  settlement.profitAmount >= 0 ? "text-income" : "text-expense"
+                }`}
+              >
+                {formatPrice(settlement.profitAmount)}
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-2 p-4 sm:p-5">
+            {settlement.partners.length === 0 ? (
+              <p className="text-sm text-muted">
+                سهم شرکا را ثبت کنید تا تقسیم نمایش داده شود.
+              </p>
+            ) : (
+              settlement.partners.map((row) => (
+                <div
+                  key={`${row.partnerId ?? "owner"}-${row.displayName}`}
+                  className="rounded-xl border border-border/40 bg-surface-secondary/40 p-3"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="font-semibold">
+                        {row.displayName}
+                        {row.isOwner ? " (شما)" : ""}
+                      </p>
+                      <p className="mt-0.5 text-xs text-muted">سهم {row.sharePercent}٪</p>
+                    </div>
+                    <div className="text-left">
+                      <p
+                        className={`text-sm font-bold ${
+                          row.profitShare >= 0 ? "text-income" : "text-expense"
+                        }`}
+                      >
+                        {row.profitShare >= 0 ? (
+                          <TrendUp size={14} className="mb-0.5 inline" />
+                        ) : (
+                          <TrendDown size={14} className="mb-0.5 inline" />
+                        )}{" "}
+                        {formatPrice(Math.abs(row.profitShare))}
+                      </p>
+                      <p className="text-[11px] text-muted">سهم از سود</p>
+                    </div>
+                  </div>
+                  <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+                    <div className="rounded-lg bg-income-soft/40 px-2 py-1.5">
+                      <span className="text-muted">سهم دریافت: </span>
+                      <span className="font-medium text-income">
+                        {formatPrice(row.receivedShare)}
+                      </span>
+                    </div>
+                    <div className="rounded-lg bg-expense-soft/40 px-2 py-1.5">
+                      <span className="text-muted">سهم هزینه: </span>
+                      <span className="font-medium text-expense">
+                        {formatPrice(row.spentShare)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </>
       )}
 
       {settlement.allocatedPercent > 100 ? (
-        <p className="text-xs text-danger">
+        <p className="px-4 pb-3 text-xs text-danger sm:px-5">
           جمع سهم‌ها بیش از ۱۰۰٪ است — تقسیم را اصلاح کنید.
         </p>
       ) : null}
 
       {isOwner && settlement.hasFinancials && partnerDebts.length > 0 ? (
-        <div className="space-y-3 border-t border-border/40 pt-3">
-          <p className="text-sm font-medium">ثبت بدهی واقعی به شرکا</p>
+        <div className="space-y-3 border-t border-border/40 px-4 py-4 sm:px-5">
+          <p className="text-sm font-medium">ثبت رسمی در طلب و بدهی</p>
           <FormSelect
-            label="دسته‌بندی بدهی"
+            label="دسته‌بندی"
             placeholder="انتخاب دسته"
             selectedKey={categoryId}
             onSelectionChange={setCategoryId}
@@ -195,17 +246,14 @@ export function PartnerSettlementPanel({
       ) : null}
 
       {isOwner && batches.length > 0 ? (
-        <div className="space-y-2 border-t border-border/40 pt-3">
+        <div className="space-y-2 border-t border-border/40 px-4 py-4 sm:px-5">
           <p className="text-sm font-medium">تسویه‌های ثبت‌شده</p>
           {batches.map((batch) => (
             <div
               key={batch._id}
-              className="rounded-xl bg-background/50 px-3 py-2 text-xs text-muted"
+              className="rounded-xl bg-surface-secondary/60 px-3 py-2 text-xs text-muted"
             >
-              <p>
-                {batch.debts.length} بدهی · سود{" "}
-                {formatPrice(batch.profitAmount)}
-              </p>
+              {batch.debts.length} بدهی · سود {formatPrice(batch.profitAmount)}
             </div>
           ))}
         </div>

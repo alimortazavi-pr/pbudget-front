@@ -99,6 +99,12 @@ export interface IVenture {
 export interface IVentureDetail {
   venture: IVenture;
   partners: IPartner[];
+  stats?: {
+    receivedAmount: number;
+    spentAmount: number;
+    profitAmount: number;
+    transactionCount: number;
+  };
 }
 
 export interface IPartnerInviteInfo {
@@ -155,10 +161,17 @@ export interface IPartnerDebtBalance {
   displayName: string;
   owesAmount: number;
   owedAmount: number;
-  relations: IPartnerDebtRelation[];
+  netBalance: number;
+  relations: Array<{
+    person: string;
+    owesAmount: number;
+    owedAmount: number;
+    source?: "ledger" | "debt";
+  }>;
 }
 
 export interface IPartnerDebtBalances {
   ownerName: string;
+  hasTransactions?: boolean;
   partners: IPartnerDebtBalance[];
 }

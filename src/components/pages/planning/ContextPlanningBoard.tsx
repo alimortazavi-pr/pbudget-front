@@ -244,12 +244,7 @@ export function ContextPlanningBoard({
 
   return (
     <div className="space-y-4">
-      <div>
-        <h2 className="text-lg font-bold">بورد برنامه‌ریزی</h2>
-        <p className="mt-1 text-sm text-muted">
-          مثل Trello — کارت‌ها را بین ستون‌ها بکشید و رها کنید
-        </p>
-      </div>
+      <h2 className="text-lg font-bold">بورد برنامه‌ریزی</h2>
 
       <div className="flex gap-3 overflow-x-auto pb-2">
         {columns.map((column) => (

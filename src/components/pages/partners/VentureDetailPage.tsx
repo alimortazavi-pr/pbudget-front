@@ -3,15 +3,16 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
-import { Trash } from "iconsax-reactjs";
+import { CloseCircle, Maximize, Trash } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 import * as partnersApi from "@/common/api/partners";
-import type { IVenture } from "@/common/interfaces/partner.interface";
+import type { IPartner, IVenture } from "@/common/interfaces/partner.interface";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { FormInput, FormTextArea } from "@/components/common/form/FormFields";
 import { PartnersSection } from "@/components/pages/partners/PartnersSection";
 import { VentureBudgetSection } from "@/components/pages/partners/VentureBudgetSection";
+import { VentureOverviewSection } from "@/components/pages/partners/VentureOverviewSection";
 import { ContextPlanningBoard } from "@/components/pages/planning/ContextPlanningBoard";
 
 type VentureDetailPageProps = {
@@ -23,18 +24,28 @@ type TabId = "overview" | "partners" | "transactions" | "board" | "settings";
 export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
   const router = useRouter();
   const [venture, setVenture] = useState<IVenture | null>(null);
+  const [partners, setPartners] = useState<IPartner[]>([]);
+  const [stats, setStats] = useState<{
+    receivedAmount: number;
+    spentAmount: number;
+    profitAmount: number;
+    transactionCount: number;
+  }>();
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<TabId>("overview");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [boardFullscreen, setBoardFullscreen] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const data = await partnersApi.fetchVenture(ventureId);
       setVenture(data.venture);
+      setPartners(data.partners);
+      setStats(data.stats);
       setTitle(data.venture.title);
       setDescription(data.venture.description ?? "");
     } catch (err) {
@@ -118,6 +129,7 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
           <button
             key={item.id}
             type="button"
+            data-venture-tab={item.id}
             onClick={() => setTab(item.id)}
             className={`shrink-0 cursor-pointer rounded-xl px-4 py-2 text-sm font-medium transition ${
               tab === item.id
@@ -131,25 +143,46 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
       </div>
 
       {tab === "overview" ? (
-        <div className="glass rounded-2xl p-4">
-          <p className="text-sm leading-7 text-muted">
-            {description || "بدون توضیحات"}
-          </p>
-        </div>
+        <VentureOverviewSection
+          ventureId={ventureId}
+          venture={venture}
+          partners={partners}
+          stats={stats}
+          readOnly={isPartner}
+          onUpdated={(updated) => {
+            setVenture(updated);
+            setDescription(updated.description ?? "");
+          }}
+          onNavigateTab={setTab}
+        />
       ) : null}
 
       {tab === "partners" ? (
-        <div className="glass rounded-2xl p-4">
-          <PartnersSection
-            contextType="venture"
-            contextId={ventureId}
-            readOnly={isPartner}
-          />
-        </div>
+        <PartnersSection
+          contextType="venture"
+          contextId={ventureId}
+          readOnly={isPartner}
+        />
       ) : null}
 
       {tab === "board" ? (
-        <div className="glass rounded-2xl p-4">
+        <div
+          className={
+            boardFullscreen
+              ? "fixed inset-0 z-50 overflow-auto bg-background p-4 sm:p-6"
+              : "glass rounded-2xl p-4"
+          }
+        >
+          <div className="mb-4 flex items-center justify-end">
+            <Button
+              size="sm"
+              variant="secondary"
+              onPress={() => setBoardFullscreen((value) => !value)}
+            >
+              {boardFullscreen ? <CloseCircle size={16} /> : <Maximize size={16} />}
+              {boardFullscreen ? "خروج از تمام‌صفحه" : "تمام‌صفحه"}
+            </Button>
+          </div>
           <ContextPlanningBoard
             contextType="venture"
             contextId={ventureId}

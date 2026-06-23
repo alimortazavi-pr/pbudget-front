@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Switch } from "@heroui/react";
-import { Add, Edit2, Task, Trash, TaskSquare, Wallet, Clock } from "iconsax-reactjs";
+import { Add, Clock, CloseCircle, Edit2, Maximize, Task, TaskSquare, Trash, Wallet } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 import * as projectsApi from "@/common/api/projects";
@@ -62,6 +62,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
   const [itemContent, setItemContent] = useState("");
   const [itemSaving, setItemSaving] = useState(false);
   const [createPlanOpen, setCreatePlanOpen] = useState(false);
+  const [boardFullscreen, setBoardFullscreen] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -542,17 +543,31 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
       )}
 
       {tab === "partners" && (
-        <div className="glass rounded-2xl p-4">
-          <PartnersSection
-            contextType="project"
-            contextId={projectId}
-            readOnly={isPartner}
-          />
-        </div>
+        <PartnersSection
+          contextType="project"
+          contextId={projectId}
+          readOnly={isPartner}
+        />
       )}
 
       {tab === "board" && (
-        <div className="glass rounded-2xl p-4">
+        <div
+          className={
+            boardFullscreen
+              ? "fixed inset-0 z-50 overflow-auto bg-background p-4 sm:p-6"
+              : "glass rounded-2xl p-4"
+          }
+        >
+          <div className="mb-4 flex items-center justify-end">
+            <Button
+              size="sm"
+              variant="secondary"
+              onPress={() => setBoardFullscreen((value) => !value)}
+            >
+              {boardFullscreen ? <CloseCircle size={16} /> : <Maximize size={16} />}
+              {boardFullscreen ? "خروج از تمام‌صفحه" : "تمام‌صفحه"}
+            </Button>
+          </div>
           <ContextPlanningBoard
             contextType="project"
             contextId={projectId}
