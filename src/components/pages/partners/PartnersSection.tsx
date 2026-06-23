@@ -13,6 +13,7 @@ import type {
 import { showToast } from "@/common/utils/toast";
 import { AddPartnerModal } from "@/components/pages/partners/AddPartnerModal";
 import { PartnerActivityPanel } from "@/components/pages/partners/PartnerActivityPanel";
+import { PartnerDebtBalancePanel } from "@/components/pages/partners/PartnerDebtBalancePanel";
 import { PartnerSettlementPanel } from "@/components/pages/partners/PartnerSettlementPanel";
 import { FormSelect } from "@/components/common/form/FormFields";
 
@@ -140,6 +141,12 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
         contextType={contextType}
         contextId={contextId}
         isOwner={!readOnly}
+      />
+
+      <PartnerDebtBalancePanel
+        contextType={contextType}
+        contextId={contextId}
+        partners={partners}
       />
 
       <PartnerActivityPanel contextType={contextType} contextId={contextId} />

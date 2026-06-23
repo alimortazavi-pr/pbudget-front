@@ -12,12 +12,13 @@ import { showErrorToast, showToast } from "@/common/utils/toast";
 import { FormInput, FormTextArea } from "@/components/common/form/FormFields";
 import { PartnersSection } from "@/components/pages/partners/PartnersSection";
 import { VentureBudgetSection } from "@/components/pages/partners/VentureBudgetSection";
+import { ContextPlanningBoard } from "@/components/pages/planning/ContextPlanningBoard";
 
 type VentureDetailPageProps = {
   ventureId: string;
 };
 
-type TabId = "overview" | "partners" | "transactions" | "settings";
+type TabId = "overview" | "partners" | "transactions" | "board" | "settings";
 
 export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
   const router = useRouter();
@@ -95,6 +96,7 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
   const tabs = [
     { id: "overview" as const, label: "خلاصه" },
     { id: "partners" as const, label: "شرکا" },
+    { id: "board" as const, label: "بورد برنامه‌ریزی" },
     { id: "transactions" as const, label: "تراکنش‌ها" },
     ...(!isPartner ? [{ id: "settings" as const, label: "تنظیمات" }] : []),
   ];
@@ -139,6 +141,16 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
       {tab === "partners" ? (
         <div className="glass rounded-2xl p-4">
           <PartnersSection
+            contextType="venture"
+            contextId={ventureId}
+            readOnly={isPartner}
+          />
+        </div>
+      ) : null}
+
+      {tab === "board" ? (
+        <div className="glass rounded-2xl p-4">
+          <ContextPlanningBoard
             contextType="venture"
             contextId={ventureId}
             readOnly={isPartner}

@@ -6,6 +6,7 @@ import type {
   IPartnerActivity,
   IPartnerInviteInfo,
   IPartnerLookupResult,
+  IPartnerDebtBalances,
   IPartnerSettlement,
   IPartnerSettlementBatch,
   IPendingPartnerInvite,
@@ -180,6 +181,18 @@ export async function updateVenture(
 
 export async function deleteVenture(id: string) {
   await axiosInstance.delete(`/ventures/${id}`);
+}
+
+export async function fetchPartnerDebtBalances(
+  contextType: "project" | "venture",
+  contextId: string,
+) {
+  const base =
+    contextType === "project"
+      ? `/projects/${contextId}/partners/debt-balances`
+      : `/ventures/${contextId}/partners/debt-balances`;
+  const { data } = await axiosInstance.get<IPartnerDebtBalances>(base);
+  return data;
 }
 
 export async function fetchPartnerActivity(

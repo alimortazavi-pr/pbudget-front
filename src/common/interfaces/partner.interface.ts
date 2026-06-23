@@ -143,3 +143,22 @@ export interface IPartnerSettlementBatch {
   }>;
   createdAt: string;
 }
+
+export interface IPartnerDebtRelation {
+  person: string;
+  owesAmount: number;
+  owedAmount: number;
+}
+
+export interface IPartnerDebtBalance {
+  partnerId: string;
+  displayName: string;
+  owesAmount: number;
+  owedAmount: number;
+  relations: IPartnerDebtRelation[];
+}
+
+export interface IPartnerDebtBalances {
+  ownerName: string;
+  partners: IPartnerDebtBalance[];
+}

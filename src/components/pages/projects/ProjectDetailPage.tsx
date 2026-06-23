@@ -16,6 +16,7 @@ import { FormInput, FormPriceInput, FormSelect, FormTextArea } from "@/component
 import { CreatePaymentPlanModal } from "@/components/pages/planning/CreatePaymentPlanModal";
 import { ProjectWorkTimeTab } from "@/components/pages/projects/ProjectWorkTimeTab";
 import { PartnersSection } from "@/components/pages/partners/PartnersSection";
+import { ContextPlanningBoard } from "@/components/pages/planning/ContextPlanningBoard";
 import { PartnerBudgetCard } from "@/components/pages/partners/PartnerBudgetCard";
 import { ProjectItemType, ProjectStatus } from "@/types/enums";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
@@ -26,7 +27,7 @@ type ProjectDetailPageProps = {
   projectId: string;
 };
 
-type TabId = "overview" | "transactions" | "installments" | "notebook" | "work" | "partners";
+type TabId = "overview" | "transactions" | "installments" | "notebook" | "work" | "partners" | "board";
 
 const STATUS_OPTIONS = [
   { id: ProjectStatus.ACTIVE, label: "فعال" },
@@ -222,6 +223,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
     { id: "installments" as const, label: "وام و اقساط" },
     ...(showWorkTime ? [{ id: "work" as const, label: "ساعات کاری" }] : []),
     { id: "partners" as const, label: "شرکا" },
+    { id: "board" as const, label: "بورد برنامه‌ریزی" },
     { id: "notebook" as const, label: "دفترچه و تسک‌ها" },
   ] as const;
 
@@ -545,6 +547,16 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
             contextType="project"
             contextId={projectId}
             readOnly={isPartner}
+          />
+        </div>
+      )}
+
+      {tab === "board" && (
+        <div className="glass rounded-2xl p-4">
+          <ContextPlanningBoard
+            contextType="project"
+            contextId={projectId}
+            readOnly={!canEditContent}
           />
         </div>
       )}
