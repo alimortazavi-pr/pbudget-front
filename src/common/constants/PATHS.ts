@@ -34,4 +34,5 @@ export const PATHS = {
   ADMIN_AUDIT: "/admin/audit",
   ADMIN_CONTENT: "/admin/content",
   ADMIN_APP: "/admin/app",
+  ADMIN_VOICE: "/admin/voice",
 } as const;

@@ -9,6 +9,7 @@ import { AuthBootstrap } from "@/components/common/layout/AuthBootstrap";
 import { MobileAppShell } from "@/components/common/layout/MobileAppShell";
 import { TimelineAppShell } from "@/components/common/layout/TimelineAppShell";
 import { BalanceModalProvider } from "@/components/providers/BalanceModalProvider";
+import { VoiceAssistantProvider } from "@/components/voice/VoiceAssistantProvider";
 import { useExperience } from "@/components/providers/ExperienceProvider";
 
 const PAGE_TITLES: Record<string, string> = {
@@ -101,21 +102,23 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <BalanceModalProvider>
-      <AuthBootstrap />
-      {isTimeline ? (
-        <TimelineAppShell {...shellProps}>{children}</TimelineAppShell>
-      ) : (
-        <MobileAppShell
-          {...shellProps}
-          showBack={
-            pathname !== PATHS.HOME &&
-            pathname !== PATHS.BOXES &&
-            pathname !== PATHS.CATEGORIES
-          }
-        >
-          {children}
-        </MobileAppShell>
-      )}
+      <VoiceAssistantProvider>
+        <AuthBootstrap />
+        {isTimeline ? (
+          <TimelineAppShell {...shellProps}>{children}</TimelineAppShell>
+        ) : (
+          <MobileAppShell
+            {...shellProps}
+            showBack={
+              pathname !== PATHS.HOME &&
+              pathname !== PATHS.BOXES &&
+              pathname !== PATHS.CATEGORIES
+            }
+          >
+            {children}
+          </MobileAppShell>
+        )}
+      </VoiceAssistantProvider>
     </BalanceModalProvider>
   );
 }

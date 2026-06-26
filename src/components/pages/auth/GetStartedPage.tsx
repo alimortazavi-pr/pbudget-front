@@ -79,7 +79,7 @@ export function GetStartedPage() {
     ];
     dispatch(setUsers(nextUsers));
     saveDataToLocal({ token, users: nextUsers });
-    router.replace(PATHS.HOME);
+    router.replace(user?.isAdmin ? PATHS.ADMIN : PATHS.HOME);
   }
 
   return (

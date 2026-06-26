@@ -4,6 +4,7 @@ import {
   Data,
   DocumentText,
   Home2,
+  Microphone2,
   Mobile,
   People,
   ShieldSearch,
@@ -46,6 +47,11 @@ export const ADMIN_NAV = [
     href: PATHS.ADMIN_AUDIT,
     label: "لاگ عملیات",
     icon: ShieldSearch,
+  },
+  {
+    href: PATHS.ADMIN_VOICE,
+    label: "لاگ صوتی",
+    icon: Microphone2,
   },
 ] as const;
 
