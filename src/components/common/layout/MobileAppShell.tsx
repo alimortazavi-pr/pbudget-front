@@ -6,6 +6,7 @@ import { Button } from "@heroui/react";
 import {
   Add,
   ArrowRight2,
+  InfoCircle,
   Menu,
 } from "iconsax-reactjs";
 import { useState, type ReactNode } from "react";
@@ -13,6 +14,7 @@ import { useState, type ReactNode } from "react";
 import { PATHS } from "@/common/constants";
 import { APP_NAME_FA } from "@/common/constants/brand";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
+import { useTour } from "@/components/providers/TourProvider";
 import { AppDrawer } from "./AppDrawer";
 import { ChangeAccountPopover } from "./ChangeAccountPopover";
 import { ShellSidebar } from "./ShellSidebar";
@@ -46,6 +48,7 @@ export function MobileAppShell({
   const pathname = usePathname();
   const router = useRouter();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const { startOnboarding, startPageTour } = useTour();
 
   return (
     <div className="min-h-screen w-full bg-background lg:flex lg:flex-row">
@@ -73,6 +76,22 @@ export function MobileAppShell({
               </h1>
             </div>
             <div className="flex items-center gap-1">
+              <Button
+                isIconOnly
+                variant="ghost"
+                size="sm"
+                aria-label="راهنما"
+                data-tour="tour-button"
+                onPress={() => {
+                  if (pathname === PATHS.HOME) {
+                    startOnboarding();
+                  } else {
+                    startPageTour();
+                  }
+                }}
+              >
+                <InfoCircle size={20} />
+              </Button>
               <ChangeAccountPopover />
               <div className="lg:hidden">
                 <ThemeToggle />
@@ -86,6 +105,7 @@ export function MobileAppShell({
             className={`pb-main-content px-4 pt-14 ${
               hideTabBar ? "pb-8" : "pb-page-with-tabbar"
             } pb-page-enter lg:px-10 lg:pb-10 lg:pt-8`}
+            data-tour="page-content"
           >
             {children}
           </main>
@@ -102,6 +122,7 @@ export function MobileAppShell({
                       href={item.href}
                       className="relative -top-4 flex flex-col items-center"
                       aria-label={item.label}
+                      data-tour="nav-create"
                     >
                       <span className="pb-fab">
                         <Add size={26} color="#fff" variant="Bold" />

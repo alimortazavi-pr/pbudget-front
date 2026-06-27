@@ -7,10 +7,8 @@ import { PATHS } from "@/common/constants";
 import { APP_NAME_FA } from "@/common/constants/brand";
 import { AuthBootstrap } from "@/components/common/layout/AuthBootstrap";
 import { MobileAppShell } from "@/components/common/layout/MobileAppShell";
-import { TimelineAppShell } from "@/components/common/layout/TimelineAppShell";
 import { BalanceModalProvider } from "@/components/providers/BalanceModalProvider";
 import { VoiceAssistantProvider } from "@/components/voice/VoiceAssistantProvider";
-import { useExperience } from "@/components/providers/ExperienceProvider";
 
 const PAGE_TITLES: Record<string, string> = {
   [PATHS.HOME]: "داشبورد",
@@ -26,12 +24,11 @@ const PAGE_TITLES: Record<string, string> = {
   [PATHS.PROJECTS]: "پروژه‌ها",
   [PATHS.TASKS]: "برنامه روزانه",
   [PATHS.PROFILE]: "پروفایل",
+  [PATHS.SETTINGS]: "تنظیمات",
 };
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const { experienceMode, mounted } = useExperience();
-  const isTimeline = mounted && experienceMode === "timeline";
   const isAuthPage =
     pathname === PATHS.GET_STARTED || pathname === PATHS.DOWNLOAD;
   const isAdminPage = pathname.startsWith("/admin");
@@ -68,9 +65,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           ? "برنامه پرداخت"
           : isDebtDetail
             ? "طلب و بدهی"
-            : pathname === PATHS.HOME && isTimeline
-              ? "خط زمانی"
-              : PAGE_TITLES[pathname]) ?? APP_NAME_FA;
+            : PAGE_TITLES[pathname]) ?? APP_NAME_FA;
 
   const shellProps = {
     title,
@@ -78,7 +73,8 @@ export function AppShell({ children }: { children: ReactNode }) {
       pathname !== PATHS.HOME &&
       pathname !== PATHS.BOXES &&
       pathname !== PATHS.CATEGORIES &&
-      pathname !== PATHS.PROFILE,
+      pathname !== PATHS.PROFILE &&
+      pathname !== PATHS.SETTINGS,
     hideTabBar:
       pathname === PATHS.CREATE_BUDGET ||
       pathname.startsWith("/budgets/") ||
@@ -90,34 +86,27 @@ export function AppShell({ children }: { children: ReactNode }) {
       pathname === PATHS.NOTES ||
       pathname === PATHS.PROJECTS ||
       pathname === PATHS.TASKS ||
+      pathname === PATHS.SETTINGS ||
       pathname.startsWith("/projects/") ||
       isInstallmentDetail ||
       isDebtDetail,
-    showPeriodBar: !(
-      [PATHS.INSTALLMENTS, PATHS.CHECKS, PATHS.COMMITMENTS, PATHS.NOTES, PATHS.TASKS] as string[]
-    ).includes(pathname) &&
-      !isInstallmentDetail &&
-      !isDebtDetail,
   };
 
   return (
     <BalanceModalProvider>
       <VoiceAssistantProvider>
         <AuthBootstrap />
-        {isTimeline ? (
-          <TimelineAppShell {...shellProps}>{children}</TimelineAppShell>
-        ) : (
-          <MobileAppShell
-            {...shellProps}
-            showBack={
-              pathname !== PATHS.HOME &&
-              pathname !== PATHS.BOXES &&
-              pathname !== PATHS.CATEGORIES
-            }
-          >
-            {children}
-          </MobileAppShell>
-        )}
+        <MobileAppShell
+          {...shellProps}
+          showBack={
+            pathname !== PATHS.HOME &&
+            pathname !== PATHS.BOXES &&
+            pathname !== PATHS.CATEGORIES &&
+            pathname !== PATHS.SETTINGS
+          }
+        >
+          {children}
+        </MobileAppShell>
       </VoiceAssistantProvider>
     </BalanceModalProvider>
   );

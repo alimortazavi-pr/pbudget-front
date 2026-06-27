@@ -27,8 +27,8 @@ export function VoiceAssistantSection() {
             <h2 className="text-lg font-bold">دستیار صوتی</h2>
           </div>
           <p className="mt-2 text-sm text-muted">
-            دکمه شناور میکروفون در پایین صفحه — برای ثبت سریع تراکنش با
-            صدا یا متن
+            دکمه شناور میکروفون در تمام صفحات — تراکنش، تسک، یادداشت،
+            بدهی، چک، اقساط و بیشتر را با صدا یا متن ثبت کنید.
           </p>
         </div>
         <Switch

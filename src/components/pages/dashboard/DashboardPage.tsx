@@ -144,6 +144,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         balance={user?.budget ?? 0}
         income={totalIncome ?? 0}
         expense={totalCost ?? 0}
+        data-tour="dashboard-balance"
       />
 
       <div className="px-4 pb-2">
@@ -260,7 +261,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
           </p>
         </div>
       ) : (
-        <div className="flex flex-col gap-3 lg:gap-4">
+        <div className="flex flex-col gap-3 lg:gap-4" data-tour="dashboard-transactions">
           {filteredBudgets.map((budget: IBudget) => (
             <TransactionCard key={budget._id} budget={budget} />
           ))}

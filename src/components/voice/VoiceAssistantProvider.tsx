@@ -108,24 +108,28 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) {
     setExecuting(true);
     try {
       const { result } = await voiceApi.executeVoice(pending.log._id);
+      const intent = pending.interpretation.intent;
 
       if (result.navigateTo) {
         router.push(result.navigateTo);
       }
 
-      if (pending.interpretation.intent === "create_budget" && result.data?.userBudget != null) {
+      if (
+        intent === "create_budget" ||
+        intent === "create_debt" ||
+        intent === "query_balance"
+      ) {
         dispatch(bumpBudgetRevision());
-        if (user) {
+        if (result.data?.userBudget != null && user) {
           dispatch(setProfile({ ...user, budget: Number(result.data.userBudget) }));
+        } else if (result.data?.balance != null && user) {
+          dispatch(setProfile({ ...user, budget: Number(result.data.balance) }));
         }
-      }
-
-      if (pending.interpretation.intent === "query_balance" && result.data?.balance != null && user) {
-        dispatch(setProfile({ ...user, budget: Number(result.data.balance) }));
       }
 
       showToast(result.message, "success");
       close();
+      router.refresh();
     } catch (err) {
       showErrorToast(err instanceof Error ? err.message : "اجرای دستور ناموفق بود");
     } finally {
@@ -171,6 +175,7 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) {
         <button
           type="button"
           aria-label="دستیار صوتی"
+          data-tour="voice-fab"
           onClick={open}
           className="fixed z-[70] flex size-14 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-lg shadow-accent/30 transition hover:scale-105 active:scale-95 end-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] lg:bottom-8"
         >
@@ -191,7 +196,7 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) {
           <div className={modalSheetBodyClass}>
             {!pending ? (
               <div className="space-y-4">
-                <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-900 dark:text-amber-100">
+                <div className="pb-notice-banner">
                   این قابلیت در حالت تست است. قبل از تأیید، مبلغ، دسته و تاریخ را
                   حتماً چک کنید.
                 </div>
@@ -224,7 +229,7 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) {
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-900 dark:text-amber-100">
+                <div className="pb-notice-banner">
                   {pending.testModeNotice}
                 </div>
 
@@ -256,7 +261,7 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) {
                 )}
 
                 {pending.interpretation.warnings.length > 0 && (
-                  <ul className="space-y-1 text-sm text-amber-700 dark:text-amber-200">
+                  <ul className="space-y-1 text-sm text-warning-foreground">
                     {pending.interpretation.warnings.map((warning) => (
                       <li key={warning}>• {warning}</li>
                     ))}

@@ -9,7 +9,7 @@ import { ShellNavGroup } from "@/components/common/layout/ShellNavGroup";
 import {
   CREATE_NAV_ITEM,
   BANK_IMPORT_NAV_ITEM,
-  PLANNING_NAV_ITEMS,
+  PLANNING_NAV_GROUPS,
   PRIMARY_NAV_ITEMS,
 } from "@/components/common/layout/shell-nav";
 import { PATHS } from "@/common/constants";
@@ -19,7 +19,7 @@ export function ShellSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="pb-sidebar" aria-label="ناوبری دسکتاپ">
+    <aside className="pb-sidebar" aria-label="ناوبری دسکتاپ" data-tour="sidebar">
       <div className="flex h-full flex-col overflow-y-auto p-5 xl:p-6">
         <Link href={PATHS.HOME} className="mb-6 block px-2">
           <AppLogo />
@@ -42,6 +42,7 @@ export function ShellSidebar() {
                   href={item.href}
                   className="pb-sidebar-link"
                   data-active={active ? "true" : "false"}
+                  data-tour={`nav-${item.href.replace(/\//g, "") || "home"}`}
                 >
                   <item.icon size={20} variant={active ? "Bold" : "Linear"} />
                   <span>{item.label}</span>
@@ -51,7 +52,11 @@ export function ShellSidebar() {
           </nav>
         </div>
 
-        <Link href={CREATE_NAV_ITEM.href} className="pb-sidebar-cta mt-4">
+        <Link
+          href={CREATE_NAV_ITEM.href}
+          className="pb-sidebar-cta mt-4"
+          data-tour="nav-create"
+        >
           <Add size={20} variant="Bold" />
           {CREATE_NAV_ITEM.label}
         </Link>
@@ -61,11 +66,14 @@ export function ShellSidebar() {
           {BANK_IMPORT_NAV_ITEM.label}
         </Link>
 
-        <ShellNavGroup
-          title="برنامه‌ریزی و ابزار"
-          items={PLANNING_NAV_ITEMS}
-          variant="sidebar"
-        />
+        {PLANNING_NAV_GROUPS.map((group) => (
+          <ShellNavGroup
+            key={group.title}
+            title={group.title}
+            items={group.items}
+            variant="sidebar"
+          />
+        ))}
 
         <div className="mt-auto mt-6 border-t border-border/50 pt-5">
           <ShellAccountMenu variant="sidebar" showPlanning={false} />

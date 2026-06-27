@@ -73,7 +73,7 @@ export function PwaInstallPrompt() {
 
   return (
     <div className="fixed inset-x-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-[60] mx-auto max-w-lg md:bottom-6 md:left-auto md:right-6">
-      <div className="glass flex items-start gap-3 rounded-2xl border border-white/20 p-4 shadow-xl">
+      <div className="glass flex items-start gap-3 rounded-2xl border border-border/50 p-4 shadow-xl">
         <div className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-xl">
           <Image
             src="/assets/logo-mark.svg"

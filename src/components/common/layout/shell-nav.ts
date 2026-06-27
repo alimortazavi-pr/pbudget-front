@@ -15,6 +15,7 @@ import {
   MoneyRecive,
   Profile,
   Profile2User,
+  Setting2,
   Wallet,
 } from "iconsax-reactjs";
 
@@ -28,7 +29,7 @@ export const SUPPORT_PHONE = "tel:09125519818";
 export function getTelegramHref() {
   return TELEGRAM_BOT_USERNAME
     ? `https://t.me/${TELEGRAM_BOT_USERNAME}`
-    : `${PATHS.PROFILE}#telegram`;
+    : `${PATHS.SETTINGS}#telegram`;
 }
 
 export const PRIMARY_NAV_ITEMS = [
@@ -52,6 +53,7 @@ export const MOBILE_TAB_SIDE_ITEMS = [
   { href: PATHS.NOTES, label: "یادداشت‌ها", icon: DocumentText },
 ] as const;
 
+/** @deprecated flat list — use PLANNING_NAV_GROUPS */
 export const PLANNING_NAV_ITEMS = [
   { href: PATHS.TASKS, label: "برنامه روزانه", icon: Task },
   { href: PATHS.PROJECTS, label: "پروژه‌ها", icon: Briefcase },
@@ -65,8 +67,37 @@ export const PLANNING_NAV_ITEMS = [
   { href: PATHS.NOTES, label: "یادداشت‌ها", icon: DocumentText },
 ] as const;
 
+export const PLANNING_NAV_GROUPS = [
+  {
+    title: "برنامه‌ریزی",
+    items: [
+      { href: PATHS.TASKS, label: "برنامه روزانه", icon: Task },
+      { href: PATHS.PROJECTS, label: "پروژه‌ها", icon: Briefcase },
+      { href: PATHS.NOTES, label: "یادداشت‌ها", icon: DocumentText },
+    ],
+  },
+  {
+    title: "مالی پیشرفته",
+    items: [
+      { href: PATHS.DEBTS, label: "طلب و بدهی", icon: Card },
+      { href: PATHS.INSTALLMENTS, label: "اقساط", icon: Calendar },
+      { href: PATHS.CHECKS, label: "چک‌ها", icon: MoneyRecive },
+      { href: PATHS.COMMITMENTS, label: "تعهدات جاری", icon: Wallet },
+    ],
+  },
+  {
+    title: "کسب‌وکار",
+    items: [
+      { href: PATHS.VENTURES, label: "کسب‌وکار و شرکا", icon: Profile2User },
+      { href: PATHS.INVITES, label: "دعوت‌های همکاری", icon: Messages2 },
+      { href: PATHS.WORK_ATTENDANCE, label: "تحلیل حضور و غیاب", icon: Clock },
+    ],
+  },
+] as const;
+
 export const ACCOUNT_NAV_ITEMS = [
   { href: PATHS.PROFILE, label: "پروفایل", icon: Profile },
+  { href: PATHS.SETTINGS, label: "تنظیمات", icon: Setting2 },
   {
     href: getTelegramHref(),
     label: "بات تلگرام",

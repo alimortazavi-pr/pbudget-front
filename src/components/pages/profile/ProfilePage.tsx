@@ -14,9 +14,6 @@ import { AppModal, AppModalHeader, AppModalSheet, modalSheetBodyClass, modalShee
 import { FormInput } from "@/components/common/form/FormFields";
 import { OtpCodeField } from "@/components/common/form/OtpCodeField";
 import { ChangeMobileModal } from "@/components/pages/profile/ChangeMobileModal";
-import { ExperienceModeSection } from "@/components/pages/profile/ExperienceModeSection";
-import { VoiceAssistantSection } from "@/components/pages/profile/VoiceAssistantSection";
-import { TelegramConnectSection } from "@/components/pages/profile/TelegramConnectSection";
 import { useTelegramStatus } from "@/common/hooks/useTelegramStatus";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { setUsers, tokenSelector } from "@/stores/auth";
@@ -196,10 +193,6 @@ export function ProfilePage() {
         </div>
       </form>
 
-      <ExperienceModeSection />
-
-      <VoiceAssistantSection />
-
       {user?.isAdmin && (
         <div className="glass rounded-2xl p-5">
           <div className="flex items-center justify-between gap-3">
@@ -219,8 +212,6 @@ export function ProfilePage() {
           </div>
         </div>
       )}
-
-      <TelegramConnectSection />
 
       <ChangeMobileModal
         open={mobileOpen}

@@ -8,6 +8,7 @@ export const PATHS = {
   BOXES: "/boxes",
   PAYMENT_CARDS: "/payment-cards",
   PROFILE: "/profile",
+  SETTINGS: "/settings",
   CATEGORIES: "/profile/categories",
   DEBTS: "/debts",
   DEBT: (id: string) => `/debts/${id}`,

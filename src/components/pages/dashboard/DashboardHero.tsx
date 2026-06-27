@@ -9,6 +9,7 @@ type DashboardHeroProps = {
   balance: number;
   income: number;
   expense: number;
+  "data-tour"?: string;
 };
 
 export function DashboardHero({
@@ -16,11 +17,15 @@ export function DashboardHero({
   balance,
   income,
   expense,
+  "data-tour": dataTour,
 }: DashboardHeroProps) {
   const isNegative = balance < 0;
 
   return (
-    <section className="pb-dashboard-hero relative -mx-4 overflow-hidden px-4 pb-6 pt-0 lg:mx-0 lg:rounded-3xl lg:px-8 lg:pb-8 lg:pt-6">
+    <section
+      className="pb-dashboard-hero relative -mx-4 overflow-hidden px-4 pb-6 pt-0 lg:mx-0 lg:rounded-3xl lg:px-8 lg:pb-8 lg:pt-6"
+      data-tour={dataTour}
+    >
       <div className="pointer-events-none absolute -end-8 -top-10 size-40 rounded-full bg-white/10 blur-2xl" />
       <div className="pointer-events-none absolute -bottom-6 start-0 size-32 rounded-full bg-white/8 blur-xl" />
 

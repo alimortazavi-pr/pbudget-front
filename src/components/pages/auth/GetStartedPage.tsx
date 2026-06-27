@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Input, Label, TextField } from "@heroui/react";
 
@@ -35,11 +35,6 @@ export function GetStartedPage() {
   const [signInOpen, setSignInOpen] = useState(false);
   const [needsPasswordSetup, setNeedsPasswordSetup] = useState(false);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    document.documentElement.classList.remove("dark");
-    document.documentElement.classList.add("light");
-  }, []);
 
   async function handleContinue(e?: FormEvent) {
     e?.preventDefault();

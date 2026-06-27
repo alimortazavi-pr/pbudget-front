@@ -66,7 +66,7 @@
   --overlay: oklch(20% 0.03 280);
   --overlay-foreground: oklch(96% 0.01 280);
   --success: oklch(78% 0.14 175);
-  --success-foreground: oklch(15% 0.04 175);
+  --success-foreground: oklch(88% 0.12 175);
   --surface: oklch(19% 0.03 280);
   --surface-foreground: oklch(96% 0.01 280);
   --surface-secondary: oklch(23% 0.035 280);
@@ -74,5 +74,5 @@
   --surface-tertiary: oklch(28% 0.04 280);
   --surface-tertiary-foreground: oklch(96% 0.01 280);
   --warning: oklch(78% 0.12 75);
-  --warning-foreground: oklch(20% 0.04 75);
+  --warning-foreground: oklch(90% 0.1 75);
 }

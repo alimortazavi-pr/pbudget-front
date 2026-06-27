@@ -42,6 +42,23 @@
   .glass {
     @apply border border-border/50 bg-surface/80 backdrop-blur-xl;
   }
+  .pb-status-badge {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium;
+  }
+  .pb-status-badge-success {
+    background: color-mix(in oklch, var(--success) 14%, transparent);
+    color: var(--success-foreground);
+  }
+  .pb-status-badge-warning {
+    background: color-mix(in oklch, var(--warning) 14%, transparent);
+    color: var(--warning-foreground);
+  }
+  .pb-notice-banner {
+    @apply rounded-2xl border px-4 py-3 text-sm;
+    border-color: color-mix(in oklch, var(--warning) 35%, transparent);
+    background: color-mix(in oklch, var(--warning) 12%, transparent);
+    color: var(--warning-foreground);
+  }
   .safe-bottom {
     padding-bottom: max(6rem, env(safe-area-inset-bottom));
   }

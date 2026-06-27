@@ -150,7 +150,7 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
                   <p className="text-xs text-muted">پنل ادمین</p>
                   <h2 className="text-xl font-bold">{pageTitle}</h2>
                 </div>
-                <div className="flex items-center gap-2 rounded-full bg-success/10 px-3 py-1.5 text-xs font-medium text-success-foreground">
+                <div className="pb-status-badge pb-status-badge-success">
                   <span className="h-2 w-2 rounded-full bg-success" />
                   آنلاین
                 </div>

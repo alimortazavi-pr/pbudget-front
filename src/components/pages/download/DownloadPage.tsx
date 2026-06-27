@@ -58,8 +58,6 @@ export function DownloadPage() {
 
   useEffect(() => {
     setPageUrl(window.location.href);
-    document.documentElement.classList.remove("dark");
-    document.documentElement.classList.add("light");
 
     void fetchAndroidAppInfo()
       .then((info) => {

@@ -35,7 +35,7 @@ const dynamicNavigationCaching = [
 
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
-  skipWaiting: true,
+  skipWaiting: false,
   clientsClaim: true,
   navigationPreload: false,
   runtimeCaching: dynamicNavigationCaching,
@@ -52,6 +52,12 @@ const serwist = new Serwist({
 });
 
 serwist.addEventListeners();
+
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(

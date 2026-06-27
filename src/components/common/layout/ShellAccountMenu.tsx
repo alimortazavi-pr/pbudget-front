@@ -12,7 +12,7 @@ import { useBalanceModal } from "@/components/providers/BalanceModalProvider";
 import { ShellNavGroup } from "@/components/common/layout/ShellNavGroup";
 import {
   ACCOUNT_NAV_ITEMS,
-  PLANNING_NAV_ITEMS,
+  PLANNING_NAV_GROUPS,
   SUPPORT_PHONE,
 } from "@/components/common/layout/shell-nav";
 import { useTelegramStatus } from "@/common/hooks/useTelegramStatus";
@@ -128,14 +128,16 @@ export function ShellAccountMenu({
         </p>
       </div>
 
-      {showPlanning && (
-        <ShellNavGroup
-          title="برنامه‌ریزی و ابزار"
-          items={PLANNING_NAV_ITEMS}
-          variant={variant}
-          onNavigate={onNavigate}
-        />
-      )}
+      {showPlanning &&
+        PLANNING_NAV_GROUPS.map((group) => (
+          <ShellNavGroup
+            key={group.title}
+            title={group.title}
+            items={group.items}
+            variant={variant}
+            onNavigate={onNavigate}
+          />
+        ))}
 
       <ShellNavGroup
         title="حساب کاربری"

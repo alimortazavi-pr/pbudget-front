@@ -50,11 +50,11 @@ function KpiCard({
 }) {
   const toneClass =
     tone === "success"
-      ? "text-emerald-500"
+      ? "text-success"
       : tone === "warning"
-        ? "text-amber-500"
+        ? "text-warning"
         : tone === "accent"
-          ? "text-violet-500"
+          ? "text-accent"
           : "text-accent";
 
   return (
@@ -76,11 +76,7 @@ function HealthBadge({ health }: { health: AdminHealth | null }) {
 
   const ok = health.status === "healthy";
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
-        ok ? "bg-success/10 text-success-foreground" : "bg-warning/10 text-warning-foreground"
-      }`}
-    >
+    <span className={`pb-status-badge ${ok ? "pb-status-badge-success" : "pb-status-badge-warning"}`}>
       <SecuritySafe size={14} variant="Bold" />
       {ok ? "سیستم سالم" : "نیاز به بررسی"}
     </span>

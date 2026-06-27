@@ -1,0 +1,65 @@
+"use client";
+
+import { Call, Moon, Refresh, Sun1 } from "iconsax-reactjs";
+import { Button } from "@heroui/react";
+
+import { APP_VERSION } from "@/common/constants/app-version";
+import { SUPPORT_PHONE } from "@/components/common/layout/shell-nav";
+import { VoiceAssistantSection } from "@/components/pages/profile/VoiceAssistantSection";
+import { TelegramConnectSection } from "@/components/pages/profile/TelegramConnectSection";
+import { useTheme } from "@/components/providers/ThemeProvider";
+import { useVersion } from "@/components/providers/VersionProvider";
+
+export function SettingsPage() {
+  const { theme, toggleTheme } = useTheme();
+  const { hasUpdate, applyUpdate, showChangelog } = useVersion();
+
+  return (
+    <div className="pb-form-page space-y-6">
+      <div className="glass rounded-2xl p-5">
+        <h2 className="text-lg font-bold">ظاهر</h2>
+        <p className="mt-1 text-sm text-muted">تم روشن یا تاریک اپلیکیشن</p>
+        <button
+          type="button"
+          className="mt-4 flex w-full cursor-pointer items-center gap-3 rounded-xl border border-border/50 bg-surface-secondary px-4 py-3 text-sm font-medium transition-colors hover:bg-surface-secondary/80"
+          onClick={toggleTheme}
+        >
+          {theme === "dark" ? <Sun1 size={20} /> : <Moon size={20} />}
+          {theme === "dark" ? "حالت روشن" : "حالت تاریک"}
+        </button>
+      </div>
+
+      <VoiceAssistantSection />
+
+      <TelegramConnectSection />
+
+      <div className="glass rounded-2xl p-5">
+        <h2 className="text-lg font-bold">نسخه اپ</h2>
+        <p className="mt-1 text-sm text-muted">نسخه فعلی: {APP_VERSION}</p>
+        <div className="mt-4 flex flex-col gap-2">
+          <Button variant="secondary" className="w-full" onPress={showChangelog}>
+            مشاهده تغییرات
+          </Button>
+          {hasUpdate && (
+            <Button variant="primary" className="w-full" onPress={applyUpdate}>
+              <Refresh size={18} />
+              بروزرسانی اپ
+            </Button>
+          )}
+        </div>
+      </div>
+
+      <div className="glass rounded-2xl p-5">
+        <h2 className="text-lg font-bold">پشتیبانی</h2>
+        <p className="mt-1 text-sm text-muted">در صورت نیاز با تیم پشتیبانی تماس بگیرید</p>
+        <a
+          href={SUPPORT_PHONE}
+          className="mt-4 flex w-full items-center gap-3 rounded-xl border border-border/50 bg-surface-secondary px-4 py-3 text-sm font-medium transition-colors hover:bg-surface-secondary/80"
+        >
+          <Call size={20} />
+          تماس با پشتیبانی
+        </a>
+      </div>
+    </div>
+  );
+}
