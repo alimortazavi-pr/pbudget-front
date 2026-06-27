@@ -7,7 +7,7 @@ import { Add, Calendar, Category, Chart, Home2, Profile, Setting2 } from "iconsa
 import { PATHS } from "@/common/constants";
 import { AppLogo } from "@/components/common/brand/AppLogo";
 import { ShellAccountMenu } from "@/components/common/layout/ShellAccountMenu";
-import { CREATE_NAV_ITEM, PLANNING_NAV_ITEMS } from "@/components/common/layout/shell-nav";
+import { CREATE_NAV_ITEM, BANK_IMPORT_NAV_ITEM, PLANNING_NAV_ITEMS } from "@/components/common/layout/shell-nav";
 
 const TIMELINE_PRIMARY = [
   { href: PATHS.HOME, label: "خط زمانی", icon: Calendar },
@@ -53,6 +53,11 @@ export function TimelineSidebar() {
         <Link href={CREATE_NAV_ITEM.href} className="pb-sidebar-cta mt-4">
           <Add size={20} variant="Bold" />
           {CREATE_NAV_ITEM.label}
+        </Link>
+
+        <Link href={BANK_IMPORT_NAV_ITEM.href} className="pb-sidebar-secondary-cta mt-2">
+          <BANK_IMPORT_NAV_ITEM.icon size={18} variant="Bold" />
+          {BANK_IMPORT_NAV_ITEM.label}
         </Link>
 
         <p className="mb-2 mt-6 px-3 text-xs font-semibold tracking-wide text-muted">

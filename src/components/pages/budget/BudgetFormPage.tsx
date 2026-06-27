@@ -386,9 +386,19 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
     <div className="pb-form-page">
       <form onSubmit={(e) => void submit(e)}>
         <div className="glass space-y-4 rounded-2xl p-4">
-          <p className="text-sm text-muted">
-            {budget ? "ویرایش تراکنش" : "ثبت تراکنش جدید"}
-          </p>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <p className="text-sm text-muted">
+              {budget ? "ویرایش تراکنش" : "ثبت تراکنش جدید"}
+            </p>
+            {!budget ? (
+              <Link
+                href={PATHS.BANK_IMPORT}
+                className="text-xs font-semibold text-accent underline-offset-2 hover:underline"
+              >
+                ورود گروهی از صورتحساب بانک
+              </Link>
+            ) : null}
+          </div>
 
           <div className="flex gap-2">
             {[

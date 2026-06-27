@@ -7,7 +7,6 @@ import {
   ArrowLeft2,
   ArrowRight2,
   DocumentUpload,
-  Edit2,
   TickCircle,
 } from "iconsax-reactjs";
 
@@ -17,13 +16,13 @@ import * as paymentCardsApi from "@/common/api/payment-cards";
 import { PATHS } from "@/common/constants";
 import type { IBank } from "@/common/interfaces/bank.interface";
 import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
-import { formatJalaliDate, formatPrice, toPersianDigits } from "@/common/utils";
+import { toPersianDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
+import { BankImportRowCard } from "@/components/pages/bank-import/BankImportRowCard";
 import { BankImportRowEditorModal } from "@/components/pages/bank-import/BankImportRowEditorModal";
 import type { ImportRowDraft } from "@/components/pages/bank-import/import-row.types";
 import {
   buildConfirmPayloadRow,
-  buildImportRowSummary,
   createImportRowDraft,
   isImportRowConfigured,
   validateImportRowDraft,
@@ -32,7 +31,6 @@ import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { bumpBudgetRevision } from "@/stores/budget";
 import { categoriesSelector } from "@/stores/category";
 import { setProfile, userSelector } from "@/stores/profile";
-import { BudgetType } from "@/types/enums";
 
 type WizardStep = 1 | 2 | 3 | 4;
 
@@ -192,6 +190,12 @@ export function BankImportWizardPage() {
     } finally {
       setConfirming(false);
     }
+  }
+
+  function setRowCategory(tempId: string, categoryId: string) {
+    setRows((prev) =>
+      prev.map((row) => (row.tempId === tempId ? { ...row, categoryId } : row)),
+    );
   }
 
   function toggleRow(tempId: string) {
@@ -372,108 +376,23 @@ export function BankImportWizardPage() {
           </div>
 
           <div className="max-h-[55vh] space-y-3 overflow-y-auto pe-1">
-            {rows.map((row) => {
-              const summary = buildImportRowSummary(
-                row,
-                categories ?? [],
-                paymentCards,
-              );
-              const configured = isImportRowConfigured(row);
-
-              return (
-                <article
-                  key={row.tempId}
-                  className={`rounded-2xl border p-4 transition-opacity ${
-                    row.isDuplicate
-                      ? "border-border/40 bg-surface-secondary/30 opacity-50"
-                      : row.selected
-                        ? configured
-                          ? "border-border/60 bg-surface/80"
-                          : "border-warning/40 bg-warning/5"
-                        : "border-border/40 bg-surface-secondary/20 opacity-60"
-                  }`}
-                >
-                  <div className="flex items-start gap-3">
-                    <input
-                      type="checkbox"
-                      checked={row.selected}
-                      disabled={row.isDuplicate}
-                      onChange={() => toggleRow(row.tempId)}
-                      className="mt-1.5 size-4 shrink-0 cursor-pointer"
-                      aria-label={row.selected ? "حذف از انتخاب" : "افزودن به انتخاب"}
-                    />
-
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="text-sm font-medium">{row.transactionKind}</p>
-                          <p className="mt-1 text-xs text-muted">
-                            {formatJalaliDate(row.year, row.month, row.day)}
-                          </p>
-                          <p className="mt-2 line-clamp-2 text-xs text-muted">
-                            {row.description}
-                          </p>
-
-                          <div className="mt-2 flex flex-wrap gap-1.5">
-                            {row.isDuplicate ? (
-                              <span className="rounded-md bg-muted/20 px-2 py-0.5 text-[10px] font-semibold text-muted">
-                                قبلاً ثبت شده
-                              </span>
-                            ) : !row.selected ? (
-                              <span className="rounded-md bg-muted/20 px-2 py-0.5 text-[10px] font-semibold text-muted">
-                                خارج از انتخاب
-                              </span>
-                            ) : configured ? (
-                              summary.map((item) => (
-                                <span
-                                  key={item}
-                                  className="rounded-md bg-accent/10 px-2 py-0.5 text-[10px] font-semibold text-accent"
-                                >
-                                  {item}
-                                </span>
-                              ))
-                            ) : (
-                              <span className="rounded-md bg-warning/15 px-2 py-0.5 text-[10px] font-semibold text-warning-foreground">
-                                دسته‌بندی الزامی
-                              </span>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="flex shrink-0 flex-col items-end gap-2">
-                          <p
-                            className={`font-bold ${
-                              Number(row.type) === BudgetType.INCOME
-                                ? "text-income"
-                                : "text-expense"
-                            }`}
-                          >
-                            {Number(row.type) === BudgetType.INCOME ? "+" : "-"}
-                            {formatPrice(Number(row.price))}
-                          </p>
-                          {!row.isDuplicate ? (
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              onPress={() => setEditingRowId(row.tempId)}
-                            >
-                              <Edit2 size={16} />
-                              ویرایش
-                            </Button>
-                          ) : null}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
+            {rows.map((row) => (
+              <BankImportRowCard
+                key={row.tempId}
+                row={row}
+                categories={categories ?? []}
+                paymentCards={paymentCards}
+                onToggle={() => toggleRow(row.tempId)}
+                onCategoryChange={(categoryId) => setRowCategory(row.tempId, categoryId)}
+                onEdit={() => setEditingRowId(row.tempId)}
+              />
+            ))}
           </div>
 
           <div className="glass sticky bottom-0 rounded-2xl p-4">
             <p className="mb-3 text-xs text-muted">
-              برای اتمام، همه تراکنش‌های انتخاب‌شده باید دسته‌بندی داشته باشند. از
-              دکمه ویرایش می‌توانید کارت، پروژه، کسب‌وکار و طلب/بدهی هم تنظیم کنید.
+              دسته‌بندی را در همین لیست انتخاب کنید. دکمه «بیشتر» برای کارت،
+              پروژه، کسب‌وکار و طلب/بدهی است.
             </p>
             <Button
               className="w-full"

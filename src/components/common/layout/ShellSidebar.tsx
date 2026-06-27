@@ -8,6 +8,7 @@ import { ShellAccountMenu } from "@/components/common/layout/ShellAccountMenu";
 import { ShellNavGroup } from "@/components/common/layout/ShellNavGroup";
 import {
   CREATE_NAV_ITEM,
+  BANK_IMPORT_NAV_ITEM,
   PLANNING_NAV_ITEMS,
   PRIMARY_NAV_ITEMS,
 } from "@/components/common/layout/shell-nav";
@@ -53,6 +54,11 @@ export function ShellSidebar() {
         <Link href={CREATE_NAV_ITEM.href} className="pb-sidebar-cta mt-4">
           <Add size={20} variant="Bold" />
           {CREATE_NAV_ITEM.label}
+        </Link>
+
+        <Link href={BANK_IMPORT_NAV_ITEM.href} className="pb-sidebar-secondary-cta mt-2">
+          <BANK_IMPORT_NAV_ITEM.icon size={18} variant="Bold" />
+          {BANK_IMPORT_NAV_ITEM.label}
         </Link>
 
         <ShellNavGroup

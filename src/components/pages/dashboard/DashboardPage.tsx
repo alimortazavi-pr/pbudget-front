@@ -14,6 +14,7 @@ import { BudgetStats } from "@/components/pages/dashboard/BudgetStats";
 import { DashboardFilterSection } from "@/components/pages/dashboard/DashboardFilterSection";
 import { DashboardHero } from "@/components/pages/dashboard/DashboardHero";
 import { PendingInvitesBanner } from "@/components/pages/partners/PendingInvitesBanner";
+import { BankImportPromoBanner } from "@/components/pages/bank-import/BankImportPromoBanner";
 import { TransactionCard } from "@/components/pages/dashboard/TransactionCard";
 import { TransactionListSkeleton } from "@/components/pages/dashboard/TransactionListSkeleton";
 import type { IBudget, IBudgetsSummary } from "@/common/interfaces/budget.interface";
@@ -149,6 +150,8 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
       <div className="px-4 pb-2">
         <PendingInvitesBanner compact />
       </div>
+
+      <BankImportPromoBanner />
 
       <BudgetStats
         count={filteredBudgets.length}

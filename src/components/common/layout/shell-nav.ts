@@ -33,11 +33,18 @@ export function getTelegramHref() {
 
 export const PRIMARY_NAV_ITEMS = [
   { href: PATHS.HOME, label: "خانه", icon: Home2 },
+  { href: PATHS.BANK_IMPORT, label: "ورود از بانک", icon: DocumentUpload },
   { href: PATHS.ANALYSIS, label: "تحلیل مالی", icon: Chart },
   { href: PATHS.BOXES, label: "صندوق‌ها", icon: Box1 },
   { href: PATHS.PAYMENT_CARDS, label: "کارت‌های من", icon: Card },
   { href: PATHS.CATEGORIES, label: "دسته‌بندی‌ها", icon: Category },
 ] as const;
+
+export const BANK_IMPORT_NAV_ITEM = {
+  href: PATHS.BANK_IMPORT,
+  label: "ورود از صورتحساب بانک",
+  icon: DocumentUpload,
+} as const;
 
 /** Classic mobile tab bar — beside the center FAB */
 export const MOBILE_TAB_SIDE_ITEMS = [
@@ -52,7 +59,6 @@ export const PLANNING_NAV_ITEMS = [
   { href: PATHS.INVITES, label: "دعوت‌های همکاری", icon: Messages2 },
   { href: PATHS.WORK_ATTENDANCE, label: "تحلیل حضور و غیاب", icon: Clock },
   { href: PATHS.DEBTS, label: "طلب و بدهی", icon: Card },
-  { href: PATHS.BANK_IMPORT, label: "ایمپورت صورتحساب", icon: DocumentUpload },
   { href: PATHS.INSTALLMENTS, label: "اقساط", icon: Calendar },
   { href: PATHS.CHECKS, label: "چک‌ها", icon: MoneyRecive },
   { href: PATHS.COMMITMENTS, label: "تعهدات جاری", icon: Wallet },
