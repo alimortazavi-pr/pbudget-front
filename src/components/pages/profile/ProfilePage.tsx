@@ -15,6 +15,7 @@ import { FormInput } from "@/components/common/form/FormFields";
 import { OtpCodeField } from "@/components/common/form/OtpCodeField";
 import { ChangeMobileModal } from "@/components/pages/profile/ChangeMobileModal";
 import { ExperienceModeSection } from "@/components/pages/profile/ExperienceModeSection";
+import { VoiceAssistantSection } from "@/components/pages/profile/VoiceAssistantSection";
 import { TelegramConnectSection } from "@/components/pages/profile/TelegramConnectSection";
 import { useTelegramStatus } from "@/common/hooks/useTelegramStatus";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
@@ -196,6 +197,8 @@ export function ProfilePage() {
       </form>
 
       <ExperienceModeSection />
+
+      <VoiceAssistantSection />
 
       {user?.isAdmin && (
         <div className="glass rounded-2xl p-5">

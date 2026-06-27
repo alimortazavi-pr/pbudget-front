@@ -15,6 +15,7 @@ import type {
   AdminImportMode,
   AdminOverview,
   AdminProjectItem,
+  AdminRequestLogListResponse,
   AdminUser,
   AdminUserListResponse,
 } from "@/common/interfaces/admin";
@@ -211,6 +212,29 @@ export async function fetchAuditLogs(params: {
       limit: params.limit ?? 30,
       action: params.action || undefined,
       resource: params.resource || undefined,
+    },
+  });
+  return data;
+}
+
+export async function fetchRequestLogs(params: {
+  page?: number;
+  limit?: number;
+  method?: string;
+  path?: string;
+  userId?: string;
+  statusCode?: number;
+  search?: string;
+}) {
+  const { data } = await axiosInstance.get<AdminRequestLogListResponse>("/admin/logs", {
+    params: {
+      page: params.page ?? 1,
+      limit: params.limit ?? 30,
+      method: params.method || undefined,
+      path: params.path || undefined,
+      userId: params.userId || undefined,
+      statusCode: params.statusCode || undefined,
+      search: params.search || undefined,
     },
   });
   return data;

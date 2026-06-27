@@ -375,7 +375,7 @@ export function BankImportWizardPage() {
             </div>
           </div>
 
-          <div className="max-h-[55vh] space-y-3 overflow-y-auto pe-1">
+          <div className="space-y-3">
             {rows.map((row) => (
               <BankImportRowCard
                 key={row.tempId}
@@ -389,7 +389,7 @@ export function BankImportWizardPage() {
             ))}
           </div>
 
-          <div className="glass sticky bottom-0 rounded-2xl p-4">
+          <div className="glass rounded-2xl p-4">
             <p className="mb-3 text-xs text-muted">
               دسته‌بندی را در همین لیست انتخاب کنید. دکمه «بیشتر» برای کارت،
               پروژه، کسب‌وکار و طلب/بدهی است.

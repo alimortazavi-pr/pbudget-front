@@ -148,6 +148,32 @@ export interface AdminAuditListResponse {
   };
 }
 
+export interface AdminRequestLog {
+  _id: string;
+  user: string | null;
+  userName: string | null;
+  method: string;
+  path: string;
+  statusCode: number | null;
+  durationMs: number | null;
+  ip: string | null;
+  userAgent: string | null;
+  query: Record<string, unknown> | null;
+  body: unknown;
+  errorMessage: string | null;
+  createdAt: string | null;
+}
+
+export interface AdminRequestLogListResponse {
+  items: AdminRequestLog[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
 export interface AdminContentUser {
   _id: string;
   firstName: string;

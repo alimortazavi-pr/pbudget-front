@@ -8,6 +8,8 @@ import ReduxProvider from "./ReduxProvider";
 import RootProvider from "./RootProvider";
 import { ThemeProvider } from "./ThemeProvider";
 import { ExperienceProvider } from "./ExperienceProvider";
+import { MobileOverlayProvider } from "./MobileOverlayProvider";
+import { VoiceAssistantPreferenceProvider } from "./VoiceAssistantPreferenceProvider";
 import { AppShell } from "@/components/common/layout/AppShell";
 import { PwaInstallPrompt } from "@/components/common/PwaInstallPrompt";
 
@@ -17,12 +19,16 @@ export const ClientProvider: FC<PropsWithChildren> = ({ children }) => {
       <ReduxProvider>
         <ThemeProvider>
           <ExperienceProvider>
-            <I18nProvider locale="fa-IR">
-              <RootProvider>
-                <AppShell>{children}</AppShell>
-                <PwaInstallPrompt />
-              </RootProvider>
-            </I18nProvider>
+            <VoiceAssistantPreferenceProvider>
+              <MobileOverlayProvider>
+                <I18nProvider locale="fa-IR">
+                  <RootProvider>
+                    <AppShell>{children}</AppShell>
+                    <PwaInstallPrompt />
+                  </RootProvider>
+                </I18nProvider>
+              </MobileOverlayProvider>
+            </VoiceAssistantPreferenceProvider>
           </ExperienceProvider>
         </ThemeProvider>
       </ReduxProvider>

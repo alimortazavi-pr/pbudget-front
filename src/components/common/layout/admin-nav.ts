@@ -9,6 +9,7 @@ import {
   People,
   ShieldSearch,
   Bank,
+  Activity,
 } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
@@ -53,6 +54,11 @@ export const ADMIN_NAV = [
     href: PATHS.ADMIN_AUDIT,
     label: "لاگ عملیات",
     icon: ShieldSearch,
+  },
+  {
+    href: PATHS.ADMIN_LOGS,
+    label: "لاگ سیستم",
+    icon: Activity,
   },
   {
     href: PATHS.ADMIN_VOICE,

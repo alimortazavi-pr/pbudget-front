@@ -4,6 +4,7 @@ import { Modal, useOverlayState } from "@heroui/react";
 import { useEffect, type ReactNode } from "react";
 
 import { shouldCloseModalOnInteractOutside } from "@/common/utils/modal-overlay";
+import { useRegisterMobileOverlay } from "@/components/providers/MobileOverlayProvider";
 
 type AppModalProps = {
   open: boolean;
@@ -31,6 +32,8 @@ export function AppModal({
     isOpen: open,
     onOpenChange,
   });
+
+  useRegisterMobileOverlay(open);
 
   useEffect(() => {
     state.setOpen(open);

@@ -93,17 +93,17 @@ export function BankImportRowCard({
             <span className="inline-flex rounded-md bg-muted/20 px-2 py-0.5 text-[10px] font-semibold text-muted">
               قبلاً ثبت شده
             </span>
-          ) : !row.selected ? (
-            <span className="inline-flex rounded-md bg-muted/20 px-2 py-0.5 text-[10px] font-semibold text-muted">
-              خارج از انتخاب
-            </span>
           ) : (
             <>
-              <div onClick={(e) => e.stopPropagation()}>
+              <div
+                className={!row.selected ? "pointer-events-none" : undefined}
+                onClick={(e) => e.stopPropagation()}
+              >
                 <FormCategoryComboBox
                   label="دسته‌بندی *"
                   placeholder="انتخاب دسته‌بندی"
                   selectedKey={row.categoryId || undefined}
+                  isDisabled={!row.selected}
                   onSelectionChange={(key) => {
                     onCategoryChange(key === "all" ? "" : key);
                   }}
@@ -112,7 +112,7 @@ export function BankImportRowCard({
                 />
               </div>
 
-              {extraSummary.length > 0 ? (
+              {row.selected && extraSummary.length > 0 ? (
                 <div className="flex flex-wrap gap-1.5">
                   {extraSummary.map((item) => (
                     <span

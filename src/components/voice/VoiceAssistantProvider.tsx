@@ -17,6 +17,7 @@ import type {
   VoiceInterpretResponse,
 } from "@/common/interfaces/voice.interface";
 import { toPersianDigits } from "@/common/utils";
+import { useMediaQuery } from "@/common/hooks/useMediaQuery";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import {
   AppModal,
@@ -25,6 +26,8 @@ import {
   modalSheetBodyClass,
   modalSheetFooterClass,
 } from "@/components/common/ui/AppModal";
+import { useMobileOverlay } from "@/components/providers/MobileOverlayProvider";
+import { useVoiceAssistantPreference } from "@/components/providers/VoiceAssistantPreferenceProvider";
 import { useVoiceAssistant } from "@/hooks/use-voice-assistant";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { bumpBudgetRevision } from "@/stores/budget";
@@ -52,6 +55,10 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) {
   const dispatch = useAppDispatch();
   const user = useAppSelector(userSelector);
   const voice = useVoiceAssistant();
+  const { enabled: voiceAssistantEnabled, mounted: preferenceMounted } =
+    useVoiceAssistantPreference();
+  const { count: mobileOverlayCount } = useMobileOverlay();
+  const isMobile = useMediaQuery("(max-width: 1023px)");
 
   const [modalOpen, setModalOpen] = useState(false);
   const [manualText, setManualText] = useState("");
@@ -151,21 +158,29 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) {
       !pending.interpretation.payload.category
     );
 
+  const showFab =
+    preferenceMounted &&
+    voiceAssistantEnabled &&
+    !(isMobile && mobileOverlayCount > 0);
+
   return (
     <VoiceAssistantContext.Provider value={ctx}>
       {children}
 
-      <button
-        type="button"
-        aria-label="دستیار صوتی"
-        onClick={open}
-        className="fixed z-[70] flex size-14 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-lg shadow-accent/30 transition hover:scale-105 active:scale-95 end-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] lg:bottom-8"
-      >
-        <Microphone2 size={24} variant="Bold" />
-      </button>
+      {showFab && (
+        <button
+          type="button"
+          aria-label="دستیار صوتی"
+          onClick={open}
+          className="fixed z-[70] flex size-14 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-lg shadow-accent/30 transition hover:scale-105 active:scale-95 end-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] lg:bottom-8"
+        >
+          <Microphone2 size={24} variant="Bold" />
+        </button>
+      )}
 
-      <AppModal open={modalOpen} onOpenChange={(v) => !v && void handleCancel()} mobileFull>
-        <AppModalDialog className="flex max-h-[100dvh] flex-col sm:max-w-lg">
+      {voiceAssistantEnabled && (
+        <AppModal open={modalOpen} onOpenChange={(v) => !v && void handleCancel()} mobileFull>
+          <AppModalDialog className="flex max-h-[100dvh] flex-col sm:max-w-lg">
           <AppModalHeader>
             <h2 className="text-lg font-bold">دستیار صوتی</h2>
             <p className="mt-1 text-sm text-muted">
@@ -317,7 +332,8 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) {
             )}
           </div>
         </AppModalDialog>
-      </AppModal>
+        </AppModal>
+      )}
     </VoiceAssistantContext.Provider>
   );
 }

@@ -32,6 +32,7 @@ export const PATHS = {
   ADMIN_DATABASE: "/admin/database",
   ADMIN_BACKUP: "/admin/backup",
   ADMIN_AUDIT: "/admin/audit",
+  ADMIN_LOGS: "/admin/logs",
   ADMIN_CONTENT: "/admin/content",
   ADMIN_APP: "/admin/app",
   ADMIN_BANKS: "/admin/banks",
