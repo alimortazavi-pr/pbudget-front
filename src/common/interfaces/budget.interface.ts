@@ -33,7 +33,7 @@ export interface IBudgetPerformer {
 export interface IBudget {
   _id: string;
   user: string;
-  category: ICategory;
+  category: ICategory | null;
   price: number;
   type: number;
   deleted: boolean;
@@ -42,6 +42,8 @@ export interface IBudget {
   day: string;
   description: string;
   createdAt: string;
+  pendingCategory?: boolean;
+  sourceBank?: { _id: string; title: string; slug?: string } | string | null;
   debt?: IDebt | null;
   project?: IProjectRef | string | null;
   venture?: IVenture | string | null;

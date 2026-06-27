@@ -39,8 +39,13 @@ export function TransactionCard({ budget }: TransactionCardProps) {
   const [deleting, setDeleting] = useState(false);
   const isIncome = budget.type === BudgetType.INCOME;
   const debt = budget.debt;
-  const categoryColor = resolveCategoryColor(budget.category?.color);
-  const categoryStyle = categoryAccentStyle(budget.category?.color);
+  const isPendingCategory = Boolean(budget.pendingCategory);
+  const categoryColor = isPendingCategory
+    ? "#f59e0b"
+    : resolveCategoryColor(budget.category?.color);
+  const categoryStyle = isPendingCategory
+    ? { borderInlineStartColor: "#f59e0b", borderInlineStartWidth: "3px" }
+    : categoryAccentStyle(budget.category?.color);
   const paymentCardLabel = resolvePaymentCardLabel(budget.paymentCard);
 
   async function handleDelete() {
@@ -62,7 +67,9 @@ export function TransactionCard({ budget }: TransactionCardProps) {
 
   return (
     <article
-      className="pb-transaction-row cursor-pointer"
+      className={`pb-transaction-row cursor-pointer ${
+        isPendingCategory ? "border border-warning/30 bg-warning/5" : ""
+      }`}
       style={categoryStyle}
       onClick={() => setExpanded((v) => !v)}
     >
@@ -74,12 +81,22 @@ export function TransactionCard({ budget }: TransactionCardProps) {
               style={{ backgroundColor: categoryColor }}
               aria-hidden
             />
-            <p className="truncate font-medium">{budget.category?.title}</p>
+            <p className="truncate font-medium">
+              {isPendingCategory ? "نیاز به دسته‌بندی" : budget.category?.title}
+            </p>
           </div>
           <p className="mt-0.5 text-xs text-muted">
             {formatJalaliDate(budget.year, budget.month, budget.day)}
             {paymentCardLabel ? ` · ${paymentCardLabel}` : ""}
+            {isPendingCategory && typeof budget.sourceBank === "object" && budget.sourceBank?.title
+              ? ` · ${budget.sourceBank.title}`
+              : ""}
           </p>
+          {isPendingCategory && (
+            <span className="mt-1 inline-flex rounded-md bg-warning/15 px-1.5 py-0.5 text-[10px] font-semibold text-warning-foreground">
+              ایمپورت بانکی
+            </span>
+          )}
           {debt && (
             <span
               className={`mt-1 inline-flex rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${

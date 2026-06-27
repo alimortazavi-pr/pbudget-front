@@ -8,6 +8,7 @@ import {
   Mobile,
   People,
   ShieldSearch,
+  Bank,
 } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
@@ -32,6 +33,11 @@ export const ADMIN_NAV = [
     href: PATHS.ADMIN_APP,
     label: "اپ اندروید",
     icon: Mobile,
+  },
+  {
+    href: PATHS.ADMIN_BANKS,
+    label: "بانک‌ها",
+    icon: Bank,
   },
   {
     href: PATHS.ADMIN_DATABASE,
