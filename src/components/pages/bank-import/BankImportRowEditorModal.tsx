@@ -297,6 +297,7 @@ export function BankImportRowEditorModal({
               onChange={(value) =>
                 patchForm({ year: value.year, month: value.month, day: value.day })
               }
+              inModal
             />
 
             <FormCategoryComboBox
