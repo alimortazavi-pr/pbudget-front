@@ -6,5 +6,6 @@ export * from "./persian-digits";
 export * from "./price-input";
 export * from "./jalali-date";
 export * from "./work-time";
+export * from "./working-days";
 export * from "./toast";
 export * from "./force-auth-logout";

@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
 import { Call, Logout, Moon, Profile, Sun1, Wallet2 } from "iconsax-reactjs";
@@ -16,6 +17,7 @@ import {
   SUPPORT_PHONE,
 } from "@/components/common/layout/shell-nav";
 import { useTelegramStatus } from "@/common/hooks/useTelegramStatus";
+import { usePendingInvitesCount } from "@/common/hooks/usePendingInvitesCount";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { logOut, resetAuth } from "@/stores/auth";
 import { setProfile, userSelector } from "@/stores/profile";
@@ -36,6 +38,14 @@ export function ShellAccountMenu({
   const user = useAppSelector(userSelector);
   const { theme, toggleTheme } = useTheme();
   const { linked: telegramLinked } = useTelegramStatus();
+  const { count: pendingInvitesCount } = usePendingInvitesCount();
+  const navBadges = useMemo(
+    () =>
+      pendingInvitesCount > 0
+        ? { [PATHS.VENTURES]: pendingInvitesCount }
+        : undefined,
+    [pendingInvitesCount],
+  );
   const { openBalanceModal } = useBalanceModal();
 
   const accountNavItems = ACCOUNT_NAV_ITEMS.filter(
@@ -136,6 +146,7 @@ export function ShellAccountMenu({
             items={group.items}
             variant={variant}
             onNavigate={onNavigate}
+            itemBadges={navBadges}
           />
         ))}
 

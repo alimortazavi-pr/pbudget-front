@@ -56,6 +56,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
   const [description, setDescription] = useState("");
   const [fixedIncome, setFixedIncome] = useState(false);
   const [trackWorkTime, setTrackWorkTime] = useState(false);
+  const [showWorkTimeOnDashboard, setShowWorkTimeOnDashboard] = useState(false);
   const [hourlyRate, setHourlyRate] = useState("");
 
   const [itemType, setItemType] = useState<ProjectItemType>(ProjectItemType.NOTE);
@@ -74,6 +75,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
       setDescription(detail.project.description ?? "");
       setFixedIncome(detail.project.fixedIncome ?? false);
       setTrackWorkTime(detail.project.trackWorkTime === true);
+      setShowWorkTimeOnDashboard(detail.project.showWorkTimeOnDashboard === true);
       setHourlyRate(
         detail.project.hourlyRate ? String(detail.project.hourlyRate) : "",
       );
@@ -120,6 +122,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
         description: description.trim(),
         fixedIncome,
         trackWorkTime,
+        showWorkTimeOnDashboard: trackWorkTime && showWorkTimeOnDashboard,
         hourlyRate: trackWorkTime && !fixedIncome ? toEnglishDigits(hourlyRate) : "0",
       });
       setData((current) =>
@@ -388,6 +391,24 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
 
           {trackWorkTime ? (
             <>
+              <div className="flex items-center justify-between rounded-xl bg-surface-secondary p-3">
+                <div>
+                  <p className="text-sm font-medium">نمایش در صفحه اصلی</p>
+                  <p className="mt-1 text-xs text-muted">
+                    میانبر حضور و غیاب در داشبورد خانه
+                  </p>
+                </div>
+                <Switch
+                  isSelected={showWorkTimeOnDashboard}
+                  onChange={setShowWorkTimeOnDashboard}
+                  size="sm"
+                >
+                  <Switch.Control>
+                    <Switch.Thumb />
+                  </Switch.Control>
+                </Switch>
+              </div>
+
               <div className="flex items-center justify-between rounded-xl bg-surface-secondary p-3">
                 <div>
                   <p className="text-sm font-medium">درآمد ثابت (حقوق ماهانه)</p>

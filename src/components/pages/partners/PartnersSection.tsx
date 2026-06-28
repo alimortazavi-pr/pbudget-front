@@ -45,8 +45,13 @@ function statusClass(status: IPartner["status"]) {
 }
 
 function permissionLabel(level?: PartnerPermissionLevel) {
+  if (level === "owner") return "مالک";
   if (level === "editor") return "ویرایشگر";
   return "مشاهده";
+}
+
+function isOwnerPartner(partner: IPartner) {
+  return partner.isOwner === true || partner.permissionLevel === "owner";
 }
 
 function partnerInitials(name: string) {
@@ -259,7 +264,9 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
           </div>
         ) : (
           <div className="grid gap-3 lg:grid-cols-2">
-            {partners.map((partner) => (
+            {partners.map((partner) => {
+              const ownerEntry = isOwnerPartner(partner);
+              return (
               <article
                 key={partner._id}
                 className="rounded-2xl border border-border/50 bg-background p-4 shadow-sm"
@@ -307,7 +314,7 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
                       <p className="mt-3 text-sm leading-6 text-muted">{partner.notes}</p>
                     ) : null}
 
-                    {!readOnly && partner.isAppUser && partner.status === "active" ? (
+                    {!readOnly && partner.isAppUser && partner.status === "active" && !ownerEntry ? (
                       <div className="mt-3">
                         <FormSelect
                           label="سطح دسترسی"
@@ -352,7 +359,7 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
                           </Button>
                         </>
                       ) : null}
-                      {!readOnly ? (
+                      {!readOnly && !ownerEntry ? (
                         <Button
                           size="sm"
                           variant="danger"
@@ -366,7 +373,8 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
                   </div>
                 </div>
               </article>
-            ))}
+            );
+            })}
           </div>
         )}
       </section>

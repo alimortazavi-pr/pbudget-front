@@ -16,6 +16,7 @@ import {
   AppModalDialog,
   AppModalHeader,
 } from "@/components/common/ui/AppModal";
+import { PendingInvitesBanner } from "@/components/pages/partners/PendingInvitesBanner";
 
 export function VenturesPage() {
   const router = useRouter();
@@ -83,6 +84,8 @@ export function VenturesPage() {
           کسب‌وکار جدید
         </Button>
       </section>
+
+      <PendingInvitesBanner />
 
       {loading ? (
         <div className="glass rounded-2xl p-10 text-center text-muted">

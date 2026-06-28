@@ -13,7 +13,7 @@ import { BudgetExportModal } from "@/components/pages/dashboard/BudgetExportModa
 import { BudgetStats } from "@/components/pages/dashboard/BudgetStats";
 import { DashboardFilterSection } from "@/components/pages/dashboard/DashboardFilterSection";
 import { DashboardHero } from "@/components/pages/dashboard/DashboardHero";
-import { PendingInvitesBanner } from "@/components/pages/partners/PendingInvitesBanner";
+import { WorkTimeQuickWidget } from "@/components/pages/projects/WorkTimeQuickWidget";
 import { TransactionCard } from "@/components/pages/dashboard/TransactionCard";
 import { TransactionListSkeleton } from "@/components/pages/dashboard/TransactionListSkeleton";
 import type { IBudget, IBudgetsSummary } from "@/common/interfaces/budget.interface";
@@ -147,8 +147,8 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         data-tour="dashboard-balance"
       />
 
-      <div className="px-4 pb-2">
-        <PendingInvitesBanner compact />
+      <div className="px-4 pb-4">
+        <WorkTimeQuickWidget />
       </div>
 
       <BudgetStats

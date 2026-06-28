@@ -28,24 +28,50 @@ export interface IWorkDailyTotal {
   minutes: number;
 }
 
+export interface IWorkDailyStatus {
+  isWorkingDay: boolean;
+  requiredDailyMinutes: number | null;
+  monthTargetMinutes: number | null;
+  workingDaysInMonth: number;
+  workedTodayMinutes: number;
+  remainingTodayMinutes: number | null;
+  targetEndAt: string | null;
+  remindAt: string | null;
+}
+
+export interface IWorkingDaysSummary {
+  inMonth: number;
+  elapsed: number;
+  remaining: number;
+  holidayCount: number;
+  fridayCount: number;
+}
+
 export interface IWorkMonthlyTarget {
   _id: string;
   user: string;
   project?: IProject | string;
   year: number;
   month: number;
-  requiredMinutes: number;
+  requiredDailyMinutes?: number;
+  requiredMinutes?: number;
   deleted: boolean;
 }
 
 export interface IWorkTimeDashboard {
   year: number;
   month: number;
+  workingDays: IWorkingDaysSummary;
+  workingDayList: number[];
   globalTarget: {
+    requiredDailyMinutes: number | null;
     requiredMinutes: number | null;
     workedMinutes: number;
+    todayWorkedMinutes: number | null;
+    dailyStatus: IWorkDailyStatus | null;
   };
   activeSession: IWorkSession | null;
+  activeSessionDailyStatus: IWorkDailyStatus | null;
   projects: IWorkTimeProjectRow[];
   dailyTotals: IWorkDailyTotal[];
 }
@@ -54,7 +80,9 @@ export interface IWorkTimeProjectRow {
   project: IProject;
   activeSession: IWorkSession | null;
   monthWorkedMinutes: number;
+  requiredDailyMinutes: number | null;
   monthTargetMinutes: number | null;
+  dailyStatus: IWorkDailyStatus | null;
   dailyTotals: IWorkDailyTotal[];
 }
 
@@ -62,7 +90,10 @@ export interface IProjectWorkSessions {
   sessions: IWorkSession[];
   activeSession: IWorkSession | null;
   monthWorkedMinutes: number;
+  requiredDailyMinutes: number | null;
   monthTargetMinutes: number | null;
+  workingDaysInMonth: number;
+  dailyStatus: IWorkDailyStatus | null;
   dailyTotals: IWorkDailyTotal[];
 }
 
@@ -132,4 +163,9 @@ export interface IWorkTimeReport {
   projectId?: string;
   projectTitle?: string;
   fixedIncome?: boolean;
+}
+
+export interface IClockInResult {
+  session: IWorkSession;
+  dailyStatus: IWorkDailyStatus;
 }

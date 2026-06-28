@@ -77,7 +77,7 @@ export function WorkTimeAnalysisSection({
             <Link href={PATHS.WORK_ATTENDANCE}>
               <Button size="sm" variant="secondary">
                 <Chart size={16} />
-                تحلیل کلی
+                همه پروژه‌ها
               </Button>
             </Link>
           ) : (

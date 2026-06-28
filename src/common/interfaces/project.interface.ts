@@ -25,6 +25,7 @@ export interface IProject {
   description: string;
   fixedIncome: boolean;
   trackWorkTime?: boolean;
+  showWorkTimeOnDashboard?: boolean;
   hourlyRate?: number;
   deleted: boolean;
   createdAt?: string;

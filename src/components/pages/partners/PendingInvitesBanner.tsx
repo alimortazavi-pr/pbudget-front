@@ -3,11 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@heroui/react";
-import { Profile2User } from "iconsax-reactjs";
-
-import { PATHS } from "@/common/constants";
 import * as partnersApi from "@/common/api/partners";
 import type { IPendingPartnerInvite } from "@/common/interfaces/partner.interface";
+import { notifyPendingInvitesChanged } from "@/common/hooks/usePendingInvitesCount";
 import { showToast } from "@/common/utils/toast";
 
 type PendingInvitesBannerProps = {
@@ -24,6 +22,7 @@ export function PendingInvitesBanner({ compact = false }: PendingInvitesBannerPr
     try {
       const list = await partnersApi.fetchPendingInvites();
       setInvites(list);
+      notifyPendingInvitesChanged();
     } catch {
       setInvites([]);
     } finally {
@@ -53,20 +52,7 @@ export function PendingInvitesBanner({ compact = false }: PendingInvitesBannerPr
   }
 
   if (compact) {
-    return (
-      <Link
-        href={PATHS.INVITES}
-        className="glass block rounded-2xl border border-accent/30 bg-accent/5 p-4 transition hover:bg-accent/10"
-      >
-        <div className="flex items-center gap-3">
-          <Profile2User size={22} className="text-accent" />
-          <div>
-            <p className="font-bold">{invites.length} دعوت همکاری در انتظار</p>
-            <p className="mt-0.5 text-sm text-muted">مشاهده و تأیید دعوت‌ها</p>
-          </div>
-        </div>
-      </Link>
-    );
+    return null;
   }
 
   return (

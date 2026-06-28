@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Add, Calendar, Category, Chart, Home2, Profile, Setting2 } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
+import { usePendingInvitesCount } from "@/common/hooks/usePendingInvitesCount";
 import { AppLogo } from "@/components/common/brand/AppLogo";
 import { ShellAccountMenu } from "@/components/common/layout/ShellAccountMenu";
 import { CREATE_NAV_ITEM, BANK_IMPORT_NAV_ITEM, PLANNING_NAV_ITEMS } from "@/components/common/layout/shell-nav";
@@ -18,6 +19,7 @@ const TIMELINE_PRIMARY = [
 
 export function TimelineSidebar() {
   const pathname = usePathname();
+  const { count: pendingInvitesCount } = usePendingInvitesCount();
 
   return (
     <aside className="pb-timeline-sidebar" aria-label="ناوبری timeline">
@@ -66,6 +68,12 @@ export function TimelineSidebar() {
         <nav className="flex flex-col gap-0.5">
           {PLANNING_NAV_ITEMS.map((item) => {
             const active = pathname.startsWith(item.href);
+            const badge =
+              item.href === PATHS.VENTURES && pendingInvitesCount > 0
+                ? pendingInvitesCount > 9
+                  ? "9+"
+                  : pendingInvitesCount
+                : null;
             return (
               <Link
                 key={item.href}
@@ -74,7 +82,14 @@ export function TimelineSidebar() {
                 data-active={active ? "true" : "false"}
               >
                 <item.icon size={20} variant={active ? "Bold" : "Linear"} />
-                <span>{item.label}</span>
+                <span className="flex flex-1 items-center justify-between gap-2">
+                  <span>{item.label}</span>
+                  {badge ? (
+                    <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-accent-foreground">
+                      {badge}
+                    </span>
+                  ) : null}
+                </span>
               </Link>
             );
           })}

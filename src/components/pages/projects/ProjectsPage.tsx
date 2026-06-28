@@ -4,13 +4,15 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
-import { Add, Briefcase, Clock } from "iconsax-reactjs";
+import { Add, Briefcase, Clock, Login } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 import * as projectsApi from "@/common/api/projects";
+import * as workTimeApi from "@/common/api/work-time";
 import type { IProject } from "@/common/interfaces/project.interface";
 import { formatPrice, formatCount } from "@/common/utils";
-import { showToast } from "@/common/utils/toast";
+import { formatDailyRemainingMessage } from "@/common/hooks/useWorkSessionDailyReminder";
+import { showErrorToast, showToast } from "@/common/utils/toast";
 import { CreateProjectModal } from "@/components/pages/projects/CreateProjectModal";
 import { ProjectStatus } from "@/types/enums";
 
@@ -31,6 +33,7 @@ export function ProjectsPage() {
   const [projects, setProjects] = useState<IProject[]>([]);
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
+  const [clockLoadingId, setClockLoadingId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -65,6 +68,19 @@ export function ProjectsPage() {
     () => new Set(projects.map((project) => project.category._id)),
     [projects],
   );
+
+  async function handleQuickClockIn(projectId: string) {
+    setClockLoadingId(projectId);
+    try {
+      const result = await workTimeApi.clockIn(projectId);
+      const msg = formatDailyRemainingMessage(result.dailyStatus);
+      showToast(msg ? `ورود ثبت شد · ${msg}` : "ورود ثبت شد", "success");
+    } catch (err) {
+      showErrorToast(err);
+    } finally {
+      setClockLoadingId(null);
+    }
+  }
 
   return (
     <div className="space-y-5 pb-6">
@@ -103,7 +119,7 @@ export function ProjectsPage() {
           <Link href={PATHS.WORK_ATTENDANCE}>
             <Button size="sm" variant="secondary">
               <Clock size={18} />
-              تحلیل کلی حضور و غیاب
+              حضور و غیاب
             </Button>
           </Link>
           <Button
@@ -207,6 +223,36 @@ export function ProjectsPage() {
                       style={{ width: `${progress}%` }}
                     />
                   </div>
+                </div>
+                <div
+                  className="mt-3 flex flex-wrap items-center gap-2"
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  role="presentation"
+                >
+                  {project.trackWorkTime ? (
+                    <>
+                      <Button
+                        size="sm"
+                        className="bg-income text-white"
+                        isPending={clockLoadingId === project._id}
+                        onPress={() => void handleQuickClockIn(project._id)}
+                      >
+                        <Login size={16} />
+                        ورود
+                      </Button>
+                      <Link
+                        href={PATHS.PROJECT_ATTENDANCE(project._id)}
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex"
+                      >
+                        <Button size="sm" variant="secondary">
+                          <Clock size={16} />
+                          حضور
+                        </Button>
+                      </Link>
+                    </>
+                  ) : null}
                 </div>
               </Link>
             );

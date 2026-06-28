@@ -31,6 +31,7 @@ function resetFormState() {
     description: "",
     fixedIncome: false,
     trackWorkTime: false,
+    showWorkTimeOnDashboard: false,
     hourlyRate: "",
   };
 }
@@ -50,6 +51,7 @@ export function CreateProjectModal({
   const [description, setDescription] = useState("");
   const [fixedIncome, setFixedIncome] = useState(false);
   const [trackWorkTime, setTrackWorkTime] = useState(false);
+  const [showWorkTimeOnDashboard, setShowWorkTimeOnDashboard] = useState(false);
   const [hourlyRate, setHourlyRate] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -78,6 +80,7 @@ export function CreateProjectModal({
     setDescription("");
     setFixedIncome(false);
     setTrackWorkTime(false);
+    setShowWorkTimeOnDashboard(false);
     setHourlyRate("");
   }, [open, hasExistingCategories, projectCategoryOptions]);
 
@@ -89,6 +92,7 @@ export function CreateProjectModal({
     setDescription(next.description);
     setFixedIncome(next.fixedIncome);
     setTrackWorkTime(next.trackWorkTime);
+    setShowWorkTimeOnDashboard(next.showWorkTimeOnDashboard);
     setHourlyRate(next.hourlyRate);
     onOpenChange(false);
   }
@@ -128,6 +132,7 @@ export function CreateProjectModal({
         description: description.trim() || undefined,
         fixedIncome,
         trackWorkTime,
+        showWorkTimeOnDashboard: trackWorkTime && showWorkTimeOnDashboard,
         hourlyRate:
           trackWorkTime && !fixedIncome ? toEnglishDigits(hourlyRate) : undefined,
       });
@@ -215,6 +220,23 @@ export function CreateProjectModal({
             </div>
             {trackWorkTime ? (
               <>
+                <div className="flex items-center justify-between rounded-xl bg-surface-secondary p-3">
+                  <div>
+                    <p className="text-sm font-medium">نمایش در صفحه اصلی</p>
+                    <p className="mt-1 text-xs text-muted">
+                      میانبر ورود/خروج و حضور امروز در داشبورد
+                    </p>
+                  </div>
+                  <Switch
+                    isSelected={showWorkTimeOnDashboard}
+                    onChange={setShowWorkTimeOnDashboard}
+                    size="sm"
+                  >
+                    <Switch.Control>
+                      <Switch.Thumb />
+                    </Switch.Control>
+                  </Switch>
+                </div>
                 <div className="flex items-center justify-between rounded-xl bg-surface-secondary p-3">
                   <div>
                     <p className="text-sm font-medium">درآمد ثابت</p>

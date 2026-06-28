@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { Add } from "iconsax-reactjs";
 
@@ -13,10 +14,19 @@ import {
   PRIMARY_NAV_ITEMS,
 } from "@/components/common/layout/shell-nav";
 import { PATHS } from "@/common/constants";
+import { usePendingInvitesCount } from "@/common/hooks/usePendingInvitesCount";
 import { AppLogo } from "@/components/common/brand/AppLogo";
 
 export function ShellSidebar() {
   const pathname = usePathname();
+  const { count: pendingInvitesCount } = usePendingInvitesCount();
+  const navBadges = useMemo(
+    () =>
+      pendingInvitesCount > 0
+        ? { [PATHS.VENTURES]: pendingInvitesCount }
+        : undefined,
+    [pendingInvitesCount],
+  );
 
   return (
     <aside className="pb-sidebar" aria-label="ناوبری دسکتاپ" data-tour="sidebar">
@@ -72,10 +82,13 @@ export function ShellSidebar() {
             title={group.title}
             items={group.items}
             variant="sidebar"
+            itemBadges={navBadges}
           />
         ))}
 
-        <div className="mt-auto mt-6 border-t border-border/50 pt-5">
+        <div className="min-h-4 shrink-0" aria-hidden />
+
+        <div className="mt-auto border-t border-border/50 pt-5">
           <ShellAccountMenu variant="sidebar" showPlanning={false} />
         </div>
       </div>

@@ -38,6 +38,10 @@ import {
 } from "@/common/utils";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { AttachBudgetButton } from "@/components/common/budget/AttachBudgetModal";
+import {
+  formatDailyRemainingMessage,
+  useWorkSessionDailyReminder,
+} from "@/common/hooks/useWorkSessionDailyReminder";
 import { FormInput } from "@/components/common/form/FormFields";
 import {
   formatSessionRange,
@@ -68,6 +72,8 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
   const [manualOpen, setManualOpen] = useState(false);
   const [editSession, setEditSession] = useState<IWorkSession | null>(null);
   const [targetHours, setTargetHours] = useState("");
+  const [savedMonthTarget, setSavedMonthTarget] = useState<number | null>(null);
+  const [workingDaysInMonth, setWorkingDaysInMonth] = useState(0);
   const [savingTarget, setSavingTarget] = useState(false);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [targetSectionEl, setTargetSectionEl] = useState<HTMLElement | null>(null);
@@ -97,10 +103,12 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
       setReport(workReport);
       setAlerts(workAlerts);
       setTargetHours(
-        sessions.monthTargetMinutes
-          ? minutesToHoursInput(sessions.monthTargetMinutes)
+        sessions.requiredDailyMinutes
+          ? minutesToHoursInput(sessions.requiredDailyMinutes)
           : "",
       );
+      setSavedMonthTarget(sessions.monthTargetMinutes);
+      setWorkingDaysInMonth(sessions.workingDaysInMonth);
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا در بارگذاری");
     } finally {
@@ -133,8 +141,9 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
   async function handleClockIn() {
     setActionLoading(true);
     try {
-      await workTimeApi.clockIn(projectId);
-      showToast("ورود ثبت شد", "success");
+      const result = await workTimeApi.clockIn(projectId);
+      const msg = formatDailyRemainingMessage(result.dailyStatus);
+      showToast(msg ? `ورود ثبت شد · ${msg}` : "ورود ثبت شد", "success");
       await load();
     } catch (err) {
       showErrorToast(err);
@@ -159,18 +168,20 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
   async function saveTarget() {
     const minutes = hoursInputToMinutes(toEnglishDigits(targetHours));
     if (!minutes) {
-      showToast("ساعت موظف را وارد کنید");
+      showToast("ساعت روزانه را وارد کنید");
       return;
     }
     setSavingTarget(true);
     try {
-      await workTimeApi.upsertMonthlyTarget({
+      const result = await workTimeApi.upsertMonthlyTarget({
         year,
         month,
-        requiredMinutes: minutes,
+        requiredDailyMinutes: minutes,
         projectId,
       });
-      showToast("ساعت موظف پروژه ذخیره شد", "success");
+      setSavedMonthTarget(result.monthTargetMinutes);
+      setWorkingDaysInMonth(result.workingDaysInMonth);
+      showToast("ساعت روزانه ذخیره شد", "success");
       await load();
     } catch (err) {
       showErrorToast(err);
@@ -221,6 +232,11 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
 
   const isActive = Boolean(data?.activeSession);
 
+  useWorkSessionDailyReminder({
+    dailyStatus: data?.dailyStatus,
+    projectTitle,
+  });
+
   if (!loading && !trackWorkTime) {
     return (
       <div className="space-y-5 pb-6">
@@ -262,7 +278,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
             href={PATHS.WORK_ATTENDANCE}
             className="font-medium text-white/90 underline-offset-2 hover:underline"
           >
-            تحلیل کلی همه پروژه‌ها
+            همه پروژه‌ها
           </Link>
         </div>
       </section>
@@ -326,9 +342,20 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
               کارکرد این ماه:{" "}
               <span className="font-bold">{formatDurationMinutes(data.monthWorkedMinutes)}</span>
               {data.monthTargetMinutes
-                ? ` · هدف ${formatDurationMinutes(data.monthTargetMinutes)}`
+                ? ` · هدف ماه ${formatDurationMinutes(data.monthTargetMinutes)}`
                 : ""}
+              {data.dailyStatus?.workedTodayMinutes !== undefined ? (
+                <>
+                  {" · "}
+                  امروز {formatDurationMinutes(data.dailyStatus.workedTodayMinutes)}
+                </>
+              ) : null}
             </div>
+            {isActive && data.dailyStatus ? (
+              <p className="text-xs text-muted">
+                {formatDailyRemainingMessage(data.dailyStatus)}
+              </p>
+            ) : null}
             {progress !== null ? (
               <div className="h-2 overflow-hidden rounded-full bg-surface-secondary">
                 <div
@@ -363,13 +390,22 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
           >
             <div className="flex items-center gap-2">
               <Setting2 size={18} className="text-accent" />
-              <h2 className="font-semibold">ساعت موظف این پروژه (ماه جاری)</h2>
+              <h2 className="font-semibold">ساعت روزانه (روزهای کاری)</h2>
             </div>
+            <p className="text-xs text-muted">
+              جمعه‌ها و تعطیلات رسمی از محاسبه کم می‌شوند.
+              {workingDaysInMonth > 0 ? (
+                <>
+                  {" "}
+                  این ماه {toPersianDigits(String(workingDaysInMonth))} روز کاری است.
+                </>
+              ) : null}
+            </p>
             <div className="flex flex-wrap items-end gap-2">
               <div className="min-w-[140px] flex-1">
                 <FormInput
-                  label="ساعت موظف"
-                  placeholder={fixedIncome ? "مثلاً ۱۷۶" : "مثلاً ۸۰"}
+                  label="ساعت در هر روز کاری"
+                  placeholder={fixedIncome ? "مثلاً ۸" : "مثلاً ۳"}
                   value={targetHours}
                   onChange={(e) => setTargetHours(e.target.value)}
                 />
@@ -378,6 +414,17 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
                 ذخیره
               </Button>
             </div>
+            {savedMonthTarget && workingDaysInMonth > 0 && targetHours ? (
+              <p className="rounded-xl bg-accent/10 p-3 text-sm">
+                هدف این ماه:{" "}
+                <span className="font-bold">{formatDurationMinutes(savedMonthTarget)}</span>
+                <span className="text-muted">
+                  {" "}
+                  ({targetHours} ساعت × {toPersianDigits(String(workingDaysInMonth))} روز
+                  کاری)
+                </span>
+              </p>
+            ) : null}
           </section>
 
           <WorkMonthCalendar

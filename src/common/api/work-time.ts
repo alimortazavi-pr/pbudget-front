@@ -1,5 +1,6 @@
 import { axiosInstance } from "@/common/axiosInstance";
 import type {
+  IClockInResult,
   IProjectWorkSessions,
   IWorkMonthlyTarget,
   IWorkSession,
@@ -8,9 +9,17 @@ import type {
   IWorkTimeReport,
 } from "@/common/interfaces/work-time.interface";
 
-export async function fetchWorkTimeDashboard(year: number, month: number) {
+export async function fetchWorkTimeDashboard(
+  year: number,
+  month: number,
+  options?: { dashboardOnly?: boolean },
+) {
   const { data } = await axiosInstance.get<IWorkTimeDashboard>("/work-time/dashboard", {
-    params: { year, month },
+    params: {
+      year,
+      month,
+      ...(options?.dashboardOnly ? { dashboardOnly: "true" } : {}),
+    },
   });
   return data;
 }
@@ -59,14 +68,15 @@ export async function fetchMonthlyTargets(year: number, month: number) {
 export async function upsertMonthlyTarget(payload: {
   year: number;
   month: number;
-  requiredMinutes: number;
+  requiredDailyMinutes: number;
   projectId?: string;
 }) {
-  const { data } = await axiosInstance.put<{ target: IWorkMonthlyTarget }>(
-    "/work-time/monthly-targets",
-    payload,
-  );
-  return data.target;
+  const { data } = await axiosInstance.put<{
+    target: IWorkMonthlyTarget;
+    workingDaysInMonth: number;
+    monthTargetMinutes: number;
+  }>("/work-time/monthly-targets", payload);
+  return data;
 }
 
 export async function fetchProjectWorkTimeReport(
@@ -106,10 +116,10 @@ export async function fetchProjectWorkSessions(
 }
 
 export async function clockIn(projectId: string) {
-  const { data } = await axiosInstance.post<{ session: IWorkSession }>(
+  const { data } = await axiosInstance.post<IClockInResult>(
     `/work-time/projects/${projectId}/clock-in`,
   );
-  return data.session;
+  return data;
 }
 
 export async function clockOut(projectId: string) {

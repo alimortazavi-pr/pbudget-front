@@ -12,6 +12,7 @@ type ShellNavGroupProps = {
   items: readonly ShellNavItem[];
   variant?: "sidebar" | "drawer";
   onNavigate?: () => void;
+  itemBadges?: Record<string, number>;
 };
 
 type IconComponent = ComponentType<{
@@ -28,6 +29,7 @@ export function ShellNavGroup({
   items,
   variant = "drawer",
   onNavigate,
+  itemBadges,
 }: ShellNavGroupProps) {
   const pathname = usePathname();
 
@@ -49,6 +51,7 @@ export function ShellNavGroup({
             active={isActive(pathname, item.href)}
             className={linkClass}
             onNavigate={onNavigate}
+            badge={itemBadges?.[item.href]}
           />
         ))}
       </nav>
@@ -61,14 +64,23 @@ type ShellNavRowProps = {
   active: boolean;
   className: string;
   onNavigate?: () => void;
+  badge?: number;
 };
 
-function ShellNavRow({ item, active, className, onNavigate }: ShellNavRowProps) {
+function ShellNavRow({ item, active, className, onNavigate, badge }: ShellNavRowProps) {
   const Icon = item.icon as IconComponent;
+  const badgeLabel = badge && badge > 9 ? "9+" : badge;
   const content: ReactNode = (
     <>
       <Icon size={20} variant={active ? "Bold" : "Linear"} />
-      <span>{item.label}</span>
+      <span className="flex flex-1 items-center justify-between gap-2">
+        <span>{item.label}</span>
+        {badgeLabel ? (
+          <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-accent-foreground">
+            {badgeLabel}
+          </span>
+        ) : null}
+      </span>
     </>
   );
 

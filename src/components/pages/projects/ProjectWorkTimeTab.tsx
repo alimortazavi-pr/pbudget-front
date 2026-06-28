@@ -17,6 +17,7 @@ import {
   toEnglishDigits,
   toPersianDigits,
 } from "@/common/utils";
+import { formatDailyRemainingMessage } from "@/common/hooks/useWorkSessionDailyReminder";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { AttachBudgetButton } from "@/components/common/budget/AttachBudgetModal";
 import { FormInput } from "@/components/common/form/FormFields";
@@ -55,8 +56,8 @@ export function ProjectWorkTimeTab({
       const sessions = await workTimeApi.fetchProjectWorkSessions(projectId, year, month);
       setData(sessions);
       setTargetHours(
-        sessions.monthTargetMinutes
-          ? minutesToHoursInput(sessions.monthTargetMinutes)
+        sessions.requiredDailyMinutes
+          ? minutesToHoursInput(sessions.requiredDailyMinutes)
           : "",
       );
     } catch (err) {
@@ -84,8 +85,9 @@ export function ProjectWorkTimeTab({
   async function handleClockIn() {
     setActionLoading(true);
     try {
-      await workTimeApi.clockIn(projectId);
-      showToast("ورود ثبت شد", "success");
+      const result = await workTimeApi.clockIn(projectId);
+      const msg = formatDailyRemainingMessage(result.dailyStatus);
+      showToast(msg ? `ورود ثبت شد · ${msg}` : "ورود ثبت شد", "success");
       await load();
     } catch (err) {
       showErrorToast(err);
@@ -110,7 +112,7 @@ export function ProjectWorkTimeTab({
   async function saveTarget() {
     const minutes = hoursInputToMinutes(toEnglishDigits(targetHours));
     if (!minutes) {
-      showToast("ساعت موظف را وارد کنید");
+      showToast("ساعت روزانه را وارد کنید");
       return;
     }
     setSavingTarget(true);
@@ -118,10 +120,10 @@ export function ProjectWorkTimeTab({
       await workTimeApi.upsertMonthlyTarget({
         year,
         month,
-        requiredMinutes: minutes,
+        requiredDailyMinutes: minutes,
         projectId,
       });
-      showToast("ساعت موظف پروژه ذخیره شد", "success");
+      showToast("ساعت روزانه ذخیره شد", "success");
       await load();
     } catch (err) {
       showErrorToast(err);

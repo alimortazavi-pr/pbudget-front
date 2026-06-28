@@ -62,6 +62,7 @@ export interface IPartner {
   notes: string;
   inviteLink?: string | null;
   contextTitle?: string;
+  isOwner?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }

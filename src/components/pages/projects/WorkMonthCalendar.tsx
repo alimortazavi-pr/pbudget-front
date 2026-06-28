@@ -6,6 +6,9 @@ import {
   getJalaliDaysInMonth,
   getJalaliFirstWeekdayIndex,
   getJalaliNow,
+  isFriday,
+  isOfficialHoliday,
+  isWorkingDay,
   JALALI_WEEKDAYS_SHORT,
   toPersianDigits,
 } from "@/common/utils";
@@ -52,6 +55,8 @@ export function WorkMonthCalendar({
             day === now.jDate() &&
             month === now.jMonth() + 1 &&
             year === now.jYear();
+          const workingDay = isWorkingDay(year, month, day);
+          const offDay = !workingDay;
 
           return (
             <button
@@ -61,10 +66,21 @@ export function WorkMonthCalendar({
               className={`cursor-pointer rounded-xl p-2 text-center transition ${
                 isSelected
                   ? "bg-accent text-accent-foreground"
-                  : minutes > 0
-                    ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
-                    : "bg-surface-secondary text-muted"
+                  : offDay
+                    ? "bg-surface-secondary/60 text-muted/70 line-through decoration-muted/40"
+                    : minutes > 0
+                      ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                      : "bg-surface-secondary text-muted"
               } ${isToday ? "ring-2 ring-accent/50" : ""}`}
+              title={
+                offDay
+                  ? isFriday(year, month, day)
+                    ? "جمعه"
+                    : isOfficialHoliday(year, month, day)
+                      ? "تعطیل رسمی"
+                      : "غیرکاری"
+                  : undefined
+              }
             >
               <p className="text-sm font-semibold">{toPersianDigits(String(day))}</p>
               {minutes > 0 ? (
