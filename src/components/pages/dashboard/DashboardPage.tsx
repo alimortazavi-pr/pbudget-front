@@ -156,7 +156,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         periodBalance={(totalIncome ?? 0) - (totalCost ?? 0)}
       />
 
-      <div className="pb-dashboard-toolbar">
+      <div className="pb-dashboard-toolbar" data-tour="dashboard-period">
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -207,24 +207,26 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         </div>
       </div>
 
-      <DashboardFilterSection
-        categories={categories ?? []}
-        category={category}
-        year={year}
-        month={month}
-        day={day}
-        onCategoryChange={(nextCategory) =>
-          updateQuery({ category: nextCategory })
-        }
-        onApplyFilter={(patch) =>
-          updateQuery({
-            category: patch.category,
-            year: patch.year,
-            month: patch.month,
-            day: patch.day,
-          })
-        }
-      />
+      <div data-tour="dashboard-filter">
+        <DashboardFilterSection
+          categories={categories ?? []}
+          category={category}
+          year={year}
+          month={month}
+          day={day}
+          onCategoryChange={(nextCategory) =>
+            updateQuery({ category: nextCategory })
+          }
+          onApplyFilter={(patch) =>
+            updateQuery({
+              category: patch.category,
+              year: patch.year,
+              month: patch.month,
+              day: patch.day,
+            })
+          }
+        />
+      </div>
 
       <div className="flex items-center justify-between pt-1 lg:pt-2">
         <h3 className="text-base font-semibold lg:text-lg">تراکنش‌ها</h3>

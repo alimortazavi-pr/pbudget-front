@@ -226,7 +226,7 @@ export function TasksPage() {
         </div>
       </section>
 
-      <div className="mb-4 flex gap-2">
+      <div className="mb-4 flex gap-2" data-tour="tasks-section-tabs">
         {(
           [
             { id: "schedule" as const, label: "لیست برنامه" },
@@ -252,6 +252,7 @@ export function TasksPage() {
         <TaskRoutinesSection />
       ) : (
         <>
+      <div data-tour="tasks-period">
       <div className="mb-4 flex flex-wrap gap-2">
         {(
           [
@@ -281,6 +282,7 @@ export function TasksPage() {
         onNext={handlePeriodNext}
         onToday={goToToday}
       />
+      </div>
 
       {summary && (
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -342,6 +344,7 @@ export function TasksPage() {
         <form
           onSubmit={(e) => void quickAdd(e)}
           className="glass mt-4 rounded-2xl p-3"
+          data-tour="tasks-quick-add"
         >
           <TextField className="gap-2">
             <Label>تسک سریع</Label>
@@ -382,7 +385,7 @@ export function TasksPage() {
           </Button>
         </div>
       ) : (
-        <div className="mt-4 space-y-2">
+        <div className="mt-4 space-y-2" data-tour="tasks-list">
           {tasks.map((task) => {
             const projectTitle = getProjectTitle(task);
             const overdue = isOverdue(task);

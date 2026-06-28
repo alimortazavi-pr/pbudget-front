@@ -1,12 +1,15 @@
 import { PATHS } from "@/common/constants";
 
 export type TourStep = {
-  /** CSS selector or data-tour attribute value */
-  target: string;
+  /** CSS selector — first visible match wins (fixes hidden sidebar duplicates) */
+  target?: string;
   title: string;
   description: string;
-  /** Position of tooltip relative to target */
   placement?: "top" | "bottom" | "start" | "end" | "center";
+  /** Skip step if target missing (e.g. voice FAB when disabled) */
+  optional?: boolean;
+  /** Limit step to viewport type */
+  when?: "mobile" | "desktop" | "all";
 };
 
 export type TourDefinition = {
@@ -20,32 +23,64 @@ export const ONBOARDING_TOUR: TourDefinition = {
   name: "راهنمای شروع",
   steps: [
     {
+      title: "به Paradise Budget خوش آمدید",
+      description:
+        "در چند قدم کوتاه با مهم‌ترین بخش‌های اپ آشنا می‌شوید. هر وقت خواستید دوباره از دکمه راهنما در بالای صفحه شروع کنید.",
+      placement: "center",
+    },
+    {
       target: '[data-tour="nav-create"]',
       title: "ثبت تراکنش",
       description:
-        "با این دکمه سریع درآمد یا هزینه ثبت کنید. در موبایل دکمه + وسط نوار پایین است.",
+        "با دکمه + وسط نوار پایین، سریع درآمد یا هزینه ثبت کنید. پرکاربردترین میانبر اپ همینجاست.",
       placement: "top",
+      when: "mobile",
+    },
+    {
+      target: '[data-tour="nav-tab-bar"]',
+      title: "ناوبری پایین",
+      description:
+        "خانه، برنامه روزانه، یادداشت‌ها و منوی «بیشتر» — همه از این نوار در دسترس‌اند.",
+      placement: "top",
+      when: "mobile",
+    },
+    {
+      target: '[data-tour="nav-more"]',
+      title: "منوی بیشتر",
+      description:
+        "پروژه‌ها، بدهی‌ها، اقساط، چک‌ها، کسب‌وکار و تنظیمات حساب — همه از این منو.",
+      placement: "top",
+      when: "mobile",
+    },
+    {
+      target: '[data-tour="nav-create"]',
+      title: "ثبت تراکنش",
+      description: "از این دکمه در منوی کناری سریع درآمد یا هزینه ثبت کنید.",
+      placement: "end",
+      when: "desktop",
+    },
+    {
+      target: '[data-tour="sidebar"]',
+      title: "منوی کناری",
+      description:
+        "دسترسی به داشبورد، تحلیل مالی، صندوق‌ها، کارت‌ها، دسته‌بندی‌ها و بخش‌های برنامه‌ریزی.",
+      placement: "end",
+      when: "desktop",
     },
     {
       target: '[data-tour="voice-fab"]',
       title: "دستیار صوتی",
       description:
-        "با میکروفون تراکنش، تسک، یادداشت، بدهی و بیشتر را با صدا ثبت کنید — در همه صفحات فعال است.",
+        "با میکروفون شناور، تراکنش، تسک، یادداشت، بدهی و بیشتر را با صدا ثبت کنید — در همه صفحات فعال است.",
       placement: "top",
+      optional: true,
     },
     {
       target: '[data-tour="tour-button"]',
-      title: "راهنما",
+      title: "راهنمای هر صفحه",
       description:
-        "هر وقت خواستید دوباره راهنما ببینید، این دکمه را بزنید. برای هر صفحه هم راهنمای جداگانه دارد.",
+        "هر وقت خواستید دوباره راهنما ببینید این دکمه را بزنید. در هر صفحه راهنمای اختصاصی همان بخش نمایش داده می‌شود.",
       placement: "bottom",
-    },
-    {
-      target: '[data-tour="sidebar"]',
-      title: "منوی کناری (دسکتاپ)",
-      description:
-        "در دسکتاپ از اینجا به همه بخش‌ها دسترسی دارید — مالی، برنامه‌ریزی، کسب‌وکار و تنظیمات.",
-      placement: "end",
     },
   ],
 };
@@ -57,15 +92,30 @@ export const PAGE_TOURS: Record<string, TourDefinition> = {
     steps: [
       {
         target: '[data-tour="dashboard-balance"]',
-        title: "موجودی",
-        description: "موجودی فعلی کیف پول و خلاصه درآمد/هزینه دوره.",
+        title: "موجودی و خلاصه دوره",
+        description:
+          "موجودی فعلی کیف پول به‌همراه دریافتی و پرداختی همین بازه — همیشه بالای داشبورد در دسترس است.",
+        placement: "bottom",
+      },
+      {
+        target: '[data-tour="dashboard-period"]',
+        title: "بازه زمانی",
+        description:
+          "بین نمای روزانه و ماهانه جابه‌جا شوید و با فلش‌ها روز یا ماه قبل/بعد را ببینید.",
+        placement: "bottom",
+      },
+      {
+        target: '[data-tour="dashboard-filter"]',
+        title: "فیلتر تراکنش‌ها",
+        description: "بر اساس دسته‌بندی یا تاریخ دقیق، لیست تراکنش‌ها را محدود کنید.",
         placement: "bottom",
       },
       {
         target: '[data-tour="dashboard-transactions"]',
-        title: "تراکنش‌ها",
-        description: "لیست تراکنش‌های دوره — برای ویرایش روی هر کدام بزنید.",
+        title: "لیست تراکنش‌ها",
+        description: "روی هر تراکنش بزنید تا ویرایش یا حذف کنید. دکمه خروجی هم گزارش Excel می‌دهد.",
         placement: "top",
+        optional: true,
       },
     ],
   },
@@ -74,10 +124,26 @@ export const PAGE_TOURS: Record<string, TourDefinition> = {
     name: "راهنمای تحلیل",
     steps: [
       {
-        target: '[data-tour="page-content"]',
-        title: "تحلیل مالی",
-        description: "نمودارها و KPIهای مالی — دوره را از بالای صفحه تغییر دهید.",
-        placement: "center",
+        target: '[data-tour="analysis-filters"]',
+        title: "فیلترهای تحلیل",
+        description:
+          "بازه (روز/ماه/سال)، دسته، کارت پرداخت و نوع تراکنش را تنظیم کنید. مقایسه دوره‌ای هم از همینجا فعال می‌شود.",
+        placement: "bottom",
+      },
+      {
+        target: '[data-tour="analysis-kpi"]',
+        title: "شاخص‌های کلیدی",
+        description: "خلاصه عددی درآمد، هزینه، پس‌انداز و نسبت‌ها — قبل از نمودارها نگاهی سریع بیندازید.",
+        placement: "bottom",
+        optional: true,
+      },
+      {
+        target: '[data-tour="analysis-charts"]',
+        title: "نمودارهای تعاملی",
+        description:
+          "روند زمانی، توزیع دسته‌ها و بینش‌های عملی — برای تصمیم‌گیری مالی از این بخش استفاده کنید.",
+        placement: "top",
+        optional: true,
       },
     ],
   },
@@ -86,10 +152,31 @@ export const PAGE_TOURS: Record<string, TourDefinition> = {
     name: "راهنمای برنامه روزانه",
     steps: [
       {
-        target: '[data-tour="page-content"]',
-        title: "برنامه روزانه",
-        description: "تسک‌های روزانه را اضافه، تکمیل یا حذف کنید.",
-        placement: "center",
+        target: '[data-tour="tasks-section-tabs"]',
+        title: "لیست برنامه و تسک‌های ثابت",
+        description: "بین برنامه روزانه/ماهانه و تسک‌های تکراری (routine) جابه‌جا شوید.",
+        placement: "bottom",
+      },
+      {
+        target: '[data-tour="tasks-period"]',
+        title: "بازه و ناوبری",
+        description: "روزانه، ماهانه یا سالانه — با فلش‌ها بین دوره‌ها حرکت کنید.",
+        placement: "bottom",
+      },
+      {
+        target: '[data-tour="tasks-quick-add"]',
+        title: "افزودن سریع",
+        description: "در نمای روزانه، تسک را تایپ و Enter بزنید — بدون باز کردن فرم کامل.",
+        placement: "top",
+        optional: true,
+      },
+      {
+        target: '[data-tour="tasks-list"]',
+        title: "مدیریت تسک‌ها",
+        description:
+          "سوئیچ برای تکمیل، دکمه ویرایش برای جزئیات (اولویت، ساعت، پروژه) و حذف.",
+        placement: "top",
+        optional: true,
       },
     ],
   },
@@ -98,9 +185,83 @@ export const PAGE_TOURS: Record<string, TourDefinition> = {
     name: "راهنمای تنظیمات",
     steps: [
       {
+        target: '[data-tour="settings-theme"]',
+        title: "تم اپ",
+        description: "بین حالت روشن و تاریک جابه‌جا شوید — روی همه صفحات اعمال می‌شود.",
+        placement: "bottom",
+      },
+      {
+        target: '[data-tour="settings-voice"]',
+        title: "دستیار صوتی",
+        description: "فعال/غیرفعال کردن دکمه میکروفون شناور در تمام صفحات.",
+        placement: "bottom",
+      },
+      {
+        target: '[data-tour="settings-telegram"]',
+        title: "اتصال تلگرام",
+        description: "حساب تلگرام را وصل کنید تا اعلان‌ها و دستورات بات در دسترس باشد.",
+        placement: "bottom",
+      },
+      {
+        target: '[data-tour="settings-support"]',
+        title: "پشتیبانی و نسخه",
+        description: "تماس با پشتیبانی، مشاهده تغییرات نسخه و بروزرسانی اپ.",
+        placement: "top",
+      },
+    ],
+  },
+  [PATHS.BANK_IMPORT]: {
+    id: "page-bank-import",
+    name: "راهنمای ورود از بانک",
+    steps: [
+      {
+        title: "ورود از صورتحساب بانک",
+        description:
+          "فایل Excel یا CSV بانک را آپلود کنید؛ تراکنش‌ها خودکار شناسایی و برای تأیید نمایش داده می‌شوند.",
+        placement: "center",
+      },
+      {
         target: '[data-tour="page-content"]',
-        title: "تنظیمات",
-        description: "تم، دستیار صوتی، تلگرام و پشتیبانی — همه از اینجا.",
+        title: "مراحل واردسازی",
+        description: "بانک را انتخاب کنید، فایل را بکشید و پس از بررسی، تراکنش‌های تأییدشده را ثبت کنید.",
+        placement: "center",
+      },
+    ],
+  },
+  [PATHS.BOXES]: {
+    id: "page-boxes",
+    name: "راهنمای صندوق‌ها",
+    steps: [
+      {
+        target: '[data-tour="page-content"]',
+        title: "صندوق‌های پس‌انداز",
+        description:
+          "برای اهداف مختلف (مسافرت، اضطراری و…) صندوق بسازید و موجودی هر کدام را جدا پیگیری کنید.",
+        placement: "center",
+      },
+    ],
+  },
+  [PATHS.DEBTS]: {
+    id: "page-debts",
+    name: "راهنمای طلب و بدهی",
+    steps: [
+      {
+        target: '[data-tour="page-content"]',
+        title: "طلب و بدهی",
+        description: "بدهی‌ها و طلب‌های خود را ثبت کنید، تسویه جزئی انجام دهید و مانده را ببینید.",
+        placement: "center",
+      },
+    ],
+  },
+  [PATHS.PROJECTS]: {
+    id: "page-projects",
+    name: "راهنمای پروژه‌ها",
+    steps: [
+      {
+        target: '[data-tour="page-content"]',
+        title: "مدیریت پروژه",
+        description:
+          "پروژه بسازید، هزینه/درآمد پروژه‌ای ثبت کنید، تسک‌ها را لینک دهید و حضور و غیاب را پیگیری کنید.",
         placement: "center",
       },
     ],

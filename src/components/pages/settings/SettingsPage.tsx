@@ -16,7 +16,7 @@ export function SettingsPage() {
 
   return (
     <div className="pb-form-page space-y-6">
-      <div className="glass rounded-2xl p-5">
+      <div className="glass rounded-2xl p-5" data-tour="settings-theme">
         <h2 className="text-lg font-bold">ظاهر</h2>
         <p className="mt-1 text-sm text-muted">تم روشن یا تاریک اپلیکیشن</p>
         <button
@@ -29,10 +29,15 @@ export function SettingsPage() {
         </button>
       </div>
 
-      <VoiceAssistantSection />
+      <div data-tour="settings-voice">
+        <VoiceAssistantSection />
+      </div>
 
-      <TelegramConnectSection />
+      <div data-tour="settings-telegram">
+        <TelegramConnectSection />
+      </div>
 
+      <div data-tour="settings-support" className="space-y-6">
       <div className="glass rounded-2xl p-5">
         <h2 className="text-lg font-bold">نسخه اپ</h2>
         <p className="mt-1 text-sm text-muted">نسخه فعلی: {APP_VERSION}</p>
@@ -59,6 +64,7 @@ export function SettingsPage() {
           <Call size={20} />
           تماس با پشتیبانی
         </a>
+      </div>
       </div>
     </div>
   );

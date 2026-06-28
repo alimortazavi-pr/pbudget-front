@@ -231,18 +231,20 @@ export function AnalysisPage() {
         </p>
       </section>
 
-      <AnalysisFilters
-        duration={duration}
-        year={year}
-        month={month}
-        day={day}
-        category={category}
-        paymentCard={paymentCard}
-        type={type}
-        compare={compare}
-        categories={categories ?? []}
-        onChange={updateQuery}
-      />
+      <div data-tour="analysis-filters">
+        <AnalysisFilters
+          duration={duration}
+          year={year}
+          month={month}
+          day={day}
+          category={category}
+          paymentCard={paymentCard}
+          type={type}
+          compare={compare}
+          categories={categories ?? []}
+          onChange={updateQuery}
+        />
+      </div>
 
       {loading && (
         <div className="glass rounded-2xl p-10 text-center text-muted">
@@ -265,9 +267,13 @@ export function AnalysisPage() {
             </div>
           )}
 
-          <AnalysisKpiCards report={report} />
+          <div data-tour="analysis-kpi">
+            <AnalysisKpiCards report={report} />
+          </div>
 
-          <AnalysisCharts report={report} duration={duration} />
+          <div data-tour="analysis-charts">
+            <AnalysisCharts report={report} duration={duration} />
+          </div>
 
           <div className="grid gap-4 xl:grid-cols-2">
             <AnalysisBudgetLimitsPanel report={report} />

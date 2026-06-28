@@ -112,7 +112,11 @@ export function MobileAppShell({
         </div>
 
         {!hideTabBar && (
-          <nav className="pb-tab-bar lg:hidden" aria-label="ناوبری اصلی">
+          <nav
+            className="pb-tab-bar lg:hidden"
+            aria-label="ناوبری اصلی"
+            data-tour="nav-tab-bar"
+          >
             <div className="pb-tab-bar-inner">
               {MOBILE_TAB_ITEMS.map((item) => {
                 if ("fab" in item && item.fab) {
@@ -138,6 +142,7 @@ export function MobileAppShell({
                       type="button"
                       className="pb-nav-item"
                       data-active={drawerOpen ? "true" : "false"}
+                      data-tour="nav-more"
                       onClick={() => setDrawerOpen(true)}
                     >
                       <item.icon size={22} variant="Bold" />
