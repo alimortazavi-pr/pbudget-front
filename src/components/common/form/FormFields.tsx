@@ -11,9 +11,10 @@ import {
   TextField,
 } from "@heroui/react";
 import type { ChangeEvent, ComponentProps, FocusEvent } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { formatPriceInput, parsePriceInput } from "@/common/utils/price-input";
-import { useModalPortalContainer } from "@/common/hooks/useModalPortalContainer";
+import { useFormModalPortalPopover } from "@/common/hooks/useFormModalPortalPopover";
+import { isFormOverlayFocusTarget } from "@/common/utils/form-overlay.util";
 import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
 import { scrollFieldIntoView } from "@/common/utils/scroll";
 
@@ -32,6 +33,8 @@ export function FormPersonComboBox({
   options,
   placeholder = "نام طرف حساب را انتخاب یا وارد کنید",
 }: FormPersonComboBoxProps) {
+  const { wrapperRef, portalProps } = useFormModalPortalPopover();
+
   const items = useMemo(
     () => options.map((person) => ({ id: person, label: person })),
     [options],
@@ -46,40 +49,42 @@ export function FormPersonComboBox({
   }, [items, options, value]);
 
   return (
-    <ComboBox
-      allowsCustomValue
-      fullWidth
-      variant="secondary"
-      menuTrigger="focus"
-      inputValue={value}
-      onInputChange={onChange}
-      selectedKey={value.trim() || null}
-      onSelectionChange={(key) => {
-        if (key == null) return;
-        onChange(String(key));
-      }}
-      items={mergedItems}
-    >
-      <Label className="mb-1.5 text-sm font-medium">{label}</Label>
-      <ComboBox.InputGroup>
-        <Input placeholder={placeholder} dir="rtl" className="text-start" />
-        <ComboBox.Trigger />
-      </ComboBox.InputGroup>
-      <ComboBox.Popover>
-        <ListBox
-          aria-label={label}
-          className="max-h-56 overflow-y-auto p-1 text-start"
-          dir="rtl"
-          items={mergedItems}
-        >
-          {(item) => (
-            <ListBoxItem id={item.id} textValue={item.label}>
-              {item.label}
-            </ListBoxItem>
-          )}
-        </ListBox>
-      </ComboBox.Popover>
-    </ComboBox>
+    <div ref={wrapperRef} className="pb-form-combobox relative z-[1]">
+      <ComboBox
+        allowsCustomValue
+        fullWidth
+        variant="secondary"
+        menuTrigger="input"
+        inputValue={value}
+        onInputChange={onChange}
+        selectedKey={value.trim() || null}
+        onSelectionChange={(key) => {
+          if (key == null) return;
+          onChange(String(key));
+        }}
+        items={mergedItems}
+      >
+        <Label className="mb-1.5 text-sm font-medium">{label}</Label>
+        <ComboBox.InputGroup>
+          <Input placeholder={placeholder} dir="rtl" className="text-start" />
+          <ComboBox.Trigger />
+        </ComboBox.InputGroup>
+        <ComboBox.Popover {...portalProps}>
+          <ListBox
+            aria-label={label}
+            className="max-h-56 overflow-y-auto p-1 text-start"
+            dir="rtl"
+            items={mergedItems}
+          >
+            {(item) => (
+              <ListBoxItem id={item.id} textValue={item.label}>
+                {item.label}
+              </ListBoxItem>
+            )}
+          </ListBox>
+        </ComboBox.Popover>
+      </ComboBox>
+    </div>
   );
 }
 
@@ -102,8 +107,7 @@ export function FormCategoryComboBox({
   emptyMessage = "دسته‌ای یافت نشد",
   isDisabled,
 }: FormCategoryComboBoxProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const { wrapperRef, portalContainer, useModalPortal } = useModalPortalContainer<HTMLDivElement>();
+  const { wrapperRef, portalProps } = useFormModalPortalPopover();
   const isNeutralSelection = !selectedKey || selectedKey === "all";
 
   const selectedOption = useMemo(
@@ -120,21 +124,25 @@ export function FormCategoryComboBox({
     if (!isSearching) {
       setInputValue(committedLabel);
     }
-  }, [committedLabel, selectedKey, isSearching]);
+  }, [committedLabel, isSearching]);
 
   const filteredItems = useMemo(() => {
+    if (!isSearching) return options;
     const query = inputValue.trim().toLowerCase();
     if (!query) return options;
     return options.filter((item) => item.label.toLowerCase().includes(query));
-  }, [inputValue, options]);
+  }, [inputValue, isSearching, options]);
 
   function handleFocus(event: FocusEvent<HTMLInputElement>) {
-    setIsSearching(true);
-    setInputValue("");
-    event.currentTarget.select();
+    requestAnimationFrame(() => {
+      if (document.activeElement === event.currentTarget) {
+        event.currentTarget.select();
+      }
+    });
   }
 
-  function resetInputToSelection() {
+  function handleBlur(event: FocusEvent<HTMLInputElement>) {
+    if (isFormOverlayFocusTarget(event.relatedTarget)) return;
     setIsSearching(false);
     setInputValue(committedLabel);
   }
@@ -144,11 +152,14 @@ export function FormCategoryComboBox({
       <ComboBox
         fullWidth
         variant="secondary"
-        menuTrigger="focus"
+        menuTrigger="input"
         isDisabled={isDisabled}
         selectedKey={selectedKey ?? null}
         inputValue={inputValue}
-        onInputChange={setInputValue}
+        onInputChange={(value) => {
+          setInputValue(value);
+          setIsSearching(true);
+        }}
         onSelectionChange={(key) => {
           if (key == null) return;
           const nextKey = String(key);
@@ -156,25 +167,21 @@ export function FormCategoryComboBox({
           onSelectionChange?.(nextKey);
           setInputValue(isNeutral ? "" : options.find((item) => item.id === nextKey)?.label ?? "");
           setIsSearching(false);
-          inputRef.current?.blur();
         }}
         items={filteredItems}
       >
         <Label className="mb-1.5 text-sm font-medium">{label}</Label>
         <ComboBox.InputGroup>
           <Input
-            ref={inputRef}
             placeholder={placeholder}
             dir="rtl"
             className="text-start"
             onFocus={handleFocus}
-            onBlur={resetInputToSelection}
+            onBlur={handleBlur}
           />
           <ComboBox.Trigger />
         </ComboBox.InputGroup>
-        <ComboBox.Popover
-          UNSTABLE_portalContainer={useModalPortal ? portalContainer ?? undefined : undefined}
-        >
+        <ComboBox.Popover {...portalProps}>
           {filteredItems.length === 0 ? (
             <p className="px-3 py-6 text-center text-sm text-muted">{emptyMessage}</p>
           ) : (
@@ -298,7 +305,7 @@ export function FormSelect({
   emptyMessage = "موردی یافت نشد",
   isDisabled,
 }: FormSelectProps) {
-  const { wrapperRef, portalContainer, useModalPortal } = useModalPortalContainer<HTMLDivElement>();
+  const { wrapperRef, portalProps } = useFormModalPortalPopover();
   const resolvedKey = selectedKey || null;
 
   return (
@@ -319,9 +326,7 @@ export function FormSelect({
           <Select.Value />
           <Select.Indicator />
         </Select.Trigger>
-        <Select.Popover
-          UNSTABLE_portalContainer={useModalPortal ? portalContainer ?? undefined : undefined}
-        >
+        <Select.Popover {...portalProps}>
           {options.length === 0 ? (
             <p className="px-3 py-6 text-center text-sm text-muted">{emptyMessage}</p>
           ) : (

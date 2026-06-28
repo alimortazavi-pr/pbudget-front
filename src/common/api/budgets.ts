@@ -4,6 +4,7 @@ import type {
   IBudgetMutationResult,
   IBudgetsSummary,
 } from "@/common/interfaces/budget.interface";
+import { sortBudgetsByTransactionDateDesc } from "@/common/utils/jalali-date";
 
 export type BudgetDuration = "daily" | "monthly" | "yearly" | "all";
 export type BudgetExportType = "excel" | "html";
@@ -22,7 +23,10 @@ export async function fetchBudgets(params: Record<string, string>, token?: strin
     params,
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
   });
-  return data;
+  return {
+    ...data,
+    budgets: sortBudgetsByTransactionDateDesc(data.budgets ?? []),
+  };
 }
 
 export async function fetchBudgetsForAttach(params: {

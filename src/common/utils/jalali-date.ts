@@ -147,4 +147,38 @@ export function formatJalaliDateTime(
   return `${date} · ${time}`;
 }
 
+type BudgetDateParts = {
+  year: string | number;
+  month: string | number;
+  day: string | number;
+  createdAt?: string;
+};
+
+function budgetDateTimestamp({ year, month, day }: BudgetDateParts) {
+  return (
+    Number(year) * 10_000 +
+    Number(month) * 100 +
+    Number(day)
+  );
+}
+
+/** Sort by user-set transaction date (newest first), then creation time. */
+export function compareBudgetsByTransactionDateDesc(
+  a: BudgetDateParts,
+  b: BudgetDateParts,
+) {
+  const dateDiff = budgetDateTimestamp(b) - budgetDateTimestamp(a);
+  if (dateDiff !== 0) return dateDiff;
+  return (
+    new Date(b.createdAt ?? 0).getTime() -
+    new Date(a.createdAt ?? 0).getTime()
+  );
+}
+
+export function sortBudgetsByTransactionDateDesc<T extends BudgetDateParts>(
+  budgets: T[],
+): T[] {
+  return [...budgets].sort(compareBudgetsByTransactionDateDesc);
+}
+
 export { moment };
