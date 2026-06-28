@@ -1,19 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 
-const PICKER_TOP_LAYER_ATTR = "data-react-aria-top-layer";
-
-/** React Aria marks everything outside an open modal as `inert`, which blocks portaled pickers on `body`. */
-function keepPickerContainersInteractive() {
-  document.querySelectorAll<HTMLElement>(".rmdp-container").forEach((el) => {
-    el.setAttribute(PICKER_TOP_LAYER_ATTR, "true");
-  });
-}
-
-function clearPickerContainerMarkers() {
-  document
-    .querySelectorAll<HTMLElement>(`.rmdp-container[${PICKER_TOP_LAYER_ATTR}]`)
-    .forEach((el) => el.removeAttribute(PICKER_TOP_LAYER_ATTR));
-}
+import {
+  clearModalPortalOverlayMarkers,
+  keepModalPortalOverlaysInteractive,
+} from "@/common/utils/modal-portal-overlays";
 
 export function useDatePickerOverlay(inModal: boolean) {
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -42,13 +32,13 @@ export function useDatePickerOverlay(inModal: boolean) {
   useEffect(() => {
     if (!calendarOpen) return;
 
-    keepPickerContainersInteractive();
-    const observer = new MutationObserver(keepPickerContainersInteractive);
+    keepModalPortalOverlaysInteractive();
+    const observer = new MutationObserver(keepModalPortalOverlaysInteractive);
     observer.observe(document.body, { childList: true, subtree: true });
 
     return () => {
       observer.disconnect();
-      clearPickerContainerMarkers();
+      clearModalPortalOverlayMarkers();
     };
   }, [calendarOpen]);
 

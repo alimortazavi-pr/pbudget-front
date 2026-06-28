@@ -220,8 +220,21 @@
     pointer-events: auto !important;
   }
 
+  .modal__dialog [data-slot="combo-box-popover"],
+  .modal__dialog [data-slot="select-popover"],
+  .modal__dialog .combo-box__popover,
+  .modal__dialog .select__popover {
+    z-index: 100000 !important;
+    pointer-events: auto !important;
+  }
+
+  .modal__dialog [data-slot="combo-box-popover"] *,
+  .modal__dialog [data-slot="select-popover"] * {
+    pointer-events: auto !important;
+  }
+
   /* Modal: while calendar is open, underlying fields must not steal clicks */
-  .modal__dialog.pb-modal-date-open .modal__body > *:not(.pb-filter-date) {
+  .modal__dialog.pb-modal-date-open .modal__body > *:not(.pb-filter-date):not(.pb-form-combobox):not(.pb-form-select) {
     pointer-events: none !important;
   }
 

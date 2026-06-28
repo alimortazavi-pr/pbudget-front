@@ -11,8 +11,9 @@ import {
   TextField,
 } from "@heroui/react";
 import type { ChangeEvent, ComponentProps, FocusEvent } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { formatPriceInput, parsePriceInput } from "@/common/utils/price-input";
+import { useModalPortalContainer } from "@/common/hooks/useModalPortalContainer";
 import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
 import { scrollFieldIntoView } from "@/common/utils/scroll";
 
@@ -101,6 +102,8 @@ export function FormCategoryComboBox({
   emptyMessage = "دسته‌ای یافت نشد",
   isDisabled,
 }: FormCategoryComboBoxProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { wrapperRef, portalContainer, useModalPortal } = useModalPortalContainer<HTMLDivElement>();
   const isNeutralSelection = !selectedKey || selectedKey === "all";
 
   const selectedOption = useMemo(
@@ -137,54 +140,60 @@ export function FormCategoryComboBox({
   }
 
   return (
-    <ComboBox
-      fullWidth
-      variant="secondary"
-      menuTrigger="focus"
-      isDisabled={isDisabled}
-      selectedKey={selectedKey ?? null}
-      inputValue={inputValue}
-      onInputChange={setInputValue}
-      onSelectionChange={(key) => {
-        if (key == null) return;
-        const nextKey = String(key);
-        const isNeutral = nextKey === "all";
-        onSelectionChange?.(nextKey);
-        setInputValue(isNeutral ? "" : options.find((item) => item.id === nextKey)?.label ?? "");
-        setIsSearching(false);
-      }}
-      items={filteredItems}
-    >
-      <Label className="mb-1.5 text-sm font-medium">{label}</Label>
-      <ComboBox.InputGroup>
-        <Input
-          placeholder={placeholder}
-          dir="rtl"
-          className="text-start"
-          onFocus={handleFocus}
-          onBlur={resetInputToSelection}
-        />
-        <ComboBox.Trigger />
-      </ComboBox.InputGroup>
-      <ComboBox.Popover>
-        {filteredItems.length === 0 ? (
-          <p className="px-3 py-6 text-center text-sm text-muted">{emptyMessage}</p>
-        ) : (
-          <ListBox
-            aria-label={label}
-            className="max-h-64 overflow-y-auto p-1 text-start"
+    <div ref={wrapperRef} className="pb-form-combobox relative z-[1]">
+      <ComboBox
+        fullWidth
+        variant="secondary"
+        menuTrigger="focus"
+        isDisabled={isDisabled}
+        selectedKey={selectedKey ?? null}
+        inputValue={inputValue}
+        onInputChange={setInputValue}
+        onSelectionChange={(key) => {
+          if (key == null) return;
+          const nextKey = String(key);
+          const isNeutral = nextKey === "all";
+          onSelectionChange?.(nextKey);
+          setInputValue(isNeutral ? "" : options.find((item) => item.id === nextKey)?.label ?? "");
+          setIsSearching(false);
+          inputRef.current?.blur();
+        }}
+        items={filteredItems}
+      >
+        <Label className="mb-1.5 text-sm font-medium">{label}</Label>
+        <ComboBox.InputGroup>
+          <Input
+            ref={inputRef}
+            placeholder={placeholder}
             dir="rtl"
-            items={filteredItems}
-          >
-            {(item) => (
-              <ListBoxItem id={item.id} textValue={item.label}>
-                {item.label}
-              </ListBoxItem>
-            )}
-          </ListBox>
-        )}
-      </ComboBox.Popover>
-    </ComboBox>
+            className="text-start"
+            onFocus={handleFocus}
+            onBlur={resetInputToSelection}
+          />
+          <ComboBox.Trigger />
+        </ComboBox.InputGroup>
+        <ComboBox.Popover
+          UNSTABLE_portalContainer={useModalPortal ? portalContainer ?? undefined : undefined}
+        >
+          {filteredItems.length === 0 ? (
+            <p className="px-3 py-6 text-center text-sm text-muted">{emptyMessage}</p>
+          ) : (
+            <ListBox
+              aria-label={label}
+              className="max-h-64 overflow-y-auto p-1 text-start"
+              dir="rtl"
+              items={filteredItems}
+            >
+              {(item) => (
+                <ListBoxItem id={item.id} textValue={item.label}>
+                  {item.label}
+                </ListBoxItem>
+              )}
+            </ListBox>
+          )}
+        </ComboBox.Popover>
+      </ComboBox>
+    </div>
   );
 }
 
@@ -289,43 +298,48 @@ export function FormSelect({
   emptyMessage = "موردی یافت نشد",
   isDisabled,
 }: FormSelectProps) {
+  const { wrapperRef, portalContainer, useModalPortal } = useModalPortalContainer<HTMLDivElement>();
   const resolvedKey = selectedKey || null;
 
   return (
-    <Select
-      fullWidth
-      variant="secondary"
-      isDisabled={isDisabled}
-      selectedKey={resolvedKey}
-      onSelectionChange={(key) => {
-        if (key == null) return;
-        onSelectionChange?.(String(key));
-      }}
-      placeholder={placeholder}
-    >
-      <Label className="mb-1.5 text-sm font-medium">{label}</Label>
-      <Select.Trigger className="min-h-11 w-full">
-        <Select.Value />
-        <Select.Indicator />
-      </Select.Trigger>
-      <Select.Popover>
-        {options.length === 0 ? (
-          <p className="px-3 py-6 text-center text-sm text-muted">{emptyMessage}</p>
-        ) : (
-          <ListBox
-            aria-label={label}
-            className="max-h-64 overflow-y-auto p-1"
-            items={options}
-          >
-            {(item) => (
-              <ListBoxItem id={item.id} textValue={item.label}>
-                {item.label}
-              </ListBoxItem>
-            )}
-          </ListBox>
-        )}
-      </Select.Popover>
-    </Select>
+    <div ref={wrapperRef} className="pb-form-select relative z-[1]">
+      <Select
+        fullWidth
+        variant="secondary"
+        isDisabled={isDisabled}
+        selectedKey={resolvedKey}
+        onSelectionChange={(key) => {
+          if (key == null) return;
+          onSelectionChange?.(String(key));
+        }}
+        placeholder={placeholder}
+      >
+        <Label className="mb-1.5 text-sm font-medium">{label}</Label>
+        <Select.Trigger className="min-h-11 w-full">
+          <Select.Value />
+          <Select.Indicator />
+        </Select.Trigger>
+        <Select.Popover
+          UNSTABLE_portalContainer={useModalPortal ? portalContainer ?? undefined : undefined}
+        >
+          {options.length === 0 ? (
+            <p className="px-3 py-6 text-center text-sm text-muted">{emptyMessage}</p>
+          ) : (
+            <ListBox
+              aria-label={label}
+              className="max-h-64 overflow-y-auto p-1"
+              items={options}
+            >
+              {(item) => (
+                <ListBoxItem id={item.id} textValue={item.label}>
+                  {item.label}
+                </ListBoxItem>
+              )}
+            </ListBox>
+          )}
+        </Select.Popover>
+      </Select>
+    </div>
   );
 }
 
