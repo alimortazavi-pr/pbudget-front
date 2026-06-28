@@ -10,7 +10,7 @@ import * as paymentCardsApi from "@/common/api/payment-cards";
 import { PATHS } from "@/common/constants";
 import { formatCardNumberForDisplay } from "@/common/utils/payment-card";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
-import { getJalaliNow, toEnglishDigits, formatPrice } from "@/common/utils";
+import { getJalaliNow, toEnglishDigits, formatPrice, formatJalaliDateWithTime } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import {
   FormCategoryComboBox,
@@ -244,6 +244,15 @@ export function BankImportRowEditorModal({
           <AppModalHeader>
             <Modal.Heading>تنظیم تراکنش</Modal.Heading>
             <p className="mt-1 text-xs text-muted">{form.transactionKind}</p>
+            <p className="mt-0.5 text-xs text-muted">
+              {formatJalaliDateWithTime(
+                form.year,
+                form.month,
+                form.day,
+                form.hour,
+                form.minute,
+              )}
+            </p>
           </AppModalHeader>
 
           <Modal.Body className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-4">

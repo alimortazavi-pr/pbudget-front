@@ -117,6 +117,22 @@ export function formatHourRange(startHour?: number, endHour?: number) {
   return `${formatHourLabel(startHour)} تا ${formatHourLabel(endHour)}`;
 }
 
+/** نمایش کوتاه با ساعت: ۱۸ خرداد ۱۴۰۵ · ۱۴:۰۷ */
+export function formatJalaliDateWithTime(
+  year: string | number,
+  month: string | number,
+  day: string | number,
+  hour?: number | null,
+  minute?: number | null,
+) {
+  const date = formatJalaliDate(String(year), String(month), String(day));
+  if (hour == null || minute == null) return date;
+  const time = toPersianDigits(
+    `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`,
+  );
+  return `${date} · ${time}`;
+}
+
 export function formatJalaliDateTime(
   year: number | string,
   month: number | string,

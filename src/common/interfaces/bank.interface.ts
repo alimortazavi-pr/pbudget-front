@@ -16,6 +16,8 @@ export interface IParsedBankRow {
   year: number;
   month: number;
   day: number;
+  hour?: number;
+  minute?: number;
   description: string;
   transactionKind: string;
   statementRef: string;
