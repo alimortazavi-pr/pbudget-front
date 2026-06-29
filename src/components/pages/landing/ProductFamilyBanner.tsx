@@ -1,13 +1,16 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { Building, Home2 } from "iconsax-reactjs";
+import { Home2 } from "iconsax-reactjs";
 
-import { BUSINESS_SITE_URL, PRODUCT_FAMILY } from "@/common/constants/products";
+import { BUSINESS_BRAND, BUSINESS_SITE_URL, PRODUCT_FAMILY } from "@/common/constants/products";
 
 type ProductFamilyBannerProps = {
   variant?: "header" | "footer" | "section";
 };
+
+const bizLogo = "/assets/business-logo-mark.svg";
 
 export function ProductFamilyBanner({ variant = "section" }: ProductFamilyBannerProps) {
   const business = PRODUCT_FAMILY.business;
@@ -16,9 +19,14 @@ export function ProductFamilyBanner({ variant = "section" }: ProductFamilyBanner
     return (
       <Link
         href={BUSINESS_SITE_URL}
-        className="hidden items-center gap-2 rounded-full border border-violet-500/25 bg-violet-500/10 px-3 py-1.5 text-xs font-medium text-violet-700 transition hover:bg-violet-500/15 dark:text-violet-300 sm:inline-flex"
+        className="hidden items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition sm:inline-flex"
+        style={{
+          borderColor: BUSINESS_BRAND.border,
+          background: BUSINESS_BRAND.surface,
+          color: BUSINESS_BRAND.emeraldDeep,
+        }}
       >
-        <Building size={14} variant="Bold" />
+        <Image src={bizLogo} alt="" width={22} height={22} className="rounded-md" />
         {business.tagline}
       </Link>
     );
@@ -30,9 +38,13 @@ export function ProductFamilyBanner({ variant = "section" }: ProductFamilyBanner
         <span className="text-xs lp-muted">محصولات مرتبط:</span>
         <Link
           href={BUSINESS_SITE_URL}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-violet-500/10 px-3 py-1.5 text-xs font-medium text-violet-700 hover:bg-violet-500/15 dark:text-violet-300"
+          className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium transition hover:opacity-90"
+          style={{
+            background: BUSINESS_BRAND.surface,
+            color: BUSINESS_BRAND.emeraldDeep,
+          }}
         >
-          <Building size={14} />
+          <Image src={bizLogo} alt="" width={20} height={20} className="rounded-md" />
           {business.name}
         </Link>
       </div>
@@ -40,22 +52,31 @@ export function ProductFamilyBanner({ variant = "section" }: ProductFamilyBanner
   }
 
   return (
-    <section className="border-y lp-border bg-[color-mix(in_oklch,var(--brand-violet)_6%,transparent)] py-10">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 text-center md:flex-row md:justify-between md:px-6 md:text-start">
-        <div className="flex items-center gap-3">
-          <span className="flex size-11 items-center justify-center rounded-xl bg-violet-500/15 text-violet-600">
-            <Building size={22} variant="Bold" />
+    <section
+      className="border-y lp-border py-10"
+      style={{ background: "color-mix(in oklch, #2dd4bf 7%, transparent)" }}
+    >
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-5 px-4 text-center md:flex-row md:justify-between md:px-6 md:text-start">
+        <div className="flex items-center gap-4">
+          <span
+            className="flex size-16 shrink-0 items-center justify-center rounded-2xl p-2 shadow-md ring-1 ring-teal-500/20"
+            style={{ background: "linear-gradient(145deg, #ecfdf5, #ccfbf1)" }}
+          >
+            <Image src={bizLogo} alt="" width={52} height={52} className="rounded-xl" />
           </span>
           <div>
-            <p className="text-sm font-semibold">{business.name}</p>
+            <p className="text-base font-bold">{business.name}</p>
             <p className="text-sm lp-muted">{business.tagline}</p>
           </div>
         </div>
         <Link
           href={BUSINESS_SITE_URL}
-          className="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-violet-700"
+          className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
+          style={{
+            background: `linear-gradient(135deg, ${BUSINESS_BRAND.emeraldDeep}, ${BUSINESS_BRAND.primaryDeep})`,
+          }}
         >
-          <Building size={16} />
+          <Image src={bizLogo} alt="" width={22} height={22} className="rounded-md" />
           مشاهده میز کسب‌وکار
         </Link>
         <div className="flex items-center gap-2 text-xs lp-muted">

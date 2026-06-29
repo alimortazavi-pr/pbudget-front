@@ -353,7 +353,7 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
       <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${scrolled ? "lp-nav-scrolled" : ""}`}>
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 md:px-6">
           <Link href={PATHS.LANDING} className="flex items-center gap-2.5 font-bold">
-            <AppLogo size={36} showText={false} />
+            <AppLogo size={44} showText={false} />
             <span className="hidden text-sm sm:block">{content.hero.title}</span>
           </Link>
 

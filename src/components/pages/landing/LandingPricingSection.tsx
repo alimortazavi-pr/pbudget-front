@@ -35,7 +35,10 @@ function planAction(
     const href = plan.externalUrl ?? BUSINESS_SITE_URL;
     return (
       <a href={href} target="_blank" rel="noopener noreferrer">
-        <Button className="w-full" variant="secondary">
+        <Button
+          className="w-full bg-gradient-to-l from-teal-600 to-emerald-700 text-white"
+          variant="primary"
+        >
           {plan.cta}
         </Button>
       </a>
@@ -85,7 +88,9 @@ export function LandingPricingSection({
             className={`landing-bento lp-card flex h-full flex-col rounded-2xl p-6 ${
               plan.highlighted
                 ? "border-2 border-[var(--brand-rose)] shadow-lg shadow-rose-500/10 md:scale-[1.02]"
-                : ""
+                : plan.id === "business"
+                  ? "border-2 border-teal-500/35 shadow-lg shadow-teal-500/10"
+                  : ""
             }`}
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}

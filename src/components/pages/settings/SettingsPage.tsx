@@ -40,7 +40,12 @@ export function SettingsPage() {
         <button
           type="button"
           onClick={() => void navigateWithSso(BUSINESS_SITE_URL, "/business")}
-          className="mt-4 flex w-full items-center gap-3 rounded-xl border border-violet-500/25 bg-violet-500/10 px-4 py-3 text-sm font-medium text-violet-700 transition-colors hover:bg-violet-500/15 dark:text-violet-300"
+          className="mt-4 flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-sm font-medium transition-colors hover:brightness-105"
+          style={{
+            borderColor: "color-mix(in oklch, #2dd4bf 30%, transparent)",
+            background: "color-mix(in oklch, #2dd4bf 10%, transparent)",
+            color: "#047857",
+          }}
         >
           <Building size={20} variant="Bold" />
           رفتن به میز کسب‌وکار

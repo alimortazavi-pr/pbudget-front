@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="biz-bg" x1="40" y1="24" x2="472" y2="488" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#022c22"/>
+      <stop offset="0.45" stop-color="#065f46"/>
+      <stop offset="1" stop-color="#0f766e"/>
+    </linearGradient>
+    <linearGradient id="biz-accent" x1="96" y1="400" x2="416" y2="80" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#34d399"/>
+      <stop offset="0.5" stop-color="#2dd4bf"/>
+      <stop offset="1" stop-color="#6ee7b7"/>
+    </linearGradient>
+    <linearGradient id="biz-glow" x1="256" y1="64" x2="256" y2="280" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="biz-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#022c22" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#biz-bg)" filter="url(#biz-shadow)"/>
+  <ellipse cx="256" cy="200" rx="210" ry="130" fill="url(#biz-glow)"/>
+  <circle cx="256" cy="132" r="58" stroke="url(#biz-accent)" stroke-width="14" fill="none"/>
+  <circle cx="256" cy="132" r="12" fill="#6ee7b7"/>
+  <path d="M256 86v28M256 164v20M214 132h-22M320 132h22" stroke="url(#biz-accent)" stroke-width="10" stroke-linecap="round" opacity="0.75"/>
+  <rect x="108" y="208" width="76" height="176" rx="20" fill="#ffffff" fill-opacity="0.1"/>
+  <rect x="218" y="168" width="76" height="216" rx="20" fill="url(#biz-accent)"/>
+  <rect x="328" y="232" width="76" height="152" rx="20" fill="#ffffff" fill-opacity="0.16"/>
+  <path d="M144 384h56M292 384h56" stroke="url(#biz-accent)" stroke-width="12" stroke-linecap="round" opacity="0.5"/>
+  <path d="M180 264h36M292 224h36M344 288h36" stroke="#ffffff" stroke-opacity="0.35" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="388" cy="156" r="36" fill="url(#biz-accent)"/>
+  <path d="M376 156l10 10 22-24" stroke="#022c22" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

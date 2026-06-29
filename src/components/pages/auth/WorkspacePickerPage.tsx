@@ -40,8 +40,8 @@ const GROUP_STYLES: Record<
     icon: Home2,
   },
   business: {
-    ring: "ring-violet-500/30 hover:border-violet-500/50",
-    iconBg: "bg-violet-500/15 text-violet-600 dark:text-violet-400",
+    ring: "ring-teal-500/35 hover:border-teal-500/55",
+    iconBg: "bg-teal-500/15 text-teal-700 dark:text-teal-300",
     icon: Building,
   },
   system: {

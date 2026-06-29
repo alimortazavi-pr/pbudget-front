@@ -18,3 +18,13 @@ export const PRODUCT_FAMILY = {
     url: BUSINESS_SITE_URL,
   },
 } as const;
+
+/** تم سبز میز کسب‌وکار — برای لینک‌های متقابل در pbudget */
+export const BUSINESS_BRAND = {
+  primary: "#2dd4bf",
+  primaryDeep: "#0d9488",
+  emerald: "#10b981",
+  emeraldDeep: "#047857",
+  surface: "color-mix(in oklch, #2dd4bf 10%, transparent)",
+  border: "color-mix(in oklch, #2dd4bf 28%, transparent)",
+} as const;
