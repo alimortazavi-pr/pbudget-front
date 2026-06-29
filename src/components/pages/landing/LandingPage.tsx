@@ -30,6 +30,8 @@ import { submitSiteContact } from "@/common/api/site";
 import { toEnglishDigits, toPersianDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
+import { AppLogo } from "@/components/common/brand/AppLogo";
+import { SiteFooterCredits } from "@/components/common/brand/SiteFooterCredits";
 import { useAppSelector } from "@/stores/hooks";
 import { isAuthSelector } from "@/stores/auth";
 import { ProductFamilyBanner } from "./ProductFamilyBanner";
@@ -350,8 +352,8 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
 
       <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${scrolled ? "lp-nav-scrolled" : ""}`}>
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 md:px-6">
-          <Link href={PATHS.LANDING} className="flex items-center gap-2 font-bold">
-            <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--brand-rose)] to-[var(--brand-violet)] text-sm text-white">پ</span>
+          <Link href={PATHS.LANDING} className="flex items-center gap-2.5 font-bold">
+            <AppLogo size={36} showText={false} />
             <span className="hidden text-sm sm:block">{content.hero.title}</span>
           </Link>
 
@@ -366,16 +368,10 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
           <div className="flex items-center gap-1.5">
             <ThemeToggle />
             <ProductFamilyBanner variant="header" />
-            {content.settings.showAppDownloadInNav ? (
-              appSoon ? (
-                <Button variant="ghost" size="sm" isDisabled className="hidden sm:flex opacity-70">
-                  {content.settings.downloadLabel}
-                </Button>
-              ) : (
+            {content.settings.showAppDownloadInNav && !appSoon ? (
                 <Link href={PATHS.DOWNLOAD} className="hidden sm:block">
                   <Button variant="ghost" size="sm"><DocumentDownload size={18} />دانلود</Button>
                 </Link>
-              )
             ) : null}
             <Link href={primaryCta}>
               <Button size="sm">{primaryLabel}<ArrowLeft2 size={16} /></Button>
@@ -626,10 +622,11 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
                 <button key={item.id} type="button" onClick={() => scrollToId(item.id)}>{item.label}</button>
               ))}
               <Link href={PATHS.GET_STARTED}>ورود</Link>
-              {!appSoon ? <Link href={PATHS.DOWNLOAD}>دانلود</Link> : <span className="opacity-60">{content.settings.downloadLabel}</span>}
+              {!appSoon ? <Link href={PATHS.DOWNLOAD}>دانلود</Link> : null}
             </nav>
           </div>
-          <p className="mt-8 text-center text-xs lp-muted">© {toPersianDigits(String(new Date().getFullYear()))} {content.hero.title}</p>
+          <SiteFooterCredits className="mt-6" />
+          <p className="mt-4 text-center text-xs lp-muted">© {toPersianDigits(String(new Date().getFullYear()))} {content.hero.title}</p>
           <ProductFamilyBanner variant="footer" />
         </div>
       </footer>

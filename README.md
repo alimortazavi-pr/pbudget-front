@@ -45,6 +45,28 @@ src/
 └── stores/              # Redux slices
 ```
 
+## دیپلوی (Vercel)
+
+1. قبل از push (اگر لوگو یا OG عوض شده):
+
+```bash
+pnpm brand    # og-landing.png + favicon/PWA
+pnpm build
+```
+
+2. Push به `main` → Vercel خودکار deploy می‌کند.
+
+3. بک‌اند روی سرور جدا deploy می‌شود — راهنمای کامل:  
+   `Paradise-Desk-Business/docs/SERVER-SETUP.md` (بخش **به‌روزرسانی روتین**).
+
+```bash
+# روی سرور
+cd /var/www/Paradise-Desk-Business
+./scripts/deploy-update.sh
+```
+
+برندینگ: `Paradise-Desk-Business/docs/BRAND.md`
+
 ## نکته
 
 این پروژه جایگزین `pbudget-front` قدیمی (Chakra UI + Pages Router) است. کوکی `userAuthorization` برای سازگاری با sesion‌های قبلی حفظ شده.

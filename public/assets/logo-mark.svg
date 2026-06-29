@@ -1,22 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
   <defs>
-    <linearGradient id="pd-bg" x1="64" y1="48" x2="448" y2="464" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#fb7185"/>
-      <stop stop-color="#e11d48"/>
+    <linearGradient id="pd-bg" x1="64" y1="32" x2="448" y2="480" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1e1b4b"/>
+      <stop offset="0.45" stop-color="#5b21b6"/>
+      <stop offset="1" stop-color="#0f766e"/>
     </linearGradient>
-    <linearGradient id="pd-surface" x1="144" y1="176" x2="368" y2="272" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#ffffff"/>
-      <stop stop-color="#fff1f2"/>
+    <linearGradient id="pd-accent" x1="96" y1="400" x2="416" y2="96" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fb7185"/>
+      <stop offset="0.5" stop-color="#c084fc"/>
+      <stop offset="1" stop-color="#2dd4bf"/>
+    </linearGradient>
+    <linearGradient id="pd-glow" x1="256" y1="80" x2="256" y2="280" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
     </linearGradient>
   </defs>
   <rect width="512" height="512" rx="112" fill="url(#pd-bg)"/>
-  <rect x="136" y="168" width="240" height="96" rx="20" fill="url(#pd-surface)"/>
-  <rect x="168" y="204" width="72" height="10" rx="5" fill="#fb7185" opacity="0.9"/>
-  <rect x="168" y="226" width="120" height="8" rx="4" fill="#fda4af"/>
-  <rect x="168" y="244" width="96" height="8" rx="4" fill="#fecdd3"/>
-  <rect x="112" y="280" width="288" height="28" rx="10" fill="#ffffff"/>
-  <rect x="144" y="308" width="40" height="96" rx="10" fill="#ffffff" opacity="0.95"/>
-  <rect x="328" y="308" width="40" height="96" rx="10" fill="#ffffff" opacity="0.95"/>
-  <circle cx="392" cy="136" r="28" fill="#ffffff" opacity="0.22"/>
-  <circle cx="416" cy="112" r="12" fill="#ffffff" opacity="0.35"/>
+  <ellipse cx="256" cy="200" rx="200" ry="120" fill="url(#pd-glow)"/>
+  <path d="M88 328h336" stroke="url(#pd-accent)" stroke-width="18" stroke-linecap="round"/>
+  <rect x="128" y="248" width="56" height="80" rx="14" fill="#ffffff" fill-opacity="0.14"/>
+  <rect x="228" y="208" width="56" height="120" rx="14" fill="url(#pd-accent)"/>
+  <rect x="328" y="272" width="56" height="56" rx="14" fill="#ffffff" fill-opacity="0.22"/>
+  <path d="M120 220c48-72 104-88 136-88s88 16 136 88" stroke="url(#pd-accent)" stroke-width="10" stroke-linecap="round" fill="none" opacity="0.55"/>
+  <circle cx="392" cy="144" r="40" fill="url(#pd-accent)"/>
+  <circle cx="392" cy="144" r="18" fill="#ffffff" fill-opacity="0.35"/>
 </svg>

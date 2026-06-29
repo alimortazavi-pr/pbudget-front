@@ -7,6 +7,7 @@ import {
   APP_NAME_EN,
   APP_NAME_FA,
   APP_SHORT_NAME_FA,
+  LOGO_OG_IMAGE_SRC,
 } from "@/common/constants/brand";
 import { ThemeScript } from "@/components/common/ThemeScript";
 import { ClientProvider } from "@/components/providers/ClientProvider";
@@ -21,6 +22,13 @@ export const metadata: Metadata = {
     template: `%s | ${APP_NAME_FA}`,
   },
   description: APP_DESCRIPTION_FA,
+  openGraph: {
+    images: [{ url: LOGO_OG_IMAGE_SRC, width: 1200, height: 630, alt: APP_NAME_FA }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: [LOGO_OG_IMAGE_SRC],
+  },
   icons: {
     icon: [
       { url: "/favicon.ico" },

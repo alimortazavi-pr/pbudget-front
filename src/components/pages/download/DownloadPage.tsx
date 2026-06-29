@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@heroui/react";
@@ -22,6 +21,8 @@ import {
 } from "@/common/constants/brand";
 import { showToast } from "@/common/utils/toast";
 import { toPersianDigits } from "@/common/utils";
+import { AppLogo } from "@/components/common/brand/AppLogo";
+import { SiteFooterCredits } from "@/components/common/brand/SiteFooterCredits";
 
 const FALLBACK_APK_URL = process.env.NEXT_PUBLIC_APK_URL ?? "/downloads/pdesk.apk";
 const FALLBACK_VERSION = process.env.NEXT_PUBLIC_APP_VERSION ?? "1.0.0";
@@ -96,18 +97,8 @@ export function DownloadPage() {
       />
 
       <header className="relative z-10 flex items-center justify-between px-5 pb-2 pt-[max(1rem,env(safe-area-inset-top))] lg:px-10">
-        <Link href={PATHS.GET_STARTED} className="flex items-center gap-3">
-          <Image
-            src="/assets/logo-mark.svg"
-            alt=""
-            width={44}
-            height={44}
-            className="rounded-2xl shadow-md"
-          />
-          <div>
-            <p className="font-bold text-foreground">{APP_NAME_FA}</p>
-            <p className="text-xs tracking-widest text-muted">{APP_NAME_EN}</p>
-          </div>
+        <Link href={PATHS.GET_STARTED}>
+          <AppLogo size={44} />
         </Link>
         <div className="flex gap-2">
           <Button variant="ghost" size="sm" onPress={() => void copyLink()}>
@@ -256,6 +247,10 @@ export function DownloadPage() {
           </div>
         </div>
       </section>
+
+      <footer className="relative z-10 border-t border-border/40 py-8">
+        <SiteFooterCredits />
+      </footer>
     </div>
   );
 }

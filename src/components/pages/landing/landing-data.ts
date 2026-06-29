@@ -196,7 +196,7 @@ export const DEFAULT_LANDING_CONTENT: ILandingContent = {
   contact: {
     title: "تماس با ما",
     description: "سوال، همکاری یا پشتیبانی — در خدمتیم.",
-    email: "hello@pdesk.ir",
+    email: "alimortazavi.pr@gmail.com",
     telegram:
       process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME?.replace(/^@/, "") ??
       "paradisebudget_bot",
@@ -222,7 +222,7 @@ export const DEFAULT_LANDING_CONTENT: ILandingContent = {
   settings: {
     downloadComingSoon: true,
     downloadLabel: "به‌زودی",
-    showAppDownloadInNav: true,
+    showAppDownloadInNav: false,
   },
   pricing: {
     eyebrow: "قیمت‌گذاری شفاف",
@@ -288,7 +288,7 @@ export const DEFAULT_LANDING_CONTENT: ILandingContent = {
     title: "میز پردیس — مدیریت مالی شخصی",
     description:
       "میز کار شخصی برای مدیریت مالی، بودجه‌بندی، تحلیل هزینه، پروژه فریلنسری و تقویم شمسی.",
-    ogImageUrl: "/assets/logo-mark.svg",
+    ogImageUrl: "/assets/og-landing.png",
   },
 };
 

@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -19,7 +18,6 @@ import {
 import * as authApi from "@/common/api/auth";
 import { PATHS } from "@/common/constants";
 import {
-  APP_NAME_EN,
   APP_NAME_FA,
   APP_TAGLINE_FA,
 } from "@/common/constants/brand";
@@ -34,6 +32,8 @@ import {
 } from "@/common/utils/post-auth";
 import { showToast } from "@/common/utils/toast";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
+import { AppLogo } from "@/components/common/brand/AppLogo";
+import { SiteFooterCredits } from "@/components/common/brand/SiteFooterCredits";
 import { FormInput } from "@/components/common/form/FormFields";
 import { ForgotPasswordStep } from "@/components/pages/auth/ForgotPasswordStep";
 import { OtpCodeField } from "@/components/common/form/OtpCodeField";
@@ -72,24 +72,6 @@ const BRAND_FEATURES = [
   { icon: Chart, text: "تحلیل و بودجه‌بندی" },
   { icon: Profile2User, text: "پروژه، شریک و برنامه روزانه" },
 ] as const;
-
-function AuthBrandMark({ compact = false }: { compact?: boolean }) {
-  return (
-    <Link href={PATHS.LANDING} className="inline-flex items-center gap-3 transition-opacity hover:opacity-90">
-      <Image
-        src="/assets/logo-mark.svg"
-        alt=""
-        width={compact ? 40 : 52}
-        height={compact ? 40 : 52}
-        className="rounded-2xl shadow-md ring-1 ring-border/40"
-      />
-      <span className="text-start">
-        <span className={`block font-bold leading-tight ${compact ? "text-base" : "text-xl"}`}>{APP_NAME_FA}</span>
-        <span className="text-xs tracking-wide text-muted">{APP_NAME_EN}</span>
-      </span>
-    </Link>
-  );
-}
 
 export function GetStartedPage() {
   const dispatch = useAppDispatch();
@@ -247,7 +229,9 @@ export function GetStartedPage() {
         <main className="order-2 flex min-h-dvh flex-col lg:order-1">
           <div className="flex items-center justify-between px-5 pt-5 lg:px-12 lg:pt-8">
             <div className="lg:hidden">
-              <AuthBrandMark compact />
+              <Link href={PATHS.LANDING}>
+                <AppLogo size={40} />
+              </Link>
             </div>
             <ThemeToggle />
           </div>
@@ -392,6 +376,8 @@ export function GetStartedPage() {
                   بازگشت به سایت
                 </Link>
               </p>
+
+              <SiteFooterCredits className="mt-8 justify-center" />
             </div>
           </div>
         </main>
@@ -410,7 +396,9 @@ export function GetStartedPage() {
           />
 
           <div className="relative flex w-full max-w-lg flex-col gap-10 xl:max-w-xl xl:gap-12">
-            <AuthBrandMark />
+            <Link href={PATHS.LANDING}>
+              <AppLogo size={52} />
+            </Link>
 
             <div>
               <h2 className="text-3xl font-bold leading-snug xl:text-4xl xl:leading-tight">

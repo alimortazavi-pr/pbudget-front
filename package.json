@@ -7,6 +7,7 @@
     "build": "next build --webpack",
     "start": "next start -p 7711",
     "lint": "eslint",
+    "brand": "node scripts/generate-brand-assets.mjs && node scripts/generate-icons.mjs",
     "icons": "node scripts/generate-icons.mjs"
   },
   "dependencies": {
