@@ -73,6 +73,10 @@ export function AuthBootstrap() {
     if (pathname !== PATHS.GET_STARTED) return;
 
     void resolvePostAuthDestination().then((result) => {
+      if (result.needsPicker) {
+        router.replace(PATHS.WORKSPACE);
+        return;
+      }
       router.replace(result.path ?? PATHS.HOME);
     });
   }, [didTry, isAuth, pathname, router]);

@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 
 import * as partnersApi from "@/common/api/partners";
-import * as businessApi from "@/common/api/business";
 
 export const PENDING_INVITES_EVENT = "pbudget:pending-invites";
 
@@ -20,11 +19,8 @@ export function usePendingInvitesCount() {
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const [partners, business] = await Promise.all([
-        partnersApi.fetchPendingInvites(),
-        businessApi.fetchPendingBusinessInvites(),
-      ]);
-      setCount(partners.length + business.length);
+      const partners = await partnersApi.fetchPendingInvites();
+      setCount(partners.length);
     } catch {
       setCount(0);
     } finally {

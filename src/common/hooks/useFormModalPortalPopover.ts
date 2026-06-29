@@ -1,13 +1,11 @@
-import { useModalPortalContainer } from "@/common/hooks/useModalPortalContainer";
+import { useRef } from "react";
 
-/** Portal HeroUI popovers into the nearest modal dialog when present. */
+/**
+ * HeroUI popovers default to `document.body`.
+ * Do not portal into `.modal__dialog` — modal containers clip overflow and cut off dropdowns.
+ * `useModalPortalOverlays` keeps body-portaled overlays interactive while a modal is open.
+ */
 export function useFormModalPortalPopover<T extends HTMLElement = HTMLDivElement>() {
-  const { wrapperRef, portalContainer, useModalPortal } = useModalPortalContainer<T>();
-
-  const portalProps =
-    useModalPortal && portalContainer
-      ? { UNSTABLE_portalContainer: portalContainer }
-      : {};
-
-  return { wrapperRef, portalProps };
+  const wrapperRef = useRef<T>(null);
+  return { wrapperRef, portalProps: {} };
 }

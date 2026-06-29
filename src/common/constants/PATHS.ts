@@ -25,22 +25,8 @@ export const PATHS = {
   WORK_ATTENDANCE: "/projects/attendance",
   VENTURES: "/ventures",
   VENTURE: (id: string) => `/ventures/${id}`,
-  BUSINESS: "/business",
-  BUSINESS_DETAIL: (id: string) => `/business/${id}`,
-  BUSINESS_STAFF: (id: string) => `/business/${id}/staff`,
-  BUSINESS_ATTENDANCE: (id: string) => `/business/${id}/attendance`,
-  BUSINESS_ATTENDANCE_ME: (id: string) => `/business/${id}/attendance/me`,
-  BUSINESS_ATTENDANCE_SHIFTS: (id: string) => `/business/${id}/attendance/shifts`,
-  BUSINESS_ATTENDANCE_REPORTS: (id: string) => `/business/${id}/attendance/reports`,
-  BUSINESS_FINANCE: (id: string) => `/business/${id}/finance`,
-  BUSINESS_EDIT_TRANSACTION: (id: string, budgetId: string) =>
-    `/business/${id}/transactions/${budgetId}/edit`,
-  BUSINESS_TRANSACTIONS: (id: string) => `/business/${id}/transactions`,
-  BUSINESS_CREATE_TRANSACTION: (id: string) =>
-    `/business/${id}/transactions/create`,
-  BUSINESS_PETTY_CASH: (id: string) => `/business/${id}/petty-cash`,
-  BUSINESS_INVITE: (token: string) => `/business-invite/${token}`,
   INVITES: "/invites",
+  WORKSPACE: "/workspace",
   PARTNER_INVITE: (token: string) => `/partner-invite/${token}`,
   TASKS: "/tasks",
   /** @deprecated use INSTALLMENTS */

@@ -13,7 +13,6 @@ type Tab =
   | "preview"
   | "hero"
   | "features"
-  | "business"
   | "why"
   | "how"
   | "about"
@@ -29,7 +28,6 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "preview", label: "پیش‌نمایش" },
   { id: "hero", label: "هیرو" },
   { id: "features", label: "امکانات" },
-  { id: "business", label: "کسب‌وکار" },
   { id: "pricing", label: "قیمت‌ها" },
   { id: "why", label: "چرا ما" },
   { id: "how", label: "نحوه کار" },
@@ -207,15 +205,6 @@ export function AdminLandingPage() {
                 <Field label="تگ‌ها (با کاما)" value={f.tags.join("، ")} onChange={(v) => { const features = [...content.features]; features[i] = { ...f, tags: v.split(/[,،]/).map((t) => t.trim()).filter(Boolean) }; setContent({ ...content, features }); }} />
               </div>
             ))}
-          </div>
-        ) : null}
-
-        {tab === "business" ? (
-          <div className="grid gap-4">
-            <Field label="عنوان کوچک" value={content.business.eyebrow} onChange={(v) => setContent({ ...content, business: { ...content.business, eyebrow: v } })} />
-            <Field label="عنوان" value={content.business.title} onChange={(v) => setContent({ ...content, business: { ...content.business, title: v } })} />
-            <Field label="هایلایت" value={content.business.highlight} onChange={(v) => setContent({ ...content, business: { ...content.business, highlight: v } })} />
-            <TextArea value={content.business.description} onChange={(e) => setContent({ ...content, business: { ...content.business, description: e.target.value } })} rows={3} />
           </div>
         ) : null}
 

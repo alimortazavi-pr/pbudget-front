@@ -3,32 +3,36 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { motion } from "motion/react";
-import { Button, Input, Label, TextArea } from "@heroui/react";
+import { Button, Input, Label, TextArea, TextField } from "@heroui/react";
 import {
   ArrowLeft2,
   Building,
   Calendar,
+  Call,
   Chart,
   Clock,
+  DirectboxSend,
   DocumentDownload,
-  Location,
   Menu,
   Messages2,
   Microphone2,
+  Profile2User,
   ShieldTick,
+  Sms,
   TickCircle,
   Wallet2,
 } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 import { APP_NAME_EN, APP_TAGLINE_FA } from "@/common/constants/brand";
-import type { ILandingContent, LandingAccent, LandingSpan } from "@/common/interfaces/landing.interface";
+import type { ILandingContent, LandingAccent } from "@/common/interfaces/landing.interface";
 import { submitSiteContact } from "@/common/api/site";
-import { toPersianDigits } from "@/common/utils";
+import { toEnglishDigits, toPersianDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { useAppSelector } from "@/stores/hooks";
 import { isAuthSelector } from "@/stores/auth";
+import { ProductFamilyBanner } from "./ProductFamilyBanner";
 import { LandingParticles } from "./LandingParticles";
 import { LandingPricingSection } from "./LandingPricingSection";
 import { useLandingContent } from "./useLandingContent";
@@ -40,14 +44,42 @@ const ACCENT: Record<LandingAccent, string> = {
   violet: "from-violet-500/15 to-violet-500/5 border-violet-500/25",
 };
 
-const SPAN: Record<LandingSpan, string> = {
-  lg: "md:col-span-2 md:row-span-2",
-  md: "md:col-span-2",
-  sm: "",
+const FEATURE_ICONS: Record<string, typeof Wallet2> = {
+  finance: Wallet2,
+  boxes: Wallet2,
+  bank: DocumentDownload,
+  categories: Chart,
+  debts: Clock,
+  planning: Calendar,
+  projects: Building,
+  ventures: Profile2User,
+  voice: Microphone2,
+  analysis: Chart,
+};
+
+const FEATURE_ICON_BG: Record<LandingAccent, string> = {
+  rose: "bg-rose-500/15 text-rose-600 dark:text-rose-400",
+  teal: "bg-teal-500/15 text-teal-600 dark:text-teal-400",
+  violet: "bg-violet-500/15 text-violet-600 dark:text-violet-400",
 };
 
 function scrollToId(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+/** آخرین کارت اگر در ردیف تنها بماند، کل عرض گرید را می‌گیرد */
+function featureGridItemClass(index: number, total: number) {
+  const isLast = index === total - 1;
+  if (!isLast) return "";
+
+  const classes: string[] = [];
+  if (total % 2 === 1) classes.push("sm:col-span-2");
+  if (total % 3 === 1) classes.push("lg:col-span-3");
+  return classes.join(" ");
+}
+
+function featureCardIsOrphanFullWidth(index: number, total: number) {
+  return index === total - 1 && total % 3 === 1;
 }
 
 function Reveal({ children, className = "", delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
@@ -70,30 +102,78 @@ function Product3D() {
   }, []);
 
   return (
-    <div ref={stageRef} className="landing-3d-stage relative hidden lg:block" onMouseMove={onMove} onMouseLeave={() => setTilt({ rx: 0, ry: 0 })}>
-      <div className="landing-3d-card lp-card relative rounded-[1.75rem] p-5 backdrop-blur-xl" style={{ transform: `rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)` }}>
-        <div className="mb-3 flex justify-between text-xs lp-muted">
-          <span>داشبورد</span>
-          <span>pdesk.ir/app</span>
+    <div
+      ref={stageRef}
+      className="landing-3d-stage landing-app-preview relative mx-auto w-full max-w-md lg:max-w-none"
+      onMouseMove={onMove}
+      onMouseLeave={() => setTilt({ rx: 0, ry: 0 })}
+    >
+      <div
+        className="landing-3d-card lp-card relative overflow-hidden rounded-[1.75rem] backdrop-blur-xl"
+        style={{ transform: `rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)` }}
+      >
+        <div className="flex items-center gap-1.5 border-b lp-border px-4 py-2.5">
+          <span className="size-2.5 rounded-full bg-rose-400/90" />
+          <span className="size-2.5 rounded-full bg-amber-400/90" />
+          <span className="size-2.5 rounded-full bg-emerald-400/90" />
+          <span className="mx-auto text-[10px] lp-muted" dir="ltr">
+            pdesk.ir/app
+          </span>
         </div>
-        <div className="grid grid-cols-3 gap-2 text-center text-sm">
-          {[{ l: "درآمد", v: "۱۲.۸M" }, { l: "هزینه", v: "۴.۲M" }, { l: "مانده", v: "۸.۶M" }].map((s) => (
-            <div key={s.l} className="rounded-lg bg-[var(--lp-card)] p-2">
-              <p className="text-[10px] lp-muted">{s.l}</p>
-              <p className="font-bold">{toPersianDigits(s.v)}</p>
+        <div className="flex min-h-[15rem]">
+          <div className="flex w-10 shrink-0 flex-col items-center gap-2 border-e lp-border py-3">
+            {[Wallet2, Calendar, Chart, DocumentDownload].map((Icon, i) => (
+              <span
+                key={i}
+                className={`flex size-6 items-center justify-center rounded-md ${i === 0 ? "bg-[color-mix(in_oklch,var(--brand-rose)_18%,transparent)] text-[var(--brand-rose-deep)]" : "lp-muted"}`}
+              >
+                <Icon size={14} variant={i === 0 ? "Bold" : "Linear"} />
+              </span>
+            ))}
+          </div>
+          <div className="flex-1 p-4">
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-xs font-semibold">داشبورد مالی</span>
+              <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
+                امروز
+              </span>
             </div>
-          ))}
-        </div>
-        <div className="mt-3 flex h-20 items-end gap-1 rounded-lg bg-[var(--lp-card)] p-2">
-          {[40, 70, 50, 90, 60, 85, 75].map((h, i) => (
-            <div key={i} className="flex-1 rounded-t bg-gradient-to-t from-[var(--brand-rose)] to-[var(--brand-violet)]" style={{ height: `${h}%` }} />
-          ))}
+            <div className="grid grid-cols-3 gap-2 text-center text-sm">
+              {[{ l: "درآمد", v: "۱۲.۸M" }, { l: "هزینه", v: "۴.۲M" }, { l: "مانده", v: "۸.۶M" }].map((s) => (
+                <div key={s.l} className="rounded-lg bg-[var(--lp-card)] p-2">
+                  <p className="text-[10px] lp-muted">{s.l}</p>
+                  <p className="font-bold">{toPersianDigits(s.v)}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-3 flex h-20 items-end gap-1 rounded-lg bg-[var(--lp-card)] p-2">
+              {[40, 70, 50, 90, 60, 85, 75].map((h, i) => (
+                <div key={i} className="flex-1 rounded-t bg-gradient-to-t from-[var(--brand-rose)] to-[var(--brand-violet)]" style={{ height: `${h}%` }} />
+              ))}
+            </div>
+            <div className="mt-3 space-y-1.5">
+              {["خرید هفتگی", "حقوق پروژه", "اشتراک ابری"].map((row, i) => (
+                <div key={row} className="flex items-center justify-between rounded-lg bg-[var(--lp-card)] px-2.5 py-1.5 text-[11px]">
+                  <span className="lp-muted">{row}</span>
+                  <span className={`font-semibold ${i === 1 ? "text-[var(--brand-teal-deep)]" : ""}`}>
+                    {toPersianDigits(i === 1 ? "+۲.۴M" : "-۸۵۰K")}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
-      <div className="landing-float-badge absolute -left-4 top-12 z-10 lp-card rounded-xl p-3 backdrop-blur-xl">
-        <div className="flex items-center gap-2 text-sm font-medium">
-          <Location size={20} className="text-[var(--brand-teal)]" />
-          GPS فعال
+      <div className="landing-float-badge absolute -left-2 top-12 z-10 lp-card rounded-xl px-3 py-2 backdrop-blur-xl md:-left-4 md:top-14">
+        <div className="flex items-center gap-2 text-xs font-medium md:text-sm">
+          <Chart size={18} className="text-[var(--brand-rose)]" />
+          بودجه ماهانه
+        </div>
+      </div>
+      <div className="landing-float-badge landing-float-badge-2 absolute -right-1 bottom-6 z-10 lp-card rounded-xl px-3 py-2 backdrop-blur-xl md:-right-2 md:bottom-8">
+        <div className="flex items-center gap-2 text-xs font-medium">
+          <TickCircle size={16} className="text-emerald-500" variant="Bold" />
+          تراکنش ثبت شد
         </div>
       </div>
     </div>
@@ -106,19 +186,40 @@ function ContactForm() {
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  function validateForm() {
+    const next: Record<string, string> = {};
+    if (!name.trim()) next.name = "نام الزامی است";
+
+    const phoneNorm = toEnglishDigits(phone.trim());
+    if (phoneNorm && !/^09\d{9}$/.test(phoneNorm)) {
+      next.phone = "شماره موبایل معتبر نیست (مثال: ۰۹۱۲۳۴۵۶۷۸۹)";
+    }
+
+    const emailTrim = email.trim();
+    if (emailTrim && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrim)) {
+      next.email = "ایمیل معتبر نیست";
+    }
+
+    if (message.trim().length < 10) {
+      next.message = "پیام باید حداقل ۱۰ کاراکتر باشد";
+    }
+
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!name.trim() || message.trim().length < 10) {
-      showToast("نام و پیام (حداقل ۱۰ کاراکتر) الزامی است");
-      return;
-    }
+    if (!validateForm()) return;
+
     setSending(true);
     try {
       const res = await submitSiteContact({
         name: name.trim(),
         email: email.trim() || undefined,
-        phone: phone.trim() || undefined,
+        phone: toEnglishDigits(phone.trim()) || undefined,
         message: message.trim(),
       });
       showToast(res.message, "success");
@@ -126,6 +227,7 @@ function ContactForm() {
       setEmail("");
       setPhone("");
       setMessage("");
+      setErrors({});
     } catch (err) {
       showToast(err instanceof Error ? err.message : "ارسال ناموفق");
     } finally {
@@ -134,25 +236,58 @@ function ContactForm() {
   }
 
   return (
-    <form onSubmit={(e) => void handleSubmit(e)} className="mt-8 grid gap-4 border-t lp-border pt-8 md:grid-cols-2">
-      <div>
-        <Label className="text-sm">نام</Label>
-        <Input className="mt-1" value={name} onChange={(e) => setName(e.target.value)} required />
-      </div>
-      <div>
-        <Label className="text-sm">ایمیل (اختیاری)</Label>
-        <Input type="email" className="mt-1" value={email} onChange={(e) => setEmail(e.target.value)} />
-      </div>
-      <div>
-        <Label className="text-sm">موبایل (اختیاری)</Label>
-        <Input type="tel" className="mt-1" value={phone} onChange={(e) => setPhone(e.target.value)} />
-      </div>
-      <div className="md:col-span-2">
-        <Label className="text-sm">پیام</Label>
-        <TextArea className="mt-1 w-full" rows={4} value={message} onChange={(e) => setMessage(e.target.value)} required />
-      </div>
-      <div className="md:col-span-2">
+    <form onSubmit={(e) => void handleSubmit(e)} className="grid gap-5 sm:grid-cols-2">
+      <TextField className="gap-2" isInvalid={Boolean(errors.name)}>
+        <Label className="text-sm font-medium">نام</Label>
+        <Input
+          variant="secondary"
+          className="w-full"
+          value={name}
+          onChange={(e) => { setName(e.target.value); setErrors((prev) => ({ ...prev, name: "" })); }}
+          required
+        />
+        {errors.name ? <span className="text-sm text-danger">{errors.name}</span> : null}
+      </TextField>
+      <TextField className="gap-2" isInvalid={Boolean(errors.phone)}>
+        <Label className="text-sm font-medium">موبایل (اختیاری)</Label>
+        <Input
+          type="tel"
+          inputMode="tel"
+          variant="secondary"
+          className="w-full"
+          placeholder="۰۹۱۲۳۴۵۶۷۸۹"
+          value={phone}
+          onChange={(e) => { setPhone(e.target.value); setErrors((prev) => ({ ...prev, phone: "" })); }}
+        />
+        {errors.phone ? <span className="text-sm text-danger">{errors.phone}</span> : null}
+      </TextField>
+      <TextField className="gap-2 sm:col-span-2" isInvalid={Boolean(errors.email)}>
+        <Label className="text-sm font-medium">ایمیل (اختیاری)</Label>
+        <Input
+          type="email"
+          variant="secondary"
+          className="w-full"
+          dir="ltr"
+          value={email}
+          onChange={(e) => { setEmail(e.target.value); setErrors((prev) => ({ ...prev, email: "" })); }}
+        />
+        {errors.email ? <span className="text-sm text-danger">{errors.email}</span> : null}
+      </TextField>
+      <TextField className="gap-2 sm:col-span-2" isInvalid={Boolean(errors.message)}>
+        <Label className="text-sm font-medium">پیام</Label>
+        <TextArea
+          variant="secondary"
+          className="w-full min-h-[9rem] resize-y"
+          rows={5}
+          value={message}
+          onChange={(e) => { setMessage(e.target.value); setErrors((prev) => ({ ...prev, message: "" })); }}
+          required
+        />
+        {errors.message ? <span className="text-sm text-danger">{errors.message}</span> : null}
+      </TextField>
+      <div className="sm:col-span-2">
         <Button type="submit" size="lg" isDisabled={sending}>
+          <DirectboxSend size={18} />
           {sending ? "در حال ارسال…" : "ارسال پیام"}
         </Button>
       </div>
@@ -230,6 +365,7 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
 
           <div className="flex items-center gap-1.5">
             <ThemeToggle />
+            <ProductFamilyBanner variant="header" />
             {content.settings.showAppDownloadInNav ? (
               appSoon ? (
                 <Button variant="ghost" size="sm" isDisabled className="hidden sm:flex opacity-70">
@@ -256,42 +392,47 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
         ) : null}
       </header>
 
-      <section ref={heroRef} className="landing-spotlight landing-noise relative min-h-[92svh] overflow-hidden pt-24 pb-14 md:pt-28">
+      <section ref={heroRef} className="landing-spotlight landing-noise relative overflow-hidden pt-28 pb-10 md:pt-32 md:pb-14 lg:pt-36 lg:pb-16">
         <LandingParticles />
         <div className="landing-aurora landing-aurora-1" style={{ transform: `translate(${parallax.x * 10}px, ${parallax.y * 6}px)` }} />
         <div className="landing-aurora landing-aurora-2" style={{ transform: `translate(${parallax.x * -8}px, ${parallax.y * -5}px)` }} />
+        <div className="landing-aurora landing-aurora-3" style={{ transform: `translate(${parallax.x * 6}px, ${parallax.y * -4}px)` }} />
         <div className="landing-grid-3d pointer-events-none absolute inset-0" />
 
-        <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 md:px-6 lg:grid-cols-2">
-          <div>
-            <p className="landing-hero-enter landing-hero-enter-d1 mb-5 inline-flex items-center gap-2 rounded-full lp-card px-3 py-1.5 text-xs font-medium backdrop-blur-md">
+        <div className="relative mx-auto grid max-w-6xl items-center gap-8 px-4 md:gap-10 md:px-6 lg:grid-cols-2 lg:gap-12 xl:max-w-7xl">
+          <div className="order-2 lg:order-1">
+            <p className="landing-hero-enter landing-hero-enter-d1 mb-4 inline-flex items-center gap-2 rounded-full lp-card px-3 py-1.5 text-xs font-medium backdrop-blur-md">
               <span className="size-2 rounded-full bg-emerald-500" />
               {content.hero.badge}
             </p>
             <motion.h1
-              className="landing-hero-enter landing-hero-enter-d2 font-sans text-3xl font-bold leading-tight md:text-5xl lg:text-6xl"
+              className="landing-hero-enter landing-hero-enter-d2 font-sans text-3xl font-bold leading-tight md:text-5xl lg:text-[3.25rem] lg:leading-[1.15]"
               initial={{ opacity: 0, y: 28 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
             >
               {content.hero.title}
-              <span className="landing-text-shimmer mt-2 block text-2xl md:text-4xl">{content.hero.tagline}</span>
+              <span className="landing-text-shimmer mt-2 block text-2xl md:text-3xl lg:text-4xl">{content.hero.tagline}</span>
             </motion.h1>
-            <p className="landing-hero-enter landing-hero-enter-d3 mt-5 max-w-lg text-base leading-relaxed lp-muted md:text-lg">{content.hero.description}</p>
-            <div className="landing-hero-enter landing-hero-enter-d4 mt-8 flex flex-wrap gap-3">
+            <p className="landing-hero-enter landing-hero-enter-d3 mt-4 max-w-xl text-base leading-relaxed lp-muted md:mt-5 md:text-lg">{content.hero.description}</p>
+            <div className="landing-hero-enter landing-hero-enter-d4 mt-6 flex flex-wrap gap-3 md:mt-8">
               <Link href={primaryCta}><Button size="lg">{primaryLabel}<ArrowLeft2 size={18} /></Button></Link>
               <Button size="lg" variant="secondary" onPress={() => scrollToId("features")}>{content.hero.secondaryCta}</Button>
             </div>
-            <div className="landing-hero-enter landing-hero-enter-d5 mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div className="landing-hero-enter landing-hero-enter-d5 landing-hero-stats landing-hero-stats--inline">
               {content.stats.map((stat) => (
-                <div key={stat.label}>
-                  <p className="landing-stat-glow text-2xl font-bold md:text-3xl">{toPersianDigits(stat.value)}</p>
-                  <p className="mt-1 font-sans text-xs font-medium lp-muted">{stat.label}</p>
+                <div key={stat.label} className="landing-hero-stat">
+                  <p className={`landing-stat-glow text-xl font-bold md:text-2xl ${/[A-Za-z]/.test(stat.value) ? "landing-stat-glow--latin" : ""}`}>
+                    {toPersianDigits(stat.value)}
+                  </p>
+                  <p className="mt-1 text-xs font-medium lp-muted">{stat.label}</p>
                 </div>
               ))}
             </div>
           </div>
-          <div className="landing-hero-enter landing-hero-enter-d3"><Product3D /></div>
+          <div className="landing-hero-enter landing-hero-enter-d3 landing-hero-visual order-1 lg:order-2">
+            <Product3D />
+          </div>
         </div>
       </section>
 
@@ -303,70 +444,51 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
         </div>
       </div>
 
-      <section id="features" className="scroll-mt-20 py-16 md:py-24">
+      <section id="features" className="scroll-mt-24 py-14 md:py-20">
         <div className="mx-auto max-w-6xl px-4 md:px-6">
           <Reveal className="mx-auto max-w-2xl text-center">
             <h2 className="text-2xl font-bold md:text-4xl">امکانات <span className="landing-text-shimmer">یکپارچه</span></h2>
-            <p className="mt-3 text-sm lp-muted md:text-base">هر ماژول عمیق و حرفه‌ای — برای کار واقعی.</p>
+            <p className="mt-3 text-sm lp-muted md:text-base">
+              همه ابزارهای مالی شخصی در یک میز — از تراکنش روزانه تا پروژه و تحلیل.
+            </p>
           </Reveal>
-          <div className="mt-10 grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-            {content.features.map((f, i) => (
-              <Reveal key={f.id} delay={i * 60} className={SPAN[f.span]}>
+          <div className="landing-features-grid mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {content.features.map((f, i) => {
+              const Icon = FEATURE_ICONS[f.id] ?? Wallet2;
+              const fullWidth = featureCardIsOrphanFullWidth(i, content.features.length);
+              return (
+              <Reveal key={f.id} delay={i * 40} className={featureGridItemClass(i, content.features.length)}>
                 <motion.article
-                  className={`landing-bento h-full rounded-2xl border bg-gradient-to-br p-5 md:p-6 ${ACCENT[f.accent]} ${SPAN[f.span]}`}
-                  initial={{ opacity: 0, y: 24 }}
+                  className={`landing-bento flex h-full flex-col rounded-2xl border bg-gradient-to-br p-5 md:p-6 ${ACCENT[f.accent]} ${
+                    fullWidth ? "lg:flex-row lg:items-start lg:gap-6 lg:p-8" : ""
+                  }`}
+                  initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-40px" }}
-                  transition={{ duration: 0.45, delay: i * 0.05 }}
+                  transition={{ duration: 0.4, delay: i * 0.04 }}
                   whileHover={{ y: -4, transition: { duration: 0.2 } }}
                 >
-                  <h3 className="text-lg font-bold">{f.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed lp-muted">{f.description}</p>
+                  <span className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${FEATURE_ICON_BG[f.accent]} ${fullWidth ? "mb-0" : "mb-4"}`}>
+                    <Icon size={22} variant="Bold" />
+                  </span>
+                  <div className={fullWidth ? "min-w-0 flex-1" : "contents"}>
+                  <h3 className="text-base font-bold md:text-lg">{f.title}</h3>
+                  <p className="mt-2 flex-1 text-sm leading-relaxed lp-muted">{f.description}</p>
                   <div className="mt-4 flex flex-wrap gap-1.5">
                     {f.tags.map((tag) => (
                       <span key={tag} className="rounded-full lp-card px-2.5 py-0.5 text-xs lp-muted">{tag}</span>
                     ))}
                   </div>
+                  </div>
                 </motion.article>
               </Reveal>
-            ))}
+            );
+            })}
           </div>
         </div>
       </section>
 
-      <section id="business" className="scroll-mt-20 border-y lp-border py-16 md:py-24">
-        <div className="mx-auto max-w-6xl px-4 md:px-6">
-          <div className="grid items-center gap-10 lg:grid-cols-2">
-            <Reveal>
-              <div className="relative mx-auto flex size-48 items-center justify-center md:size-56">
-                <div className="landing-gps-ring absolute inset-0" />
-                <div className="landing-gps-ring absolute inset-0" />
-                <Location size={40} variant="Bold" className="relative z-10 text-[var(--brand-teal)]" />
-              </div>
-            </Reveal>
-            <Reveal delay={100}>
-              <p className="text-sm font-semibold text-[var(--brand-violet)]">{content.business.eyebrow}</p>
-              <h2 className="mt-2 text-2xl font-bold md:text-4xl">{content.business.title}<span className="block text-[var(--brand-rose-deep)]">{content.business.highlight}</span></h2>
-              <p className="mt-4 lp-muted leading-relaxed">{content.business.description}</p>
-              <ul className="mt-5 space-y-2">
-                {content.business.bullets.map((b) => (
-                  <li key={b} className="flex items-center gap-2 text-sm"><TickCircle size={18} variant="Bold" className="text-[var(--brand-teal-deep)]" />{b}</li>
-                ))}
-              </ul>
-            </Reveal>
-          </div>
-          <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {content.business.features.map((item, i) => (
-              <Reveal key={item.title} delay={i * 50}>
-                <div className="landing-bento lp-card h-full rounded-xl p-4">
-                  <h3 className="font-semibold">{item.title}</h3>
-                  <p className="mt-2 text-sm lp-muted">{item.description}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
+      <ProductFamilyBanner variant="section" />
 
       <section id="pricing" className="scroll-mt-20 py-16 md:py-24">
         <div className="mx-auto max-w-6xl px-4 md:px-6">
@@ -446,38 +568,49 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
         </div>
       </section>
 
-      {/* Contact — prominent */}
+      {/* Contact */}
       <section id="contact" className="scroll-mt-20 py-16 md:py-24">
-        <div className="mx-auto max-w-6xl px-4 md:px-6">
-          <div className="landing-contact-card rounded-3xl p-8 md:p-12">
-            <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
-              <div>
-                <h2 className="text-3xl font-bold md:text-4xl">{content.contact.title}</h2>
-                <p className="mt-3 text-base lp-muted">{content.contact.description}</p>
+        <div className="mx-auto max-w-5xl px-4 md:px-6">
+          <Reveal>
+            <div className="landing-contact-card overflow-hidden rounded-3xl">
+            <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
+              <div className="landing-contact-aside p-8 md:p-10">
+                <h2 className="text-2xl font-bold md:text-3xl">{content.contact.title}</h2>
+                <p className="mt-3 text-sm leading-relaxed lp-muted md:text-base">{content.contact.description}</p>
+                <div className="mt-8 space-y-3">
+                  {[
+                    { label: "ایمیل", value: content.contact.email, href: `mailto:${content.contact.email}`, icon: Sms },
+                    { label: "تلگرام", value: `@${content.contact.telegram}`, href: `https://t.me/${content.contact.telegram}`, icon: Messages2 },
+                    { label: "تلفن", value: toPersianDigits(content.contact.phone), href: `tel:${content.contact.phone}`, icon: Call },
+                  ].map((c) => (
+                    <a
+                      key={c.label}
+                      href={c.href}
+                      target={c.href.startsWith("http") ? "_blank" : undefined}
+                      rel="noopener noreferrer"
+                      className="landing-contact-channel"
+                    >
+                      <span className="landing-contact-channel-icon">
+                        <c.icon size={20} variant="Bold" />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-xs font-medium lp-muted">{c.label}</span>
+                        <span className="mt-0.5 block truncate text-sm font-semibold">{c.value}</span>
+                      </span>
+                    </a>
+                  ))}
+                </div>
               </div>
-              <div className="grid gap-4 sm:grid-cols-3">
-                {[
-                  { label: "ایمیل", value: content.contact.email, href: `mailto:${content.contact.email}` },
-                  { label: "تلگرام", value: `@${content.contact.telegram}`, href: `https://t.me/${content.contact.telegram}` },
-                  { label: "تلفن", value: toPersianDigits(content.contact.phone), href: `tel:${content.contact.phone}` },
-                ].map((c) => (
-                  <a key={c.label} href={c.href} target={c.href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer" className="lp-card rounded-2xl p-4 text-center transition hover:border-[var(--brand-rose)]">
-                    <p className="text-xs font-medium lp-muted">{c.label}</p>
-                    <p className="mt-2 text-sm font-bold break-all">{c.value}</p>
-                  </a>
-                ))}
+              <div className="landing-contact-form-panel border-t lp-border p-8 md:p-10 lg:border-s lg:border-t-0">
+                <h3 className="text-lg font-semibold">ارسال پیام</h3>
+                <p className="mt-1 text-sm lp-muted">معمولاً در کمتر از ۲۴ ساعت پاسخ می‌دهیم.</p>
+                <div className="mt-6">
+                  <ContactForm />
+                </div>
               </div>
             </div>
-            <ContactForm />
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Link href={primaryCta}><Button size="lg">{primaryLabel}</Button></Link>
-              {appSoon ? (
-                <Button size="lg" variant="secondary" isDisabled>{content.settings.downloadLabel} — اپ موبایل</Button>
-              ) : (
-                <Link href={PATHS.DOWNLOAD}><Button size="lg" variant="secondary">دانلود اپ</Button></Link>
-              )}
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 
@@ -497,6 +630,7 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
             </nav>
           </div>
           <p className="mt-8 text-center text-xs lp-muted">© {toPersianDigits(String(new Date().getFullYear()))} {content.hero.title}</p>
+          <ProductFamilyBanner variant="footer" />
         </div>
       </footer>
     </div>

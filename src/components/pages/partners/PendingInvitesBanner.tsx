@@ -4,9 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@heroui/react";
 import * as partnersApi from "@/common/api/partners";
-import * as businessApi from "@/common/api/business";
 import type { IPendingPartnerInvite } from "@/common/interfaces/partner.interface";
-import type { IPendingBusinessInvite } from "@/common/interfaces/business.interface";
 import { notifyPendingInvitesChanged } from "@/common/hooks/usePendingInvitesCount";
 import { showToast } from "@/common/utils/toast";
 
@@ -18,25 +16,17 @@ export function PendingInvitesBanner({ compact = false }: PendingInvitesBannerPr
   const [partnerInvites, setPartnerInvites] = useState<IPendingPartnerInvite[]>(
     [],
   );
-  const [businessInvites, setBusinessInvites] = useState<
-    IPendingBusinessInvite[]
-  >([]);
   const [loading, setLoading] = useState(true);
   const [actingId, setActingId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [partners, business] = await Promise.all([
-        partnersApi.fetchPendingInvites(),
-        businessApi.fetchPendingBusinessInvites(),
-      ]);
+      const partners = await partnersApi.fetchPendingInvites();
       setPartnerInvites(partners);
-      setBusinessInvites(business);
       notifyPendingInvitesChanged();
     } catch {
       setPartnerInvites([]);
-      setBusinessInvites([]);
     } finally {
       setLoading(false);
     }
@@ -59,7 +49,7 @@ export function PendingInvitesBanner({ compact = false }: PendingInvitesBannerPr
     }
   }
 
-  if (loading || (partnerInvites.length === 0 && businessInvites.length === 0)) {
+  if (loading || partnerInvites.length === 0) {
     return null;
   }
 
@@ -67,40 +57,14 @@ export function PendingInvitesBanner({ compact = false }: PendingInvitesBannerPr
     return null;
   }
 
-  const total = partnerInvites.length + businessInvites.length;
-
   return (
     <section className="glass space-y-3 rounded-2xl p-4">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-lg font-bold">دعوت‌های در انتظار</h2>
         <span className="rounded-lg bg-accent/15 px-2 py-1 text-xs font-medium text-accent">
-          {total}
+          {partnerInvites.length}
         </span>
       </div>
-
-      {businessInvites.map((invite) => {
-        const token = invite.inviteLink?.split("/").pop();
-        return (
-          <article
-            key={invite.id}
-            className="rounded-xl bg-surface-secondary p-3"
-          >
-            <p className="font-medium">{invite.businessTitle}</p>
-            <p className="mt-1 text-sm text-muted">
-              دعوت پرسنل · نقش {invite.preset}
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {invite.inviteLink ? (
-                <Link href={invite.inviteLink.replace(/^https?:\/\/[^/]+/, "")}>
-                  <Button size="sm" variant="secondary">
-                    مشاهده
-                  </Button>
-                </Link>
-              ) : null}
-            </div>
-          </article>
-        );
-      })}
 
       {partnerInvites.map((invite) => {
         const token = invite.inviteLink?.split("/").pop();

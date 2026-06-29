@@ -1,11 +1,6 @@
 const PENDING_PERSONA_KEY = "pbudget-pending-persona-tour";
 
-export type PersonaKind =
-  | "personal"
-  | "business"
-  | "attendance"
-  | "admin"
-  | "invites";
+export type PersonaKind = "personal" | "admin" | "invites";
 
 export function queuePersonaOnboarding(kind: string) {
   if (typeof window === "undefined") return;
@@ -29,13 +24,7 @@ export function peekPendingPersonaTour(): PersonaKind | null {
 }
 
 function normalizePersonaKind(kind: string): PersonaKind | null {
-  if (
-    kind === "personal" ||
-    kind === "business" ||
-    kind === "attendance" ||
-    kind === "admin" ||
-    kind === "invites"
-  ) {
+  if (kind === "personal" || kind === "admin" || kind === "invites") {
     return kind;
   }
   return null;

@@ -18,9 +18,8 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: [
     "pdesk.ir",
     "www.pdesk.ir",
-    "pbudget.ir",
-    "www.pbudget.ir",
-    "budget.paradisecode.org",
+    "business.pdesk.ir",
+    "www.business.pdesk.ir",
   ],
   async rewrites() {
     const apiRoot = (

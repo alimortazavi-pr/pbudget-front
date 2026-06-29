@@ -20,14 +20,6 @@ export interface ILandingContent {
     accent: LandingAccent;
     span: LandingSpan;
   }[];
-  business: {
-    eyebrow: string;
-    title: string;
-    highlight: string;
-    description: string;
-    bullets: string[];
-    features: { title: string; description: string }[];
-  };
   whyUs: { title: string; description: string }[];
   howSteps: { step: string; title: string; description: string }[];
   faq: { q: string; a: string }[];
@@ -66,6 +58,7 @@ export interface ILandingContent {
       features: string[];
       cta: string;
       highlighted: boolean;
+      externalUrl?: string;
     }[];
   };
 }

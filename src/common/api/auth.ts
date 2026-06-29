@@ -27,6 +27,35 @@ export async function requestCode(mobile: string) {
   await axiosInstance.post("/auth/request-code", { mobile });
 }
 
+export type PasswordResetRequestResult =
+  | { sent: true; message: string }
+  | {
+      telegramRequired: true;
+      botUsername: string | null;
+      botStartPayload: string;
+      message: string;
+    };
+
+export async function requestPasswordReset(mobile: string) {
+  const { data } = await axiosInstance.post<PasswordResetRequestResult>(
+    "/auth/request-password-reset",
+    { mobile },
+  );
+  return data;
+}
+
+export async function resetPassword(form: {
+  mobile: string;
+  code: string;
+  password: string;
+}) {
+  const { data } = await axiosInstance.post<{ message: string }>(
+    "/auth/reset-password",
+    form,
+  );
+  return data;
+}
+
 export async function signUp(form: ISignUpForm) {
   const { data } = await axiosInstance.post<{
     token: string;

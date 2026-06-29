@@ -4,15 +4,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button, Input, Label, TextField } from "@heroui/react";
+import { motion, AnimatePresence } from "motion/react";
+import { Button } from "@heroui/react";
 import {
   ArrowLeft2,
   ArrowRight2,
-  Building,
+  Chart,
   Home2,
   Login,
   Profile2User,
-  Shield,
   Sms,
 } from "iconsax-reactjs";
 
@@ -31,13 +31,11 @@ import {
 } from "@/common/utils/auth-flow";
 import {
   resolvePostAuthDestination,
-  type PostLoginChoice,
 } from "@/common/utils/post-auth";
-import { scrollFieldIntoView } from "@/common/utils/scroll";
-import { completeWorkspaceSelection } from "@/common/utils/workspace-selection";
 import { showToast } from "@/common/utils/toast";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { FormInput } from "@/components/common/form/FormFields";
+import { ForgotPasswordStep } from "@/components/pages/auth/ForgotPasswordStep";
 import { OtpCodeField } from "@/components/common/form/OtpCodeField";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import {
@@ -48,22 +46,50 @@ import {
 } from "@/stores/auth";
 import { setProfile } from "@/stores/profile";
 
-type Step = "mobile" | "register" | "signin" | "workspace";
+type Step = "mobile" | "register" | "signin" | "reset";
 
-const STEP_META: Record<Exclude<Step, "workspace">, { title: string; sub: string }> = {
+const STEP_META: Record<Step, { title: string; sub: string }> = {
   mobile: {
     title: "ورود یا ثبت‌نام",
-    sub: "شماره موبایل خود را وارد کنید تا مسیر مناسب را پیدا کنیم.",
+    sub: "شماره موبایل خود را وارد کنید.",
   },
   register: {
     title: "ساخت حساب",
-    sub: "اطلاعات خود را تکمیل کنید. اگر از طرف کارفرما دعوت شده‌اید، همین شماره را وارد کرده‌اید.",
+    sub: "اطلاعات خود را تکمیل کنید.",
   },
   signin: {
     title: "خوش برگشتی",
     sub: "با رمز عبور یا کد تلگرام وارد شوید.",
   },
+  reset: {
+    title: "بازیابی رمز عبور",
+    sub: "کد تأیید به تلگرام متصل‌شده ارسال می‌شود.",
+  },
 };
+
+const BRAND_FEATURES = [
+  { icon: Home2, text: "مدیریت مالی شخصی" },
+  { icon: Chart, text: "تحلیل و بودجه‌بندی" },
+  { icon: Profile2User, text: "پروژه، شریک و برنامه روزانه" },
+] as const;
+
+function AuthBrandMark({ compact = false }: { compact?: boolean }) {
+  return (
+    <Link href={PATHS.LANDING} className="inline-flex items-center gap-3 transition-opacity hover:opacity-90">
+      <Image
+        src="/assets/logo-mark.svg"
+        alt=""
+        width={compact ? 40 : 52}
+        height={compact ? 40 : 52}
+        className="rounded-2xl shadow-md ring-1 ring-border/40"
+      />
+      <span className="text-start">
+        <span className={`block font-bold leading-tight ${compact ? "text-base" : "text-xl"}`}>{APP_NAME_FA}</span>
+        <span className="text-xs tracking-wide text-muted">{APP_NAME_EN}</span>
+      </span>
+    </Link>
+  );
+}
 
 export function GetStartedPage() {
   const dispatch = useAppDispatch();
@@ -86,8 +112,6 @@ export function GetStartedPage() {
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
   const [usePassword, setUsePassword] = useState(true);
-
-  const [choices, setChoices] = useState<PostLoginChoice[]>([]);
   const [returnBanner, setReturnBanner] = useState<string | null>(null);
 
   useEffect(() => {
@@ -115,9 +139,8 @@ export function GetStartedPage() {
         user,
       });
 
-      if (result.needsPicker && result.context) {
-        setChoices(result.context.choices);
-        setStep("workspace");
+      if (result.needsPicker) {
+        router.replace(PATHS.WORKSPACE);
         return;
       }
 
@@ -131,9 +154,8 @@ export function GetStartedPage() {
     void resolvePostAuthDestination({
       returnUrl: searchParams.get("return"),
     }).then((r) => {
-      if (r.needsPicker && r.context) {
-        setChoices(r.context.choices);
-        setStep("workspace");
+      if (r.needsPicker) {
+        router.replace(PATHS.WORKSPACE);
         return;
       }
       router.replace(r.path ?? PATHS.HOME);
@@ -214,171 +236,215 @@ export function GetStartedPage() {
     }
   }
 
-  function choiceIcon(kind: string) {
-    if (kind === "admin") return Shield;
-    if (kind === "business" || kind === "attendance") return Building;
-    if (kind === "invites") return Profile2User;
-    return Home2;
-  }
-
   return (
     <div className="relative min-h-dvh bg-background">
-      <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-4 py-4 md:px-8">
-        <Link href={PATHS.LANDING} className="text-sm font-medium text-muted hover:text-foreground">
-          {APP_NAME_FA}
-        </Link>
-        <ThemeToggle />
-      </div>
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,color-mix(in_oklch,var(--brand-rose)_10%,transparent),transparent)]"
+      />
 
-      <div className="mx-auto flex min-h-dvh max-w-6xl flex-col lg:flex-row">
-        <aside className="relative hidden flex-1 flex-col justify-between overflow-hidden bg-gradient-to-br from-rose-500/10 via-violet-500/5 to-background p-10 lg:flex">
-          <div>
-            <Image src="/assets/logo-mark.svg" alt="" width={64} height={64} className="rounded-2xl shadow-md" />
-            <h2 className="mt-6 text-3xl font-bold">{APP_NAME_FA}</h2>
-            <p className="mt-2 font-display text-sm tracking-widest text-muted">{APP_NAME_EN}</p>
-            <p className="mt-6 max-w-sm leading-8 text-muted">{APP_TAGLINE_FA}</p>
+      <div className="relative mx-auto grid min-h-dvh lg:grid-cols-2">
+        <main className="order-2 flex min-h-dvh flex-col lg:order-1">
+          <div className="flex items-center justify-between px-5 pt-5 lg:px-12 lg:pt-8">
+            <div className="lg:hidden">
+              <AuthBrandMark compact />
+            </div>
+            <ThemeToggle />
           </div>
-          <ul className="space-y-3 text-sm text-muted">
-            <li className="flex items-center gap-2"><Home2 size={18} />میز شخصی — مالی و برنامه روزانه</li>
-            <li className="flex items-center gap-2"><Building size={18} />فضای کسب‌وکار و حضور GPS</li>
-            <li className="flex items-center gap-2"><Profile2User size={18} />پرسنل، شریک و دعوت‌ها</li>
-          </ul>
-        </aside>
 
-        <main className="flex flex-1 flex-col justify-center px-5 py-20 lg:px-12">
-          {returnBanner ? (
-            <p className="mb-6 rounded-xl border border-accent/30 bg-accent/10 px-4 py-3 text-sm text-muted">
-              بعد از ورود به{" "}
-              <span className="font-medium text-foreground" dir="ltr">
-                {returnBanner}
-              </span>{" "}
-              هدایت می‌شوید.
-            </p>
-          ) : null}
+          <div className="flex flex-1 items-center justify-center px-5 py-8 lg:px-12 lg:py-14">
+            <div className="w-full max-w-lg">
+              {returnBanner ? (
+                <p className="mb-5 rounded-2xl border border-accent/30 bg-accent/10 px-4 py-3 text-sm leading-7 text-muted">
+                  بعد از ورود به{" "}
+                  <span className="font-medium text-foreground" dir="ltr">
+                    {returnBanner}
+                  </span>{" "}
+                  هدایت می‌شوید.
+                </p>
+              ) : null}
 
-          {step === "workspace" ? (
-            <div className="mx-auto w-full max-w-md">
-              <h1 className="text-2xl font-bold">کجا می‌روید؟</h1>
-              <p className="mt-2 text-muted">چند فضای کاری دارید — یکی را انتخاب کنید.</p>
-              <ul className="mt-8 space-y-3">
-                {choices.map((c) => {
-                  const Icon = choiceIcon(c.kind);
-                  return (
-                    <li key={c.id}>
+              <div className="rounded-3xl border border-border bg-surface p-7 shadow-sm md:p-9">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={step}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    {step !== "mobile" && step !== "reset" ? (
                       <button
                         type="button"
-                        className="flex w-full items-center gap-4 rounded-2xl border border-border bg-surface p-4 text-start transition hover:border-accent hover:shadow-md"
-                        onClick={() => {
-                          void completeWorkspaceSelection(c).then(() => {
-                            router.replace(c.path);
-                          });
-                        }}
+                        className="mb-8 flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-foreground"
+                        onClick={() => setStep("mobile")}
                       >
-                        <span className="flex size-11 items-center justify-center rounded-xl bg-accent/15 text-accent">
-                          <Icon size={22} />
-                        </span>
-                        <span>
-                          <span className="block font-semibold">{c.label}</span>
-                          <span className="text-sm text-muted">{c.description}</span>
-                        </span>
-                        <ArrowLeft2 size={18} className="mr-auto text-muted" />
+                        <ArrowRight2 size={16} />
+                        تغییر شماره
                       </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ) : (
-            <div className="mx-auto w-full max-w-md">
-              {step !== "mobile" ? (
-                <button
-                  type="button"
-                  className="mb-6 flex items-center gap-1 text-sm text-muted hover:text-foreground"
-                  onClick={() => setStep("mobile")}
-                >
-                  <ArrowRight2 size={16} />
-                  تغییر شماره
-                </button>
-              ) : null}
+                    ) : null}
 
-              <div className="mb-8 lg:hidden text-center">
-                <Image src="/assets/logo-mark.svg" alt="" width={56} height={56} className="mx-auto rounded-2xl" />
+                    <h1 className="text-2xl font-bold leading-snug lg:text-3xl">{STEP_META[step].title}</h1>
+                    <p className="mt-3 text-base leading-8 text-muted">{STEP_META[step].sub}</p>
+
+                    {step === "mobile" ? (
+                      <form className="mt-10 space-y-7" onSubmit={(e) => void handleMobile(e)}>
+                        <FormInput
+                          label="شماره موبایل"
+                          type="tel"
+                          inputMode="tel"
+                          placeholder="۰۹۱۲۳۴۵۶۷۸۹"
+                          value={mobile}
+                          onChange={(e) => { setMobile(e.target.value); setError(""); }}
+                          aria-invalid={Boolean(error)}
+                        />
+                        {error ? <p className="text-sm text-danger">{error}</p> : null}
+                        <Button type="submit" size="lg" className="w-full" isPending={loading}>
+                          ادامه
+                          <ArrowLeft2 size={18} />
+                        </Button>
+                      </form>
+                    ) : null}
+
+                    {step === "register" ? (
+                      <form className="mt-10 space-y-6" onSubmit={(e) => void handleRegister(e)}>
+                        {needsPasswordSetup ? (
+                          <p className="rounded-2xl bg-surface-secondary px-4 py-3 text-sm leading-7 text-muted">
+                            حساب شما از قبل ساخته شده — فقط رمز عبور را تکمیل کنید.
+                          </p>
+                        ) : null}
+                        <FormInput label="نام" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                        <FormInput label="نام خانوادگی" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                        <FormInput label="موبایل" value={mobile} readOnly />
+                        <FormInput label="رمز عبور" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                        <Button type="submit" size="lg" className="w-full" isPending={loading}>
+                          {needsPasswordSetup ? "تکمیل و ورود" : "ثبت‌نام"}
+                        </Button>
+                      </form>
+                    ) : null}
+
+                    {step === "signin" ? (
+                      <form className="mt-10 space-y-6" onSubmit={(e) => void handleSignIn(e)}>
+                        <FormInput label="موبایل" value={mobile} readOnly />
+                        {usePassword ? (
+                          <FormInput label="رمز عبور" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                        ) : (
+                          <>
+                            <OtpCodeField label="کد تلگرام" value={code} onChange={setCode} />
+                            <Button type="button" variant="secondary" className="w-full" onPress={() => void requestCode()}>
+                              <Sms size={16} />
+                              ارسال کد به تلگرام
+                            </Button>
+                          </>
+                        )}
+                        {usePassword && hasPassword ? (
+                          <button
+                            type="button"
+                            className="text-sm text-accent transition-colors hover:underline"
+                            onClick={() => {
+                              setStep("reset");
+                              setError("");
+                            }}
+                          >
+                            فراموشی رمز عبور؟
+                          </button>
+                        ) : null}
+                        {hasPassword && hasTelegram ? (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            className="w-full"
+                            onPress={() => setUsePassword((v) => !v)}
+                          >
+                            {usePassword ? "ورود با کد تلگرام" : "ورود با رمز عبور"}
+                          </Button>
+                        ) : null}
+                        <Button type="submit" size="lg" className="w-full" isPending={loading}>
+                          <Login size={18} />
+                          ورود
+                        </Button>
+                      </form>
+                    ) : null}
+
+                    {step === "reset" ? (
+                      <ForgotPasswordStep
+                        mobile={mobile}
+                        onBack={() => {
+                          setStep("signin");
+                          setError("");
+                        }}
+                        onSuccess={() => {
+                          setPassword("");
+                          setStep("signin");
+                        }}
+                      />
+                    ) : null}
+                  </motion.div>
+                </AnimatePresence>
               </div>
 
-              <h1 className="text-2xl font-bold lg:text-3xl">{STEP_META[step].title}</h1>
-              <p className="mt-2 leading-7 text-muted">{STEP_META[step].sub}</p>
-
-              {step === "mobile" ? (
-                <form className="mt-8 space-y-4" onSubmit={(e) => void handleMobile(e)}>
-                  <TextField isInvalid={Boolean(error)}>
-                    <Label>شماره موبایل</Label>
-                    <Input
-                      type="tel"
-                      inputMode="tel"
-                      placeholder="۰۹۱۲۳۴۵۶۷۸۹"
-                      value={mobile}
-                      onChange={(e) => { setMobile(e.target.value); setError(""); }}
-                      onFocus={(e) => scrollFieldIntoView(e.currentTarget)}
-                      className="min-h-12 text-base"
-                    />
-                    {error ? <span className="text-sm text-danger">{error}</span> : null}
-                  </TextField>
-                  <Button type="submit" size="lg" className="w-full" isPending={loading}>
-                    ادامه
-                    <ArrowLeft2 size={18} />
-                  </Button>
-                </form>
-              ) : null}
-
-              {step === "register" ? (
-                <form className="mt-8 space-y-4" onSubmit={(e) => void handleRegister(e)}>
-                  {needsPasswordSetup ? (
-                    <p className="rounded-xl bg-surface-secondary px-3 py-2 text-sm text-muted">
-                      حساب شما از قبل ساخته شده — فقط رمز عبور را تکمیل کنید.
-                    </p>
-                  ) : null}
-                  <FormInput label="نام" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-                  <FormInput label="نام خانوادگی" value={lastName} onChange={(e) => setLastName(e.target.value)} />
-                  <FormInput label="موبایل" value={mobile} readOnly />
-                  <FormInput label="رمز عبور" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                  <Button type="submit" size="lg" className="w-full" isPending={loading}>
-                    {needsPasswordSetup ? "تکمیل و ورود" : "ثبت‌نام"}
-                  </Button>
-                </form>
-              ) : null}
-
-              {step === "signin" ? (
-                <form className="mt-8 space-y-4" onSubmit={(e) => void handleSignIn(e)}>
-                  <FormInput label="موبایل" value={mobile} readOnly />
-                  {usePassword ? (
-                    <FormInput label="رمز عبور" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                  ) : (
-                    <>
-                      <OtpCodeField label="کد تلگرام" value={code} onChange={setCode} />
-                      <Button type="button" variant="secondary" size="sm" onPress={() => void requestCode()}>
-                        <Sms size={16} />
-                        ارسال کد
-                      </Button>
-                    </>
-                  )}
-                  {hasPassword && hasTelegram ? (
-                    <button type="button" className="text-sm text-accent" onClick={() => setUsePassword((v) => !v)}>
-                      {usePassword ? "ورود با کد تلگرام" : "ورود با رمز عبور"}
-                    </button>
-                  ) : null}
-                  <Button type="submit" size="lg" className="w-full" isPending={loading}>
-                    <Login size={18} />
-                    ورود
-                  </Button>
-                </form>
-              ) : null}
-
-              <p className="mt-8 text-center text-xs text-muted">
+              <p className="mt-6 text-center text-xs leading-6 text-muted">
                 با ادامه، شرایط استفاده از {APP_NAME_FA} را می‌پذیرید.
               </p>
+
+              <p className="mt-3 text-center lg:hidden">
+                <Link href={PATHS.LANDING} className="text-sm text-muted transition-colors hover:text-foreground">
+                  بازگشت به سایت
+                </Link>
+              </p>
             </div>
-          )}
+          </div>
         </main>
+
+        <aside className="relative order-1 hidden overflow-hidden lg:order-2 lg:flex lg:items-center lg:justify-center lg:p-10 xl:p-14">
+          <div className="absolute inset-0 bg-gradient-to-br from-rose-500/14 via-violet-500/8 to-teal-500/10" />
+          <div
+            aria-hidden
+            className="absolute inset-0 opacity-[0.35]"
+            style={{
+              backgroundImage:
+                "linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)",
+              backgroundSize: "48px 48px",
+              maskImage: "radial-gradient(ellipse 90% 80% at 50% 30%, black 20%, transparent 75%)",
+            }}
+          />
+
+          <div className="relative flex w-full max-w-lg flex-col gap-10 xl:max-w-xl xl:gap-12">
+            <AuthBrandMark />
+
+            <div>
+              <h2 className="text-3xl font-bold leading-snug xl:text-4xl xl:leading-tight">
+                مدیریت مالی شخصی
+                <span className="mt-3 block bg-gradient-to-l from-[var(--brand-rose)] via-[var(--brand-violet)] to-[var(--brand-teal)] bg-clip-text text-transparent">
+                  ساده، دقیق و شمسی
+                </span>
+              </h2>
+              <p className="mt-5 max-w-md text-base leading-8 text-muted">{APP_TAGLINE_FA}</p>
+            </div>
+
+            <ul className="space-y-3">
+              {BRAND_FEATURES.map(({ icon: Icon, text }) => (
+                <li
+                  key={text}
+                  className="flex items-center gap-4 rounded-2xl border border-border/60 bg-surface/80 px-5 py-4 backdrop-blur-sm"
+                >
+                  <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-accent/12 text-accent">
+                    <Icon size={20} variant="Bold" />
+                  </span>
+                  <span className="text-base leading-7">{text}</span>
+                </li>
+              ))}
+            </ul>
+
+            <Link
+              href={PATHS.LANDING}
+              className="inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-foreground"
+            >
+              <ArrowRight2 size={16} />
+              بازگشت به سایت
+            </Link>
+          </div>
+        </aside>
       </div>
     </div>
   );

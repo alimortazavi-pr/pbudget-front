@@ -1,9 +1,12 @@
 "use client";
 
-import { Call, Moon, Refresh, Sun1 } from "iconsax-reactjs";
+import { Call, Building, Moon, Refresh, Sun1 } from "iconsax-reactjs";
 import { Button } from "@heroui/react";
+import Link from "next/link";
 
 import { APP_VERSION } from "@/common/constants/app-version";
+import { BUSINESS_SITE_URL } from "@/common/constants/products";
+import { navigateWithSso } from "@/common/utils/sso";
 import { SUPPORT_PHONE } from "@/components/common/layout/shell-nav";
 import { VoiceAssistantSection } from "@/components/pages/profile/VoiceAssistantSection";
 import { TelegramConnectSection } from "@/components/pages/profile/TelegramConnectSection";
@@ -26,6 +29,21 @@ export function SettingsPage() {
         >
           {theme === "dark" ? <Sun1 size={20} /> : <Moon size={20} />}
           {theme === "dark" ? "حالت روشن" : "حالت تاریک"}
+        </button>
+      </div>
+
+      <div className="glass rounded-2xl p-5" data-tour="settings-business-product">
+        <h2 className="text-lg font-bold">میز پردیس کسب‌وکار</h2>
+        <p className="mt-1 text-sm text-muted">
+          حضور GPS، پرسنل، شیفت و مالی تیمی — برای تیم و کارمندان
+        </p>
+        <button
+          type="button"
+          onClick={() => void navigateWithSso(BUSINESS_SITE_URL, "/business")}
+          className="mt-4 flex w-full items-center gap-3 rounded-xl border border-violet-500/25 bg-violet-500/10 px-4 py-3 text-sm font-medium text-violet-700 transition-colors hover:bg-violet-500/15 dark:text-violet-300"
+        >
+          <Building size={20} variant="Bold" />
+          رفتن به میز کسب‌وکار
         </button>
       </div>
 

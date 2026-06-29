@@ -3,10 +3,8 @@ import { PATHS } from "@/common/constants";
 const ALLOWED_PREFIXES = [
   PATHS.HOME,
   PATHS.ADMIN,
-  PATHS.BUSINESS,
   PATHS.INVITES,
   "/partner-invite",
-  "/business-invite",
   PATHS.PROJECTS,
   PATHS.LANDING,
 ] as const;

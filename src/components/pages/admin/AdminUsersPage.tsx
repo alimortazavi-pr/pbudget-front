@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Button, Modal, Switch } from "@heroui/react";
-import { Edit2, SearchNormal1, ShieldTick, Trash } from "iconsax-reactjs";
+import { Edit2, Lock, SearchNormal1, ShieldTick, Trash } from "iconsax-reactjs";
 
 import * as adminApi from "@/common/api/admin";
 import type { AdminUser } from "@/common/interfaces/admin";
@@ -18,6 +18,8 @@ export function AdminUsersPage() {
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<AdminUser | null>(null);
+  const [passwordUser, setPasswordUser] = useState<AdminUser | null>(null);
+  const [newPassword, setNewPassword] = useState("");
   const [editForm, setEditForm] = useState({
     firstName: "",
     lastName: "",
@@ -86,6 +88,28 @@ export function AdminUsersPage() {
       void load();
     } catch {
       showToast("عملیات ناموفق بود", "danger");
+    }
+  };
+
+  const openPassword = (user: AdminUser) => {
+    setPasswordUser(user);
+    setNewPassword("");
+  };
+
+  const savePassword = async () => {
+    if (!passwordUser) return;
+    if (newPassword.trim().length < 6) {
+      showToast("رمز عبور حداقل ۶ کاراکتر", "danger");
+      return;
+    }
+    try {
+      await adminApi.setAdminUserPassword(passwordUser._id, newPassword.trim());
+      showToast("رمز عبور تنظیم شد", "success");
+      setPasswordUser(null);
+      setNewPassword("");
+      void load();
+    } catch {
+      showToast("تنظیم رمز ناموفق بود", "danger");
     }
   };
 
@@ -178,6 +202,7 @@ export function AdminUsersPage() {
                       </p>
                       <p className="text-xs text-muted">
                         {user.telegramLinked ? "تلگرام متصل" : "بدون تلگرام"}
+                        {user.hasPassword ? " · رمز دارد" : " · بدون رمز"}
                       </p>
                     </td>
                     <td className="px-4 py-3">{toPersianDigits(user.mobile)}</td>
@@ -205,6 +230,14 @@ export function AdminUsersPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onPress={() => openPassword(user)}
+                          aria-label="تغییر رمز عبور"
+                        >
+                          <Lock size={16} />
+                        </Button>
                         <Button
                           size="sm"
                           variant="ghost"
@@ -315,6 +348,44 @@ export function AdminUsersPage() {
                   انصراف
                 </Button>
                 <Button onPress={() => void saveEdit()}>ذخیره</Button>
+              </Modal.Footer>
+            </Modal.Dialog>
+          </Modal.Container>
+        </Modal.Backdrop>
+      </Modal>
+
+      <Modal isOpen={Boolean(passwordUser)} onOpenChange={() => setPasswordUser(null)}>
+        <Modal.Backdrop>
+          <Modal.Container>
+            <Modal.Dialog className="max-w-md">
+              <Modal.CloseTrigger />
+              <Modal.Header>
+                <Modal.Heading>تغییر رمز عبور</Modal.Heading>
+              </Modal.Header>
+              <Modal.Body className="space-y-3">
+                {passwordUser ? (
+                  <p className="text-sm text-muted">
+                    کاربر:{" "}
+                    <span className="font-medium text-foreground">
+                      {passwordUser.firstName} {passwordUser.lastName}
+                    </span>{" "}
+                    ({toPersianDigits(passwordUser.mobile)})
+                  </p>
+                ) : null}
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
+                  placeholder="رمز عبور جدید (حداقل ۶ کاراکتر)"
+                  autoComplete="new-password"
+                />
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onPress={() => setPasswordUser(null)}>
+                  انصراف
+                </Button>
+                <Button onPress={() => void savePassword()}>ذخیره رمز</Button>
               </Modal.Footer>
             </Modal.Dialog>
           </Modal.Container>

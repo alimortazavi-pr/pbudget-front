@@ -89,6 +89,13 @@ export async function setUserDeleted(id: string, deleted: boolean) {
   return data;
 }
 
+export async function setAdminUserPassword(id: string, password: string) {
+  const { data } = await axiosInstance.patch<AdminUser>(`/admin/users/${id}/password`, {
+    password,
+  });
+  return data;
+}
+
 export async function fetchAdminCollections() {
   const { data } = await axiosInstance.get<AdminCollectionMeta[]>(
     "/admin/database/collections",

@@ -1,7 +1,5 @@
-import { redirect } from "next/navigation";
-
-import { PATHS } from "@/common/constants";
+import { VenturesPage } from "@/components/pages/partners/VenturesPage";
 
 export default function Page() {
-  redirect(PATHS.BUSINESS);
+  return <VenturesPage />;
 }

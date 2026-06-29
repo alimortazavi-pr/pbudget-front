@@ -88,20 +88,44 @@ export function AdminDashboardPage() {
   const [activity, setActivity] = useState<AdminActivitySeries | null>(null);
   const [health, setHealth] = useState<AdminHealth | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async (options?: { silent?: boolean }) => {
+    if (!options?.silent) {
+      setLoading(true);
+    }
+    setLoadError(null);
     try {
-      const [overviewData, activityData, healthData] = await Promise.all([
-        adminApi.fetchAdminOverview(),
-        adminApi.fetchAdminActivity(30),
-        adminApi.fetchAdminHealth(),
-      ]);
-      setOverview(overviewData);
-      setActivity(activityData);
-      setHealth(healthData);
-    } catch {
-      showToast("بارگذاری داشبورد ادمین ناموفق بود", "danger");
+      const [overviewResult, activityResult, healthResult] =
+        await Promise.allSettled([
+          adminApi.fetchAdminOverview(),
+          adminApi.fetchAdminActivity(30),
+          adminApi.fetchAdminHealth(),
+        ]);
+
+      if (overviewResult.status === "fulfilled") {
+        setOverview(overviewResult.value);
+      }
+      if (activityResult.status === "fulfilled") {
+        setActivity(activityResult.value);
+      }
+      if (healthResult.status === "fulfilled") {
+        setHealth(healthResult.value);
+      }
+
+      const failures = [overviewResult, activityResult, healthResult].filter(
+        (result) => result.status === "rejected",
+      );
+
+      if (failures.length === 3) {
+        const message = "بارگذاری داشبورد ادمین ناموفق بود";
+        setLoadError(message);
+        showToast(message, "danger");
+      } else if (overviewResult.status === "rejected") {
+        const message = "بارگذاری آمار کلی ناموفق بود";
+        setLoadError(message);
+        showToast(message, "danger");
+      }
     } finally {
       setLoading(false);
     }
@@ -109,7 +133,7 @@ export function AdminDashboardPage() {
 
   useEffect(() => {
     void load();
-    const interval = setInterval(() => void load(), 60_000);
+    const interval = setInterval(() => void load({ silent: true }), 60_000);
     return () => clearInterval(interval);
   }, [load]);
 
@@ -125,8 +149,17 @@ export function AdminDashboardPage() {
 
   if (!overview) {
     return (
-      <div className="glass rounded-2xl p-8 text-center text-muted">
-        داده‌ای برای نمایش وجود ندارد
+      <div className="glass space-y-4 rounded-2xl p-8 text-center">
+        <p className="text-muted">
+          {loadError ?? "داده‌ای برای نمایش وجود ندارد"}
+        </p>
+        <button
+          type="button"
+          className="text-sm font-medium text-accent hover:underline"
+          onClick={() => void load()}
+        >
+          تلاش مجدد
+        </button>
       </div>
     );
   }

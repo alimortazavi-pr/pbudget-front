@@ -8,7 +8,7 @@ export const APP_SHORT_NAME_EN = "P Desk";
 export const APP_SHORT_NAME_FA = "پردیس";
 
 export const APP_TAGLINE_FA =
-  "مدیریت مالی، پروژه و برنامه روزانه";
+  "مدیریت مالی شخصی، پروژه و برنامه روزانه";
 
 export const APP_DESCRIPTION_FA =
-  "میز کار شخصی برای مدیریت مالی، پروژه‌ها و برنامه روزانه";
+  "میز کار شخصی برای مدیریت مالی، بودجه‌بندی، تحلیل هزینه و برنامه روزانه";

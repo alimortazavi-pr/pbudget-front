@@ -210,6 +210,21 @@
     pointer-events: auto !important;
   }
 
+  body > [data-slot="combo-box-popover"],
+  body > [data-slot="select-popover"],
+  body > [data-slot="autocomplete-popover"],
+  body > .combo-box__popover,
+  body > .select__popover {
+    z-index: 100000 !important;
+    pointer-events: auto !important;
+  }
+
+  body > [data-slot="combo-box-popover"] *,
+  body > [data-slot="select-popover"] *,
+  body > [data-slot="autocomplete-popover"] * {
+    pointer-events: auto !important;
+  }
+
   .modal__dialog .rmdp-container,
   .modal__dialog .rmdp-wrapper {
     z-index: 100000 !important;

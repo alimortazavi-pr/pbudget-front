@@ -232,6 +232,13 @@ html.light .landing-page {
   box-shadow: 0 20px 40px -12px oklch(0% 0 0 / 0.2);
 }
 
+/* کارت تنها در آخر گرید ۳ ستونه — تمام عرض */
+@media (min-width: 1024px) {
+  .landing-features-grid > .landing-reveal:last-child:nth-child(3n + 1) {
+    grid-column: 1 / -1;
+  }
+}
+
 .landing-gps-ring {
   position: absolute;
   border-radius: 50%;
@@ -250,6 +257,121 @@ html.light .landing-page {
 .landing-contact-card {
   background: linear-gradient(135deg, color-mix(in oklch, var(--brand-rose) 12%, var(--lp-bg-elevated)), var(--lp-bg-elevated));
   border: 2px solid color-mix(in oklch, var(--brand-rose) 35%, var(--lp-border));
+}
+
+.landing-contact-aside {
+  background: color-mix(in oklch, var(--brand-rose) 6%, var(--lp-bg-elevated));
+}
+
+.landing-contact-form-panel {
+  background: var(--lp-bg-elevated);
+}
+
+.landing-contact-channel {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  border-radius: 1rem;
+  border: 1px solid var(--lp-border);
+  background: color-mix(in oklch, var(--lp-card) 88%, transparent);
+  padding: 0.875rem 1rem;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.landing-contact-channel:hover {
+  border-color: color-mix(in oklch, var(--brand-rose) 45%, var(--lp-border));
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px oklch(0% 0 0 / 0.06);
+}
+
+.landing-contact-channel-icon {
+  display: flex;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  background: color-mix(in oklch, var(--brand-rose) 14%, transparent);
+  color: var(--brand-rose-deep);
+}
+
+.landing-hero-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.25rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--lp-border);
+}
+
+.landing-hero-stats--inline .landing-hero-stat {
+  text-align: start;
+}
+
+@media (min-width: 640px) {
+  .landing-hero-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .landing-hero-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+
+  .landing-3d-stage {
+    width: min(100%, 22rem);
+    margin-inline: auto;
+    transform: scale(0.92);
+    transform-origin: center;
+  }
+}
+
+@media (min-width: 1024px) {
+  .landing-hero-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 22rem;
+  }
+
+  .landing-3d-stage {
+    width: min(100%, 26rem);
+  }
+}
+
+@media (min-width: 1280px) {
+  .landing-aurora-1 {
+    width: min(55vw, 720px);
+    height: min(55vw, 720px);
+  }
+
+  .landing-aurora-2 {
+    width: min(48vw, 620px);
+    height: min(48vw, 620px);
+  }
+
+  .landing-3d-stage {
+    width: min(100%, 30rem);
+    transform: scale(1.06);
+    transform-origin: center;
+  }
+
+  .landing-grid-3d {
+    mask-image: radial-gradient(ellipse 95% 85% at 50% 25%, black 15%, transparent 80%);
+  }
+}
+
+@media (min-width: 1536px) {
+  .landing-3d-stage {
+    width: min(100%, 34rem);
+    transform: scale(1.12);
+  }
 }
 
 .landing-footer-nav {
@@ -303,11 +425,21 @@ html.light .landing-page {
 }
 
 .landing-stat-glow {
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
   background: linear-gradient(135deg, var(--brand-rose), var(--brand-violet));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+.landing-stat-glow--latin {
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+  unicode-bidi: isolate;
+  display: inline-block;
 }
 
 .landing-nav-link::after {
@@ -339,7 +471,13 @@ html.light .landing-page {
   .landing-bento:hover { transform: none; }
 }
 
-@media (max-width: 640px) {
+.landing-app-preview .landing-3d-card {
+  box-shadow:
+    0 24px 60px -20px oklch(0% 0 0 / 0.28),
+    0 0 0 1px color-mix(in oklch, var(--lp-border) 80%, transparent);
+}
+
+@media (max-width: 767px) {
   .landing-3d-stage { display: none; }
   .landing-footer-nav {
     flex-direction: column;

@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 import { Button } from "@heroui/react";
 import { CloseCircle } from "iconsax-reactjs";
 
@@ -14,33 +13,27 @@ type BeforeInstallPromptEvent = Event & {
 };
 
 const SEEN_KEY = "pbudget-pwa-install-seen";
-const ATTENDANCE_SEEN_KEY = "pbudget-pwa-attendance-seen";
 
 export function PwaInstallPrompt() {
-  const pathname = usePathname();
-  const isAttendancePortal = /\/business\/[^/]+\/attendance\/me/.test(pathname);
-
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
   const [installing, setInstalling] = useState(false);
 
-  const seenKey = isAttendancePortal ? ATTENDANCE_SEEN_KEY : SEEN_KEY;
-
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.matchMedia("(display-mode: standalone)").matches) return;
-    if (localStorage.getItem(seenKey) === "1" && !isAttendancePortal) return;
+    if (localStorage.getItem(SEEN_KEY) === "1") return;
 
     const onBeforeInstall = (event: Event) => {
       event.preventDefault();
-      if (localStorage.getItem(seenKey) === "1" && !isAttendancePortal) return;
+      if (localStorage.getItem(SEEN_KEY) === "1") return;
       setDeferredPrompt(event as BeforeInstallPromptEvent);
       setVisible(true);
     };
 
     const onInstalled = () => {
-      localStorage.setItem(seenKey, "1");
+      localStorage.setItem(SEEN_KEY, "1");
       setVisible(false);
       setDeferredPrompt(null);
     };
@@ -52,23 +45,12 @@ export function PwaInstallPrompt() {
       window.removeEventListener("beforeinstallprompt", onBeforeInstall);
       window.removeEventListener("appinstalled", onInstalled);
     };
-  }, [seenKey, isAttendancePortal]);
-
-  useEffect(() => {
-    if (!isAttendancePortal) return;
-    if (localStorage.getItem(ATTENDANCE_SEEN_KEY) === "1") return;
-    const timer = window.setTimeout(() => {
-      if (!deferredPrompt) {
-        setVisible(true);
-      }
-    }, 2500);
-    return () => window.clearTimeout(timer);
-  }, [isAttendancePortal, deferredPrompt]);
+  }, []);
 
   const dismiss = useCallback(() => {
-    localStorage.setItem(seenKey, "1");
+    localStorage.setItem(SEEN_KEY, "1");
     setVisible(false);
-  }, [seenKey]);
+  }, []);
 
   const install = useCallback(async () => {
     if (!deferredPrompt) {
@@ -80,7 +62,7 @@ export function PwaInstallPrompt() {
       await deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       if (outcome === "accepted") {
-        localStorage.setItem(seenKey, "1");
+        localStorage.setItem(SEEN_KEY, "1");
         setVisible(false);
       } else {
         dismiss();
@@ -89,26 +71,12 @@ export function PwaInstallPrompt() {
       setInstalling(false);
       setDeferredPrompt(null);
     }
-  }, [deferredPrompt, dismiss, seenKey]);
+  }, [deferredPrompt, dismiss]);
 
   if (!visible) return null;
 
-  const title = isAttendancePortal
-    ? "نصب اپ حضور و غیاب"
-    : `نصب ${APP_NAME_FA}`;
-  const description = isAttendancePortal
-    ? "برای ثبت سریع ورود و خروج با GPS، اپ را روی صفحه اصلی گوشی نصب کنید — مثل اپ native."
-    : "اپ را روی گوشی یا دسکتاپ نصب کنید و مثل برنامه native بازش کنید.";
-
   return (
-    <div
-      className={`fixed inset-x-4 z-[60] mx-auto max-w-lg md:left-auto md:right-6 ${
-        isAttendancePortal
-          ? "bottom-4 md:bottom-6"
-          : "bottom-[calc(5.5rem+env(safe-area-inset-bottom))] md:bottom-6"
-      }`}
-      data-tour="attendance-pwa"
-    >
+    <div className="fixed inset-x-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-[60] mx-auto max-w-lg md:bottom-6 md:left-auto md:right-6">
       <div className="glass flex items-start gap-3 rounded-2xl border border-border/50 p-4 shadow-xl">
         <div className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-xl">
           <Image
@@ -121,8 +89,10 @@ export function PwaInstallPrompt() {
         </div>
         <div className="min-w-0 flex-1 space-y-3">
           <div>
-            <p className="font-semibold text-foreground">{title}</p>
-            <p className="mt-1 text-sm text-muted">{description}</p>
+            <p className="font-semibold text-foreground">نصب {APP_NAME_FA}</p>
+            <p className="mt-1 text-sm text-muted">
+              اپ را روی گوشی یا دسکتاپ نصب کنید و مثل برنامه native بازش کنید.
+            </p>
           </div>
           <div className="flex flex-wrap gap-2">
             {deferredPrompt ? (

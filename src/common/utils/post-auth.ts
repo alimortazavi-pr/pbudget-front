@@ -5,8 +5,8 @@ import {
   consumeAuthReturnUrl,
   validateAuthReturnUrl,
 } from "@/common/utils/auth-flow";
-import { getLastWorkspace } from "@/common/utils/workspace-memory";
 import { queuePersonaOnboarding } from "@/common/utils/persona-onboarding";
+import { shouldShowWorkspacePicker } from "@/common/utils/workspace-choice";
 
 export type PostLoginChoice = {
   id: string;
@@ -42,22 +42,10 @@ export async function resolvePostAuthDestination(options?: {
   try {
     const context = await authApi.fetchPostLoginContext();
 
-    const last = getLastWorkspace();
-    if (last) {
-      const remembered = context.choices.find((c) => c.path === last.path);
-      if (remembered) {
-        queuePersonaOnboarding(remembered.kind);
-        return {
-          path: remembered.path,
-          context,
-          needsPicker: false,
-        };
-      }
-    }
-
-    if (context.choices.length > 1) {
+    if (shouldShowWorkspacePicker(context.choices)) {
       return { path: null, context, needsPicker: true };
     }
+
     const single = context.choices[0];
     if (single) {
       queuePersonaOnboarding(single.kind);

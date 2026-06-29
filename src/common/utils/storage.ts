@@ -1,10 +1,13 @@
 import jsCookies from "js-cookie";
 
 import type { ISaveToLocal } from "@/common/interfaces";
+import { getCookieOptions } from "@/common/utils/cookie-options";
 
 const AUTH_COOKIE = "userAuthorization";
 const THEME_COOKIE = "pbudget-theme";
-const BUSINESS_COOKIE = "activeBusinessId";
+
+const cookieOpts = () => ({ expires: 90, ...getCookieOptions() });
+const themeOpts = () => ({ expires: 365, ...getCookieOptions() });
 
 export const storage = {
   getAuthData(): ISaveToLocal | null {
@@ -18,11 +21,11 @@ export const storage = {
   },
 
   setAuthData(data: ISaveToLocal) {
-    jsCookies.set(AUTH_COOKIE, JSON.stringify(data), { expires: 90, path: "/" });
+    jsCookies.set(AUTH_COOKIE, JSON.stringify(data), cookieOpts());
   },
 
   clearAuthData() {
-    jsCookies.remove(AUTH_COOKIE, { path: "/" });
+    jsCookies.remove(AUTH_COOKIE, getCookieOptions());
   },
 
   getToken(): string | undefined {
@@ -38,23 +41,8 @@ export const storage = {
   },
 
   setTheme(theme: "light" | "dark") {
-    jsCookies.set(THEME_COOKIE, theme, { expires: 365, path: "/" });
-    jsCookies.set("dark-mode", theme === "dark" ? "true" : "false", {
-      expires: 365,
-      path: "/",
-    });
-  },
-
-  getActiveBusinessId(): string | undefined {
-    return jsCookies.get(BUSINESS_COOKIE) || undefined;
-  },
-
-  setActiveBusinessId(businessId: string | null) {
-    if (businessId) {
-      jsCookies.set(BUSINESS_COOKIE, businessId, { expires: 90, path: "/" });
-    } else {
-      jsCookies.remove(BUSINESS_COOKIE, { path: "/" });
-    }
+    jsCookies.set(THEME_COOKIE, theme, themeOpts());
+    jsCookies.set("dark-mode", theme === "dark" ? "true" : "false", themeOpts());
   },
 };
 
