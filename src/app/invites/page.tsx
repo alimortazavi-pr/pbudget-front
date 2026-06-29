@@ -1,7 +1,5 @@
-import { redirect } from "next/navigation";
-
-import { PATHS } from "@/common/constants";
+import { InvitesPage } from "@/components/pages/invites/InvitesPage";
 
 export default function Page() {
-  redirect(PATHS.VENTURES);
+  return <InvitesPage />;
 }

@@ -16,10 +16,12 @@ import { usePathname } from "next/navigation";
 
 import {
   getTourForPath,
+  getPersonaTour,
   ONBOARDING_TOUR,
   type TourDefinition,
   type TourStep,
 } from "@/common/constants/tours";
+import { consumePendingPersonaTour } from "@/common/utils/persona-onboarding";
 import {
   isOnboardingDone,
   isTourDone,
@@ -294,9 +296,20 @@ export function TourProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!mounted) return;
     if (pathname === "/get-started" || pathname === "/download") return;
-    if (pathname.startsWith("/admin")) return;
+    if (pathname === "/") return;
 
     const timer = window.setTimeout(() => {
+      const pendingKind = consumePendingPersonaTour();
+      if (pendingKind) {
+        const personaTour = getPersonaTour(pendingKind);
+        if (personaTour && !isTourDone(personaTour.id)) {
+          startTour(personaTour);
+          return;
+        }
+      }
+
+      if (pathname.startsWith("/admin")) return;
+
       if (!isOnboardingDone()) {
         startTour(ONBOARDING_TOUR);
         return;

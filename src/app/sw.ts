@@ -75,3 +75,49 @@ self.addEventListener("activate", (event) => {
     ),
   );
 });
+
+self.addEventListener("push", (event) => {
+  let payload: { title?: string; body?: string; url?: string } = {};
+  try {
+    payload = event.data?.json() ?? {};
+  } catch {
+    payload = { body: event.data?.text() };
+  }
+
+  const title = payload.title ?? "میز پردیس";
+  const body = payload.body ?? "";
+  const url = payload.url ?? "/";
+
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body,
+      icon: "/assets/icons/icon-192x192.png",
+      badge: "/assets/icons/icon-96x96.png",
+      data: { url },
+      dir: "rtl",
+      lang: "fa",
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = (event.notification.data?.url as string | undefined) ?? "/";
+
+  event.waitUntil(
+    self.clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((clientList) => {
+        for (const client of clientList) {
+          if ("focus" in client) {
+            void client.focus();
+            if ("navigate" in client) {
+              void (client as WindowClient).navigate(url);
+            }
+            return;
+          }
+        }
+        return self.clients.openWindow(url);
+      }),
+  );
+});

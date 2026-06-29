@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
 
 import { PATHS } from "@/common/constants";
+import { buildGetStartedUrl } from "@/common/utils/auth-flow";
 import * as partnersApi from "@/common/api/partners";
 import type { IPartnerInviteInfo } from "@/common/interfaces/partner.interface";
 import { formatJalaliDateSlashed, moment } from "@/common/utils";
@@ -136,7 +137,7 @@ export function PartnerInvitePage({ token }: PartnerInvitePageProps) {
             </span>{" "}
             وارد شوید
           </p>
-          <Link href={PATHS.GET_STARTED}>
+          <Link href={buildGetStartedUrl(PATHS.PARTNER_INVITE(token))}>
             <Button className="w-full" size="lg">
               ورود / ثبت‌نام
             </Button>

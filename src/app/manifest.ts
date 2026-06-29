@@ -21,6 +21,26 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#fb7185",
     background_color: "#1f2937",
     categories: ["finance", "productivity"],
+    shortcuts: [
+      {
+        name: "داشبورد",
+        short_name: "داشبورد",
+        url: "/app",
+        icons: [{ src: "/assets/icons/icon-96x96.png", sizes: "96x96" }],
+      },
+      {
+        name: "ثبت تراکنش",
+        short_name: "تراکنش",
+        url: "/create-budget",
+        icons: [{ src: "/assets/icons/icon-96x96.png", sizes: "96x96" }],
+      },
+      {
+        name: "برنامه روزانه",
+        short_name: "تسک‌ها",
+        url: "/tasks",
+        icons: [{ src: "/assets/icons/icon-96x96.png", sizes: "96x96" }],
+      },
+    ],
     icons: [
       {
         src: "/assets/icons/icon-72x72.png",

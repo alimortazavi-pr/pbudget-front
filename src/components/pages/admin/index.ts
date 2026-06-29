@@ -3,6 +3,7 @@ export { AdminUsersPage } from "./AdminUsersPage";
 export { AdminDatabasePage } from "./AdminDatabasePage";
 export { AdminBackupPage } from "./AdminBackupPage";
 export { AdminAuditPage } from "./AdminAuditPage";
+export { AdminAuthAuditPage } from "./AdminAuthAuditPage";
 export { AdminContentPage } from "./AdminContentPage";
 export { AdminAppPage } from "./AdminAppPage";
 export { AdminVoiceLogsPage } from "./AdminVoiceLogsPage";

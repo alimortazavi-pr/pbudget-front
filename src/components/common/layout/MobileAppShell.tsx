@@ -17,6 +17,7 @@ import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { useTour } from "@/components/providers/TourProvider";
 import { AppDrawer } from "./AppDrawer";
 import { ChangeAccountPopover } from "./ChangeAccountPopover";
+import { BusinessWorkspaceSwitcher } from "./BusinessWorkspaceSwitcher";
 import { ShellSidebar } from "./ShellSidebar";
 import {
   CREATE_NAV_ITEM,
@@ -93,6 +94,7 @@ export function MobileAppShell({
                 <InfoCircle size={20} />
               </Button>
               <ChangeAccountPopover />
+              <BusinessWorkspaceSwitcher />
               <div className="lg:hidden">
                 <ThemeToggle />
               </div>

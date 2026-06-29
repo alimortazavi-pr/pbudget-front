@@ -54,7 +54,7 @@ export function DownloadPage() {
   const [pageUrl, setPageUrl] = useState("");
   const [apkUrl, setApkUrl] = useState(FALLBACK_APK_URL);
   const [appVersion, setAppVersion] = useState(FALLBACK_VERSION);
-  const [apkAvailable, setApkAvailable] = useState(true);
+  const [apkAvailable, setApkAvailable] = useState(false);
 
   useEffect(() => {
     setPageUrl(window.location.href);
@@ -66,7 +66,7 @@ export function DownloadPage() {
         setApkAvailable(info.available);
       })
       .catch(() => {
-        setApkAvailable(true);
+        setApkAvailable(false);
       });
   }, []);
 
@@ -135,8 +135,8 @@ export function DownloadPage() {
             </span>
           </h1>
           <p className="mt-4 max-w-xl text-base leading-8 text-muted lg:text-lg">
-            {APP_TAGLINE_FA}. نسخه اندروید با طراحی هماهنگ وب، بدون نیاز به
-            لاگین برای دانلود — همین الان نصب کنید.
+            {APP_TAGLINE_FA}. نسخه اندروید به‌زودی منتشر می‌شود — فعلاً از نسخه وب
+            یا PWA استفاده کنید.
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">

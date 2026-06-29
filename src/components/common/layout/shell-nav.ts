@@ -87,11 +87,76 @@ export const PLANNING_NAV_GROUPS = [
   {
     title: "کسب‌وکار",
     items: [
-      { href: PATHS.VENTURES, label: "کسب‌وکار و شرکا", icon: Profile2User },
-      { href: PATHS.WORK_ATTENDANCE, label: "حضور و غیاب", icon: Clock },
+      { href: PATHS.BUSINESS, label: "کسب‌وکارهای من", icon: Profile2User },
+      { href: PATHS.VENTURES, label: "شرکا و تسویه", icon: Briefcase },
+      { href: PATHS.WORK_ATTENDANCE, label: "حضور فریلنسری", icon: Clock },
     ],
   },
 ] as const;
+
+export type BusinessNavItem = {
+  href: string;
+  label: string;
+  icon: typeof Home2;
+  permission?: import("@/common/interfaces/business.interface").BusinessPermission;
+};
+
+export const BUSINESS_NAV_ITEMS: BusinessNavItem[] = [
+  {
+    href: "#dashboard",
+    label: "داشبورد",
+    icon: Home2,
+    permission: "dashboard.view",
+  },
+  {
+    href: "transactions",
+    label: "تراکنش‌ها",
+    icon: Wallet,
+    permission: "transactions.view",
+  },
+  {
+    href: "staff",
+    label: "پرسنل",
+    icon: Profile2User,
+    permission: "staff.view",
+  },
+  {
+    href: "attendance",
+    label: "حضور تیم",
+    icon: Clock,
+    permission: "attendance.view_team",
+  },
+  {
+    href: "attendance/me",
+    label: "حضور من",
+    icon: Clock,
+    permission: "attendance.self_clock",
+  },
+  {
+    href: "attendance/shifts",
+    label: "شیفت‌ها",
+    icon: Clock,
+    permission: "attendance.manage_shifts",
+  },
+  {
+    href: "attendance/reports",
+    label: "گزارش حضور",
+    icon: Clock,
+    permission: "attendance.reports",
+  },
+  {
+    href: "finance",
+    label: "مدیریت مالی",
+    icon: Wallet,
+    permission: "categories.manage",
+  },
+  {
+    href: "petty-cash",
+    label: "تنخواه",
+    icon: MoneyRecive,
+    permission: "petty_cash.hold",
+  },
+];
 
 export const ACCOUNT_NAV_ITEMS = [
   { href: PATHS.PROFILE, label: "پروفایل", icon: Profile },
@@ -124,7 +189,7 @@ const NAV_ACTIVE_EXCLUSIONS: Record<string, readonly string[]> = {
 
 export function isShellNavActive(pathname: string, href: string) {
   if (href.includes("#")) return false;
-  if (href === "/") return pathname === "/";
+  if (href === PATHS.HOME) return pathname === PATHS.HOME;
   if (pathname === href) return true;
   if (!pathname.startsWith(`${href}/`)) return false;
 

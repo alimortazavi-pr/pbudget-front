@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import { fetchBudgetById } from "@/common/api/budgets";
+import { PATHS } from "@/common/constants";
 import type { IBudget } from "@/common/interfaces/budget.interface";
 import { BudgetFormPage } from "./BudgetFormPage";
 
@@ -15,7 +16,7 @@ export function EditBudgetPage() {
   useEffect(() => {
     void fetchBudgetById(params.id)
       .then((data) => setBudget(data.budget as IBudget))
-      .catch(() => router.replace("/"));
+      .catch(() => router.replace(PATHS.HOME));
   }, [params.id, router]);
 
   if (!budget) {

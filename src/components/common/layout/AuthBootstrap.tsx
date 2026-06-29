@@ -8,6 +8,7 @@ import { isPublicPath } from "@/common/constants/public-routes";
 import * as authApi from "@/common/api/auth";
 import * as categoriesApi from "@/common/api/categories";
 import { saveDataToLocal, storage } from "@/common/utils";
+import { resolvePostAuthDestination } from "@/common/utils/post-auth";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import {
   authenticate,
@@ -66,6 +67,15 @@ export function AuthBootstrap() {
       dispatch(setCategories(cats));
     });
   }, [dispatch, isAuth]);
+
+  useEffect(() => {
+    if (!didTry || !isAuth) return;
+    if (pathname !== PATHS.GET_STARTED) return;
+
+    void resolvePostAuthDestination().then((result) => {
+      router.replace(result.path ?? PATHS.HOME);
+    });
+  }, [didTry, isAuth, pathname, router]);
 
   return null;
 }

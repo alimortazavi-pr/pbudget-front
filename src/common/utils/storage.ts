@@ -4,6 +4,7 @@ import type { ISaveToLocal } from "@/common/interfaces";
 
 const AUTH_COOKIE = "userAuthorization";
 const THEME_COOKIE = "pbudget-theme";
+const BUSINESS_COOKIE = "activeBusinessId";
 
 export const storage = {
   getAuthData(): ISaveToLocal | null {
@@ -42,6 +43,18 @@ export const storage = {
       expires: 365,
       path: "/",
     });
+  },
+
+  getActiveBusinessId(): string | undefined {
+    return jsCookies.get(BUSINESS_COOKIE) || undefined;
+  },
+
+  setActiveBusinessId(businessId: string | null) {
+    if (businessId) {
+      jsCookies.set(BUSINESS_COOKIE, businessId, { expires: 90, path: "/" });
+    } else {
+      jsCookies.remove(BUSINESS_COOKIE, { path: "/" });
+    }
   },
 };
 

@@ -59,3 +59,31 @@ export async function signInWithPassword(form: ISignInPasswordForm) {
     user: normalizeProfile(data.user as unknown as Record<string, unknown>),
   };
 }
+
+export type PostLoginContextResponse = {
+  suggestedPath: string;
+  choices: {
+    id: string;
+    label: string;
+    description: string;
+    path: string;
+    kind: string;
+  }[];
+  pendingInvitesCount: number;
+  businessCount: number;
+};
+
+export async function fetchPostLoginContext() {
+  const { data } = await axiosInstance.get<PostLoginContextResponse>(
+    "/auth/post-login-context",
+  );
+  return data;
+}
+
+export async function logWorkspaceSelection(input: {
+  path: string;
+  kind: string;
+  label?: string;
+}) {
+  await axiosInstance.post("/auth/workspace-selected", input);
+}

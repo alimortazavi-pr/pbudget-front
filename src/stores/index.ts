@@ -5,6 +5,7 @@ import { profileReducer } from "./profile";
 import { budgetReducer } from "./budget";
 import { categoryReducer } from "./category";
 import { boxReducer } from "./box";
+import { businessContextReducer } from "./businessContext";
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
     budget: budgetReducer,
     category: categoryReducer,
     box: boxReducer,
+    businessContext: businessContextReducer,
   },
 });
 

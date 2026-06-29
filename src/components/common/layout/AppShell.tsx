@@ -23,17 +23,35 @@ const PAGE_TITLES: Record<string, string> = {
   [PATHS.NOTES]: "یادداشت‌ها",
   [PATHS.PROJECTS]: "پروژه‌ها",
   [PATHS.TASKS]: "برنامه روزانه",
+  [PATHS.BUSINESS]: "کسب‌وکارهای من",
   [PATHS.PROFILE]: "پروفایل",
   [PATHS.SETTINGS]: "تنظیمات",
 };
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const isLandingPage = pathname === PATHS.LANDING;
+  const isLandingPreview = pathname === PATHS.LANDING_PREVIEW;
+  const isPricingPage = pathname === PATHS.PRICING;
   const isAuthPage =
     pathname === PATHS.GET_STARTED || pathname === PATHS.DOWNLOAD;
-  const isAdminPage = pathname.startsWith("/admin");
 
-  if (isAuthPage) {
+  if (isLandingPage || isLandingPreview || isPricingPage) {
+    return (
+      <>
+        <AuthBootstrap />
+        {children}
+      </>
+    );
+  }
+  const isAdminPage = pathname.startsWith("/admin");
+  const isBusinessWorkspace =
+    pathname.startsWith("/business/") && pathname !== PATHS.BUSINESS;
+  const isPublicInvitePage =
+    pathname.startsWith("/partner-invite/") ||
+    pathname.startsWith("/business-invite/");
+
+  if (isAuthPage || isPublicInvitePage) {
     return (
       <>
         <AuthBootstrap />
@@ -43,6 +61,15 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
 
   if (isAdminPage) {
+    return (
+      <>
+        <AuthBootstrap />
+        {children}
+      </>
+    );
+  }
+
+  if (isBusinessWorkspace) {
     return (
       <>
         <AuthBootstrap />

@@ -217,6 +217,39 @@ export async function fetchAuditLogs(params: {
   return data;
 }
 
+export async function fetchAuthAuditLogs(params: {
+  page?: number;
+  limit?: number;
+  action?: string;
+  userId?: string;
+}) {
+  const { data } = await axiosInstance.get<
+    import("@/common/interfaces/admin").AdminAuthAuditListResponse
+  >("/admin/auth-audit", {
+    params: {
+      page: params.page ?? 1,
+      limit: params.limit ?? 30,
+      action: params.action || undefined,
+      userId: params.userId || undefined,
+    },
+  });
+  return data;
+}
+
+export function downloadAuthAuditExport(params?: {
+  action?: string;
+  userId?: string;
+}) {
+  return downloadAdminFile(
+    '/admin/auth-audit/export',
+    `auth-audit-${new Date().toISOString().slice(0, 10)}.csv`,
+    {
+      action: params?.action ?? '',
+      userId: params?.userId ?? '',
+    },
+  );
+}
+
 export async function fetchRequestLogs(params: {
   page?: number;
   limit?: number;
@@ -351,5 +384,35 @@ export async function uploadAdminAndroidApk(
     form,
     { headers: { "Content-Type": "multipart/form-data" } },
   );
+  return data;
+}
+
+export async function fetchAdminLanding() {
+  const { data } = await axiosInstance.get<{
+    slug: string;
+    content: import("@/common/interfaces/landing.interface").ILandingContent;
+    publishedContent?: import("@/common/interfaces/landing.interface").ILandingContent;
+    hasDraftChanges?: boolean;
+    updatedAt: string | null;
+  }>("/admin/landing");
+  return data;
+}
+
+export async function fetchAdminLandingPreview() {
+  const { data } = await axiosInstance.get<
+    import("@/common/interfaces/landing.interface").ILandingContent
+  >("/admin/landing/preview");
+  return data;
+}
+
+export async function updateAdminLanding(
+  content: import("@/common/interfaces/landing.interface").ILandingContent,
+) {
+  const { data } = await axiosInstance.patch("/admin/landing", { content });
+  return data;
+}
+
+export async function publishAdminLanding() {
+  const { data } = await axiosInstance.post("/admin/landing/publish");
   return data;
 }

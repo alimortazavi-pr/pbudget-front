@@ -44,6 +44,15 @@ axiosInstance.interceptors.request.use((config) => {
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    const businessId = storage.getActiveBusinessId();
+    if (
+      businessId &&
+      typeof config.url === "string" &&
+      config.url.includes("/business/workspace")
+    ) {
+      config.headers["X-Business-Id"] = businessId;
+    }
   }
 
   return config;

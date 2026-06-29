@@ -268,6 +268,123 @@ export const PAGE_TOURS: Record<string, TourDefinition> = {
   },
 };
 
+export const PERSONA_TOURS: Record<string, TourDefinition> = {
+  personal: ONBOARDING_TOUR,
+  business: {
+    id: "persona-business",
+    name: "راهنمای کسب‌وکار",
+    steps: [
+      {
+        title: "به فضای کسب‌وکار خوش آمدید",
+        description:
+          "از اینجا پرسنل، حضور، مالی تیمی و گزارش‌ها را مدیریت می‌کنید.",
+        placement: "center",
+      },
+      {
+        target: '[data-tour="page-content"]',
+        title: "داشبورد کسب‌وکار",
+        description:
+          "خلاصه وضعیت تیم، تراکنش‌های اخیر و میانبرهای مهم همین‌جاست.",
+        placement: "center",
+        optional: true,
+      },
+      {
+        target: '[data-tour="tour-button"]',
+        title: "راهنمای صفحات",
+        description: "در هر بخش می‌توانید دوباره راهنما را ببینید.",
+        placement: "bottom",
+        optional: true,
+      },
+    ],
+  },
+  attendance: {
+    id: "persona-attendance",
+    name: "راهنمای حضور پرسنل",
+    steps: [
+      {
+        title: "پرتال حضور شما",
+        description:
+          "ورود و خروج با GPS، درخواست مرخصی و گزارش ماهانه — همه از همین صفحه.",
+        placement: "center",
+      },
+      {
+        target: '[data-tour="attendance-tabs"]',
+        title: "تب‌های اصلی",
+        description: "بین ثبت حضور، درخواست‌ها و گزارش جابه‌جا شوید.",
+        placement: "bottom",
+        optional: true,
+      },
+      {
+        target: '[data-tour="attendance-clock"]',
+        title: "ثبت ورود و خروج",
+        description:
+          "موقعیت GPS را فعال کنید و دکمه ورود/خروج را بزنید. در محدوده مجاز باید باشید.",
+        placement: "top",
+        optional: true,
+      },
+      {
+        target: '[data-tour="attendance-push"]',
+        title: 'یادآور ورود',
+        description:
+          'اعلان وب را فعال کنید تا اگر ورود امروز را ثبت نکرده باشید، صبح یادآوری بگیرید.',
+        placement: 'top',
+        optional: true,
+      },
+      {
+        target: '[data-tour="attendance-pwa"]',
+        title: "نصب روی گوشی",
+        description:
+          "اپ را نصب کنید تا مثل برنامه native از صفحه اصلی باز کنید — ایده‌آل برای پرسنل.",
+        placement: "top",
+        optional: true,
+      },
+    ],
+  },
+  admin: {
+    id: "persona-admin",
+    name: "راهنمای پنل ادمین",
+    steps: [
+      {
+        title: "پنل مدیریت سیستم",
+        description:
+          "کاربران، محتوا، لندینگ، بکاپ و لاگ‌ها — دسترسی کامل مدیر سیستم.",
+        placement: "center",
+      },
+      {
+        target: '[data-tour="page-content"]',
+        title: "داشبورد ادمین",
+        description: "وضعیت سلامت، فعالیت کاربران و میانبرهای مدیریتی.",
+        placement: "center",
+        optional: true,
+      },
+    ],
+  },
+  invites: {
+    id: "persona-invites",
+    name: "راهنمای دعوت‌ها",
+    steps: [
+      {
+        title: "صندوق دعوت‌ها",
+        description:
+          "دعوت‌های کسب‌وکار و همکاری پروژه اینجا جمع می‌شوند — بپذیرید یا رد کنید.",
+        placement: "center",
+      },
+      {
+        target: '[data-tour="invites-list"]',
+        title: "کارت‌های دعوت",
+        description:
+          "جزئیات نقش، تاریخ انقضا و لینک مستقیم — پذیرش فوری یا مشاهده جزئیات.",
+        placement: "top",
+        optional: true,
+      },
+    ],
+  },
+};
+
+export function getPersonaTour(kind: string): TourDefinition | null {
+  return PERSONA_TOURS[kind] ?? null;
+}
+
 export function getTourForPath(pathname: string): TourDefinition | null {
   if (PAGE_TOURS[pathname]) return PAGE_TOURS[pathname];
 

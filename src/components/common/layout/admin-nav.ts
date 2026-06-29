@@ -4,8 +4,10 @@ import {
   Data,
   DocumentText,
   Home2,
+  LoginCurve,
   Microphone2,
   Mobile,
+  Monitor,
   People,
   ShieldSearch,
   Bank,
@@ -24,6 +26,11 @@ export const ADMIN_NAV = [
     href: PATHS.ADMIN_USERS,
     label: "کاربران",
     icon: People,
+  },
+  {
+    href: PATHS.ADMIN_LANDING,
+    label: "صفحه لندینگ",
+    icon: Monitor,
   },
   {
     href: PATHS.ADMIN_CONTENT,
@@ -54,6 +61,11 @@ export const ADMIN_NAV = [
     href: PATHS.ADMIN_AUDIT,
     label: "لاگ عملیات",
     icon: ShieldSearch,
+  },
+  {
+    href: PATHS.ADMIN_AUTH_AUDIT,
+    label: "لاگ ورود",
+    icon: LoginCurve,
   },
   {
     href: PATHS.ADMIN_LOGS,
