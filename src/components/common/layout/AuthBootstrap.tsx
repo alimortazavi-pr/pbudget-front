@@ -70,7 +70,7 @@ export function AuthBootstrap() {
 
   useEffect(() => {
     if (!didTry || !isAuth) return;
-    if (pathname !== PATHS.GET_STARTED) return;
+    if (pathname !== PATHS.GET_STARTED && pathname !== PATHS.LANDING) return;
 
     void resolvePostAuthDestination().then((result) => {
       if (result.needsPicker) {

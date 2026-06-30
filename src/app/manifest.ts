@@ -5,6 +5,7 @@ import {
   APP_NAME_FA,
   APP_SHORT_NAME_FA,
 } from "@/common/constants/brand";
+import { PATHS } from "@/common/constants";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -14,7 +15,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description: APP_DESCRIPTION_FA,
     lang: "fa",
     dir: "rtl",
-    start_url: "/",
+    start_url: PATHS.HOME,
     scope: "/",
     display: "standalone",
     orientation: "portrait",
