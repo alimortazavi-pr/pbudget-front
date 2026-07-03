@@ -84,12 +84,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   const shellProps = {
     title,
-    showBack:
-      pathname !== PATHS.HOME &&
-      pathname !== PATHS.BOXES &&
-      pathname !== PATHS.CATEGORIES &&
-      pathname !== PATHS.PROFILE &&
-      pathname !== PATHS.SETTINGS,
+    showBack: pathname !== PATHS.HOME,
     hideTabBar:
       pathname === PATHS.CREATE_BUDGET ||
       pathname.startsWith("/budgets/") ||
@@ -113,12 +108,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <AuthBootstrap />
         <MobileAppShell
           {...shellProps}
-          showBack={
-            pathname !== PATHS.HOME &&
-            pathname !== PATHS.BOXES &&
-            pathname !== PATHS.CATEGORIES &&
-            pathname !== PATHS.SETTINGS
-          }
+          showBack={pathname !== PATHS.HOME}
         >
           {children}
         </MobileAppShell>
