@@ -240,19 +240,25 @@ export function BankImportWizardPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-4 gap-2">
-        {STEPS.map((item) => (
-          <div
-            key={item.id}
-            className={`rounded-xl px-2 py-2 text-center text-xs font-medium ${
-              step >= item.id
-                ? "bg-accent/15 text-accent"
-                : "bg-surface-secondary text-muted"
-            }`}
-          >
-            {item.label}
-          </div>
-        ))}
+      <div className="grid grid-cols-4 gap-1.5 xs:gap-2">
+        {STEPS.map((item) => {
+          const isActive = step === item.id;
+          const isCompleted = step > item.id;
+          return (
+            <div
+              key={item.id}
+              className={`rounded-xl py-2 px-1 text-center text-[10px] min-[360px]:text-[11px] xs:text-xs font-medium whitespace-nowrap transition-all duration-200 ${
+                isActive
+                  ? "bg-accent/15 text-accent ring-1 ring-accent/30 font-semibold"
+                  : isCompleted
+                    ? "bg-accent/5 text-accent/70"
+                    : "bg-surface-secondary text-muted"
+              }`}
+            >
+              {item.label}
+            </div>
+          );
+        })}
       </div>
 
       {step === 1 && (
