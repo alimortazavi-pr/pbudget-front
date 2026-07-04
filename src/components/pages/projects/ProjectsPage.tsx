@@ -51,8 +51,14 @@ export function ProjectsPage() {
     void load();
   }, [load]);
 
+  const visibleProjects = useMemo(() => {
+    const showSynced = typeof window !== "undefined" && localStorage.getItem("pbudget_show_synced_projects") !== "false";
+    if (showSynced) return projects;
+    return projects.filter((p) => !p.description?.includes("Synced from Business"));
+  }, [projects]);
+
   const summary = useMemo(() => {
-    return projects.reduce(
+    return visibleProjects.reduce(
       (acc, project) => {
         const stats = project.stats;
         acc.total += project.totalAmount;
@@ -62,11 +68,11 @@ export function ProjectsPage() {
       },
       { total: 0, received: 0, remaining: 0 },
     );
-  }, [projects]);
+  }, [visibleProjects]);
 
   const usedCategoryIds = useMemo(
-    () => new Set(projects.map((project) => project.category._id)),
-    [projects],
+    () => new Set(visibleProjects.map((project) => project.category._id)),
+    [visibleProjects],
   );
 
   async function handleQuickClockIn(projectId: string) {
@@ -135,7 +141,7 @@ export function ProjectsPage() {
 
       {loading ? (
         <div className="glass rounded-2xl p-10 text-center text-muted">در حال بارگذاری…</div>
-      ) : projects.length === 0 ? (
+      ) : visibleProjects.length === 0 ? (
         <div className="glass rounded-2xl p-10 text-center">
           <Briefcase size={40} className="mx-auto mb-3 text-muted" />
           <p className="text-muted">هنوز پروژه‌ای ثبت نشده</p>
@@ -146,7 +152,7 @@ export function ProjectsPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {projects.map((project) => {
+          {visibleProjects.map((project) => {
             const stats = project.stats;
             const received = stats?.receivedAmount ?? 0;
             const remaining = stats?.remainingAmount ?? project.totalAmount;

@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { Call, Building, Moon, Refresh, Sun1 } from "iconsax-reactjs";
-import { Button } from "@heroui/react";
+import { Button, Switch } from "@heroui/react";
 import Link from "next/link";
 
 import { APP_VERSION } from "@/common/constants/app-version";
@@ -17,6 +18,18 @@ export function SettingsPage() {
   const { theme, toggleTheme } = useTheme();
   const { hasUpdate, applyUpdate, showChangelog } = useVersion();
 
+  const [showSynced, setShowSynced] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("pbudget_show_synced_projects") !== "false";
+    }
+    return true;
+  });
+
+  const handleToggleSynced = (checked: boolean) => {
+    setShowSynced(checked);
+    localStorage.setItem("pbudget_show_synced_projects", String(checked));
+  };
+
   return (
     <div className="pb-form-page space-y-6">
       <div className="glass rounded-2xl p-5" data-tour="settings-theme">
@@ -30,6 +43,20 @@ export function SettingsPage() {
           {theme === "dark" ? <Sun1 size={20} /> : <Moon size={20} />}
           {theme === "dark" ? "حالت روشن" : "حالت تاریک"}
         </button>
+      </div>
+
+      <div className="glass rounded-2xl p-5">
+        <div className="flex items-center justify-between">
+          <div className="min-w-0 pr-4 text-start">
+            <h2 className="text-lg font-bold">همگام‌سازی کسب‌وکار</h2>
+            <p className="mt-1 text-sm text-muted">نمایش پروژه‌ها و کارکردهایی که از میز کسب‌وکار متصل شده‌اند.</p>
+          </div>
+          <Switch isSelected={showSynced} onChange={handleToggleSynced} size="sm">
+            <Switch.Control>
+              <Switch.Thumb />
+            </Switch.Control>
+          </Switch>
+        </div>
       </div>
 
       <div className="glass rounded-2xl p-5" data-tour="settings-business-product">
