@@ -14,10 +14,27 @@ export function normalizeWalletBalances(
   raw?: Partial<WalletBalances> | null,
   legacyBudget?: number,
 ): WalletBalances {
+  const budget = Number(legacyBudget ?? 0);
+  const tomanRaw = raw?.toman;
+  const usd = Number(raw?.usd ?? 0) || 0;
+  const dinar = Number(raw?.dinar ?? 0) || 0;
+  const toman = Number(tomanRaw ?? budget) || 0;
+
+  if (
+    (raw == null || (tomanRaw === 0 && usd === 0 && dinar === 0)) &&
+    budget !== 0
+  ) {
+    return {
+      toman: budget,
+      usd: 0,
+      dinar: 0,
+    };
+  }
+
   return {
-    toman: Number(raw?.toman ?? legacyBudget ?? 0) || 0,
-    usd: Number(raw?.usd ?? 0) || 0,
-    dinar: Number(raw?.dinar ?? 0) || 0,
+    toman,
+    usd,
+    dinar,
   };
 }
 
