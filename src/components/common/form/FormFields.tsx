@@ -15,6 +15,7 @@ import { useEffect, useMemo, useState } from "react";
 import { formatPriceInput, parsePriceInput } from "@/common/utils/price-input";
 import { useFormModalPortalPopover } from "@/common/hooks/useFormModalPortalPopover";
 import { isFormOverlayFocusTarget } from "@/common/utils/form-overlay.util";
+import type { UserDateCalendar } from "@/common/constants/user-preferences";
 import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
 import { scrollFieldIntoView } from "@/common/utils/scroll";
 
@@ -213,6 +214,7 @@ type FormPriceInputProps = Omit<ComponentProps<typeof Input>, "value" | "onChang
   value: string;
   onChange: (rawValue: string) => void;
   allowNegative?: boolean;
+  currency?: import("@/common/constants/user-preferences").UserCurrency;
 };
 
 export function FormPriceInput({
@@ -220,6 +222,7 @@ export function FormPriceInput({
   value,
   onChange,
   allowNegative = false,
+  currency: _currency = "toman",
   onFocus,
   ...props
 }: FormPriceInputProps) {
@@ -356,6 +359,7 @@ type FormDatePickerProps = {
   onChange: (value: { year: string; month: string; day: string }) => void;
   hint?: string;
   inModal?: boolean;
+  calendarType?: UserDateCalendar;
 };
 
 export function FormDatePicker({
@@ -366,6 +370,7 @@ export function FormDatePicker({
   onChange,
   hint,
   inModal = false,
+  calendarType = "jalali",
 }: FormDatePickerProps) {
   return (
     <div className="pb-filter-date flex flex-col gap-2">
@@ -378,6 +383,7 @@ export function FormDatePicker({
         onChange={onChange}
         hideHint
         inModal={inModal}
+        calendarType={calendarType}
       />
     </div>
   );

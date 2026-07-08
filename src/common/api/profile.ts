@@ -15,6 +15,15 @@ export async function updateProfile(payload: {
   return normalizeProfile(data.user as Record<string, unknown>);
 }
 
+export async function updateUserPreferences(payload: {
+  currency?: "toman" | "usd" | "dinar";
+  dateCalendar?: "jalali" | "gregorian";
+  configured?: boolean;
+}) {
+  const { data } = await axiosInstance.put("/users/profile/preferences", payload);
+  return normalizeProfile(data.user as Record<string, unknown>);
+}
+
 export async function changeMobile(payload: { mobile: string; code: string }) {
   const { data } = await axiosInstance.put("/users/profile/change-mobile", payload);
   return {

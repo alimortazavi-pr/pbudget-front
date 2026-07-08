@@ -11,6 +11,7 @@ import { navigateWithSso } from "@/common/utils/sso";
 import { SUPPORT_PHONE } from "@/components/common/layout/shell-nav";
 import { VoiceAssistantSection } from "@/components/pages/profile/VoiceAssistantSection";
 import { TelegramConnectSection } from "@/components/pages/profile/TelegramConnectSection";
+import { UserPreferencesSettings } from "@/components/pages/settings/UserPreferencesSection";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { useVersion } from "@/components/providers/VersionProvider";
 
@@ -44,6 +45,8 @@ export function SettingsPage() {
           {theme === "dark" ? "حالت روشن" : "حالت تاریک"}
         </button>
       </div>
+
+      <UserPreferencesSettings />
 
       <div className="glass rounded-2xl p-5">
         <div className="flex items-center justify-between">

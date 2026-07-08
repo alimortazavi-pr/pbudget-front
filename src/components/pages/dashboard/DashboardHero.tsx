@@ -2,7 +2,10 @@
 
 import { ArrowDown, ArrowUp, Wallet2 } from "iconsax-reactjs";
 
-import { formatPrice } from "@/common/utils";
+import { formatPriceWithCurrency } from "@/common/utils/format-currency";
+import { DEFAULT_USER_PREFERENCES, currencyLabel } from "@/common/constants/user-preferences";
+import { useAppSelector } from "@/stores/hooks";
+import { userSelector } from "@/stores/profile";
 
 type DashboardHeroProps = {
   firstName?: string;
@@ -19,6 +22,8 @@ export function DashboardHero({
   expense,
   "data-tour": dataTour,
 }: DashboardHeroProps) {
+  const user = useAppSelector(userSelector);
+  const currency = user?.preferences?.currency ?? DEFAULT_USER_PREFERENCES.currency;
   const isNegative = balance < 0;
 
   return (
@@ -57,10 +62,10 @@ export function DashboardHero({
               ) : null}
               <div className="mt-2 flex items-end justify-between gap-4 lg:mt-3">
                 <p className="pb-balance-amount text-white">
-                  {formatPrice(balance)}
+                  {formatPriceWithCurrency(balance, currency)}
                 </p>
                 <span className="mb-1 shrink-0 text-sm font-medium text-white/80 lg:text-base">
-                  تومان
+                  {currencyLabel(currency)}
                 </span>
               </div>
             </div>
@@ -73,7 +78,7 @@ export function DashboardHero({
                 دریافتی دوره
               </div>
               <p className="mt-1 text-left text-sm font-bold text-white lg:text-lg">
-                {formatPrice(income)}
+                {formatPriceWithCurrency(income, currency)}
               </p>
             </div>
             <div className="rounded-xl border border-white/15 bg-black/10 px-3 py-2.5 backdrop-blur-sm lg:px-4 lg:py-4">
@@ -82,7 +87,7 @@ export function DashboardHero({
                 پرداختی دوره
               </div>
               <p className="mt-1 text-left text-sm font-bold text-white lg:text-lg">
-                {formatPrice(expense)}
+                {formatPriceWithCurrency(expense, currency)}
               </p>
             </div>
           </div>

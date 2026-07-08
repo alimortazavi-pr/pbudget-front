@@ -49,6 +49,8 @@ export interface IBudget {
   venture?: IVenture | string | null;
   paymentCard?: IPaymentCard | string | null;
   performer?: IBudgetPerformer;
+  currency?: "toman" | "usd" | "dinar";
+  dateCalendar?: "jalali" | "gregorian";
 }
 
 export interface ICreateAndEditBudgetForm {

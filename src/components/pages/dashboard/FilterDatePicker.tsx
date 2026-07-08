@@ -2,10 +2,13 @@
 
 import { useEffect } from "react";
 import DateObject from "react-date-object";
+import gregorianCalendar from "react-date-object/calendars/gregorian";
 import persianCalendar from "react-date-object/calendars/persian";
+import gregorianLocale from "react-date-object/locales/gregorian_en";
 import persianLocale from "react-date-object/locales/persian_fa";
 import DatePicker from "react-multi-date-picker";
 
+import type { UserDateCalendar } from "@/common/constants/user-preferences";
 import { DATE_PICKER_Z_INDEX } from "@/common/constants/overlay-z-index";
 import { useDatePickerOverlay } from "@/common/hooks/useDatePickerOverlay";
 
@@ -19,6 +22,7 @@ type FilterDatePickerProps = {
   hideHint?: boolean;
   /** Better positioning + click handling inside modals */
   inModal?: boolean;
+  calendarType?: UserDateCalendar;
 };
 
 export function FilterDatePicker({
@@ -28,6 +32,7 @@ export function FilterDatePicker({
   onChange,
   hideHint,
   inModal = false,
+  calendarType = "jalali",
 }: FilterDatePickerProps) {
   const {
     wrapperRef,
@@ -36,6 +41,11 @@ export function FilterDatePicker({
     usePortal,
     resolvedPortalTarget,
   } = useDatePickerOverlay(inModal);
+
+  const isGregorian = calendarType === "gregorian";
+  const calendar = isGregorian ? gregorianCalendar : persianCalendar;
+  const locale = isGregorian ? gregorianLocale : persianLocale;
+  const format = isGregorian ? "YYYY/MM/DD" : "YYYY/MM/DD";
 
   useEffect(() => {
     if (!inModal) return;
@@ -55,7 +65,7 @@ export function FilterDatePicker({
           year: Number(year),
           month: Number(month),
           day: Number(day || 1),
-          calendar: persianCalendar,
+          calendar,
         })
       : undefined;
 
@@ -72,20 +82,22 @@ export function FilterDatePicker({
     <div ref={wrapperRef} className="pb-filter-date relative z-[1] space-y-2">
       {!hideHint && (
         <p className="text-xs leading-5 text-muted">
-          اگر تاریخ را در حالت ماهانه قرار داده باشید روز تاریخ محاسبه نمی‌شود
+          {isGregorian
+            ? "تقویم میلادی — تاریخ تراکنش به‌صورت سال/ماه/روز میلادی ذخیره می‌شود"
+            : "اگر تاریخ را در حالت ماهانه قرار داده باشید روز تاریخ محاسبه نمی‌شود"}
         </p>
       )}
       <DatePicker
         value={value}
-        locale={persianLocale}
-        calendar={persianCalendar}
+        locale={locale}
+        calendar={calendar}
         onChange={handleChange}
         onOpen={() => setCalendarOpen(true)}
         onClose={() => {
           setCalendarOpen(false);
           return undefined;
         }}
-        format="YYYY/MM/DD"
+        format={format}
         editable={false}
         portal={usePortal}
         portalTarget={resolvedPortalTarget}
@@ -95,7 +107,7 @@ export function FilterDatePicker({
         offsetY={inModal ? 8 : undefined}
         containerClassName="w-full"
         inputClass="pb-form-date-input"
-        placeholder="تاریخ"
+        placeholder={isGregorian ? "Gregorian date" : "تاریخ"}
       />
     </div>
   );

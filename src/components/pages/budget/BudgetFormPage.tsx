@@ -15,7 +15,14 @@ import { resolveDefaultPaymentCardId } from "@/common/utils/default-payment-card
 import { formatCardNumberForDisplay } from "@/common/utils/payment-card";
 import type { IBudget } from "@/common/interfaces/budget.interface";
 import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
-import { getJalaliNow, normalizeJalaliPart, toEnglishDigits, formatPrice } from "@/common/utils";
+import { getJalaliNow, normalizeJalaliPart, toEnglishDigits, formatPrice, getNowDateParts } from "@/common/utils";
+import { formatPriceWithCurrency } from "@/common/utils/format-currency";
+import {
+  currencyLabel,
+  DEFAULT_USER_PREFERENCES,
+  resolveBudgetCurrency,
+  resolveBudgetDateCalendar,
+} from "@/common/constants/user-preferences";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { FormCategoryComboBox, FormDatePicker, FormPriceInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
@@ -38,6 +45,7 @@ import {
   type VentureLedgerValue,
 } from "@/components/pages/budget/VentureLedgerSection";
 import { CreateCategoryModal } from "@/components/pages/categories/CreateCategoryModal";
+import { UserPreferencesOnboardingModal } from "@/components/pages/settings/UserPreferencesSection";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { bumpBudgetRevision } from "@/stores/budget";
 import { categoriesSelector } from "@/stores/category";
@@ -78,10 +86,17 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   const user = useAppSelector(userSelector);
   const categories = useAppSelector(categoriesSelector);
   const categoryOptions = getCategorySelectOptions(categories ?? []);
-  const now = getJalaliNow();
-  const defaultYear = String(now.jYear());
-  const defaultMonth = String(now.jMonth() + 1);
-  const defaultDay = String(now.jDate());
+  const userPrefs = user?.preferences ?? DEFAULT_USER_PREFERENCES;
+  const formCalendar = budget
+    ? resolveBudgetDateCalendar(budget.dateCalendar)
+    : userPrefs.dateCalendar;
+  const formCurrency = budget
+    ? resolveBudgetCurrency(budget.currency)
+    : userPrefs.currency;
+  const nowParts = getNowDateParts(formCalendar);
+  const defaultYear = nowParts.year;
+  const defaultMonth = nowParts.month;
+  const defaultDay = nowParts.day;
   const existingProjectId = resolveProjectId(budget?.project);
   const existingVentureId = resolveVentureId(budget?.venture);
   const existingPaymentCardId = resolveBudgetPaymentCardId(budget?.paymentCard);
@@ -124,6 +139,27 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   );
   const [paymentCards, setPaymentCards] = useState<IPaymentCard[]>([]);
   const [paymentCardId, setPaymentCardId] = useState(() => existingPaymentCardId);
+  const [prefsModalOpen, setPrefsModalOpen] = useState(false);
+
+  const needsPreferencesOnboarding =
+    !budget &&
+    Boolean(user) &&
+    !user?.preferences?.configured &&
+    !user?.hasAnyBudget;
+
+  useEffect(() => {
+    if (needsPreferencesOnboarding) {
+      setPrefsModalOpen(true);
+    }
+  }, [needsPreferencesOnboarding]);
+
+  useEffect(() => {
+    if (budget) return;
+    const parts = getNowDateParts(userPrefs.dateCalendar);
+    setYear(parts.year);
+    setMonth(parts.month);
+    setDay(parts.day);
+  }, [budget, userPrefs.dateCalendar, userPrefs.currency]);
 
   const paymentCardOptions = useMemo(
     () =>
@@ -169,8 +205,8 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
     void budgetsApi
       .fetchBudgets({
         duration: "monthly",
-        year: String(now.jYear()),
-        month: String(now.jMonth() + 1),
+        year: now.format("jYYYY"),
+        month: String(Number(now.format("jM"))),
         category,
       })
       .then((data) => {
@@ -178,12 +214,12 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
         const remaining = limit - spent;
         setCategorySpendHint(
           remaining >= 0
-            ? `سقف ${formatPrice(limit)} · خرج این ماه ${formatPrice(spent)} · مانده ${formatPrice(remaining)}`
-            : `سقف ${formatPrice(limit)} · خرج این ماه ${formatPrice(spent)} · ${formatPrice(Math.abs(remaining))} بیش از سقف`,
+            ? `سقف ${formatPriceWithCurrency(limit, formCurrency)} · خرج این ماه ${formatPriceWithCurrency(spent, formCurrency)} · مانده ${formatPriceWithCurrency(remaining, formCurrency)}`
+            : `سقف ${formatPriceWithCurrency(limit, formCurrency)} · خرج این ماه ${formatPriceWithCurrency(spent, formCurrency)} · ${formatPriceWithCurrency(Math.abs(remaining), formCurrency)} بیش از سقف`,
         );
       })
       .catch(() => setCategorySpendHint(null));
-  }, [category, selectedCategory?.monthlyLimit, type]);
+  }, [category, selectedCategory?.monthlyLimit, type, formCurrency]);
 
   const projectBlockedForVenture =
     Boolean(existingProjectId) ||
@@ -255,6 +291,13 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
 
   async function submit(e?: FormEvent) {
     e?.preventDefault();
+
+    if (needsPreferencesOnboarding && !user?.preferences?.configured) {
+      setPrefsModalOpen(true);
+      showToast("ابتدا نوع ارز و تاریخ را انتخاب کنید");
+      return;
+    }
+
     const payload: Record<string, string> = {
       price: toEnglishDigits(price),
       type: String(type),
@@ -265,6 +308,11 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
       description,
       paymentCardId: paymentCardId || "",
     };
+
+    if (!budget) {
+      payload.currency = formCurrency;
+      payload.dateCalendar = formCalendar;
+    }
 
     if (projectLedger.enabled && projectLedger.projectId) {
       payload.projectId = projectLedger.projectId;
@@ -371,7 +419,17 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
       }
 
       if (user && userBudget !== undefined) {
-        dispatch(setProfile({ ...user, budget: userBudget }));
+        dispatch(
+          setProfile({
+            ...user,
+            budget: userBudget,
+            hasAnyBudget: true,
+            preferences: {
+              ...(user.preferences ?? DEFAULT_USER_PREFERENCES),
+              configured: true,
+            },
+          }),
+        );
       }
       dispatch(bumpBudgetRevision());
       router.push(`/?duration=monthly&year=${year}&month=${month}`);
@@ -384,6 +442,10 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
 
   return (
     <div className="pb-form-page">
+      <UserPreferencesOnboardingModal
+        open={prefsModalOpen}
+        onConfigured={() => setPrefsModalOpen(false)}
+      />
       <form onSubmit={(e) => void submit(e)}>
         <div className="glass space-y-4 rounded-2xl p-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
@@ -438,17 +500,19 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
           </div>
 
           <FormPriceInput
-            label="مبلغ (تومان)"
+            label={`مبلغ (${currencyLabel(formCurrency)})`}
             value={price}
             onChange={setPrice}
+            currency={formCurrency}
           />
 
           <FormDatePicker
-            label="تاریخ (شمسی)"
+            label={formCalendar === "gregorian" ? "تاریخ (میلادی)" : "تاریخ (شمسی)"}
             year={year}
             month={month}
             day={day}
             onChange={handleDateChange}
+            calendarType={formCalendar}
           />
 
           <FormCategoryComboBox

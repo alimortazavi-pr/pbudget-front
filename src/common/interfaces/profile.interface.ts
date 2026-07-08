@@ -1,3 +1,5 @@
+import type { UserPreferences } from "@/common/constants/user-preferences";
+
 export interface IProfileState {
   user: IProfile | null;
 }
@@ -11,6 +13,8 @@ export interface IProfile {
   isVerifiedMobile: boolean;
   hasPassword?: boolean;
   isAdmin?: boolean;
+  preferences: UserPreferences;
+  hasAnyBudget: boolean;
 }
 
 export interface IEditProfileForm {

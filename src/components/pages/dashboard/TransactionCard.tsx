@@ -12,7 +12,9 @@ import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
 import { resolveCategoryColor } from "@/common/constants/category-colors";
 import { categoryAccentStyle } from "@/common/utils/category-accent";
 import { paymentCardSubtitle } from "@/common/utils/payment-card";
-import { formatBudgetDateTime, formatJalaliDate, formatPrice } from "@/common/utils";
+import { formatBudgetDate, formatBudgetDateTime } from "@/common/utils/calendar-date";
+import { formatPriceWithCurrency } from "@/common/utils/format-currency";
+import { resolveBudgetCurrency, resolveBudgetDateCalendar } from "@/common/constants/user-preferences";
 import { showToast } from "@/common/utils/toast";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { bumpBudgetRevision, deleteBudget } from "@/stores/budget";
@@ -47,6 +49,8 @@ export function TransactionCard({ budget }: TransactionCardProps) {
     ? { borderInlineStartColor: "#f59e0b", borderInlineStartWidth: "3px" }
     : categoryAccentStyle(budget.category?.color);
   const paymentCardLabel = resolvePaymentCardLabel(budget.paymentCard);
+  const budgetCurrency = resolveBudgetCurrency(budget.currency);
+  const budgetCalendar = resolveBudgetDateCalendar(budget.dateCalendar);
 
   async function handleDelete() {
     setDeleting(true);
@@ -86,7 +90,7 @@ export function TransactionCard({ budget }: TransactionCardProps) {
             </p>
           </div>
           <p className="mt-0.5 text-xs text-muted">
-            {formatJalaliDate(budget.year, budget.month, budget.day)}
+            {formatBudgetDate(budget.year, budget.month, budget.day, budgetCalendar)}
             {paymentCardLabel ? ` · ${paymentCardLabel}` : ""}
             {isPendingCategory && typeof budget.sourceBank === "object" && budget.sourceBank?.title
               ? ` · ${budget.sourceBank.title}`
@@ -106,7 +110,7 @@ export function TransactionCard({ budget }: TransactionCardProps) {
               }`}
             >
               {debt.type === DebtType.RECEIVABLE ? "طلب" : "بدهی"} · {debt.person}
-              {debt.status !== "settled" ? ` · ${formatPrice(debt.remainingAmount)}` : ""}
+              {debt.status !== "settled" ? ` · ${formatPriceWithCurrency(debt.remainingAmount, budgetCurrency)}` : ""}
             </span>
           )}
         </div>
@@ -116,7 +120,7 @@ export function TransactionCard({ budget }: TransactionCardProps) {
           }`}
         >
           {isIncome ? "+" : "-"}
-          {formatPrice(budget.price)}
+          {formatPriceWithCurrency(budget.price, budgetCurrency)}
         </p>
       </div>
 
@@ -128,6 +132,7 @@ export function TransactionCard({ budget }: TransactionCardProps) {
               budget.month,
               budget.day,
               budget.createdAt,
+              budgetCalendar,
             )}
           </p>
           {budget.description ? (
