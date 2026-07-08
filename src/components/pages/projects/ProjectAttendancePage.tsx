@@ -37,6 +37,7 @@ import {
   toPersianDigits,
 } from "@/common/utils";
 import { showErrorToast, showToast } from "@/common/utils/toast";
+import { isBusinessSyncedProject } from "@/common/utils/business-sync";
 import { AttachBudgetButton } from "@/components/common/budget/AttachBudgetModal";
 import {
   formatDailyRemainingMessage,
@@ -63,6 +64,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
   const [projectTitle, setProjectTitle] = useState("پروژه");
   const [fixedIncome, setFixedIncome] = useState(false);
   const [trackWorkTime, setTrackWorkTime] = useState(false);
+  const [businessSynced, setBusinessSynced] = useState(false);
   const [hourlyRate, setHourlyRate] = useState(0);
   const [data, setData] = useState<IProjectWorkSessions | null>(null);
   const [report, setReport] = useState<IWorkTimeReport | null>(null);
@@ -85,6 +87,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
       setProjectTitle(projectDetail.project.category?.title ?? "پروژه");
       setFixedIncome(projectDetail.project.fixedIncome ?? false);
       setTrackWorkTime(projectDetail.project.trackWorkTime === true);
+      setBusinessSynced(isBusinessSyncedProject(projectDetail.project));
       setHourlyRate(projectDetail.project.hourlyRate ?? 0);
 
       if (projectDetail.project.trackWorkTime !== true) {
@@ -119,6 +122,14 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    if (!businessSynced) return;
+    const timer = window.setInterval(() => {
+      void load();
+    }, 30_000);
+    return () => window.clearInterval(timer);
+  }, [businessSynced, load]);
 
   const dailyMap = useMemo(() => {
     const map = new Map<number, number>();
@@ -309,12 +320,26 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
 
           <section className="glass space-y-3 rounded-2xl p-4">
             <p className="text-sm text-muted">
-              {fixedIncome
-                ? "پروژه با درآمد ثابت — ساعت موظف معمولاً ثابت ماهانه است."
-                : "پروژه ساعتی/قراردادی — ساعت کار را برای فاکتور و تحلیل ثبت کنید."}
+              {businessSynced
+                ? "حضور این پروژه از Business همگام می‌شود — ورود و خروج را در پنل Business ثبت کنید."
+                : fixedIncome
+                  ? "پروژه با درآمد ثابت — ساعت موظف معمولاً ثابت ماهانه است."
+                  : "پروژه ساعتی/قراردادی — ساعت کار را برای فاکتور و تحلیل ثبت کنید."}
             </p>
             <div className="flex flex-wrap gap-2">
-              {isActive ? (
+              {businessSynced ? (
+                isActive ? (
+                  <div className="inline-flex items-center gap-2 rounded-xl bg-income/15 px-4 py-2 text-sm font-medium text-income">
+                    <Login size={16} />
+                    داخل محل کار (همگام با Business)
+                  </div>
+                ) : (
+                  <div className="inline-flex items-center gap-2 rounded-xl bg-surface-secondary px-4 py-2 text-sm text-muted">
+                    <Logout size={16} />
+                    خارج از محل کار
+                  </div>
+                )
+              ) : isActive ? (
                 <Button
                   className="bg-expense text-white"
                   onPress={() => void handleClockOut()}
@@ -333,10 +358,12 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
                   ورود
                 </Button>
               )}
-              <Button variant="secondary" onPress={() => setManualOpen(true)}>
-                <Add size={16} />
-                ثبت دستی
-              </Button>
+              {!businessSynced ? (
+                <Button variant="secondary" onPress={() => setManualOpen(true)}>
+                  <Add size={16} />
+                  ثبت دستی
+                </Button>
+              ) : null}
             </div>
             <div className="rounded-xl bg-surface-secondary p-3 text-sm">
               کارکرد این ماه:{" "}
