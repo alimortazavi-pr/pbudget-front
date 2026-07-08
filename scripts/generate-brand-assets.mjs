@@ -1,15 +1,18 @@
-import { mkdir } from "node:fs/promises";
+import { copyFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const root = path.join(__dirname, "..");
-const assetsDir = path.join(root, "public", "assets");
+const frontRoot = path.join(__dirname, "..");
+const mobileRoot = path.join(frontRoot, "..", "pbudget-mobile");
+const assetsDir = path.join(frontRoot, "public", "assets");
+const sourcePng = path.join(assetsDir, "logo-source.png");
 
+const BRAND_BG = "#5E1B34";
 const PRODUCT = {
-  bgStops: ["#1e1b4b", "#5b21b6", "#0f766e"],
-  accentStops: ["#fb7185", "#c084fc", "#2dd4bf"],
+  bgStops: ["#5E1B34", "#3D1225", "#2A0C1A"],
+  accentStops: ["#E8C4A8", "#D4A574", "#B8735C"],
   title: "Paradise Desk",
   subtitle: "Personal finance, budget and daily planning",
   domain: "pdesk.ir",
@@ -28,36 +31,85 @@ function ogBackgroundSvg() {
     </linearGradient>
   </defs>
   <rect width="1200" height="630" fill="url(#bg)"/>
-  <g opacity="0.07" stroke="#fff" stroke-width="1">
-    <path d="M0 105h1200M0 210h1200M0 315h1200M0 420h1200M0 525h1200"/>
-    <path d="M120 0v630M240 0v630M360 0v630M480 0v630M600 0v630M720 0v630M840 0v630M960 0v630M1080 0v630"/>
-  </g>
-  <text x="560" y="248" fill="#fff" font-family="Poppins,system-ui,sans-serif" font-size="58" font-weight="700">${PRODUCT.title}</text>
-  <text x="562" y="312" fill="#e9d5ff" font-family="Poppins,system-ui,sans-serif" font-size="28" font-weight="500">${PRODUCT.subtitle}</text>
-  <text x="562" y="372" fill="#99f6e4" font-family="Poppins,system-ui,sans-serif" font-size="24" font-weight="600">${PRODUCT.domain}</text>
+  <text x="560" y="248" fill="#fff7f9" font-family="Poppins,system-ui,sans-serif" font-size="58" font-weight="700">${PRODUCT.title}</text>
+  <text x="562" y="312" fill="#f0d4c4" font-family="Poppins,system-ui,sans-serif" font-size="28" font-weight="500">${PRODUCT.subtitle}</text>
+  <text x="562" y="372" fill="#d4a574" font-family="Poppins,system-ui,sans-serif" font-size="24" font-weight="600">${PRODUCT.domain}</text>
   <rect x="560" y="400" width="240" height="6" rx="3" fill="url(#accent)"/>
 </svg>`;
 }
 
+async function renderIconBuffer(size, pngPath) {
+  return sharp(pngPath)
+    .resize(size, size, { fit: "cover", position: "centre" })
+    .png()
+    .toBuffer();
+}
+
+async function renderMaskableIcon(size, pngPath) {
+  const inner = Math.round(size * 0.8);
+  const logo = await sharp(pngPath)
+    .resize(inner, inner, { fit: "cover", position: "centre" })
+    .png()
+    .toBuffer();
+  const offset = Math.round((size - inner) / 2);
+  return sharp({
+    create: {
+      width: size,
+      height: size,
+      channels: 4,
+      background: BRAND_BG,
+    },
+  })
+    .composite([{ input: logo, left: offset, top: offset }])
+    .png()
+    .toBuffer();
+}
+
 await mkdir(assetsDir, { recursive: true });
 
-const logoMark = path.join(assetsDir, "logo-mark.svg");
 const logoSize = 400;
-const logoPng = await sharp(logoMark)
-  .resize(logoSize, logoSize, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
-  .png()
-  .toBuffer();
-
-const bgPng = await sharp(Buffer.from(ogBackgroundSvg()))
-  .resize(1200, 630)
-  .png()
-  .toBuffer();
-
-const ogPng = path.join(assetsDir, "og-landing.png");
-
+const logoPng = await renderIconBuffer(logoSize, sourcePng);
+const bgPng = await sharp(Buffer.from(ogBackgroundSvg())).resize(1200, 630).png().toBuffer();
 await sharp(bgPng)
   .composite([{ input: logoPng, left: 72, top: 115 }])
   .png({ compressionLevel: 9 })
-  .toFile(ogPng);
+  .toFile(path.join(assetsDir, "og-landing.png"));
 
-console.log("Brand assets generated: public/assets/og-landing.png");
+for (const [name, size] of [
+  ["logo-mark.png", 512],
+  ["logo-mark-on-light.png", 512],
+]) {
+  await sharp(sourcePng)
+    .resize(size, size, { fit: "cover", position: "centre" })
+    .png()
+    .toFile(path.join(assetsDir, name));
+}
+
+const maskable512 = await renderMaskableIcon(512, sourcePng);
+await sharp(maskable512).toFile(path.join(assetsDir, "logo-mark-maskable.png"));
+
+const mobileAssets = path.join(mobileRoot, "assets");
+await mkdir(mobileAssets, { recursive: true });
+
+await copyFile(sourcePng, path.join(mobileAssets, "logo-source.png"));
+await copyFile(path.join(assetsDir, "logo-mark.png"), path.join(mobileAssets, "logo-mark.png"));
+
+const appIcon = await sharp(sourcePng)
+  .resize(1024, 1024, { fit: "cover", position: "centre" })
+  .png()
+  .toBuffer();
+await sharp(appIcon).toFile(path.join(mobileAssets, "app_icon.png"));
+
+const adaptive = await renderMaskableIcon(1024, sourcePng);
+await sharp(adaptive).toFile(path.join(mobileAssets, "app_icon_adaptive.png"));
+
+const webDir = path.join(mobileRoot, "web");
+await mkdir(path.join(webDir, "icons"), { recursive: true });
+for (const size of [192, 512]) {
+  await sharp(appIcon).resize(size, size).png().toFile(path.join(webDir, "icons", `Icon-${size}.png`));
+  const maskable = await renderMaskableIcon(size, sourcePng);
+  await sharp(maskable).png().toFile(path.join(webDir, "icons", `Icon-maskable-${size}.png`));
+}
+await sharp(appIcon).resize(48, 48).png().toFile(path.join(webDir, "favicon.png"));
+
+console.log("Brand assets generated from logo-source.png");
