@@ -20,6 +20,8 @@ import type {
 } from "@/common/interfaces/work-time.interface";
 import { buildClientAnalyticsReport } from "@/common/utils/analytics-fallback";
 import { getJalaliNow } from "@/common/utils/jalali-date";
+import { DEFAULT_USER_PREFERENCES } from "@/common/constants/user-preferences";
+import { getWalletBalance } from "@/common/utils/wallet-balances";
 import { showToast } from "@/common/utils/toast";
 import { AnalysisFilters } from "@/components/pages/analysis/AnalysisFilters";
 import { AnalysisInsightsPanel } from "@/components/pages/analysis/AnalysisInsightsPanel";
@@ -119,7 +121,10 @@ export function AnalysisPage() {
         budgets: budgetData.budgets,
         totalIncomePrice: budgetData.totalIncomePrice,
         totalCostPrice: budgetData.totalCostPrice,
-        userBalance: user?.budget ?? 0,
+        userBalance: getWalletBalance(
+          user,
+          user?.preferences?.currency ?? DEFAULT_USER_PREFERENCES.currency,
+        ),
         boxesTotal,
         duration,
         year,
@@ -215,7 +220,8 @@ export function AnalysisPage() {
     paymentCard,
     type,
     compare,
-    user?.budget,
+    user?.walletBalances,
+    user?.preferences?.currency,
   ]);
 
   return (

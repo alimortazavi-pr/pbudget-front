@@ -18,6 +18,7 @@ import type {
 } from "@/common/interfaces/voice.interface";
 import { toPersianDigits } from "@/common/utils";
 import { useMediaQuery } from "@/common/hooks/useMediaQuery";
+import { mergeProfileWallet } from "@/common/utils/wallet-balances";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import {
   AppModal,
@@ -120,8 +121,19 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) {
         intent === "query_balance"
       ) {
         dispatch(bumpBudgetRevision());
-        if (result.data?.userBudget != null && user) {
-          dispatch(setProfile({ ...user, budget: Number(result.data.userBudget) }));
+        if (user && (result.data?.userBudget != null || result.data?.userWalletBalances)) {
+          dispatch(
+            setProfile(
+              mergeProfileWallet(user, {
+                userBudget:
+                  result.data?.userBudget != null
+                    ? Number(result.data.userBudget)
+                    : undefined,
+                userWalletBalances: result.data?.userWalletBalances,
+                currency: result.data?.currency,
+              }),
+            ),
+          );
         } else if (result.data?.balance != null && user) {
           dispatch(setProfile({ ...user, budget: Number(result.data.balance) }));
         }

@@ -1,5 +1,6 @@
 export type UserCurrency = "toman" | "usd" | "dinar";
 export type UserDateCalendar = "jalali" | "gregorian";
+export type WalletBalances = Record<UserCurrency, number>;
 
 export type UserPreferences = {
   currency: UserCurrency;

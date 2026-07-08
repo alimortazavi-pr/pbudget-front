@@ -1,3 +1,4 @@
+import type { UserCurrency, WalletBalances } from "@/common/constants/user-preferences";
 import type { ICategory } from "./category.interface";
 import type { IDebt } from "./debt.interface";
 import type { IPaymentCard } from "./payment-card.interface";
@@ -19,6 +20,8 @@ export interface IBudgetState {
 export interface IBudgetMutationResult {
   budget: IBudget;
   userBudget: number;
+  userWalletBalances?: WalletBalances;
+  currency?: UserCurrency;
 }
 
 export interface IBudgetPerformer {

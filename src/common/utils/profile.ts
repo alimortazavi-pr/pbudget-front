@@ -2,7 +2,9 @@ import type { IProfile } from "@/common/interfaces/profile.interface";
 import {
   DEFAULT_USER_PREFERENCES,
   type UserPreferences,
+  type WalletBalances,
 } from "@/common/constants/user-preferences";
+import { normalizeWalletBalances } from "@/common/utils/wallet-balances";
 
 export function normalizeProfile(user: Record<string, unknown>): IProfile {
   const rawPrefs = (user.preferences ?? {}) as Partial<UserPreferences>;
@@ -21,12 +23,19 @@ export function normalizeProfile(user: Record<string, unknown>): IProfile {
     configured: Boolean(rawPrefs.configured),
   };
 
+  const legacyBudget = Number(user.budget ?? 0);
+  const walletBalances = normalizeWalletBalances(
+    user.walletBalances as Partial<WalletBalances> | undefined,
+    legacyBudget,
+  );
+
   return {
     _id: String(user._id ?? ""),
     firstName: String(user.firstName ?? ""),
     lastName: String(user.lastName ?? ""),
     mobile: String(user.mobile ?? ""),
-    budget: Number(user.budget ?? 0),
+    budget: walletBalances.toman,
+    walletBalances,
     isVerifiedMobile: Boolean(user.isVerifiedMobile ?? user.mobileActive),
     hasPassword:
       user.hasPassword !== undefined ? Boolean(user.hasPassword) : undefined,

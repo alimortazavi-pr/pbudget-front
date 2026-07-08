@@ -1,4 +1,4 @@
-import type { UserPreferences } from "@/common/constants/user-preferences";
+import type { UserPreferences, WalletBalances } from "@/common/constants/user-preferences";
 
 export interface IProfileState {
   user: IProfile | null;
@@ -10,6 +10,7 @@ export interface IProfile {
   lastName: string;
   mobile: string;
   budget: number;
+  walletBalances: WalletBalances;
   isVerifiedMobile: boolean;
   hasPassword?: boolean;
   isAdmin?: boolean;

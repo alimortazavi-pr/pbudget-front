@@ -68,7 +68,9 @@ export async function updateBudget(id: string, payload: Record<string, string>) 
 }
 
 export async function softDeleteBudget(id: string) {
-  const { data } = await axiosInstance.delete<{ userBudget: number }>(`/budgets/${id}/soft`);
+  const { data } = await axiosInstance.delete<
+    Pick<IBudgetMutationResult, "userBudget" | "userWalletBalances" | "currency">
+  >(`/budgets/${id}/soft`);
   return data;
 }
 

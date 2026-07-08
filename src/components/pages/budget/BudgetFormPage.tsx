@@ -13,7 +13,7 @@ import * as paymentCardsApi from "@/common/api/payment-cards";
 import { PATHS } from "@/common/constants";
 import { resolveDefaultPaymentCardId } from "@/common/utils/default-payment-card";
 import { formatCardNumberForDisplay } from "@/common/utils/payment-card";
-import type { IBudget } from "@/common/interfaces/budget.interface";
+import type { IBudget, IBudgetMutationResult } from "@/common/interfaces/budget.interface";
 import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
 import { getJalaliNow, normalizeJalaliPart, toEnglishDigits, formatPrice, getNowDateParts } from "@/common/utils";
 import { formatPriceWithCurrency } from "@/common/utils/format-currency";
@@ -24,6 +24,7 @@ import {
   resolveBudgetDateCalendar,
 } from "@/common/constants/user-preferences";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
+import { mergeProfileWallet } from "@/common/utils/wallet-balances";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { FormCategoryComboBox, FormDatePicker, FormPriceInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
 import { BudgetMoreToggle } from "@/components/pages/budget/BudgetMoreToggle";
@@ -353,12 +354,12 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
 
     setLoading(true);
     try {
-      let userBudget: number | undefined;
+      let mutationResult: IBudgetMutationResult | undefined;
       let savedBudgetId = budget?._id ?? "";
 
       if (budget) {
         const res = await budgetsApi.updateBudget(budget._id, payload);
-        userBudget = res.userBudget;
+        mutationResult = res;
         savedBudgetId = budget._id;
 
         if (debtLedger.enabled && canAttachDebt) {
@@ -382,7 +383,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
         }
       } else {
         const res = await budgetsApi.createBudget(payload);
-        userBudget = res.userBudget;
+        mutationResult = res;
         savedBudgetId = res.budget._id;
 
         if (debtLedger.enabled) {
@@ -418,17 +419,21 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
         );
       }
 
-      if (user && userBudget !== undefined) {
+      if (user && mutationResult) {
         dispatch(
-          setProfile({
-            ...user,
-            budget: userBudget,
-            hasAnyBudget: true,
-            preferences: {
-              ...(user.preferences ?? DEFAULT_USER_PREFERENCES),
-              configured: true,
-            },
-          }),
+          setProfile(
+            mergeProfileWallet(
+              {
+                ...user,
+                hasAnyBudget: true,
+                preferences: {
+                  ...(user.preferences ?? DEFAULT_USER_PREFERENCES),
+                  configured: true,
+                },
+              },
+              mutationResult,
+            ),
+          ),
         );
       }
       dispatch(bumpBudgetRevision());

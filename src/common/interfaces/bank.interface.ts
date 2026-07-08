@@ -36,6 +36,8 @@ export interface IBankImportPreview {
   duplicateCount: number;
 }
 
+import type { WalletBalances } from "@/common/constants/user-preferences";
+
 export interface IBankImportConfirmResult {
   batchId: string;
   importedCount: number;
@@ -43,6 +45,7 @@ export interface IBankImportConfirmResult {
   pendingCount: number;
   createdBudgetIds: string[];
   userBudget: number;
+  userWalletBalances?: WalletBalances;
 }
 
 export interface IBankImportPendingBudget {

@@ -141,7 +141,6 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
     <div className="pb-dashboard-page">
       <DashboardHero
         firstName={user?.firstName}
-        balance={user?.budget ?? 0}
         income={totalIncome ?? 0}
         expense={totalCost ?? 0}
         data-tour="dashboard-balance"

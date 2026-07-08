@@ -11,8 +11,14 @@ import {
 } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
-import { formatPrice, toPersianDigits } from "@/common/utils";
+import {
+  CURRENCY_OPTIONS,
+  DEFAULT_USER_PREFERENCES,
+} from "@/common/constants/user-preferences";
+import { formatPriceWithCurrency } from "@/common/utils/format-currency";
+import { getWalletBalance } from "@/common/utils/wallet-balances";
 import { showToast } from "@/common/utils/toast";
+import { formatPrice, toPersianDigits } from "@/common/utils";
 import * as tasksApi from "@/common/api/tasks";
 import { TransactionCard } from "@/components/pages/dashboard/TransactionCard";
 import {
@@ -69,10 +75,27 @@ function TimelineHomePageContent() {
     <div className="pb-timeline-home">
       <section className="pb-timeline-hero">
         <p className="text-sm text-white/80">سلام {user?.firstName ?? ""}</p>
-        <p className="pb-balance-amount mt-1 text-white">
-          {formatPrice(user?.budget ?? 0)}
-        </p>
-        <p className="mt-1 text-xs text-white/70">موجودی کل</p>
+        <div className="mt-1 space-y-1">
+          {CURRENCY_OPTIONS.map((option) => {
+            const amount = getWalletBalance(user, option.id);
+            const preferred =
+              user?.preferences?.currency ?? DEFAULT_USER_PREFERENCES.currency;
+            if (amount === 0 && option.id !== preferred) return null;
+            return (
+              <p
+                key={option.id}
+                className={
+                  option.id === preferred
+                    ? "pb-balance-amount text-white"
+                    : "text-sm font-semibold text-white/90"
+                }
+              >
+                {formatPriceWithCurrency(amount, option.id)}
+              </p>
+            );
+          })}
+        </div>
+        <p className="mt-1 text-xs text-white/70">موجودی کیف پول</p>
       </section>
 
       <PeriodScopeBar />

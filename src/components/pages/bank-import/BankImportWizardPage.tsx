@@ -16,7 +16,8 @@ import * as paymentCardsApi from "@/common/api/payment-cards";
 import { PATHS } from "@/common/constants";
 import type { IBank } from "@/common/interfaces/bank.interface";
 import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
-import { toPersianDigits } from "@/common/utils";
+import { toPersianDigits, formatPrice } from "@/common/utils";
+import { mergeProfileWallet } from "@/common/utils/wallet-balances";
 import { showToast } from "@/common/utils/toast";
 import { BankImportRowCard } from "@/components/pages/bank-import/BankImportRowCard";
 import { BankImportRowEditorModal } from "@/components/pages/bank-import/BankImportRowEditorModal";
@@ -174,8 +175,8 @@ export function BankImportWizardPage() {
         rows: selectedRows.map((row) => buildConfirmPayloadRow(row)),
       });
 
-      if (user && result.userBudget !== undefined) {
-        dispatch(setProfile({ ...user, budget: result.userBudget }));
+      if (user) {
+        dispatch(setProfile(mergeProfileWallet(user, result)));
       }
       dispatch(bumpBudgetRevision());
 

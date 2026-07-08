@@ -3,28 +3,43 @@
 import { ArrowDown, ArrowUp, Wallet2 } from "iconsax-reactjs";
 
 import { formatPriceWithCurrency } from "@/common/utils/format-currency";
-import { DEFAULT_USER_PREFERENCES, currencyLabel } from "@/common/constants/user-preferences";
+import {
+  CURRENCY_OPTIONS,
+  DEFAULT_USER_PREFERENCES,
+  currencyLabel,
+  type UserCurrency,
+} from "@/common/constants/user-preferences";
+import { getWalletBalance } from "@/common/utils/wallet-balances";
 import { useAppSelector } from "@/stores/hooks";
 import { userSelector } from "@/stores/profile";
 
 type DashboardHeroProps = {
   firstName?: string;
-  balance: number;
   income: number;
   expense: number;
   "data-tour"?: string;
 };
 
+function walletDisplayOrder(preferred: UserCurrency): UserCurrency[] {
+  return [
+    preferred,
+    ...CURRENCY_OPTIONS.map((option) => option.id).filter(
+      (currency) => currency !== preferred,
+    ),
+  ];
+}
+
 export function DashboardHero({
   firstName,
-  balance,
   income,
   expense,
   "data-tour": dataTour,
 }: DashboardHeroProps) {
   const user = useAppSelector(userSelector);
-  const currency = user?.preferences?.currency ?? DEFAULT_USER_PREFERENCES.currency;
-  const isNegative = balance < 0;
+  const preferred =
+    user?.preferences?.currency ?? DEFAULT_USER_PREFERENCES.currency;
+  const currency = preferred;
+  const orderedCurrencies = walletDisplayOrder(preferred);
 
   return (
     <section
@@ -53,20 +68,48 @@ export function DashboardHero({
           <div className="mt-5 lg:mt-6">
             <div className="rounded-2xl border border-white/20 bg-white/12 p-4 shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-md lg:p-6">
               <p className="text-xs font-medium text-white/75 lg:text-sm">
-                موجودی حساب
+                موجودی کیف پول
               </p>
-              {isNegative ? (
-                <p className="mt-1 text-xs font-medium text-rose-200">
-                  (کمبود وجه)
-                </p>
-              ) : null}
-              <div className="mt-2 flex items-end justify-between gap-4 lg:mt-3">
-                <p className="pb-balance-amount text-white">
-                  {formatPriceWithCurrency(balance, currency)}
-                </p>
-                <span className="mb-1 shrink-0 text-sm font-medium text-white/80 lg:text-base">
-                  {currencyLabel(currency)}
-                </span>
+              <div className="mt-3 space-y-3">
+                {orderedCurrencies.map((walletCurrency) => {
+                  const amount = getWalletBalance(user, walletCurrency);
+                  const isPreferred = walletCurrency === preferred;
+                  if (!isPreferred && amount === 0) {
+                    return null;
+                  }
+
+                  const isNegative = amount < 0;
+                  return (
+                    <div
+                      key={walletCurrency}
+                      className={
+                        isPreferred
+                          ? ""
+                          : "rounded-xl border border-white/15 bg-black/10 px-3 py-2.5"
+                      }
+                    >
+                      {isNegative ? (
+                        <p className="text-xs font-medium text-rose-200">
+                          (کمبود وجه — {currencyLabel(walletCurrency)})
+                        </p>
+                      ) : null}
+                      <div className="flex items-end justify-between gap-4">
+                        <p
+                          className={
+                            isPreferred
+                              ? "pb-balance-amount text-white"
+                              : "text-lg font-bold text-white"
+                          }
+                        >
+                          {formatPriceWithCurrency(amount, walletCurrency)}
+                        </p>
+                        <span className="mb-1 shrink-0 text-sm font-medium text-white/80 lg:text-base">
+                          {currencyLabel(walletCurrency)}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>

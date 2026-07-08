@@ -13,7 +13,15 @@ import { Button, Modal } from "@heroui/react";
 import type { FormEvent } from "react";
 
 import * as profileApi from "@/common/api/profile";
-import { formatPrice, parsePriceInput } from "@/common/utils";
+import { parsePriceInput } from "@/common/utils";
+import { formatPriceWithCurrency } from "@/common/utils/format-currency";
+import {
+  CURRENCY_OPTIONS,
+  DEFAULT_USER_PREFERENCES,
+  currencyLabel,
+  type UserCurrency,
+} from "@/common/constants/user-preferences";
+import { getWalletBalance } from "@/common/utils/wallet-balances";
 import { showToast } from "@/common/utils/toast";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { FormPriceInput } from "@/components/common/form/FormFields";
@@ -45,6 +53,9 @@ function BalanceModalDialog({
   const dispatch = useAppDispatch();
   const user = useAppSelector(userSelector);
   const [price, setPrice] = useState("");
+  const [currency, setCurrency] = useState<UserCurrency>(
+    user?.preferences?.currency ?? DEFAULT_USER_PREFERENCES.currency,
+  );
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -55,7 +66,8 @@ function BalanceModalDialog({
   useEffect(() => {
     if (!open) return;
     setPrice("");
-  }, [open]);
+    setCurrency(user?.preferences?.currency ?? DEFAULT_USER_PREFERENCES.currency);
+  }, [open, user?.preferences?.currency]);
 
   async function submit(e?: FormEvent) {
     e?.preventDefault();
@@ -67,10 +79,16 @@ function BalanceModalDialog({
 
     setLoading(true);
     try {
-      const updated = await profileApi.changeUserBudget(delta);
+      const updated = await profileApi.changeUserBudget(delta, currency);
       dispatch(setProfile(updated));
       dispatch(bumpBudgetRevision());
-      showToast(`موجودی جدید: ${formatPrice(updated.budget ?? 0)} تومان`, "success");
+      showToast(
+        `موجودی ${currencyLabel(currency)}: ${formatPriceWithCurrency(
+          getWalletBalance(updated, currency),
+          currency,
+        )}`,
+        "success",
+      );
       onOpenChange(false);
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
@@ -81,6 +99,8 @@ function BalanceModalDialog({
 
   if (!mounted) return null;
 
+  const currentBalance = getWalletBalance(user, currency);
+
   return createPortal(
     <AppModal open={open} onOpenChange={onOpenChange}>
       <AppModalDialog>
@@ -90,14 +110,31 @@ function BalanceModalDialog({
           </AppModalHeader>
           <Modal.Body>
             <p className="mb-3 text-sm text-muted">
-              موجودی فعلی: {formatPrice(user?.budget ?? 0)} تومان
+              موجودی فعلی ({currencyLabel(currency)}):{" "}
+              {formatPriceWithCurrency(currentBalance, currency)}
             </p>
             <p className="mb-3 text-xs leading-6 text-muted">
-              مبلغ تغییر را وارد کنید — مثبت برای افزایش، منفی برای کاهش. یک تراکنش در
-              دسته «تنظیم موجودی» ثبت می‌شود تا تراز دوره و تحلیل مالی هم‌خوان بماند.
+              ارز را انتخاب کنید و مبلغ تغییر را وارد کنید — مثبت برای افزایش،
+              منفی برای کاهش. هر ارز موجودی جداگانه دارد.
             </p>
+            <div className="mb-4 flex flex-wrap gap-2">
+              {CURRENCY_OPTIONS.map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  onClick={() => setCurrency(option.id)}
+                  className={`cursor-pointer rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
+                    currency === option.id
+                      ? "bg-accent text-accent-foreground"
+                      : "bg-surface-secondary text-muted"
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
             <FormPriceInput
-              label="مبلغ افزایش/کاهش (تومان)"
+              label={`مبلغ افزایش/کاهش (${currencyLabel(currency)})`}
               value={price}
               onChange={setPrice}
               allowNegative

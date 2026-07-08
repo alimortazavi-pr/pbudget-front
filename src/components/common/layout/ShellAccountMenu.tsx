@@ -6,7 +6,12 @@ import { Button } from "@heroui/react";
 import { Call, Logout, Moon, Profile, Sun1, Wallet2 } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
-import { formatPrice } from "@/common/utils";
+import { formatPriceWithCurrency } from "@/common/utils/format-currency";
+import {
+  CURRENCY_OPTIONS,
+  DEFAULT_USER_PREFERENCES,
+} from "@/common/constants/user-preferences";
+import { getWalletBalance } from "@/common/utils/wallet-balances";
 import { storage } from "@/common/utils/storage";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { useBalanceModal } from "@/components/providers/BalanceModalProvider";
@@ -126,16 +131,22 @@ export function ShellAccountMenu({
             تنظیم
           </Button>
         </div>
-        <p
-          className={
-            variant === "sidebar"
-              ? "mt-2 text-xl font-bold tracking-tight"
-              : "mt-2 text-2xl font-bold tracking-tight"
-          }
-        >
-          {formatPrice(user?.budget ?? 0)}{" "}
-          <span className="text-sm font-normal text-muted">تومان</span>
-        </p>
+        <div className="mt-3 space-y-2">
+          {CURRENCY_OPTIONS.map((option) => {
+            const amount = getWalletBalance(user, option.id);
+            if (amount === 0 && option.id !== (user?.preferences?.currency ?? DEFAULT_USER_PREFERENCES.currency)) {
+              return null;
+            }
+            return (
+              <div key={option.id} className="flex items-baseline justify-between gap-2">
+                <span className="text-xs text-muted">{option.label}</span>
+                <p className="text-base font-bold tracking-tight">
+                  {formatPriceWithCurrency(amount, option.id)}
+                </p>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {showPlanning &&

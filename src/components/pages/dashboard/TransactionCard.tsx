@@ -14,7 +14,11 @@ import { categoryAccentStyle } from "@/common/utils/category-accent";
 import { paymentCardSubtitle } from "@/common/utils/payment-card";
 import { formatBudgetDate, formatBudgetDateTime } from "@/common/utils/calendar-date";
 import { formatPriceWithCurrency } from "@/common/utils/format-currency";
-import { resolveBudgetCurrency, resolveBudgetDateCalendar } from "@/common/constants/user-preferences";
+import { mergeProfileWallet } from "@/common/utils/wallet-balances";
+import {
+  resolveBudgetCurrency,
+  resolveBudgetDateCalendar,
+} from "@/common/constants/user-preferences";
 import { showToast } from "@/common/utils/toast";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { bumpBudgetRevision, deleteBudget } from "@/stores/budget";
@@ -57,8 +61,8 @@ export function TransactionCard({ budget }: TransactionCardProps) {
     try {
       const res = await budgetsApi.softDeleteBudget(budget._id);
       dispatch(deleteBudget(budget));
-      if (user && res.userBudget !== undefined) {
-        dispatch(setProfile({ ...user, budget: res.userBudget }));
+      if (user) {
+        dispatch(setProfile(mergeProfileWallet(user, res)));
       }
       dispatch(bumpBudgetRevision());
       showToast("تراکنش حذف شد", "success");
