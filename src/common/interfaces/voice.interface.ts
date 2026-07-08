@@ -1,3 +1,5 @@
+import type { UserCurrency, WalletBalances } from "@/common/constants/user-preferences";
+
 export type VoiceLogStatus =
   | "pending"
   | "confirmed"
@@ -58,10 +60,17 @@ export interface VoiceInterpretResponse {
   testModeNotice: string;
 }
 
+export interface VoiceExecuteData {
+  userBudget?: number;
+  userWalletBalances?: WalletBalances;
+  currency?: UserCurrency;
+  balance?: number;
+}
+
 export interface VoiceExecuteResult {
   success: boolean;
   message: string;
-  data?: Record<string, unknown>;
+  data?: VoiceExecuteData;
   navigateTo?: string;
 }
 
