@@ -7,7 +7,7 @@ import { DEFAULT_CATEGORY_COLORS } from "@/common/constants/category-colors";
 import * as categoriesApi from "@/common/api/categories";
 import type { ICategory } from "@/common/interfaces/category.interface";
 import { getParentSelectOptions } from "@/common/utils/category-tree";
-import { showToast } from "@/common/utils/toast";
+import { showErrorToast, showToast } from "@/common/utils/toast";
 import { FormInput, FormPriceInput, FormSelect } from "@/components/common/form/FormFields";
 import { CategoryColorPicker } from "@/components/common/form/CategoryColorPicker";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
@@ -54,7 +54,7 @@ export function CreateCategoryModal({
         parentId: parentId || null,
         kind: isProjectKind ? CategoryKind.PROJECT : CategoryKind.DEFAULT,
         color,
-        monthlyLimit: monthlyLimit || 0,
+        monthlyLimit: monthlyLimit.trim() || "0",
       });
       dispatch(setCategories([...(categories ?? []), created]));
       showToast("دسته‌بندی ایجاد شد", "success");
@@ -66,7 +66,7 @@ export function CreateCategoryModal({
       setMonthlyLimit("");
       onOpenChange(false);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showErrorToast(err, "ایجاد دسته‌بندی ناموفق بود");
     } finally {
       setSaving(false);
     }
