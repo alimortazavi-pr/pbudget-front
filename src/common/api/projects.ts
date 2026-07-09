@@ -90,3 +90,9 @@ export async function attachProjectBudget(projectId: string, budgetId: string) {
   );
   return data.budget;
 }
+
+export async function attachProjectBudgets(projectId: string, budgetIds: string[]) {
+  for (const budgetId of budgetIds) {
+    await attachProjectBudget(projectId, budgetId);
+  }
+}

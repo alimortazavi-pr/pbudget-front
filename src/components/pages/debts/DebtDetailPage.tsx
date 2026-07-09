@@ -328,6 +328,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
                       : "تراکنش دریافتی (واریز به حساب شما) که با ایجاد این بدهی مرتبط است را انتخاب کنید."
                   }
                   context={{ type: "debt-source", contextId: debtId }}
+                  selectionMode="single"
                   onAttach={async (budgetId) => {
                     await debtsApi.attachDebtSource(debtId, budgetId);
                     await load();
@@ -345,7 +346,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
                         : "یک یا چند تراکنش پرداختی (برداشت) که بدهی را پرداخت کرده‌اند انتخاب کنید."
                     }
                     context={{ type: "debt-settlement", contextId: debtId }}
-                    multiSelect
+                    selectionMode="multiple"
                     onAttach={async (budgetId) => {
                       await debtsApi.settleDebt(debtId, { budgetId });
                       await load();

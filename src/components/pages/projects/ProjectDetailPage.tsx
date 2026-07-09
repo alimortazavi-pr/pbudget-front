@@ -481,10 +481,15 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
               <>
               <AttachBudgetButton
                 title="افزودن از تراکنش‌ها"
-                description="یک تراکنش قبلی را به این پروژه وصل کنید."
+                description="یک یا چند تراکنش قبلی را به این پروژه وصل کنید."
                 context={{ type: "project", contextId: projectId }}
+                selectionMode="multiple"
                 onAttach={async (budgetId) => {
                   await projectsApi.attachProjectBudget(projectId, budgetId);
+                  await load();
+                }}
+                onAttachMultiple={async (budgetIds) => {
+                  await projectsApi.attachProjectBudgets(projectId, budgetIds);
                   await load();
                 }}
               />

@@ -41,7 +41,8 @@ type AttachBudgetModalProps = {
   context: AttachBudgetContext;
   onAttach: (budgetId: string) => Promise<void>;
   onAttachMultiple?: (budgetIds: string[]) => Promise<void>;
-  multiSelect?: boolean;
+  /** چندتایی = چک‌باکس؛ تکی = فقط یک تراکنش */
+  selectionMode?: "single" | "multiple";
   attachLabel?: string;
 };
 
@@ -57,9 +58,10 @@ export function AttachBudgetModal({
   context,
   onAttach,
   onAttachMultiple,
-  multiSelect = false,
+  selectionMode = "multiple",
   attachLabel = "انتخاب",
 }: AttachBudgetModalProps) {
+  const multiSelect = selectionMode === "multiple";
   const categories = useAppSelector(categoriesSelector);
   const categoryOptions = getCategorySelectOptions(categories ?? []);
   const now = getJalaliNow();
@@ -72,7 +74,6 @@ export function AttachBudgetModal({
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [attachingId, setAttachingId] = useState<string | null>(null);
   const [attachingMultiple, setAttachingMultiple] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [budgets, setBudgets] = useState<IBudget[]>([]);
@@ -202,6 +203,9 @@ export function AttachBudgetModal({
 
   function toggleSelection(budgetId: string) {
     setSelectedIds((prev) => {
+      if (!multiSelect) {
+        return prev.has(budgetId) ? new Set() : new Set([budgetId]);
+      }
       const next = new Set(prev);
       if (next.has(budgetId)) next.delete(budgetId);
       else next.add(budgetId);
@@ -209,27 +213,25 @@ export function AttachBudgetModal({
     });
   }
 
-  async function handleAttach(budgetId: string) {
-    setAttachingId(budgetId);
-    try {
-      await onAttach(budgetId);
-      showToast("تراکنش وصل شد", "success");
-      onOpenChange(false);
-    } catch (err) {
-      showErrorToast(err, "خطا در وصل کردن تراکنش");
-    } finally {
-      setAttachingId(null);
-    }
-  }
-
-  async function handleAttachMultiple() {
-    if (!onAttachMultiple || selectedIds.size === 0) return;
+  async function handleConfirmSelection() {
+    const budgetIds = Array.from(selectedIds);
+    if (!budgetIds.length) return;
 
     setAttachingMultiple(true);
     try {
-      await onAttachMultiple(Array.from(selectedIds));
+      if (budgetIds.length > 1 && onAttachMultiple) {
+        await onAttachMultiple(budgetIds);
+      } else if (budgetIds.length > 1) {
+        for (const budgetId of budgetIds) {
+          await onAttach(budgetId);
+        }
+      } else {
+        await onAttach(budgetIds[0]);
+      }
       showToast(
-        selectedIds.size === 1 ? "تراکنش وصل شد" : `${selectedIds.size} تراکنش وصل شد`,
+        budgetIds.length === 1
+          ? "تراکنش وصل شد"
+          : `${toPersianDigits(budgetIds.length)} تراکنش وصل شد`,
         "success",
       );
       onOpenChange(false);
@@ -339,43 +341,29 @@ export function AttachBudgetModal({
                   const isSelected = selectedIds.has(budget._id);
 
                   return (
-                    <div
+                    <button
                       key={budget._id}
-                      className={`flex items-center justify-between gap-3 rounded-xl border px-3 py-3 transition ${
-                        multiSelect && isSelected
+                      type="button"
+                      onClick={() => toggleSelection(budget._id)}
+                      className={`flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl border px-3 py-3 text-right transition ${
+                        isSelected
                           ? "border-accent bg-accent/10"
                           : "border-border bg-surface-secondary"
                       }`}
                     >
-                      {multiSelect ? (
-                        <button
-                          type="button"
-                          onClick={() => toggleSelection(budget._id)}
-                          className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 text-right"
+                      <div className="flex min-w-0 flex-1 items-center gap-3">
+                        <span
+                          className={`flex h-5 w-5 shrink-0 items-center justify-center ${
+                            multiSelect ? "rounded-md" : "rounded-full"
+                          } border ${
+                            isSelected
+                              ? "border-accent bg-accent text-accent-foreground"
+                              : "border-border bg-surface"
+                          }`}
+                          aria-hidden
                         >
-                          <span
-                            className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border ${
-                              isSelected
-                                ? "border-accent bg-accent text-accent-foreground"
-                                : "border-border bg-surface"
-                            }`}
-                            aria-hidden
-                          >
-                            {isSelected ? "✓" : ""}
-                          </span>
-                          <div className="min-w-0">
-                            <p className="truncate font-medium">{categoryTitle}</p>
-                            <p className="mt-1 text-xs text-muted">
-                              {formatJalaliDate(
-                                String(budget.year),
-                                String(budget.month),
-                                String(budget.day),
-                              )}
-                              {budget.description ? ` · ${budget.description}` : ""}
-                            </p>
-                          </div>
-                        </button>
-                      ) : (
+                          {isSelected ? "✓" : ""}
+                        </span>
                         <div className="min-w-0">
                           <p className="truncate font-medium">{categoryTitle}</p>
                           <p className="mt-1 text-xs text-muted">
@@ -387,24 +375,13 @@ export function AttachBudgetModal({
                             {budget.description ? ` · ${budget.description}` : ""}
                           </p>
                         </div>
-                      )}
-                      <div className="flex shrink-0 items-center gap-2">
-                        <p
-                          className={`text-sm font-bold ${isIncome ? "text-income" : "text-expense"}`}
-                        >
-                          {formatPrice(budget.price)}
-                        </p>
-                        {!multiSelect ? (
-                          <Button
-                            size="sm"
-                            onPress={() => void handleAttach(budget._id)}
-                            isPending={attachingId === budget._id}
-                          >
-                            {attachLabel}
-                          </Button>
-                        ) : null}
                       </div>
-                    </div>
+                      <p
+                        className={`shrink-0 text-sm font-bold ${isIncome ? "text-income" : "text-expense"}`}
+                      >
+                        {formatPrice(budget.price)}
+                      </p>
+                    </button>
                   );
                 })}
 
@@ -421,22 +398,24 @@ export function AttachBudgetModal({
             )}
           </div>
         </Modal.Body>
-        {multiSelect && onAttachMultiple ? (
-          <Modal.Footer className="border-t border-border/40">
-            <Button variant="ghost" onPress={() => onOpenChange(false)}>
-              انصراف
-            </Button>
-            <Button
-              onPress={() => void handleAttachMultiple()}
-              isDisabled={selectedIds.size === 0}
-              isPending={attachingMultiple}
-            >
-              {selectedIds.size > 0
+        <Modal.Footer className="border-t border-border/40">
+          <Button variant="ghost" onPress={() => onOpenChange(false)}>
+            انصراف
+          </Button>
+          <Button
+            onPress={() => void handleConfirmSelection()}
+            isDisabled={selectedIds.size === 0}
+            isPending={attachingMultiple}
+          >
+            {selectedIds.size > 0
+              ? multiSelect
                 ? `وصل کردن ${toPersianDigits(selectedIds.size)} تراکنش`
-                : "تراکنش انتخاب کنید"}
-            </Button>
-          </Modal.Footer>
-        ) : null}
+                : attachLabel
+              : multiSelect
+                ? "تراکنش انتخاب کنید"
+                : "یک تراکنش انتخاب کنید"}
+          </Button>
+        </Modal.Footer>
       </AppModalDialog>
     </AppModal>
   );
@@ -449,7 +428,7 @@ type AttachBudgetButtonProps = {
   context: AttachBudgetContext;
   onAttach: (budgetId: string) => Promise<void>;
   onAttachMultiple?: (budgetIds: string[]) => Promise<void>;
-  multiSelect?: boolean;
+  selectionMode?: "single" | "multiple";
   attachLabel?: string;
 };
 
@@ -459,7 +438,7 @@ export function AttachBudgetButton({
   context,
   onAttach,
   onAttachMultiple,
-  multiSelect,
+  selectionMode,
   attachLabel,
 }: AttachBudgetButtonProps) {
   const [open, setOpen] = useState(false);
@@ -478,7 +457,7 @@ export function AttachBudgetButton({
         context={context}
         onAttach={onAttach}
         onAttachMultiple={onAttachMultiple}
-        multiSelect={multiSelect}
+        selectionMode={selectionMode}
         attachLabel={attachLabel}
       />
     </>
