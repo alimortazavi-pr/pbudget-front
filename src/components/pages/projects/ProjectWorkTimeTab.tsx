@@ -292,6 +292,7 @@ export function ProjectWorkTimeTab({
                         title="لینک تراکنش"
                         description="درآمد یا پرداخت مرتبط با این ساعت را وصل کنید."
                         context={{ type: "project", contextId: projectId }}
+                        selectionMode="single"
                         onAttach={async (budgetId) => {
                           await workTimeApi.attachWorkSessionBudget(
                             projectId,

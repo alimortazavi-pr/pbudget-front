@@ -373,6 +373,7 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
                       title="وصل تراکنش"
                       description="یک تراکنش پرداختی قبلی را به این قسط وصل کنید."
                       context={{ type: "occurrence", contextId: planId }}
+                      selectionMode="single"
                       onAttach={async (budgetId) => {
                         await paymentPlansApi.linkOccurrenceBudget(item._id, { budgetId });
                         await load();

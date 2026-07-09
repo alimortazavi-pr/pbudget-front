@@ -20,7 +20,9 @@ import { toPersianDigits, formatPrice } from "@/common/utils";
 import { mergeProfileWallet } from "@/common/utils/wallet-balances";
 import { showToast } from "@/common/utils/toast";
 import { BankImportRowCard } from "@/components/pages/bank-import/BankImportRowCard";
+import { BankImportRowGroup } from "@/components/pages/bank-import/BankImportRowGroup";
 import { BankImportRowEditorModal } from "@/components/pages/bank-import/BankImportRowEditorModal";
+import { groupImportRows } from "@/components/pages/bank-import/import-row-group.util";
 import type { ImportRowDraft } from "@/components/pages/bank-import/import-row.types";
 import {
   buildConfirmPayloadRow,
@@ -89,6 +91,8 @@ export function BankImportWizardPage() {
     selectedRows.length > 0 &&
     incompleteSelectedCount === 0 &&
     selectedRows.every((row) => !validateImportRowDraft(row));
+
+  const rowGroups = useMemo(() => groupImportRows(rows), [rows]);
 
   const editingRow = useMemo(
     () => rows.find((row) => row.tempId === editingRowId) ?? null,
@@ -383,16 +387,20 @@ export function BankImportWizardPage() {
           </div>
 
           <div className="space-y-3">
-            {rows.map((row) => (
-              <BankImportRowCard
-                key={row.tempId}
-                row={row}
-                categories={categories ?? []}
-                paymentCards={paymentCards}
-                onToggle={() => toggleRow(row.tempId)}
-                onCategoryChange={(categoryId) => setRowCategory(row.tempId, categoryId)}
-                onEdit={() => setEditingRowId(row.tempId)}
-              />
+            {rowGroups.map((group) => (
+              <BankImportRowGroup key={group.groupKey} group={group}>
+                {group.rows.map((row, index) => (
+                  <BankImportRowCard
+                    key={`${row.tempId}-${row.rowNumber ?? index}`}
+                    row={row}
+                    categories={categories ?? []}
+                    paymentCards={paymentCards}
+                    onToggle={() => toggleRow(row.tempId)}
+                    onCategoryChange={(categoryId) => setRowCategory(row.tempId, categoryId)}
+                    onEdit={() => setEditingRowId(row.tempId)}
+                  />
+                ))}
+              </BankImportRowGroup>
             ))}
           </div>
 

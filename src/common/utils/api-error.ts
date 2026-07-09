@@ -15,14 +15,40 @@ const VALIDATION_KEY_TRANSLATIONS: Record<string, string> = {
   dueDayOfMonth: "روز سررسید",
   title: "عنوان",
   amount: "مبلغ",
+  monthlyLimit: "سقف ماهانه",
+  price: "مبلغ",
+  categoryId: "دسته‌بندی",
+  parentId: "دسته والد",
+  color: "رنگ",
+  email: "ایمیل",
+  password: "رمز عبور",
 };
 
+function fieldLabel(field: string): string {
+  return VALIDATION_KEY_TRANSLATIONS[field] ?? field;
+}
+
 function translateValidationKeyMessage(message: string): string | null {
+  const mustBeString = message.match(/^(\w+)\s+must be a string$/i);
+  if (mustBeString) {
+    return `${fieldLabel(mustBeString[1])} فرمت نامعتبر است`;
+  }
+
+  const mustBeNumber = message.match(/^(\w+)\s+must be (?:a )?number/i);
+  if (mustBeNumber) {
+    return `${fieldLabel(mustBeNumber[1])} باید عدد باشد`;
+  }
+
+  const mustNotBeEmpty = message.match(/^(\w+)\s+should not be empty$/i);
+  if (mustNotBeEmpty) {
+    return `${fieldLabel(mustNotBeEmpty[1])} الزامی است`;
+  }
+
   const match = message.match(/^(\w+)\s+must not be (greater than|less than)\s+(.+)$/i);
   if (!match) return null;
 
   const [, field, direction, bound] = match;
-  const label = VALIDATION_KEY_TRANSLATIONS[field] ?? field;
+  const label = fieldLabel(field);
   if (direction === "greater than") {
     return `${label} نباید بیشتر از ${bound} باشد`;
   }
