@@ -80,7 +80,7 @@ export function PwaInstallPrompt() {
       <div className="glass flex items-start gap-3 rounded-2xl border border-border/50 p-4 shadow-xl">
         <div className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-xl">
           <Image
-            src="/assets/logo-mark.svg"
+            src="/assets/logo-mark.png"
             alt=""
             width={44}
             height={44}
