@@ -437,7 +437,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
         );
       }
       dispatch(bumpBudgetRevision());
-      router.push(`/?duration=monthly&year=${year}&month=${month}`);
+      router.push(`${PATHS.HOME}?duration=monthly&year=${year}&month=${month}`);
     } catch (err) {
       showErrorToast(err);
     } finally {

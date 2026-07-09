@@ -6,6 +6,7 @@ import { Button } from "@heroui/react";
 import { ArrowLeft2, ArrowRight2, Export, Filter } from "iconsax-reactjs";
 
 import * as budgetsApi from "@/common/api/budgets";
+import { PATHS } from "@/common/constants";
 import { useHydratedSearchParams } from "@/common/hooks/useHydratedSearchParams";
 import { getJalaliNow, JALALI_MONTHS, toPersianDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
@@ -72,7 +73,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         if (v) params.set(k, v);
         else params.delete(k);
       });
-      router.replace(`/?${params.toString()}`, { scroll: false });
+      router.replace(`${PATHS.HOME}?${params.toString()}`, { scroll: false });
     },
     [router],
   );
