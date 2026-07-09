@@ -5,7 +5,7 @@ import { Edit2 } from "iconsax-reactjs";
 
 import type { ICategory } from "@/common/interfaces/category.interface";
 import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
-import { formatJalaliDateWithTime, formatPrice } from "@/common/utils";
+import { formatJalaliDateWithTime, formatPrice, toPersianDigits } from "@/common/utils";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { FormCategoryComboBox } from "@/components/common/form/FormFields";
 import { BudgetType } from "@/types/enums";
@@ -74,6 +74,19 @@ export function BankImportRowCard({
                   row.minute,
                 )}
               </p>
+              {(row.documentNumber || row.rowNumber > 0) && (
+                <p className="mt-1 text-[10px] text-muted/80">
+                  {row.documentNumber ? (
+                    <>
+                      شماره سند: {toPersianDigits(row.documentNumber)}
+                      {row.rowNumber > 0 ? " · " : ""}
+                    </>
+                  ) : null}
+                  {row.rowNumber > 0 ? (
+                    <>ردیف: {toPersianDigits(row.rowNumber)}</>
+                  ) : null}
+                </p>
+              )}
               <p className="mt-2 line-clamp-2 text-xs text-muted">{row.description}</p>
             </div>
 

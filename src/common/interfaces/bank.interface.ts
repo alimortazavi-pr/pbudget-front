@@ -21,6 +21,7 @@ export interface IParsedBankRow {
   description: string;
   transactionKind: string;
   statementRef: string;
+  documentNumber?: string;
   rowNumber: number;
   isDuplicate?: boolean;
 }
