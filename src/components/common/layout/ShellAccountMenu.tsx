@@ -184,14 +184,16 @@ export function ShellAccountMenu({
             {theme === "dark" ? <Sun1 size={20} /> : <Moon size={20} />}
             {theme === "dark" ? t("common.lightMode") : t("common.darkMode")}
           </button>
-          <Link href={DOWNLOAD_NAV_ITEM.href} className={utilityLinkClass} onClick={onNavigate}>
-            <Mobile size={20} />
-            {t(DOWNLOAD_NAV_ITEM.label)}
-          </Link>
           <a href={SUPPORT_PHONE} className={utilityLinkClass} onClick={onNavigate}>
             <Call size={20} />
             {t("common.support")}
           </a>
+          {variant === "sidebar" ? (
+            <Link href={DOWNLOAD_NAV_ITEM.href} className={utilityLinkClass} onClick={onNavigate}>
+              <Mobile size={20} />
+              {t(DOWNLOAD_NAV_ITEM.label)}
+            </Link>
+          ) : null}
         </div>
       </div>
 

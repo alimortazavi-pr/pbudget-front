@@ -19,8 +19,7 @@ import { BudgetExportModal } from "@/components/pages/dashboard/BudgetExportModa
 import { BudgetStats } from "@/components/pages/dashboard/BudgetStats";
 import { DashboardFilterSection } from "@/components/pages/dashboard/DashboardFilterSection";
 import { DashboardHero } from "@/components/pages/dashboard/DashboardHero";
-import { DownloadAppPromo } from "@/components/common/DownloadAppPromo";
-import { WorkTimeQuickWidget } from "@/components/pages/projects/WorkTimeQuickWidget";
+import { BudgetExportModal } from "@/components/pages/dashboard/BudgetExportModal";
 import { TransactionCard } from "@/components/pages/dashboard/TransactionCard";
 import { TransactionListSkeleton } from "@/components/pages/dashboard/TransactionListSkeleton";
 import type { IBudget, IBudgetsSummary } from "@/common/interfaces/budget.interface";
@@ -182,10 +181,6 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         expense={totalCost ?? 0}
         data-tour="dashboard-balance"
       />
-
-      <div className="px-4 pb-4">
-        <DownloadAppPromo />
-      </div>
 
       <div className="px-4 pb-4">
         <WorkTimeQuickWidget />
