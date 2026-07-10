@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useMemo, useState } from "react";
 import { DocumentFilter } from "iconsax-reactjs";
 
@@ -32,6 +34,7 @@ export function DashboardFilterSection({
   onCategoryChange,
   onApplyFilter,
 }: DashboardFilterSectionProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const categoryOptions = useMemo(
     () => getCategorySelectOptions(categories),
@@ -43,8 +46,8 @@ export function DashboardFilterSection({
       <div className="glass flex items-end gap-2 rounded-2xl p-3 lg:gap-4 lg:p-5">
         <div className="min-w-0 flex-1">
           <FormCategoryComboBox
-            label="فیلتر بر اساس دسته‌بندی"
-            placeholder="همه دسته‌بندی‌ها"
+            label={t("فیلتر بر اساس دسته‌بندی")}
+            placeholder={t("همه دسته‌بندی‌ها")}
             selectedKey={category || "all"}
             onSelectionChange={(key) =>
               onCategoryChange(key === "all" ? "" : key)
@@ -61,7 +64,7 @@ export function DashboardFilterSection({
           className="mb-0.5 flex h-11 shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border border-border bg-surface-secondary px-3 text-sm font-medium text-foreground transition-colors hover:border-accent/40"
           onClick={() => setOpen(true)}
         >
-          <span>فیلتر</span>
+          <span>{t("فیلتر")}</span>
           <DocumentFilter size={18} />
         </button>
       </div>

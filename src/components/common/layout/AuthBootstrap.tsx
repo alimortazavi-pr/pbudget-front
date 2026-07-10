@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -20,7 +22,8 @@ import {
 import { setProfile } from "@/stores/profile";
 import { setCategories } from "@/stores/category";
 
-export function AuthBootstrap() {
+export function AuthBootstrap() {  const { t } = useTranslation();
+
   const dispatch = useAppDispatch();
   const router = useRouter();
   const pathname = usePathname();

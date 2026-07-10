@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Button } from "@heroui/react";
@@ -18,6 +20,7 @@ import { showErrorToast, showToast } from "@/common/utils/toast";
 import { QuickManualWorkSessionModal } from "@/components/pages/projects/QuickManualWorkSessionModal";
 
 export function WorkTimeQuickWidget() {
+  const { t } = useTranslation();
   const now = getJalaliNow();
   const [data, setData] = useState<IWorkTimeDashboard | null>(null);
   const [loading, setLoading] = useState(true);
@@ -80,7 +83,7 @@ export function WorkTimeQuickWidget() {
     setActionProjectId(projectId);
     try {
       await workTimeApi.clockOut(projectId);
-      showToast("خروج ثبت شد", "success");
+      showToast(t("خروج ثبت شد"), "success");
       await load();
     } catch (err) {
       showErrorToast(err);
@@ -97,7 +100,7 @@ export function WorkTimeQuickWidget() {
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Clock size={20} className="text-accent" />
-            <h2 className="font-semibold">حضور و غیاب امروز</h2>
+            <h2 className="font-semibold">{t("حضور و غیاب امروز")}</h2>
           </div>
           <Link href={PATHS.WORK_ATTENDANCE} className="text-xs text-accent">
             همه پروژه‌ها
@@ -105,7 +108,7 @@ export function WorkTimeQuickWidget() {
         </div>
 
         {todayStatus?.isWorkingDay === false ? (
-          <p className="text-sm text-muted">امروز روز کاری نیست.</p>
+          <p className="text-sm text-muted">{t("امروز روز کاری نیست.")}</p>
         ) : todayStatus ? (
           <p className="text-sm">
             امروز:{" "}

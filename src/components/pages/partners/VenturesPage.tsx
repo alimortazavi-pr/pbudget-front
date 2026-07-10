@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -19,6 +21,7 @@ import {
 import { PendingInvitesBanner } from "@/components/pages/partners/PendingInvitesBanner";
 
 export function VenturesPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [ventures, setVentures] = useState<IVenture[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,7 +48,7 @@ export function VenturesPage() {
 
   async function createVenture() {
     if (!title.trim()) {
-      showToast("نام کسب‌وکار الزامی است");
+      showToast(t("نام کسب‌وکار الزامی است"));
       return;
     }
 
@@ -55,7 +58,7 @@ export function VenturesPage() {
         title: title.trim(),
         description: description.trim(),
       });
-      showToast("کسب‌وکار ایجاد شد", "success");
+      showToast(t("کسب‌وکار ایجاد شد"), "success");
       setCreateOpen(false);
       setTitle("");
       setDescription("");
@@ -70,8 +73,8 @@ export function VenturesPage() {
   return (
     <div className="space-y-5 pb-6">
       <section className="rounded-3xl bg-gradient-to-br from-violet-600 to-indigo-700 p-5 text-white shadow-lg">
-        <p className="text-sm font-medium text-white/80">همکاری و شراکت</p>
-        <h1 className="mt-1 text-2xl font-bold">کسب‌وکارها و شرکا</h1>
+        <p className="text-sm font-medium text-white/80">{t("همکاری و شراکت")}</p>
+        <h1 className="mt-1 text-2xl font-bold">{t("کسب‌وکارها و شرکا")}</h1>
         <p className="mt-2 text-sm leading-7 text-white/85">
           برای مشارکت‌هایی که فقط پروژه نیستند — رستوران، فروشگاه، سرمایه‌گذاری
           مشترک و هر کسب‌وکار دیگر.
@@ -94,7 +97,7 @@ export function VenturesPage() {
       ) : ventures.length === 0 ? (
         <div className="glass rounded-2xl p-10 text-center">
           <Profile2User size={40} className="mx-auto text-muted" />
-          <p className="mt-3 text-muted">هنوز کسب‌وکاری ثبت نشده</p>
+          <p className="mt-3 text-muted">{t("هنوز کسب‌وکاری ثبت نشده")}</p>
           <p className="mt-1 text-sm text-muted">
             یا از تب شرکا در هر پروژه استفاده کنید
           </p>
@@ -133,20 +136,20 @@ export function VenturesPage() {
       <AppModal open={createOpen} onOpenChange={setCreateOpen}>
         <AppModalDialog className="sm:max-w-md">
           <AppModalHeader onClose={() => setCreateOpen(false)}>
-            <Modal.Heading>کسب‌وکار جدید</Modal.Heading>
+            <Modal.Heading>{t("کسب‌وکار جدید")}</Modal.Heading>
             <p className="mt-1 text-sm text-muted">
               برای مشارکت‌هایی جدا از پروژه‌های ثبت‌شده
             </p>
           </AppModalHeader>
           <Modal.Body className="space-y-4">
             <FormInput
-              label="نام کسب‌وکار"
-              placeholder="مثلاً کافه مشترک"
+              label={t("نام کسب‌وکار")}
+              placeholder={t("مثلاً کافه مشترک")}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
             <FormTextArea
-              label="توضیحات — اختیاری"
+              label={t("توضیحات — اختیاری")}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />

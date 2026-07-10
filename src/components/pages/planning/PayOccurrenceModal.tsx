@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useState } from "react";
 import { Button, Modal } from "@heroui/react";
 
@@ -28,6 +30,7 @@ export function PayOccurrenceModal({
   onOpenChange,
   onPaid,
 }: PayOccurrenceModalProps) {
+  const { t } = useTranslation();
   const user = useAppSelector(userSelector);
   const preferredCurrency = user?.preferences?.currency ?? "toman";
   const categories = useAppSelector(categoriesSelector);
@@ -48,7 +51,7 @@ export function PayOccurrenceModal({
 
   async function handleSubmit() {
     if (!occurrence || !category) {
-      showToast("دسته‌بندی الزامی است");
+      showToast(t("دسته‌بندی الزامی است"));
       return;
     }
 
@@ -62,7 +65,7 @@ export function PayOccurrenceModal({
         day: String(now.jDate()),
         note,
       });
-      showToast("پرداخت ثبت و تراکنش ساخته شد", "success");
+      showToast(t("پرداخت ثبت و تراکنش ساخته شد"), "success");
       onPaid();
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
@@ -88,8 +91,8 @@ export function PayOccurrenceModal({
           <FormPriceInput label={`مبلغ (${currencyLabel(preferredCurrency)})`} value={amount} onChange={setAmount} />
 
           <FormCategoryComboBox
-            label="دسته‌بندی"
-            placeholder="جستجو یا انتخاب دسته‌بندی"
+            label={t("دسته‌بندی")}
+            placeholder={t("جستجو یا انتخاب دسته‌بندی")}
             selectedKey={category || undefined}
             onSelectionChange={(key) => setCategory(key)}
             options={categoryOptions}
@@ -97,8 +100,8 @@ export function PayOccurrenceModal({
           />
 
           <FormTextArea
-            label="یادداشت این پرداخت"
-            placeholder="مثلاً از کارت بانک X پرداخت شد"
+            label={t("یادداشت این پرداخت")}
+            placeholder={t("مثلاً از کارت بانک X پرداخت شد")}
             value={note}
             onChange={(e) => setNote(e.target.value)}
           />

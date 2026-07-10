@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useState } from "react";
 import { Button, Checkbox, TextArea } from "@heroui/react";
 import { Add, Alarm, Trash } from "iconsax-reactjs";
@@ -59,6 +61,7 @@ export function linesFromNote(
 }
 
 export function hasEditorContent(lines: EditorLine[]) {
+  const { t } = useTranslation();
   return lines.some((line) => line.text.trim().length > 0);
 }
 
@@ -76,6 +79,7 @@ function ReminderPanel({
   onChange: (r: INoteLineReminder) => void;
   onRemove: () => void;
 }) {
+  const { t } = useTranslation();
   const [draft, setDraft] = useState(reminder);
 
   useEffect(() => {
@@ -91,7 +95,7 @@ function ReminderPanel({
   return (
     <div className="mt-2 rounded-xl border border-default-200 bg-default-50 p-3 space-y-3">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-xs font-medium text-default-600">یادآوری تلگرام</span>
+        <span className="text-xs font-medium text-default-600">{t("یادآوری تلگرام")}</span>
         <Button size="sm" variant="ghost" onPress={onRemove}>
           حذف یادآوری
         </Button>
@@ -130,7 +134,8 @@ function ReminderPanel({
   );
 }
 
-export function AppleNoteEditor({ items, onChange }: AppleNoteEditorProps) {
+export function AppleNoteEditor({ items, onChange }: AppleNoteEditorProps) {  const { t } = useTranslation();
+
   const [expandedReminderId, setExpandedReminderId] = useState<string | null>(null);
   const lineIdsKey = items.map((line) => line.id).join("|");
 
@@ -182,7 +187,7 @@ export function AppleNoteEditor({ items, onChange }: AppleNoteEditorProps) {
                 isSelected={line.done}
                 onChange={(checked) => updateLine(line.id, { done: checked })}
                 className="mt-2 shrink-0"
-                aria-label="انجام شد"
+                aria-label={t("انجام شد")}
               >
                 <Checkbox.Control>
                   <Checkbox.Indicator />
@@ -211,7 +216,7 @@ export function AppleNoteEditor({ items, onChange }: AppleNoteEditorProps) {
                   toggleReminder(line);
                 }
               }}
-              aria-label="یادآوری"
+              aria-label={t("یادآوری")}
             >
               <Alarm size={16} />
             </Button>
@@ -221,7 +226,7 @@ export function AppleNoteEditor({ items, onChange }: AppleNoteEditorProps) {
               isIconOnly
               className="mt-1 shrink-0 opacity-0 group-hover:opacity-100"
               onPress={() => removeLine(line.id)}
-              aria-label="حذف خط"
+              aria-label={t("حذف خط")}
             >
               <Trash size={16} />
             </Button>

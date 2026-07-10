@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { Modal } from "@heroui/react";
 
 import {
@@ -14,6 +16,7 @@ type AppDrawerProps = {
 };
 
 export function AppDrawer({ open, onOpenChange }: AppDrawerProps) {
+  const { t } = useTranslation();
   return (
     <AppModal
       open={open}
@@ -24,7 +27,7 @@ export function AppDrawer({ open, onOpenChange }: AppDrawerProps) {
     >
       <AppModalDialog className="flex max-h-[100dvh] w-full min-h-0 flex-col rounded-none border-0 bg-surface p-0">
         <AppModalHeader onClose={() => onOpenChange(false)}>
-          <Modal.Heading className="text-base font-bold">منو و حساب</Modal.Heading>
+          <Modal.Heading className="text-base font-bold">{t("منو و حساب")}</Modal.Heading>
         </AppModalHeader>
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-3">
           <ShellAccountMenu

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@heroui/react";
 import { Add, CloseCircle, Maximize, Trash } from "iconsax-reactjs";
@@ -66,6 +68,7 @@ export function ContextPlanningBoard({
   contextId,
   readOnly = false,
 }: ContextPlanningBoardProps) {
+  const { t } = useTranslation();
   const [columns, setColumns] = useState<IContextBoardColumn[]>([]);
   const [loading, setLoading] = useState(true);
   const [fullscreen, setFullscreen] = useState(false);
@@ -96,7 +99,7 @@ export function ContextPlanningBoard({
 
   async function addColumn() {
     if (!newColumnTitle.trim()) {
-      showToast("نام ستون را وارد کنید");
+      showToast(t("نام ستون را وارد کنید"));
       return;
     }
 
@@ -109,7 +112,7 @@ export function ContextPlanningBoard({
       );
       setColumns((prev) => [...prev, { ...column, cards: column.cards ?? [] }]);
       setNewColumnTitle("");
-      showToast("ستون اضافه شد", "success");
+      showToast(t("ستون اضافه شد"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا در افزودن ستون");
     } finally {
@@ -136,7 +139,7 @@ export function ContextPlanningBoard({
 
   async function addCard(columnId: string) {
     if (!newCardTitle.trim()) {
-      showToast("عنوان کارت را وارد کنید");
+      showToast(t("عنوان کارت را وارد کنید"));
       return;
     }
 
@@ -153,7 +156,7 @@ export function ContextPlanningBoard({
       );
       setNewCardTitle("");
       setAddingCardColumnId(null);
-      showToast("کارت اضافه شد", "success");
+      showToast(t("کارت اضافه شد"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا در افزودن کارت");
     }
@@ -174,7 +177,7 @@ export function ContextPlanningBoard({
             : column,
         ),
       );
-      showToast("کارت حذف شد", "success");
+      showToast(t("کارت حذف شد"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا در حذف کارت");
     }
@@ -186,7 +189,7 @@ export function ContextPlanningBoard({
     try {
       await boardApi.deleteBoardColumn(columnId);
       setColumns((prev) => prev.filter((column) => column._id !== columnId));
-      showToast("ستون حذف شد", "success");
+      showToast(t("ستون حذف شد"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا در حذف ستون");
     }
@@ -328,7 +331,7 @@ export function ContextPlanningBoard({
             />
           ) : null}
           {updatingColorId === column._id ? (
-            <p className="text-[11px] text-muted">در حال ذخیره رنگ…</p>
+            <p className="text-[11px] text-muted">{t("در حال ذخیره رنگ…")}</p>
           ) : null}
         </div>
 
@@ -360,7 +363,7 @@ export function ContextPlanningBoard({
                     type="button"
                     className="shrink-0 text-muted hover:text-danger"
                     onClick={() => void removeCard(column._id, card._id)}
-                    aria-label="حذف کارت"
+                    aria-label={t("حذف کارت")}
                   >
                     <Trash size={14} />
                   </button>
@@ -392,7 +395,7 @@ export function ContextPlanningBoard({
             addingCardColumnId === column._id ? (
               <div className="space-y-2 rounded-xl border border-dashed border-border/60 bg-background/40 p-2">
                 <FormInput
-                  label="عنوان کارت"
+                  label={t("عنوان کارت")}
                   value={newCardTitle}
                   onChange={(event) => setNewCardTitle(event.target.value)}
                 />
@@ -448,8 +451,8 @@ export function ContextPlanningBoard({
           {!readOnly ? (
             <section className="flex h-full w-80 shrink-0 flex-col rounded-2xl border border-dashed border-border/70 bg-background/40 p-3">
               <FormInput
-                label="ستون جدید"
-                placeholder="مثلاً بررسی"
+                label={t("ستون جدید")}
+                placeholder={t("مثلاً بررسی")}
                 value={newColumnTitle}
                 onChange={(event) => setNewColumnTitle(event.target.value)}
               />
@@ -475,8 +478,8 @@ export function ContextPlanningBoard({
         {!readOnly ? (
           <section className="flex w-72 shrink-0 flex-col rounded-2xl border border-dashed border-border/70 bg-background/40 p-3">
             <FormInput
-              label="ستون جدید"
-              placeholder="مثلاً بررسی"
+              label={t("ستون جدید")}
+              placeholder={t("مثلاً بررسی")}
               value={newColumnTitle}
               onChange={(event) => setNewColumnTitle(event.target.value)}
             />
@@ -536,7 +539,7 @@ export function ContextPlanningBoard({
       <FullscreenOverlay
         open={fullscreen}
         onClose={() => setFullscreen(false)}
-        title="بورد برنامه‌ریزی"
+        title={t("بورد برنامه‌ریزی")}
       >
         <div className="flex h-dvh min-h-0 flex-col">
           {renderToolbar(true)}

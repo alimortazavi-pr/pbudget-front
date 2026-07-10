@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useState, type FormEvent } from "react";
 import { Button, Input, Modal } from "@heroui/react";
 import { Add, Box1, Edit2, Trash } from "iconsax-reactjs";
@@ -16,6 +18,7 @@ import { userSelector } from "@/stores/profile";
 import { currencyLabel } from "@/common/constants/user-preferences";
 
 export function BoxesPage() {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const boxes = useAppSelector(boxesSelector);
   const user = useAppSelector(userSelector);
@@ -44,11 +47,11 @@ export function BoxesPage() {
         dispatch(
           setBoxes((boxes ?? []).map((b) => (b._id === updated._id ? updated : b))),
         );
-        showToast("صندوق ویرایش شد", "success");
+        showToast(t("صندوق ویرایش شد"), "success");
       } else {
         const created = await boxesApi.createBox({ title });
         dispatch(setBoxes([...(boxes ?? []), created]));
-        showToast("صندوق ایجاد شد", "success");
+        showToast(t("صندوق ایجاد شد"), "success");
       }
       setCreateOpen(false);
       setEditBox(null);
@@ -73,7 +76,7 @@ export function BoxesPage() {
       const refreshed = await boxesApi.fetchBoxes();
       dispatch(setBoxes(refreshed));
       setBudgetAmount("");
-      showToast("موجودی صندوق به‌روز شد", "success");
+      showToast(t("موجودی صندوق به‌روز شد"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     }
@@ -88,7 +91,7 @@ export function BoxesPage() {
         day: String(now.jDate()),
       });
       dispatch(setBoxes((boxes ?? []).filter((b) => b._id !== box._id)));
-      showToast("صندوق حذف شد", "success");
+      showToast(t("صندوق حذف شد"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     }
@@ -98,8 +101,8 @@ export function BoxesPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold">صندوق‌ها</h2>
-          <p className="text-sm text-muted">مدیریت پس‌انداز و بودجه‌های جدا</p>
+          <h2 className="text-lg font-bold">{t("صندوق‌ها")}</h2>
+          <p className="text-sm text-muted">{t("مدیریت پس‌انداز و بودجه‌های جدا")}</p>
         </div>
         <Button
           isIconOnly
@@ -123,7 +126,7 @@ export function BoxesPage() {
       ) : !boxes?.length ? (
         <div className="rounded-2xl border border-dashed border-border p-10 text-center">
           <Box1 size={36} className="mx-auto mb-3 text-muted" />
-          <p>هنوز صندوقی نساخته‌اید</p>
+          <p>{t("هنوز صندوقی نساخته‌اید")}</p>
         </div>
       ) : (
         <div className="pb-card-grid">
@@ -162,7 +165,7 @@ export function BoxesPage() {
               </div>
               <div className="mt-4 flex gap-2">
                 <Input
-                  placeholder="مبلغ افزایش/کاهش"
+                  placeholder={t("مبلغ افزایش/کاهش")}
                   value={formatPriceInput(budgetAmount, true)}
                   onChange={(e) =>
                     setBudgetAmount(parsePriceInput(e.target.value, true))
@@ -188,7 +191,7 @@ export function BoxesPage() {
               <Modal.Heading>{editBox ? "ویرایش صندوق" : "صندوق جدید"}</Modal.Heading>
             </AppModalHeader>
             <Modal.Body>
-              <FormInput label="نام صندوق" value={title} onChange={(e) => setTitle(e.target.value)} />
+              <FormInput label={t("نام صندوق")} value={title} onChange={(e) => setTitle(e.target.value)} />
             </Modal.Body>
             <Modal.Footer>
               <Button type="button" variant="ghost" onPress={() => setCreateOpen(false)}>

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -41,6 +43,7 @@ function itemTypeLabel(type: IProjectItem["type"]) {
 }
 
 export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const categories = useAppSelector(categoriesSelector);
@@ -110,7 +113,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
   async function saveOverview() {
     if (!data) return;
     if (!title.trim()) {
-      showToast("نام پروژه الزامی است");
+      showToast(t("نام پروژه الزامی است"));
       return;
     }
 
@@ -141,7 +144,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
         );
       }
 
-      showToast("ذخیره شد", "success");
+      showToast(t("ذخیره شد"), "success");
     } catch (err) {
       showErrorToast(err);
     } finally {
@@ -151,7 +154,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
 
   async function addItem() {
     if (!itemContent.trim()) {
-      showToast("متن را وارد کنید");
+      showToast(t("متن را وارد کنید"));
       return;
     }
     setItemSaving(true);
@@ -164,7 +167,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
         current ? { ...current, items: [item, ...current.items] } : current,
       );
       setItemContent("");
-      showToast("اضافه شد", "success");
+      showToast(t("اضافه شد"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     } finally {
@@ -200,7 +203,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
           ? { ...current, items: current.items.filter((row) => row._id !== item._id) }
           : current,
       );
-      showToast("حذف شد", "success");
+      showToast(t("حذف شد"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     }
@@ -211,7 +214,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
     setDeleting(true);
     try {
       await projectsApi.deleteProject(projectId);
-      showToast("پروژه حذف شد", "success");
+      showToast(t("پروژه حذف شد"), "success");
       router.push(PATHS.PROJECTS);
     } catch (err) {
       showErrorToast(err);
@@ -233,7 +236,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
 
   if (loading || !data) {
     return (
-      <div className="glass rounded-2xl p-10 text-center text-muted">در حال بارگذاری…</div>
+      <div className="glass rounded-2xl p-10 text-center text-muted">{t("در حال بارگذاری…")}</div>
     );
   }
 
@@ -255,7 +258,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
       <section className="glass rounded-3xl p-5">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-sm text-muted">پروژه</p>
+            <p className="text-sm text-muted">{t("پروژه")}</p>
             <h1 className="mt-1 text-2xl font-bold">{title || project.category?.title}</h1>
             {isPartner ? (
               <p className="mt-2 rounded-lg bg-accent/10 px-2 py-1 text-xs text-accent">
@@ -302,7 +305,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
             <p className="mt-1 font-bold text-expense">{formatPrice(remaining)}</p>
           </div>
           <div className="rounded-xl bg-surface-secondary p-3">
-            <p className="text-xs text-muted">سود خالص</p>
+            <p className="text-xs text-muted">{t("سود خالص")}</p>
             <p className={`mt-1 font-bold ${profit >= 0 ? "text-income" : "text-expense"}`}>
               {formatPrice(profit)}
             </p>
@@ -354,8 +357,8 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
           ) : (
             <>
           <FormInput
-            label="نام پروژه"
-            placeholder="مثلاً طراحی سایت شرکت X"
+            label={t("نام پروژه")}
+            placeholder={t("مثلاً طراحی سایت شرکت X")}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
@@ -369,20 +372,20 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
             onChange={setTotalAmount}
           />
           <FormSelect
-            label="وضعیت"
+            label={t("وضعیت")}
             selectedKey={status}
             onSelectionChange={(key) => setStatus(key as ProjectStatusType)}
             options={STATUS_OPTIONS}
           />
           <FormTextArea
-            label="توضیحات پروژه"
+            label={t("توضیحات پروژه")}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
 
           <div className="flex items-center justify-between rounded-xl bg-surface-secondary p-3">
             <div>
-              <p className="text-sm font-medium">ثبت ساعت کاری (ورود و خروج)</p>
+              <p className="text-sm font-medium">{t("ثبت ساعت کاری (ورود و خروج)")}</p>
               <p className="mt-1 text-xs text-muted">
                 اگر این پروژه نیاز به حضور و غیاب ندارد، خاموش کنید.
               </p>
@@ -398,7 +401,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
             <>
               <div className="flex items-center justify-between rounded-xl bg-surface-secondary p-3">
                 <div>
-                  <p className="text-sm font-medium">نمایش در صفحه اصلی</p>
+                  <p className="text-sm font-medium">{t("نمایش در صفحه اصلی")}</p>
                   <p className="mt-1 text-xs text-muted">
                     میانبر حضور و غیاب در داشبورد خانه
                   </p>
@@ -416,7 +419,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
 
               <div className="flex items-center justify-between rounded-xl bg-surface-secondary p-3">
                 <div>
-                  <p className="text-sm font-medium">درآمد ثابت (حقوق ماهانه)</p>
+                  <p className="text-sm font-medium">{t("درآمد ثابت (حقوق ماهانه)")}</p>
                   <p className="mt-1 text-xs text-muted">
                     برای پروژه‌هایی با حقوق ثابت — ساعت موظف ماهانه معمولاً ثابت است.
                   </p>
@@ -455,7 +458,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
           </div>
 
           <section className="rounded-2xl border border-dashed border-danger/35 bg-danger/5 p-4">
-            <p className="text-sm font-medium text-danger">منطقه خطر</p>
+            <p className="text-sm font-medium text-danger">{t("منطقه خطر")}</p>
             <p className="mt-1 text-xs leading-6 text-muted">
               با حذف پروژه، تراکنش‌های مرتبط با دسته این پروژه باقی می‌مانند؛ فقط
               دفترچه و آمار پروژه حذف می‌شود.
@@ -485,8 +488,8 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
               {canEditContent ? (
               <>
               <AttachBudgetButton
-                title="افزودن از تراکنش‌ها"
-                description="یک یا چند تراکنش قبلی را به این پروژه وصل کنید."
+                title={t("افزودن از تراکنش‌ها")}
+                description={t("یک یا چند تراکنش قبلی را به این پروژه وصل کنید.")}
                 context={{ type: "project", contextId: projectId }}
                 selectionMode="multiple"
                 onAttach={async (budgetId) => {
@@ -642,7 +645,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
 
           {tasks.length > 0 && (
             <section className="space-y-2">
-              <h3 className="text-sm font-semibold text-muted">تسک‌ها</h3>
+              <h3 className="text-sm font-semibold text-muted">{t("تسک‌ها")}</h3>
               {tasks.map((item) => (
                 <article key={item._id} className="glass flex items-start gap-3 rounded-2xl p-4">
                   {canEditContent ? (
@@ -650,7 +653,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
                     isSelected={item.done}
                     onChange={() => void toggleTask(item)}
                     size="sm"
-                    aria-label="انجام شد"
+                    aria-label={t("انجام شد")}
                   >
                     <Switch.Control>
                       <Switch.Thumb />
@@ -685,7 +688,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
 
           {notes.length > 0 && (
             <section className="space-y-2">
-              <h3 className="text-sm font-semibold text-muted">یادداشت‌ها</h3>
+              <h3 className="text-sm font-semibold text-muted">{t("یادداشت‌ها")}</h3>
               {notes.map((item) => (
                 <article key={item._id} className="glass rounded-2xl p-4">
                   <div className="flex items-start justify-between gap-3">

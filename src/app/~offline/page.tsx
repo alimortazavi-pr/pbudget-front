@@ -1,13 +1,14 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
 import { WifiSquare } from "iconsax-reactjs";
 
-import { APP_NAME_FA } from "@/common/constants/brand";
-
 export default function OfflinePage() {
   const router = useRouter();
+  const { t } = useTranslation();
 
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center gap-6 px-6 text-center">
@@ -15,10 +16,9 @@ export default function OfflinePage() {
         <WifiSquare size={40} variant="Bold" />
       </div>
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold text-foreground">اتصال اینترنت نیست</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t("اتصال اینترنت نیست")}</h1>
         <p className="max-w-sm text-sm text-muted">
-          برای استفاده از {APP_NAME_FA} به اینترنت نیاز دارید. وقتی وصل شدید دوباره
-          تلاش کنید.
+          {t("برای استفاده از اپ به اینترنت نیاز دارید. وقتی وصل شدید دوباره تلاش کنید.")}
         </p>
       </div>
       <Button
@@ -26,7 +26,7 @@ export default function OfflinePage() {
         className="min-w-40"
         onPress={() => router.push("/")}
       >
-        تلاش مجدد
+        {t("تلاش مجدد")}
       </Button>
     </main>
   );

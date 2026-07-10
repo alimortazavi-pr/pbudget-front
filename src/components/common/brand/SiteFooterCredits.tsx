@@ -1,3 +1,4 @@
+import { useTranslation } from "@/components/providers/LanguageProvider";
 import Link from "next/link";
 
 import {
@@ -7,11 +8,12 @@ import {
 } from "@/common/constants/brand";
 
 export function SiteFooterCredits({ className = "" }: { className?: string }) {
+  const { t } = useTranslation();
   return (
     <div
       className={`flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs lp-muted ${className}`}
     >
-      <span>توسعه:</span>
+      <span>{t("توسعه:")}</span>
       <Link
         href={DEVELOPER_SITE_URL}
         target="_blank"

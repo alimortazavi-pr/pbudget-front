@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Wallet, ArrowDown, ArrowUp } from "iconsax-reactjs";
 
@@ -26,7 +28,8 @@ function balanceForPartner(
   return balances.find((row) => row.partnerId === partnerId);
 }
 
-function partnerInitials(name: string) {
+function partnerInitials(name: string) {  const { t } = useTranslation();
+
   const parts = name.trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return "؟";
   if (parts.length === 1) return parts[0].slice(0, 1);
@@ -39,6 +42,7 @@ export function PartnerDebtBalancePanel({
   partners,
   ownerName: ownerNameProp,
 }: PartnerDebtBalancePanelProps) {
+  const { t } = useTranslation();
   const [ownerName, setOwnerName] = useState(ownerNameProp ?? "مالک");
   const [balances, setBalances] = useState<IPartnerDebtBalance[]>([]);
   const [hasTransactions, setHasTransactions] = useState(false);
@@ -94,7 +98,7 @@ export function PartnerDebtBalancePanel({
               <Wallet size={20} />
             </div>
             <div>
-              <h3 className="text-base font-bold">حساب دفتری شرکا</h3>
+              <h3 className="text-base font-bold">{t("حساب دفتری شرکا")}</h3>
               <p className="mt-0.5 text-xs leading-5 text-muted">
                 بر اساس تراکنش‌های واقعی — چه کسی پرداخت کرده و سهم هر شریک چقدر است
               </p>
@@ -102,7 +106,7 @@ export function PartnerDebtBalancePanel({
           </div>
           {totalReceivable > 0 ? (
             <div className="rounded-xl bg-income-soft/70 px-3 py-2 text-left">
-              <p className="text-[11px] text-muted">مجموع طلب شما</p>
+              <p className="text-[11px] text-muted">{t("مجموع طلب شما")}</p>
               <p className="font-bold text-income">{formatPrice(totalReceivable)}</p>
             </div>
           ) : null}
@@ -111,7 +115,7 @@ export function PartnerDebtBalancePanel({
 
       <div className="space-y-3 p-4 sm:p-5">
         {loading ? (
-          <p className="text-sm text-muted">در حال محاسبه حساب‌ها…</p>
+          <p className="text-sm text-muted">{t("در حال محاسبه حساب‌ها…")}</p>
         ) : !hasTransactions ? (
           <p className="rounded-xl border border-dashed border-border px-4 py-6 text-center text-sm text-muted">
             هنوز تراکنشی به این {contextType === "project" ? "پروژه" : "کسب‌وکار"} وصل نشده.

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useMemo } from "react";
 import {
   Area,
@@ -74,6 +76,7 @@ function CustomTooltip({
 }
 
 export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
+  const { t } = useTranslation();
   const expensePieData = useMemo(
     () =>
       report.topExpenses.slice(0, 8).map((item, index) => ({
@@ -178,7 +181,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-bold lg:text-xl">نمودارها</h2>
+          <h2 className="text-lg font-bold lg:text-xl">{t("نمودارها")}</h2>
           <p className="text-sm text-muted">
             نمای تصویری درآمد، هزینه و توزیع دسته‌بندی‌ها
           </p>
@@ -186,7 +189,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
-        <ChartCard title="ترکیب دوره" subtitle="سهم درآمد و هزینه">
+        <ChartCard title={t("ترکیب دوره")} subtitle="سهم درآمد و هزینه">
           {overviewData.length > 0 ? (
             <div className="pb-chart-canvas h-64 w-full min-h-[16rem]" dir="ltr">
               <ResponsiveContainer width="100%" height="100%" minHeight={256}>
@@ -225,7 +228,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
           )}
         </ChartCard>
 
-        <ChartCard title="درآمد در برابر هزینه" subtitle="خلاصه همین بازه">
+        <ChartCard title={t("درآمد در برابر هزینه")} subtitle="خلاصه همین بازه">
           <div className="pb-chart-canvas h-64 w-full min-h-[16rem]" dir="ltr">
             <ResponsiveContainer width="100%" height="100%" minHeight={256}>
               <BarChart data={overviewBarData}>
@@ -244,7 +247,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
 
       <div className="grid gap-4 xl:grid-cols-2">
         <ChartCard
-          title="روند درآمد و هزینه"
+          title={t("روند درآمد و هزینه")}
           subtitle={
             duration === "monthly"
               ? "نمودار روزانه ماه جاری"
@@ -290,7 +293,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
           </div>
         </ChartCard>
 
-        <ChartCard title="خالص دوره" subtitle="درآمد منهای هزینه">
+        <ChartCard title={t("خالص دوره")} subtitle="درآمد منهای هزینه">
           <div className="pb-chart-canvas h-72 w-full min-h-[18rem]" dir="ltr">
             <ResponsiveContainer width="100%" height="100%" minHeight={288}>
               <BarChart data={cashFlowData}>
@@ -313,7 +316,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
-        <ChartCard title="توزیع هزینه‌ها" subtitle="بر اساس دسته‌بندی">
+        <ChartCard title={t("توزیع هزینه‌ها")} subtitle="بر اساس دسته‌بندی">
           {expensePieData.length > 0 ? (
             <div className="pb-chart-canvas h-72 w-full min-h-[18rem]" dir="ltr">
               <ResponsiveContainer width="100%" height="100%" minHeight={288}>
@@ -343,11 +346,11 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
               </ResponsiveContainer>
             </div>
           ) : (
-            <p className="py-12 text-center text-sm text-muted">هزینه‌ای ثبت نشده</p>
+            <p className="py-12 text-center text-sm text-muted">{t("هزینه‌ای ثبت نشده")}</p>
           )}
         </ChartCard>
 
-        <ChartCard title="توزیع درآمدها" subtitle="بر اساس دسته‌بندی">
+        <ChartCard title={t("توزیع درآمدها")} subtitle="بر اساس دسته‌بندی">
           {incomePieData.length > 0 ? (
             <div className="pb-chart-canvas h-72 w-full min-h-[18rem]" dir="ltr">
               <ResponsiveContainer width="100%" height="100%" minHeight={288}>
@@ -377,12 +380,12 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
               </ResponsiveContainer>
             </div>
           ) : (
-            <p className="py-12 text-center text-sm text-muted">درآمدی ثبت نشده</p>
+            <p className="py-12 text-center text-sm text-muted">{t("درآمدی ثبت نشده")}</p>
           )}
         </ChartCard>
       </div>
 
-      <ChartCard title="مقایسه دسته‌ها" subtitle="درآمد و هزینه هر دسته">
+      <ChartCard title={t("مقایسه دسته‌ها")} subtitle="درآمد و هزینه هر دسته">
         {categoryBarData.length > 0 ? (
           <div className="pb-chart-canvas h-80 w-full min-h-[20rem]" dir="ltr">
             <ResponsiveContainer width="100%" height="100%" minHeight={320}>
@@ -398,12 +401,12 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
             </ResponsiveContainer>
           </div>
         ) : (
-          <p className="py-12 text-center text-sm text-muted">داده‌ای موجود نیست</p>
+          <p className="py-12 text-center text-sm text-muted">{t("داده‌ای موجود نیست")}</p>
         )}
       </ChartCard>
 
       {paymentCardBarData.length > 0 && (
-        <ChartCard title="تراکنش‌ها بر اساس کارت" subtitle="پرداخت و دریافت در این بازه">
+        <ChartCard title={t("تراکنش‌ها بر اساس کارت")} subtitle="پرداخت و دریافت در این بازه">
           <div className="pb-chart-canvas h-72 w-full min-h-[18rem]" dir="ltr">
             <ResponsiveContainer width="100%" height="100%" minHeight={288}>
               <BarChart data={paymentCardBarData}>
@@ -422,7 +425,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
 
       <div className="grid gap-4 xl:grid-cols-2">
         {boxData.length > 0 && (
-          <ChartCard title="تخصیص صندوق‌ها" subtitle="سهم از کل دارایی نقدی">
+          <ChartCard title={t("تخصیص صندوق‌ها")} subtitle="سهم از کل دارایی نقدی">
             <div className="pb-chart-canvas h-64 w-full min-h-[16rem]" dir="ltr">
               <ResponsiveContainer width="100%" height="100%" minHeight={256}>
                 <PieChart>
@@ -467,7 +470,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
 
       <div className="grid gap-4 xl:grid-cols-2">
         <CategoryTable
-          title="پرتکرارترین هزینه‌ها"
+          title={t("پرتکرارترین هزینه‌ها")}
           rows={report.topExpenses.map((item, index) => ({
             title: item.title,
             amount: item.amount,
@@ -478,7 +481,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
           amountLabel="هزینه"
         />
         <CategoryTable
-          title="بیشترین درآمدها"
+          title={t("بیشترین درآمدها")}
           rows={report.topIncomes.map((item, index) => ({
             title: item.title,
             amount: item.amount,
@@ -507,21 +510,22 @@ function CategoryTable({
     color?: string;
   }>;
   amountLabel: string;
-}) {
+}) {  const { t } = useTranslation();
+
   return (
     <section className="glass rounded-2xl p-4 lg:p-5">
       <h3 className="mb-4 font-bold">{title}</h3>
       {rows.length === 0 ? (
-        <p className="text-sm text-muted">داده‌ای موجود نیست</p>
+        <p className="text-sm text-muted">{t("داده‌ای موجود نیست")}</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border/60 text-muted">
-                <th className="pb-2 text-start font-medium">دسته</th>
+                <th className="pb-2 text-start font-medium">{t("دسته")}</th>
                 <th className="pb-2 text-start font-medium">{amountLabel}</th>
-                <th className="pb-2 text-start font-medium">سهم</th>
-                <th className="pb-2 text-start font-medium">تعداد</th>
+                <th className="pb-2 text-start font-medium">{t("سهم")}</th>
+                <th className="pb-2 text-start font-medium">{t("تعداد")}</th>
               </tr>
             </thead>
             <tbody>

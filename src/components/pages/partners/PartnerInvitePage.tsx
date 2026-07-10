@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -19,6 +21,7 @@ type PartnerInvitePageProps = {
 };
 
 export function PartnerInvitePage({ token }: PartnerInvitePageProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const user = useAppSelector(userSelector);
   const [invite, setInvite] = useState<IPartnerInviteInfo | null>(null);
@@ -49,7 +52,7 @@ export function PartnerInvitePage({ token }: PartnerInvitePageProps) {
     setActing(true);
     try {
       await partnersApi.acceptPartnerInvite(token);
-      showToast("دعوت تأیید شد", "success");
+      showToast(t("دعوت تأیید شد"), "success");
       router.push(
         contextType === "project" ? PATHS.PROJECTS : PATHS.VENTURES,
       );
@@ -64,7 +67,7 @@ export function PartnerInvitePage({ token }: PartnerInvitePageProps) {
     setActing(true);
     try {
       await partnersApi.declinePartnerInvite(token);
-      showToast("دعوت رد شد");
+      showToast(t("دعوت رد شد"));
       router.push(PATHS.HOME);
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
@@ -86,7 +89,7 @@ export function PartnerInvitePage({ token }: PartnerInvitePageProps) {
       <div className="mx-auto max-w-md space-y-4 py-16 text-center">
         <p className="text-danger">{error ?? "دعوت یافت نشد"}</p>
         <Link href={PATHS.HOME}>
-          <Button variant="secondary">بازگشت به خانه</Button>
+          <Button variant="secondary">{t("بازگشت به خانه")}</Button>
         </Link>
       </div>
     );
@@ -107,7 +110,7 @@ export function PartnerInvitePage({ token }: PartnerInvitePageProps) {
   return (
     <div className="mx-auto max-w-md space-y-5 py-8">
       <section className="glass rounded-3xl p-6 text-center">
-        <p className="text-sm text-muted">دعوت همکاری</p>
+        <p className="text-sm text-muted">{t("دعوت همکاری")}</p>
         <h1 className="mt-2 text-2xl font-bold">{invite.contextTitle}</h1>
         <p className="mt-3 text-sm leading-7 text-muted">
           <span className="font-medium text-foreground">{invite.ownerName}</span>{" "}

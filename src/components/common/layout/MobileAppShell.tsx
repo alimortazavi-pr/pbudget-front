@@ -67,7 +67,7 @@ export function MobileAppShell({
                   isIconOnly
                   variant="ghost"
                   size="sm"
-                  aria-label="بازگشت"
+                  aria-label={t("بازگشت")}
                   onPress={() => router.back()}
                 >
                   <ArrowRight2 size={20} />
@@ -80,7 +80,7 @@ export function MobileAppShell({
                   {displayTitle}
                 </h1>
                 <span className="hidden shrink-0 rounded-full bg-rose-500/12 px-2 py-0.5 text-[10px] font-medium text-rose-600 dark:text-rose-400 sm:inline">
-                  {t("personalDesk")}
+                  {t("میز شخصی")}
                 </span>
               </div>
             </div>
@@ -89,7 +89,7 @@ export function MobileAppShell({
                 isIconOnly
                 variant="ghost"
                 size="sm"
-                aria-label="راهنما"
+                aria-label={t("راهنما")}
                 data-tour="tour-button"
                 onPress={() => {
                   if (pathname === PATHS.HOME) {
@@ -124,7 +124,7 @@ export function MobileAppShell({
         {!hideTabBar && (
           <nav
             className="pb-tab-bar lg:hidden"
-            aria-label="ناوبری اصلی"
+            aria-label={t("ناوبری اصلی")}
             data-tour="nav-tab-bar"
           >
             <div className="pb-tab-bar-inner">
@@ -135,7 +135,7 @@ export function MobileAppShell({
                       key={item.href}
                       href={item.href}
                       className="relative -top-4 flex flex-col items-center"
-                      aria-label={item.label}
+                      aria-label={t(item.label)}
                       data-tour="nav-create"
                     >
                       <span className="pb-fab">
@@ -156,7 +156,7 @@ export function MobileAppShell({
                       onClick={() => setDrawerOpen(true)}
                     >
                       <item.icon size={22} variant="Bold" />
-                      <span>{item.label}</span>
+                      <span>{t(item.label)}</span>
                     </button>
                   );
                 }

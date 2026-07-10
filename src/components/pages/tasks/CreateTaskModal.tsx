@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Button, Modal } from "@heroui/react";
 
@@ -44,6 +46,7 @@ export function CreateTaskModal({
   task,
   onSaved,
 }: CreateTaskModalProps) {
+  const { t } = useTranslation();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState<TaskPriority>("medium");
@@ -84,7 +87,7 @@ export function CreateTaskModal({
   async function save(e?: FormEvent) {
     e?.preventDefault();
     if (!title.trim()) {
-      showToast("عنوان تسک الزامی است");
+      showToast(t("عنوان تسک الزامی است"));
       return;
     }
 
@@ -123,24 +126,24 @@ export function CreateTaskModal({
           </AppModalHeader>
           <Modal.Body className="space-y-4">
             <FormInput
-              label="عنوان"
+              label={t("عنوان")}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               autoFocus
             />
             <FormTextArea
-              label="توضیحات"
+              label={t("توضیحات")}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
             <FormSelect
-              label="اولویت"
+              label={t("اولویت")}
               selectedKey={priority}
               onSelectionChange={(key) => setPriority(key as TaskPriority)}
               options={PRIORITY_OPTIONS}
             />
             <div>
-              <p className="mb-2 text-sm text-muted">تاریخ سررسید (شمسی)</p>
+              <p className="mb-2 text-sm text-muted">{t("تاریخ سررسید (شمسی)")}</p>
               <FilterDatePicker
                 year={year}
                 month={month}
@@ -154,8 +157,8 @@ export function CreateTaskModal({
               />
             </div>
             <FormSelect
-              label="پروژه مرتبط"
-              placeholder="بدون پروژه"
+              label={t("پروژه مرتبط")}
+              placeholder={t("بدون پروژه")}
               selectedKey={projectId || "none"}
               onSelectionChange={(key) => setProjectId(key === "none" ? "" : key)}
               options={projectOptions}

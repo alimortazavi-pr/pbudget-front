@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useState, type FormEvent } from "react";
 import { Button, Modal } from "@heroui/react";
 
@@ -24,6 +26,7 @@ export function SignUpModal({
   needsPasswordSetup = false,
   onSuccess,
 }: SignUpModalProps) {
+  const { t } = useTranslation();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
@@ -40,7 +43,7 @@ export function SignUpModal({
   async function submit(e?: FormEvent) {
     e?.preventDefault();
     if (!password.trim() || password.trim().length < 6) {
-      showToast("رمز عبور باید حداقل ۶ کاراکتر باشد");
+      showToast(t("رمز عبور باید حداقل ۶ کاراکتر باشد"));
       return;
     }
 
@@ -71,15 +74,15 @@ export function SignUpModal({
             </Modal.Heading>
           </AppModalHeader>
           <Modal.Body className={`${modalSheetBodyClass} space-y-4`}>
-            <FormInput label="نام" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-            <FormInput label="نام خانوادگی" value={lastName} onChange={(e) => setLastName(e.target.value)} />
-            <FormInput label="موبایل" value={mobile} readOnly />
+            <FormInput label={t("نام")} value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+            <FormInput label={t("نام خانوادگی")} value={lastName} onChange={(e) => setLastName(e.target.value)} />
+            <FormInput label={t("موبایل")} value={mobile} readOnly />
             <FormInput
-              label="رمز عبور"
+              label={t("رمز عبور")}
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="حداقل ۶ کاراکتر"
+              placeholder={t("حداقل ۶ کاراکتر")}
             />
             <p className="text-xs leading-6 text-muted">
               با تعیین رمز عبور حساب شما ساخته می‌شود. اتصال تلگرام اختیاری است

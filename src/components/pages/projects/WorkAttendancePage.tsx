@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Button } from "@heroui/react";
@@ -42,6 +44,7 @@ import { moment } from "@/common/utils/jalali-date";
 type TabId = "today" | "all";
 
 export function WorkAttendancePage() {
+  const { t } = useTranslation();
   const now = getJalaliNow();
   const [year, setYear] = useState(now.jYear());
   const [month, setMonth] = useState(now.jMonth() + 1);
@@ -126,7 +129,7 @@ export function WorkAttendancePage() {
     try {
       const blob = await workTimeApi.exportWorkTimeExcel(year, month);
       workTimeApi.downloadWorkTimeExport(blob, year, month);
-      showToast("فایل اکسل دانلود شد", "success");
+      showToast(t("فایل اکسل دانلود شد"), "success");
     } catch (err) {
       showErrorToast(err);
     } finally {
@@ -152,7 +155,7 @@ export function WorkAttendancePage() {
     setActionProjectId(projectId);
     try {
       await workTimeApi.clockOut(projectId);
-      showToast("خروج ثبت شد", "success");
+      showToast(t("خروج ثبت شد"), "success");
       await load();
     } catch (err) {
       showErrorToast(err);
@@ -182,8 +185,8 @@ export function WorkAttendancePage() {
   return (
     <div className="space-y-5 pb-6">
       <section className="rounded-3xl bg-gradient-to-br from-emerald-600 to-teal-700 p-5 text-white shadow-lg">
-        <p className="text-sm font-medium text-white/80">پروژه‌ها</p>
-        <h1 className="mt-1 text-2xl font-bold">حضور و غیاب</h1>
+        <p className="text-sm font-medium text-white/80">{t("پروژه‌ها")}</p>
+        <h1 className="mt-1 text-2xl font-bold">{t("حضور و غیاب")}</h1>
         <p className="mt-2 text-sm leading-7 text-white/80">
           ساعت روزانه را برای هر پروژه تعریف کنید — هدف ماه با احتساب جمعه و تعطیلات
           رسمی محاسبه می‌شود.
@@ -223,7 +226,7 @@ export function WorkAttendancePage() {
             variant="ghost"
             onPress={() => void handleExport()}
             isPending={exporting}
-            aria-label="خروجی اکسل"
+            aria-label={t("خروجی اکسل")}
           >
             <DocumentDownload size={18} />
           </Button>
@@ -234,7 +237,7 @@ export function WorkAttendancePage() {
       </div>
 
       {loading || !data ? (
-        <div className="glass rounded-2xl p-10 text-center text-muted">در حال بارگذاری…</div>
+        <div className="glass rounded-2xl p-10 text-center text-muted">{t("در حال بارگذاری…")}</div>
       ) : (
         <>
           {alerts.length > 0 ? (
@@ -247,7 +250,7 @@ export function WorkAttendancePage() {
 
           {activeProjectId && activeProjectTitle ? (
             <section className="rounded-2xl border-2 border-accent/50 bg-accent/10 p-4">
-              <p className="text-sm font-medium text-accent">در حال کار</p>
+              <p className="text-sm font-medium text-accent">{t("در حال کار")}</p>
               <p className="mt-1 font-bold">{activeProjectTitle}</p>
               {data.activeSessionDailyStatus ? (
                 <p className="mt-1 text-xs text-muted">
@@ -422,7 +425,7 @@ export function WorkAttendancePage() {
                       </p>
                     ) : null}
                     {row.dailyStatus?.isWorkingDay === false ? (
-                      <p className="mt-2 text-xs text-muted">امروز روز کاری نیست.</p>
+                      <p className="mt-2 text-xs text-muted">{t("امروز روز کاری نیست.")}</p>
                     ) : null}
                   </article>
                 );
@@ -439,8 +442,8 @@ export function WorkAttendancePage() {
               <div className="flex items-center gap-2">
                 <Chart size={18} className="text-accent" />
                 <div>
-                  <p className="font-semibold">تحلیل و تقویم ماه</p>
-                  <p className="text-xs text-muted">نمودارها، تقویم و جزئیات کارکرد</p>
+                  <p className="font-semibold">{t("تحلیل و تقویم ماه")}</p>
+                  <p className="text-xs text-muted">{t("نمودارها، تقویم و جزئیات کارکرد")}</p>
                 </div>
               </div>
               {showAnalysis ? <ArrowUp2 size={18} /> : <ArrowDown2 size={18} />}

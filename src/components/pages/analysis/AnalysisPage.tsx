@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
@@ -49,6 +51,7 @@ const AnalysisCharts = dynamic(
 );
 
 export function AnalysisPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { hydrated, get } = useHydratedSearchParams();
   const categories = useAppSelector(categoriesSelector);
@@ -188,7 +191,7 @@ export function AnalysisPage() {
           if (!cancelled) {
             setReport(fallback);
             setUsedFallback(true);
-            showToast("نمودارها از داده محلی ساخته شدند", "success");
+            showToast(t("نمودارها از داده محلی ساخته شدند"), "success");
           }
         } catch (err) {
           if (!cancelled) {
@@ -227,7 +230,7 @@ export function AnalysisPage() {
   return (
     <div className="space-y-4 pb-6 lg:space-y-6">
       <section className="pb-analysis-hero rounded-2xl p-5 lg:p-8">
-        <p className="text-sm font-medium text-white/80">مرکز تحلیل مالی</p>
+        <p className="text-sm font-medium text-white/80">{t("مرکز تحلیل مالی")}</p>
         <h1 className="mt-1 text-2xl font-bold text-white lg:text-3xl">
           تحلیل جامع وضعیت مالی
         </h1>
@@ -288,7 +291,7 @@ export function AnalysisPage() {
 
           {report.comparison && (
             <section className="glass rounded-2xl border border-border/50 p-4 text-sm lg:p-5">
-              <p className="font-semibold">مقایسه دوره‌ای</p>
+              <p className="font-semibold">{t("مقایسه دوره‌ای")}</p>
               <p className="mt-1 text-muted">
                 {report.comparison.currentPeriodLabel} در برابر{" "}
                 {report.comparison.previousPeriodLabel}

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Button, Modal, Switch } from "@heroui/react";
 import { Add, Category, Edit2, Trash } from "iconsax-reactjs";
@@ -24,6 +26,7 @@ import { categoriesSelector, setCategories } from "@/stores/category";
 import { CategoryKind } from "@/types/enums";
 
 export function CategoriesPage() {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const categories = useAppSelector(categoriesSelector);
   const [open, setOpen] = useState(false);
@@ -106,7 +109,7 @@ export function CategoriesPage() {
         dispatch(setCategories([...(categories ?? []), created]));
       }
 
-      showToast("ذخیره شد", "success");
+      showToast(t("ذخیره شد"), "success");
       setOpen(false);
       setTitle("");
       setParentId("");
@@ -126,7 +129,7 @@ export function CategoriesPage() {
       dispatch(
         setCategories((categories ?? []).filter((category) => !removeIds.has(category._id))),
       );
-      showToast("حذف شد", "success");
+      showToast(t("حذف شد"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     }
@@ -136,8 +139,8 @@ export function CategoriesPage() {
     <div className="space-y-4 pt-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold">دسته‌بندی‌ها</h2>
-          <p className="text-sm text-muted">دسته‌های اصلی و زیردسته‌ها</p>
+          <h2 className="text-lg font-bold">{t("دسته‌بندی‌ها")}</h2>
+          <p className="text-sm text-muted">{t("دسته‌های اصلی و زیردسته‌ها")}</p>
         </div>
         <Button
           isIconOnly
@@ -149,10 +152,10 @@ export function CategoriesPage() {
       </div>
 
       <FormInput
-        label="جستجو"
+        label={t("جستجو")}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder="نام دسته‌بندی…"
+        placeholder={t("نام دسته‌بندی…")}
       />
 
       {!filteredCategoryRows.length ? (
@@ -190,7 +193,7 @@ export function CategoriesPage() {
                   ) : null}
                 </div>
                 {depth > 0 ? (
-                  <p className="text-xs text-muted">زیردسته</p>
+                  <p className="text-xs text-muted">{t("زیردسته")}</p>
                 ) : null}
                 </div>
               </div>
@@ -227,20 +230,20 @@ export function CategoriesPage() {
             </AppModalHeader>
             <Modal.Body className="space-y-4">
               <FormInput
-                label="عنوان"
+                label={t("عنوان")}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />
               <FormSelect
-                label="دسته والد"
-                placeholder="بدون والد"
+                label={t("دسته والد")}
+                placeholder={t("بدون والد")}
                 selectedKey={parentId || "none"}
                 onSelectionChange={(key) => setParentId(key === "none" ? "" : key)}
                 options={parentOptions}
               />
               <CategoryColorPicker value={color} onChange={setColor} />
               <FormPriceInput
-                label="سقف خرج ماهانه (اختیاری)"
+                label={t("سقف خرج ماهانه (اختیاری)")}
                 value={monthlyLimit}
                 onChange={setMonthlyLimit}
               />
@@ -249,8 +252,8 @@ export function CategoriesPage() {
               </p>
               <div className="flex items-center justify-between rounded-xl border border-border/50 bg-surface-secondary px-3 py-3">
                 <div>
-                  <p className="text-sm font-medium">نوع پروژه</p>
-                  <p className="text-xs text-muted">برای مدیریت قرارداد و پرداخت‌های خرد</p>
+                  <p className="text-sm font-medium">{t("نوع پروژه")}</p>
+                  <p className="text-xs text-muted">{t("برای مدیریت قرارداد و پرداخت‌های خرد")}</p>
                 </div>
                 <Switch isSelected={isProjectKind} onChange={setIsProjectKind} size="sm">
                   <Switch.Control>

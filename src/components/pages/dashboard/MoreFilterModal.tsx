@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useMemo, useState } from "react";
 import { Button, Modal } from "@heroui/react";
 
@@ -35,6 +37,7 @@ export function MoreFilterModal({
   initialDay,
   onApply,
 }: MoreFilterModalProps) {
+  const { t } = useTranslation();
   const [category, setCategory] = useState(initialCategory);
   const [date, setDate] = useState({
     year: initialYear,
@@ -70,12 +73,12 @@ export function MoreFilterModal({
     <AppModal open={open} onOpenChange={onOpenChange}>
       <AppModalDialog className="overflow-visible">
         <AppModalHeader onClose={() => onOpenChange(false)}>
-          <Modal.Heading>فیلتر تراکنش‌ها</Modal.Heading>
+          <Modal.Heading>{t("فیلتر تراکنش‌ها")}</Modal.Heading>
         </AppModalHeader>
         <Modal.Body className="space-y-4 overflow-visible">
           <FormCategoryComboBox
-            label="دسته‌بندی"
-            placeholder="همه دسته‌بندی‌ها"
+            label={t("دسته‌بندی")}
+            placeholder={t("همه دسته‌بندی‌ها")}
             selectedKey={category || "all"}
             onSelectionChange={(key) => setCategory(key === "all" ? "" : key)}
             options={[

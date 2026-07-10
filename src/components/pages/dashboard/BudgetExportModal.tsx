@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useMemo, useState } from "react";
 import { Button, Modal } from "@heroui/react";
 import { DocumentDownload, DocumentText, Export } from "iconsax-reactjs";
@@ -75,6 +77,7 @@ export function BudgetExportModal({
   initialDay,
   initialDuration = "monthly",
 }: BudgetExportModalProps) {
+  const { t } = useTranslation();
   const [category, setCategory] = useState(initialCategory);
   const [date, setDate] = useState({
     year: initialYear,
@@ -120,15 +123,15 @@ export function BudgetExportModal({
   function validateFilters() {
     if (duration === "all") return true;
     if (!date.year) {
-      showToast("سال را انتخاب کنید");
+      showToast(t("سال را انتخاب کنید"));
       return false;
     }
     if ((duration === "monthly" || duration === "daily") && !date.month) {
-      showToast("ماه را انتخاب کنید");
+      showToast(t("ماه را انتخاب کنید"));
       return false;
     }
     if (duration === "daily" && !date.day) {
-      showToast("روز را انتخاب کنید");
+      showToast(t("روز را انتخاب کنید"));
       return false;
     }
     return true;
@@ -156,10 +159,10 @@ export function BudgetExportModal({
 
       if (mode === "preview" && exportType === "html") {
         openExportInBrowser(blob);
-        showToast("گزارش در تب جدید باز شد", "success");
+        showToast(t("گزارش در تب جدید باز شد"), "success");
       } else {
         downloadExportFile(blob, exportType, duration, date);
-        showToast("فایل خروجی دانلود شد", "success");
+        showToast(t("فایل خروجی دانلود شد"), "success");
         onOpenChange(false);
       }
     } catch (err) {
@@ -175,20 +178,20 @@ export function BudgetExportModal({
         <AppModalHeader onClose={() => onOpenChange(false)}>
           <div className="flex items-center gap-2">
             <Export size={22} className="text-accent" />
-            <Modal.Heading>خروجی گزارش مالی</Modal.Heading>
+            <Modal.Heading>{t("خروجی گزارش مالی")}</Modal.Heading>
           </div>
         </AppModalHeader>
         <Modal.Body className="space-y-5 overflow-visible">
           <div className="rounded-2xl border border-border/60 bg-surface-secondary/70 px-4 py-3 text-sm leading-7 text-muted">
-            گزارش شامل <strong className="text-foreground">خلاصه آماری</strong>،{" "}
-            <strong className="text-foreground">تفکیک دسته‌بندی</strong>،{" "}
-            <strong className="text-foreground">توضیحات هر تراکنش</strong> و اطلاعات
+            گزارش شامل <strong className="text-foreground">{t("خلاصه آماری")}</strong>،{" "}
+            <strong className="text-foreground">{t("تفکیک دسته‌بندی")}</strong>،{" "}
+            <strong className="text-foreground">{t("توضیحات هر تراکنش")}</strong> و اطلاعات
             کاربر است. بازه انتخابی: <strong className="text-foreground">{periodPreview}</strong>
           </div>
 
           <FormCategoryComboBox
-            label="دسته‌بندی"
-            placeholder="همه دسته‌بندی‌ها"
+            label={t("دسته‌بندی")}
+            placeholder={t("همه دسته‌بندی‌ها")}
             selectedKey={category || "all"}
             onSelectionChange={(key) => setCategory(key === "all" ? "" : key)}
             options={[
@@ -209,7 +212,7 @@ export function BudgetExportModal({
           ) : null}
 
           <div className="space-y-2">
-            <p className="text-sm font-medium">بازه زمانی</p>
+            <p className="text-sm font-medium">{t("بازه زمانی")}</p>
             <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
               {DURATION_OPTIONS.map((option) => (
                 <button
@@ -226,7 +229,7 @@ export function BudgetExportModal({
           </div>
 
           <div className="space-y-2">
-            <p className="text-sm font-medium">فرمت خروجی</p>
+            <p className="text-sm font-medium">{t("فرمت خروجی")}</p>
             <div className="grid gap-2 sm:grid-cols-2">
               {EXPORT_OPTIONS.map((option) => {
                 const Icon = option.icon;

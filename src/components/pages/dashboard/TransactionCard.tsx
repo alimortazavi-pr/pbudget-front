@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import Link from "next/link";
 import { useState } from "react";
 import { Button, Modal } from "@heroui/react";
@@ -39,6 +41,7 @@ function resolvePaymentCardLabel(
 }
 
 export function TransactionCard({ budget }: TransactionCardProps) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const user = useAppSelector(userSelector);
   const [expanded, setExpanded] = useState(false);
@@ -65,7 +68,7 @@ export function TransactionCard({ budget }: TransactionCardProps) {
         dispatch(setProfile(mergeProfileWallet(user, res)));
       }
       dispatch(bumpBudgetRevision());
-      showToast("تراکنش حذف شد", "success");
+      showToast(t("تراکنش حذف شد"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا در حذف");
     } finally {

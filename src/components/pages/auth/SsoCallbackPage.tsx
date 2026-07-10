@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { exchangeSsoCode } from "@/common/utils/sso";
@@ -12,6 +14,7 @@ import { normalizeProfile } from "@/common/utils/profile";
 import type { IProfile } from "@/common/interfaces/profile.interface";
 
 export function SsoCallbackPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const params = useSearchParams();
   const dispatch = useAppDispatch();
@@ -47,7 +50,7 @@ export function SsoCallbackPage() {
       {error ? (
         <p className="text-rose-600">{error}</p>
       ) : (
-        <p className="text-muted">در حال ورود خودکار…</p>
+        <p className="text-muted">{t("در حال ورود خودکار…")}</p>
       )}
     </div>
   );

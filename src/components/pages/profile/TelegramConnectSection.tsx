@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useState } from "react";
 import { Button } from "@heroui/react";
 
@@ -15,6 +17,7 @@ const FALLBACK_BOT_USERNAME =
   process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME?.replace(/^@/, "") ?? "";
 
 export function TelegramConnectSection() {
+  const { t } = useTranslation();
   const { linked, botUsername, loading, refresh } = useTelegramStatus();
   const [connecting, setConnecting] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
@@ -29,13 +32,13 @@ export function TelegramConnectSection() {
       const username = apiBotUsername || resolvedBotUsername;
 
       if (!username) {
-        showToast("نام کاربری بات تلگرام تنظیم نشده است");
+        showToast(t("نام کاربری بات تلگرام تنظیم نشده است"));
         return;
       }
 
       const url = `https://t.me/${username}?start=link_${token}`;
       window.open(url, "_blank", "noopener,noreferrer");
-      showToast("تلگرام باز شد — در بات «شروع» را بزنید", "success");
+      showToast(t("تلگرام باز شد — در بات «شروع» را بزنید"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا در اتصال تلگرام");
     } finally {
@@ -48,7 +51,7 @@ export function TelegramConnectSection() {
     try {
       await profileApi.unlinkTelegram();
       notifyTelegramStatusChanged();
-      showToast("اتصال تلگرام قطع شد", "success");
+      showToast(t("اتصال تلگرام قطع شد"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا در قطع اتصال");
     } finally {
@@ -59,14 +62,14 @@ export function TelegramConnectSection() {
   return (
     <div id="telegram" className="glass space-y-4 rounded-2xl p-5 scroll-mt-24">
       <div className="space-y-1">
-        <h2 className="text-lg font-bold">بات تلگرام</h2>
+        <h2 className="text-lg font-bold">{t("بات تلگرام")}</h2>
         <p className="text-sm text-muted">
           تراکنش‌ها، دسته‌بندی‌ها و گزارش‌ها را مستقیم از تلگرام مدیریت کنید.
         </p>
       </div>
 
       {loading ? (
-        <p className="text-sm text-muted">در حال بارگذاری…</p>
+        <p className="text-sm text-muted">{t("در حال بارگذاری…")}</p>
       ) : linked ? (
         <div className="space-y-3">
           <p className="rounded-xl bg-success/15 px-3 py-2 text-sm text-success-foreground">

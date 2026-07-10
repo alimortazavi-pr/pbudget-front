@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 
@@ -15,7 +17,8 @@ export function FullscreenOverlay({
   onClose,
   children,
   title,
-}: FullscreenOverlayProps) {
+}: FullscreenOverlayProps) {  const { t } = useTranslation();
+
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {

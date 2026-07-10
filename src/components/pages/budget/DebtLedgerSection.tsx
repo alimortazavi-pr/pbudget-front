@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useMemo, useState } from "react";
 import { Switch } from "@heroui/react";
 
@@ -39,6 +41,7 @@ type LinkedDebtSummaryProps = {
 };
 
 export function LinkedDebtSummary({ debt }: LinkedDebtSummaryProps) {
+  const { t } = useTranslation();
   const isReceivable = debt.type === DebtType.RECEIVABLE;
   const statusLabel =
     debt.status === "settled"
@@ -49,7 +52,7 @@ export function LinkedDebtSummary({ debt }: LinkedDebtSummaryProps) {
 
   return (
     <div className="space-y-2 rounded-2xl border border-border/60 bg-surface-secondary/60 p-4">
-      <p className="text-sm font-medium">مرتبط با طلب یا بدهی</p>
+      <p className="text-sm font-medium">{t("مرتبط با طلب یا بدهی")}</p>
       <div
         className={`rounded-xl px-3 py-3 text-sm ${
           isReceivable ? "bg-income-soft/50 text-income" : "bg-expense-soft/50 text-expense"
@@ -75,7 +78,8 @@ export function DebtLedgerSection({
   amount,
   value,
   onChange,
-}: DebtLedgerSectionProps) {
+}: DebtLedgerSectionProps) {  const { t } = useTranslation();
+
   const persons = useMergedPersons(value.enabled);
   const [openDebts, setOpenDebts] = useState<IDebt[]>([]);
 
@@ -111,7 +115,7 @@ export function DebtLedgerSection({
     <div className="space-y-3 rounded-2xl border border-border/60 bg-surface-secondary/60 p-4">
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-sm font-medium">مرتبط با طلب یا بدهی</p>
+          <p className="text-sm font-medium">{t("مرتبط با طلب یا بدهی")}</p>
           <p className="mt-1 text-xs text-muted">
             ثبت تعهد جدید یا تسویه موردی که قبلاً ثبت شده
           </p>
@@ -120,7 +124,7 @@ export function DebtLedgerSection({
           isSelected={value.enabled}
           onChange={(selected) => onChange({ enabled: selected })}
           size="sm"
-          aria-label="مرتبط با طلب یا بدهی"
+          aria-label={t("مرتبط با طلب یا بدهی")}
         >
           <Switch.Control>
             <Switch.Thumb />
@@ -172,11 +176,11 @@ export function DebtLedgerSection({
               </div>
 
               <FormPersonComboBox
-                label="نام طرف حساب"
+                label={t("نام طرف حساب")}
                 value={value.person}
                 onChange={(person) => onChange({ person })}
                 options={persons}
-                placeholder="مثلاً علی، فروشگاه X"
+                placeholder={t("مثلاً علی، فروشگاه X")}
               />
 
               <p className="text-xs leading-6 text-muted">
@@ -195,7 +199,7 @@ export function DebtLedgerSection({
                     ? "کدام طلب تسویه می‌شود؟"
                     : "کدام بدهی پرداخت می‌شود؟"
                 }
-                placeholder="یک مورد انتخاب کنید"
+                placeholder={t("یک مورد انتخاب کنید")}
                 selectedKey={value.settleDebtId || undefined}
                 onSelectionChange={(key) => onChange({ settleDebtId: key })}
                 options={settleOptions}

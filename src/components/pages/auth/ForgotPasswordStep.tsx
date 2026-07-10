@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useState } from "react";
 import { Button } from "@heroui/react";
 import { ArrowRight2, Sms } from "iconsax-reactjs";
@@ -33,6 +35,7 @@ export function ForgotPasswordStep({
   onBack,
   onSuccess,
 }: ForgotPasswordStepProps) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [codeSent, setCodeSent] = useState(false);
@@ -71,11 +74,11 @@ export function ForgotPasswordStep({
 
   async function handleReset() {
     if (newPassword.trim().length < 6) {
-      showToast("رمز عبور حداقل ۶ کاراکتر");
+      showToast(t("رمز عبور حداقل ۶ کاراکتر"));
       return;
     }
     if (toEnglishDigits(code).length !== 6) {
-      showToast("کد ۶ رقمی را کامل وارد کنید");
+      showToast(t("کد ۶ رقمی را کامل وارد کنید"));
       return;
     }
     setError("");
@@ -86,7 +89,7 @@ export function ForgotPasswordStep({
         code: toEnglishDigits(code),
         password: newPassword.trim(),
       });
-      showToast("رمز عبور تغییر کرد — اکنون وارد شوید", "success");
+      showToast(t("رمز عبور تغییر کرد — اکنون وارد شوید"), "success");
       onSuccess();
     } catch (err) {
       const msg = err instanceof Error ? err.message : "خطا در تغییر رمز";
@@ -115,15 +118,15 @@ export function ForgotPasswordStep({
         بازگشت به ورود
       </button>
 
-      <FormInput label="موبایل" value={mobile} readOnly />
+      <FormInput label={t("موبایل")} value={mobile} readOnly />
 
       {telegramRequired ? (
         <div className="space-y-4 rounded-2xl border border-amber-500/35 bg-amber-500/10 px-4 py-4">
           <p className="text-sm leading-7 text-foreground">{telegramRequired.message}</p>
           <ul className="list-disc space-y-1 ps-5 text-sm leading-7 text-muted">
-            <li>بات تلگرام را باز کنید و «شروع» را بزنید.</li>
-            <li>فقط با دکمه «اشتراک‌گذاری شماره تلگرام» شماره را بفرستید — تایپ دستی پذیرفته نمی‌شود.</li>
-            <li>شماره تلگرام باید دقیقاً با شماره ثبت‌نام شما یکی باشد.</li>
+            <li>{t("بات تلگرام را باز کنید و «شروع» را بزنید.")}</li>
+            <li>{t("فقط با دکمه «اشتراک‌گذاری شماره تلگرام» شماره را بفرستید — تایپ دستی پذیرفته نمی‌شود.")}</li>
+            <li>{t("شماره تلگرام باید دقیقاً با شماره ثبت‌نام شما یکی باشد.")}</li>
           </ul>
           {recoverUrl ? (
             <Button
@@ -159,9 +162,9 @@ export function ForgotPasswordStep({
         </Button>
       ) : (
         <>
-          <OtpCodeField label="کد تلگرام" value={code} onChange={setCode} />
+          <OtpCodeField label={t("کد تلگرام")} value={code} onChange={setCode} />
           <FormInput
-            label="رمز عبور جدید"
+            label={t("رمز عبور جدید")}
             type="password"
             value={newPassword}
             onChange={(e) => {

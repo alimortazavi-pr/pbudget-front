@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useMemo, useState } from "react";
 import { Switch } from "@heroui/react";
 
@@ -36,9 +38,10 @@ function resolveProjectTitle(project: NonNullable<IBudget["project"]>): string {
 }
 
 export function LinkedProjectSummary({ project }: LinkedProjectSummaryProps) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-2 rounded-2xl border border-border/60 bg-surface-secondary/60 p-4">
-      <p className="text-sm font-medium">مرتبط با پروژه</p>
+      <p className="text-sm font-medium">{t("مرتبط با پروژه")}</p>
       <div className="rounded-xl bg-accent/10 px-3 py-3 text-sm text-accent">
         <p className="font-semibold">{resolveProjectTitle(project)}</p>
       </div>
@@ -55,7 +58,8 @@ export function ProjectLedgerSection({
   onChange,
   isProjectCategory,
   categoryTitle,
-}: ProjectLedgerSectionProps) {
+}: ProjectLedgerSectionProps) {  const { t } = useTranslation();
+
   const [projects, setProjects] = useState<IProject[]>([]);
 
   useEffect(() => {
@@ -79,7 +83,7 @@ export function ProjectLedgerSection({
     <div className="space-y-3 rounded-2xl border border-border/60 bg-surface-secondary/60 p-4">
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-sm font-medium">مرتبط با پروژه</p>
+          <p className="text-sm font-medium">{t("مرتبط با پروژه")}</p>
           <p className="mt-1 text-xs text-muted">
             ثبت تراکنش در حساب یک پروژه مشخص
           </p>
@@ -88,7 +92,7 @@ export function ProjectLedgerSection({
           isSelected={value.enabled}
           onChange={(selected) => onChange({ enabled: selected })}
           size="sm"
-          aria-label="مرتبط با پروژه"
+          aria-label={t("مرتبط با پروژه")}
         >
           <Switch.Control>
             <Switch.Thumb />
@@ -105,8 +109,8 @@ export function ProjectLedgerSection({
       {value.enabled ? (
         <div className="space-y-3 border-t border-border/40 pt-3">
           <FormSelect
-            label="کدام پروژه؟"
-            placeholder="یک پروژه انتخاب کنید"
+            label={t("کدام پروژه؟")}
+            placeholder={t("یک پروژه انتخاب کنید")}
             selectedKey={value.projectId || undefined}
             onSelectionChange={(key) => onChange({ projectId: key })}
             options={projectOptions}

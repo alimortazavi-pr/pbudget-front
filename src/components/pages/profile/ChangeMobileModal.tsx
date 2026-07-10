@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useState, type FormEvent } from "react";
 import { Button, Modal } from "@heroui/react";
 
@@ -27,6 +29,7 @@ export function ChangeMobileModal({
   currentMobile,
   telegramLinked,
 }: ChangeMobileModalProps) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const users = useAppSelector((s) => s.auth.users);
   const [mobile, setMobile] = useState("");
@@ -44,17 +47,17 @@ export function ChangeMobileModal({
 
   async function requestCode() {
     if (!telegramLinked) {
-      showToast("ابتدا تلگرام را از پروفایل وصل کنید");
+      showToast(t("ابتدا تلگرام را از پروفایل وصل کنید"));
       return;
     }
 
     const normalized = toEnglishDigits(mobile.trim());
     if (!/^09\d{9}$/.test(normalized)) {
-      showToast("شماره موبایل معتبر نیست");
+      showToast(t("شماره موبایل معتبر نیست"));
       return;
     }
     if (normalized === currentMobile) {
-      showToast("شماره واردشده همان شماره فعلی شماست");
+      showToast(t("شماره واردشده همان شماره فعلی شماست"));
       return;
     }
 
@@ -63,7 +66,7 @@ export function ChangeMobileModal({
       await authApi.requestCode(normalized);
       setMobile(normalized);
       setCodeSent(true);
-      showToast("کد تأیید به تلگرام ارسال شد", "success");
+      showToast(t("کد تأیید به تلگرام ارسال شد"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     } finally {
@@ -74,7 +77,7 @@ export function ChangeMobileModal({
   async function submit(e?: FormEvent) {
     e?.preventDefault();
     if (!telegramLinked) {
-      showToast("ابتدا تلگرام را وصل کنید");
+      showToast(t("ابتدا تلگرام را وصل کنید"));
       return;
     }
     if (!codeSent) {
@@ -95,7 +98,7 @@ export function ChangeMobileModal({
       );
       dispatch(setUsers(nextUsers));
       saveDataToLocal({ token: newToken, users: nextUsers });
-      showToast("شماره موبایل تغییر کرد", "success");
+      showToast(t("شماره موبایل تغییر کرد"), "success");
       onOpenChange(false);
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
@@ -109,7 +112,7 @@ export function ChangeMobileModal({
       <AppModalSheet>
         <form onSubmit={(e) => void submit(e)} className={modalSheetFormClass}>
           <AppModalHeader onClose={() => onOpenChange(false)}>
-            <Modal.Heading>تغییر شماره موبایل</Modal.Heading>
+            <Modal.Heading>{t("تغییر شماره موبایل")}</Modal.Heading>
           </AppModalHeader>
           <Modal.Body className={`${modalSheetBodyClass} space-y-4`}>
             {!telegramLinked ? (
@@ -119,7 +122,7 @@ export function ChangeMobileModal({
               </p>
             ) : null}
             <FormInput
-              label="شماره موبایل جدید"
+              label={t("شماره موبایل جدید")}
               inputMode="tel"
               value={mobile}
               onChange={(e) => setMobile(e.target.value)}
@@ -128,7 +131,7 @@ export function ChangeMobileModal({
             />
             {codeSent ? (
               <>
-                <OtpCodeField label="کد تأیید تلگرام" value={code} onChange={setCode} />
+                <OtpCodeField label={t("کد تأیید تلگرام")} value={code} onChange={setCode} />
                 <div className="flex justify-end">
                   <Button
                     type="button"

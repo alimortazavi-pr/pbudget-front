@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { Button } from "@heroui/react";
 import { SearchNormal1 } from "iconsax-reactjs";
@@ -22,6 +24,7 @@ const STATUS_OPTIONS = [
 ];
 
 export function AdminVoiceLogsPage() {
+  const { t } = useTranslation();
   const [logs, setLogs] = useState<VoiceLog[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -37,7 +40,7 @@ export function AdminVoiceLogsPage() {
       setLogs(data.items);
       setTotalPages(data.pagination.totalPages);
     } catch {
-      showToast("بارگذاری لاگ‌های صوتی ناموفق بود", "danger");
+      showToast(t("بارگذاری لاگ‌های صوتی ناموفق بود"), "danger");
     } finally {
       setLoading(false);
     }
@@ -50,7 +53,7 @@ export function AdminVoiceLogsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-bold">لاگ دستیار صوتی</h3>
+        <h3 className="text-lg font-bold">{t("لاگ دستیار صوتی")}</h3>
         <p className="text-sm text-muted">
           تمام درخواست‌های تشخیص و اجرای دستورات صوتی (محیط تست)
         </p>
@@ -83,7 +86,7 @@ export function AdminVoiceLogsPage() {
               setPage(1);
               setIntent(e.target.value);
             }}
-            placeholder="فیلتر intent…"
+            placeholder={t("فیلتر intent…")}
             className="w-full rounded-xl border border-border bg-surface px-10 py-2.5 text-sm outline-none focus:border-accent"
           />
         </div>
@@ -94,11 +97,11 @@ export function AdminVoiceLogsPage() {
           <table className="min-w-full text-sm">
             <thead className="bg-surface-secondary/70 text-muted">
               <tr>
-                <th className="px-4 py-3 text-start font-medium">زمان</th>
-                <th className="px-4 py-3 text-start font-medium">کاربر</th>
-                <th className="px-4 py-3 text-start font-medium">متن</th>
+                <th className="px-4 py-3 text-start font-medium">{t("زمان")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("کاربر")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("متن")}</th>
                 <th className="px-4 py-3 text-start font-medium">Intent</th>
-                <th className="px-4 py-3 text-start font-medium">وضعیت</th>
+                <th className="px-4 py-3 text-start font-medium">{t("وضعیت")}</th>
                 <th className="px-4 py-3 text-start font-medium" />
               </tr>
             </thead>
@@ -151,13 +154,13 @@ export function AdminVoiceLogsPage() {
                         <td colSpan={6} className="px-4 py-4">
                           <div className="grid gap-3 text-xs lg:grid-cols-2">
                             <div>
-                              <p className="font-medium text-muted">تفسیر</p>
+                              <p className="font-medium text-muted">{t("تفسیر")}</p>
                               <pre className="mt-1 overflow-x-auto rounded-xl bg-surface p-3 text-[11px] leading-5">
                                 {JSON.stringify(log.interpretation, null, 2)}
                               </pre>
                             </div>
                             <div>
-                              <p className="font-medium text-muted">نتیجه اجرا</p>
+                              <p className="font-medium text-muted">{t("نتیجه اجرا")}</p>
                               <pre className="mt-1 overflow-x-auto rounded-xl bg-surface p-3 text-[11px] leading-5">
                                 {JSON.stringify(
                                   {

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import type { AnalyticsReport } from "@/common/interfaces/analytics.interface";
 import { resolveCategoryColor } from "@/common/constants/category-colors";
 import { formatPrice, toPersianDigits } from "@/common/utils";
@@ -9,14 +11,15 @@ type AnalysisBudgetLimitsPanelProps = {
 };
 
 export function AnalysisBudgetLimitsPanel({ report }: AnalysisBudgetLimitsPanelProps) {
+  const { t } = useTranslation();
   const rows = report.categoryBudgets ?? [];
   if (rows.length === 0) return null;
 
   return (
     <section className="glass rounded-2xl p-4 lg:p-5">
       <div className="mb-4">
-        <h3 className="font-bold">سقف بودجه دسته‌ها</h3>
-        <p className="text-sm text-muted">مقایسه خرج دوره با سقف ماهانه — عبور مجاز است</p>
+        <h3 className="font-bold">{t("سقف بودجه دسته‌ها")}</h3>
+        <p className="text-sm text-muted">{t("مقایسه خرج دوره با سقف ماهانه — عبور مجاز است")}</p>
       </div>
       <div className="space-y-3">
         {rows.map((row, index) => (
@@ -31,7 +34,7 @@ export function AnalysisBudgetLimitsPanel({ report }: AnalysisBudgetLimitsPanelP
                   <p className="font-medium">
                     {row.title}
                     {row.isRollup ? (
-                      <span className="ms-1 text-xs text-muted">(جمع)</span>
+                      <span className="ms-1 text-xs text-muted">{t("(جمع)")}</span>
                     ) : null}
                   </p>
                   <p className="text-xs text-muted">

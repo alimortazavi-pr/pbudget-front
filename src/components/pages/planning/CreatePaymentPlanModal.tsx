@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useState } from "react";
 import { Button, Modal, Switch } from "@heroui/react";
 
@@ -29,6 +31,7 @@ export function CreatePaymentPlanModal({
   onCreated,
   defaultProjectId,
 }: CreatePaymentPlanModalProps) {
+  const { t } = useTranslation();
   const user = useAppSelector(userSelector);
   const preferredCurrency = user?.preferences?.currency ?? "toman";
   const categories = useAppSelector(categoriesSelector);
@@ -71,7 +74,7 @@ export function CreatePaymentPlanModal({
 
   async function handleSubmit() {
     if (!title.trim() || !amount.trim()) {
-      showToast("عنوان و مبلغ الزامی است");
+      showToast(t("عنوان و مبلغ الزامی است"));
       return;
     }
 
@@ -91,7 +94,7 @@ export function CreatePaymentPlanModal({
         description,
         projectId: projectId || defaultProjectId || undefined,
       });
-      showToast("برنامه پرداخت ثبت شد", "success");
+      showToast(t("برنامه پرداخت ثبت شد"), "success");
       onCreated(result.plan._id);
       onOpenChange(false);
       setTitle("");
@@ -112,7 +115,7 @@ export function CreatePaymentPlanModal({
     <AppModal open={open} onOpenChange={onOpenChange}>
       <AppModalDialog className="max-w-lg">
         <AppModalHeader onClose={() => onOpenChange(false)}>
-          <Modal.Heading>برنامه پرداخت جدید</Modal.Heading>
+          <Modal.Heading>{t("برنامه پرداخت جدید")}</Modal.Heading>
         </AppModalHeader>
         <Modal.Body className="max-h-[70vh] space-y-4 overflow-y-auto">
           <p className="text-sm text-muted">
@@ -120,9 +123,9 @@ export function CreatePaymentPlanModal({
             می‌شود.
           </p>
 
-          <FormInput label="عنوان" value={title} onChange={(e) => setTitle(e.target.value)} />
+          <FormInput label={t("عنوان")} value={title} onChange={(e) => setTitle(e.target.value)} />
           <FormPersonComboBox
-            label="طرف حساب (اختیاری)"
+            label={t("طرف حساب (اختیاری)")}
             value={person}
             onChange={setPerson}
             options={persons}
@@ -133,35 +136,35 @@ export function CreatePaymentPlanModal({
             onChange={setAmount}
           />
           <FormCategoryComboBox
-            label="دسته‌بندی پیش‌فرض"
-            placeholder="جستجو یا انتخاب دسته‌بندی"
+            label={t("دسته‌بندی پیش‌فرض")}
+            placeholder={t("جستجو یا انتخاب دسته‌بندی")}
             selectedKey={category || undefined}
             onSelectionChange={(key) => setCategory(key)}
             options={categoryOptions}
             emptyMessage="دسته‌ای ثبت نشده"
           />
           <FormInput
-            label="روز سررسید هر ماه (۱ تا ۳۱)"
+            label={t("روز سررسید هر ماه (۱ تا ۳۱)")}
             inputMode="numeric"
             value={dueDay}
             onChange={(e) => setDueDay(e.target.value)}
           />
           <FormInput
-            label="تعداد اقساط (خالی = تا لغو)"
+            label={t("تعداد اقساط (خالی = تا لغو)")}
             inputMode="numeric"
             value={installments}
             onChange={(e) => setInstallments(e.target.value)}
           />
           <FormTextArea
-            label="توضیحات"
+            label={t("توضیحات")}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
 
           {!defaultProjectId && projectOptions.length > 0 && (
             <FormSelect
-              label="پروژه (اختیاری)"
-              placeholder="بدون پروژه"
+              label={t("پروژه (اختیاری)")}
+              placeholder={t("بدون پروژه")}
               selectedKey={projectId || undefined}
               onSelectionChange={(key) => setProjectId(String(key ?? ""))}
               options={[{ id: "", label: "بدون پروژه" }, ...projectOptions]}
@@ -170,8 +173,8 @@ export function CreatePaymentPlanModal({
 
           <div className="flex items-center justify-between rounded-xl border border-border/60 bg-surface-secondary/60 p-3">
             <div>
-              <p className="text-sm font-medium">یادآوری اول ماه</p>
-              <p className="text-xs text-muted">لیست اقساط این ماه در تلگرام</p>
+              <p className="text-sm font-medium">{t("یادآوری اول ماه")}</p>
+              <p className="text-xs text-muted">{t("لیست اقساط این ماه در تلگرام")}</p>
             </div>
             <Switch isSelected={remindMonthStart} onChange={setRemindMonthStart} size="sm">
               <Switch.Control>

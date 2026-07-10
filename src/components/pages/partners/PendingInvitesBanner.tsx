@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@heroui/react";
@@ -13,6 +15,7 @@ type PendingInvitesBannerProps = {
 };
 
 export function PendingInvitesBanner({ compact = false }: PendingInvitesBannerProps) {
+  const { t } = useTranslation();
   const [partnerInvites, setPartnerInvites] = useState<IPendingPartnerInvite[]>(
     [],
   );
@@ -40,7 +43,7 @@ export function PendingInvitesBanner({ compact = false }: PendingInvitesBannerPr
     setActingId(inviteId);
     try {
       await partnersApi.acceptPartnerInvite(token);
-      showToast("دعوت تأیید شد", "success");
+      showToast(t("دعوت تأیید شد"), "success");
       void load();
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا در تأیید");
@@ -60,7 +63,7 @@ export function PendingInvitesBanner({ compact = false }: PendingInvitesBannerPr
   return (
     <section className="glass space-y-3 rounded-2xl p-4">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-lg font-bold">دعوت‌های در انتظار</h2>
+        <h2 className="text-lg font-bold">{t("دعوت‌های در انتظار")}</h2>
         <span className="rounded-lg bg-accent/15 px-2 py-1 text-xs font-medium text-accent">
           {partnerInvites.length}
         </span>

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Modal } from "@heroui/react";
 import { DocumentDownload, DocumentUpload, Eye } from "iconsax-reactjs";
@@ -26,6 +28,7 @@ const FORMATS: { value: AdminExportFormat; label: string; hint: string }[] = [
 ];
 
 export function AdminDatabasePage() {
+  const { t } = useTranslation();
   const [collections, setCollections] = useState<AdminCollectionMeta[]>([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState<string | null>(null);
@@ -42,7 +45,7 @@ export function AdminDatabasePage() {
       const data = await adminApi.fetchAdminCollections();
       setCollections(data);
     } catch {
-      showToast("بارگذاری کالکشن‌ها ناموفق بود", "danger");
+      showToast(t("بارگذاری کالکشن‌ها ناموفق بود"), "danger");
     } finally {
       setLoading(false);
     }
@@ -58,7 +61,7 @@ export function AdminDatabasePage() {
       await adminApi.downloadCollectionExport(name, format);
       showToast(`خروجی ${name} دانلود شد`, "success");
     } catch {
-      showToast("دانلود ناموفق بود", "danger");
+      showToast(t("دانلود ناموفق بود"), "danger");
     } finally {
       setExporting(null);
     }
@@ -68,9 +71,9 @@ export function AdminDatabasePage() {
     setExporting("__all__");
     try {
       await adminApi.downloadFullDatabaseExport(format);
-      showToast("خروجی کامل دیتابیس دانلود شد", "success");
+      showToast(t("خروجی کامل دیتابیس دانلود شد"), "success");
     } catch {
-      showToast("دانلود ناموفق بود", "danger");
+      showToast(t("دانلود ناموفق بود"), "danger");
     } finally {
       setExporting(null);
     }
@@ -96,7 +99,7 @@ export function AdminDatabasePage() {
       );
       void load();
     } catch {
-      showToast("بازیابی ناموفق بود", "danger");
+      showToast(t("بازیابی ناموفق بود"), "danger");
     } finally {
       setExporting(null);
       setImportTarget(null);
@@ -110,7 +113,7 @@ export function AdminDatabasePage() {
       const data = await adminApi.fetchCollectionPreview(name, 15);
       setPreview(data);
     } catch {
-      showToast("پیش‌نمایش ناموفق بود", "danger");
+      showToast(t("پیش‌نمایش ناموفق بود"), "danger");
     } finally {
       setPreviewLoading(false);
     }
@@ -126,7 +129,7 @@ export function AdminDatabasePage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h3 className="text-lg font-bold">مدیریت دیتابیس</h3>
+          <h3 className="text-lg font-bold">{t("مدیریت دیتابیس")}</h3>
           <p className="text-sm text-muted">
             {toPersianDigits(collections.length)} کالکشن ·{" "}
             {toPersianDigits(totalDocs)} سند · {formatBytes(totalSize)}
@@ -204,11 +207,11 @@ export function AdminDatabasePage() {
           <table className="min-w-full text-sm">
             <thead className="bg-surface-secondary/70 text-muted">
               <tr>
-                <th className="px-4 py-3 text-start font-medium">کالکشن</th>
-                <th className="px-4 py-3 text-start font-medium">اسناد</th>
-                <th className="px-4 py-3 text-start font-medium">حجم</th>
-                <th className="px-4 py-3 text-start font-medium">ایندکس</th>
-                <th className="px-4 py-3 text-start font-medium">عملیات</th>
+                <th className="px-4 py-3 text-start font-medium">{t("کالکشن")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("اسناد")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("حجم")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("ایندکس")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("عملیات")}</th>
               </tr>
             </thead>
             <tbody>

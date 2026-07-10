@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Button, Modal, Switch } from "@heroui/react";
 
@@ -40,6 +42,7 @@ export function CreateRoutineModal({
   routine,
   onSaved,
 }: CreateRoutineModalProps) {
+  const { t } = useTranslation();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState<TaskPriority>("medium");
@@ -98,7 +101,7 @@ export function CreateRoutineModal({
   async function save(e?: FormEvent) {
     e?.preventDefault();
     if (!title.trim()) {
-      showToast("عنوان الزامی است");
+      showToast(t("عنوان الزامی است"));
       return;
     }
 
@@ -118,7 +121,7 @@ export function CreateRoutineModal({
       (payload.startHour !== undefined && payload.endHour === undefined) ||
       (payload.endHour !== undefined && payload.startHour === undefined)
     ) {
-      showToast("ساعت شروع و پایان را با هم وارد کنید");
+      showToast(t("ساعت شروع و پایان را با هم وارد کنید"));
       return;
     }
 
@@ -152,27 +155,27 @@ export function CreateRoutineModal({
               می‌شوند.
             </p>
             <FormInput
-              label="عنوان"
-              placeholder="مثلاً رفتن سرکار"
+              label={t("عنوان")}
+              placeholder={t("مثلاً رفتن سرکار")}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               autoFocus
             />
             <FormTextArea
-              label="توضیحات"
+              label={t("توضیحات")}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
             <div className="grid grid-cols-2 gap-3">
               <FormSelect
-                label="از ساعت"
+                label={t("از ساعت")}
                 placeholder="—"
                 selectedKey={startHour || undefined}
                 onSelectionChange={(key) => setStartHour(key)}
                 options={HOUR_OPTIONS}
               />
               <FormSelect
-                label="تا ساعت"
+                label={t("تا ساعت")}
                 placeholder="—"
                 selectedKey={endHour || undefined}
                 onSelectionChange={(key) => setEndHour(key)}
@@ -180,20 +183,20 @@ export function CreateRoutineModal({
               />
             </div>
             <FormSelect
-              label="اولویت"
+              label={t("اولویت")}
               selectedKey={priority}
               onSelectionChange={(key) => setPriority(key as TaskPriority)}
               options={PRIORITY_OPTIONS}
             />
             <FormSelect
-              label="پروژه مرتبط"
+              label={t("پروژه مرتبط")}
               selectedKey={projectId || "none"}
               onSelectionChange={(key) => setProjectId(key === "none" ? "" : key)}
               options={projectOptions}
             />
             <div>
               <div className="mb-2 flex items-center justify-between">
-                <p className="text-sm font-medium">روزهای تکرار</p>
+                <p className="text-sm font-medium">{t("روزهای تکرار")}</p>
                 <label className="flex items-center gap-2 text-xs text-muted">
                   <Switch
                     isSelected={everyDay}
@@ -232,8 +235,8 @@ export function CreateRoutineModal({
             <div className="space-y-3 rounded-xl border border-border/50 bg-surface-secondary p-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium">فعال</p>
-                  <p className="text-xs text-muted">غیرفعال = دیگر اضافه نمی‌شود</p>
+                  <p className="text-sm font-medium">{t("فعال")}</p>
+                  <p className="text-xs text-muted">{t("غیرفعال = دیگر اضافه نمی‌شود")}</p>
                 </div>
                 <Switch isSelected={active} onChange={setActive} size="sm">
                   <Switch.Control>
@@ -243,8 +246,8 @@ export function CreateRoutineModal({
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium">یادآوری تلگرام</p>
-                  <p className="text-xs text-muted">صبح در بات ارسال می‌شود</p>
+                  <p className="text-sm font-medium">{t("یادآوری تلگرام")}</p>
+                  <p className="text-xs text-muted">{t("صبح در بات ارسال می‌شود")}</p>
                 </div>
                 <Switch
                   isSelected={remindTelegram}

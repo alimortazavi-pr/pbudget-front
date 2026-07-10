@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useState } from "react";
 import { Button, Modal } from "@heroui/react";
 
@@ -28,6 +30,7 @@ export function DebtSettleModal({
   onOpenChange,
   onSettled,
 }: DebtSettleModalProps) {
+  const { t } = useTranslation();
   const user = useAppSelector(userSelector);
   const preferredCurrency = user?.preferences?.currency ?? "toman";
   const [candidates, setCandidates] = useState<IBudget[]>([]);
@@ -63,7 +66,7 @@ export function DebtSettleModal({
 
   async function handleSubmit() {
     if (!debt || selectedIds.size === 0) {
-      showToast("حداقل یک تراکنش برای تسویه انتخاب کنید");
+      showToast(t("حداقل یک تراکنش برای تسویه انتخاب کنید"));
       return;
     }
 
@@ -81,7 +84,7 @@ export function DebtSettleModal({
           Array.from(selectedIds).map((budgetId) => ({ budgetId })),
         );
       }
-      showToast("تسویه ثبت شد", "success");
+      showToast(t("تسویه ثبت شد"), "success");
       onSettled();
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا در تسویه");
@@ -122,7 +125,7 @@ export function DebtSettleModal({
           )}
 
           {loading ? (
-            <p className="text-sm text-muted">در حال بارگذاری تراکنش‌ها…</p>
+            <p className="text-sm text-muted">{t("در حال بارگذاری تراکنش‌ها…")}</p>
           ) : candidates.length === 0 ? (
             <p className="rounded-xl bg-surface-secondary p-3 text-sm text-muted">
               تراکنش مناسبی پیدا نشد. ابتدا تراکنش{" "}

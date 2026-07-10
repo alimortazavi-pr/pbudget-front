@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import {
   Bar,
   BarChart,
@@ -62,6 +64,7 @@ export function WorkTimeAnalysisCharts({
   report,
   scope = "global",
 }: WorkTimeAnalysisChartsProps) {
+  const { t } = useTranslation();
   const isProjectScope = scope === "project";
   const weeklyData = report.weeklyTotals.map((week) => ({
     name: week.label,
@@ -96,7 +99,7 @@ export function WorkTimeAnalysisCharts({
         </h3>
         <p className="mb-4 text-sm text-muted">{report.periodLabel}</p>
         {weeklyData.length === 0 ? (
-          <p className="py-8 text-center text-sm text-muted">داده‌ای برای نمودار نیست</p>
+          <p className="py-8 text-center text-sm text-muted">{t("داده‌ای برای نمودار نیست")}</p>
         ) : (
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -117,10 +120,10 @@ export function WorkTimeAnalysisCharts({
 
       {!isProjectScope ? (
         <section className="glass rounded-2xl p-4 lg:p-5">
-          <h3 className="font-bold">ساعت کار به تفکیک پروژه</h3>
-          <p className="mb-4 text-sm text-muted">کارکرد در مقابل هدف (ساعت)</p>
+          <h3 className="font-bold">{t("ساعت کار به تفکیک پروژه")}</h3>
+          <p className="mb-4 text-sm text-muted">{t("کارکرد در مقابل هدف (ساعت)")}</p>
           {projectHoursData.length === 0 ? (
-            <p className="py-8 text-center text-sm text-muted">هنوز ساعتی ثبت نشده</p>
+            <p className="py-8 text-center text-sm text-muted">{t("هنوز ساعتی ثبت نشده")}</p>
           ) : (
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">

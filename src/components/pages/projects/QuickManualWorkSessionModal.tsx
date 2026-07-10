@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useState } from "react";
 import { Button } from "@heroui/react";
 
@@ -26,6 +28,7 @@ export function QuickManualWorkSessionModal({
   defaultDay,
   onSaved,
 }: QuickManualWorkSessionModalProps) {
+  const { t } = useTranslation();
   const [projectId, setProjectId] = useState<string | null>(null);
 
   if (projectId) {
@@ -51,11 +54,11 @@ export function QuickManualWorkSessionModal({
   return (
     <AppModal open={open} onOpenChange={onOpenChange}>
       <AppModalDialog>
-        <AppModalHeader>ثبت دستی ساعت</AppModalHeader>
+        <AppModalHeader>{t("ثبت دستی ساعت")}</AppModalHeader>
         <div className="space-y-2 p-4">
-          <p className="text-sm text-muted">پروژه را انتخاب کنید:</p>
+          <p className="text-sm text-muted">{t("پروژه را انتخاب کنید:")}</p>
           {projects.length === 0 ? (
-            <p className="text-sm text-muted">پروژه‌ای با ثبت ساعت فعال نیست.</p>
+            <p className="text-sm text-muted">{t("پروژه‌ای با ثبت ساعت فعال نیست.")}</p>
           ) : (
             projects.map((project) => (
               <Button

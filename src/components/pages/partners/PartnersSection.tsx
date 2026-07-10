@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "@heroui/react";
 import {
@@ -54,7 +56,8 @@ function isOwnerPartner(partner: IPartner) {
   return partner.isOwner === true || partner.permissionLevel === "owner";
 }
 
-function partnerInitials(name: string) {
+function partnerInitials(name: string) {  const { t } = useTranslation();
+
   const parts = name.trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return "؟";
   if (parts.length === 1) return parts[0].slice(0, 1);
@@ -62,6 +65,7 @@ function partnerInitials(name: string) {
 }
 
 export function PartnersSection({ contextType, contextId, readOnly = false }: PartnersSectionProps) {
+  const { t } = useTranslation();
   const [partners, setPartners] = useState<IPartner[]>([]);
   const [debtBalances, setDebtBalances] = useState<IPartnerDebtBalance[]>([]);
   const [loading, setLoading] = useState(true);
@@ -140,7 +144,7 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
     if (!confirm(`شریک «${partner.displayName}» حذف شود؟`)) return;
     try {
       await partnersApi.deletePartner(partner._id);
-      showToast("شریک حذف شد", "success");
+      showToast(t("شریک حذف شد"), "success");
       void load();
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا در حذف");
@@ -150,9 +154,9 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
   async function copyLink(link: string) {
     try {
       await navigator.clipboard.writeText(link);
-      showToast("لینک کپی شد", "success");
+      showToast(t("لینک کپی شد"), "success");
     } catch {
-      showToast("کپی لینک ممکن نشد");
+      showToast(t("کپی لینک ممکن نشد"));
     }
   }
 
@@ -161,9 +165,9 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
     try {
       const result = await partnersApi.resendPartnerInvite(partnerId);
       if (result.telegramSent) {
-        showToast("دعوت مجدد ارسال شد (تلگرام + لینک)", "success");
+        showToast(t("دعوت مجدد ارسال شد (تلگرام + لینک)"), "success");
       } else {
-        showToast("لینک جدید ساخته شد — تلگرام فعال نبود", "success");
+        showToast(t("لینک جدید ساخته شد — تلگرام فعال نبود"), "success");
       }
       void load();
     } catch (err) {
@@ -178,7 +182,7 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
     setUpdatingId(partner._id);
     try {
       await partnersApi.updatePartner(partner._id, { permissionLevel });
-      showToast("دسترسی به‌روز شد", "success");
+      showToast(t("دسترسی به‌روز شد"), "success");
       void load();
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا در به‌روزرسانی");
@@ -191,7 +195,7 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
     <div className="space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold">مدیریت شرکا</h2>
+          <h2 className="text-xl font-bold">{t("مدیریت شرکا")}</h2>
           <p className="mt-1 text-sm text-muted">
             دعوت، تقسیم سهم، حساب دفتری و دسترسی مشترک
           </p>
@@ -206,19 +210,19 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
         <div className="rounded-2xl border border-border/50 bg-surface-secondary/40 p-4">
           <div className="flex items-center gap-2 text-muted">
             <People size={16} />
-            <span className="text-xs">تعداد شرکا</span>
+            <span className="text-xs">{t("تعداد شرکا")}</span>
           </div>
           <p className="mt-2 text-2xl font-bold">{activePartners.length}</p>
         </div>
         <div className="rounded-2xl border border-border/50 bg-surface-secondary/40 p-4">
-          <p className="text-xs text-muted">جمع سهم‌ها</p>
+          <p className="text-xs text-muted">{t("جمع سهم‌ها")}</p>
           <p className="mt-2 text-2xl font-bold">{totalShare}٪</p>
           {totalShare > 100 ? (
-            <p className="mt-1 text-xs text-danger">بیش از ۱۰۰٪</p>
+            <p className="mt-1 text-xs text-danger">{t("بیش از ۱۰۰٪")}</p>
           ) : null}
         </div>
         <div className="rounded-2xl border border-border/50 bg-surface-secondary/40 p-4">
-          <p className="text-xs text-muted">طلب شما</p>
+          <p className="text-xs text-muted">{t("طلب شما")}</p>
           <p className="mt-2 text-2xl font-bold text-income">
             {formatPrice(totalReceivable)}
           </p>
@@ -240,7 +244,7 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
 
       <section className="space-y-3">
         <div className="flex items-center justify-between gap-3">
-          <h3 className="font-bold">لیست شرکا</h3>
+          <h3 className="font-bold">{t("لیست شرکا")}</h3>
           <span className="text-xs text-muted">
             {activePartners.length} شریک فعال
           </span>
@@ -252,7 +256,7 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
           </div>
         ) : partners.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border p-8 text-center">
-            <p className="text-muted">هنوز شریکی ثبت نشده</p>
+            <p className="text-muted">{t("هنوز شریکی ثبت نشده")}</p>
             <Button
               className="mt-4"
               variant="secondary"
@@ -317,7 +321,7 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
                     {!readOnly && partner.isAppUser && partner.status === "active" && !ownerEntry ? (
                       <div className="mt-3">
                         <FormSelect
-                          label="سطح دسترسی"
+                          label={t("سطح دسترسی")}
                           selectedKey={partner.permissionLevel ?? "viewer"}
                           onSelectionChange={(key) =>
                             void changePermission(partner, key as PartnerPermissionLevel)
@@ -333,7 +337,7 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
 
                     {partner.inviteLink && partner.status === "pending" ? (
                       <div className="mt-3 rounded-xl bg-warning/10 px-3 py-2 text-xs">
-                        <p className="font-medium text-warning-foreground">لینک دعوت</p>
+                        <p className="font-medium text-warning-foreground">{t("لینک دعوت")}</p>
                         <p className="mt-1 break-all text-foreground">{partner.inviteLink}</p>
                       </div>
                     ) : null}

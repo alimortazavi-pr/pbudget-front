@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { Button, Modal } from "@heroui/react";
 import { Refresh, TickCircle } from "iconsax-reactjs";
 import {
@@ -56,11 +58,12 @@ function ChangelogModal({
   entries: ReturnType<typeof getChangelogSince>;
   footer?: ReactNode;
 }) {
+  const { t } = useTranslation();
   return (
     <AppModal open={open} onOpenChange={onOpenChange} mobileFull>
       <AppModalDialog className="flex max-h-[100dvh] flex-col sm:max-w-lg">
         <AppModalHeader onClose={() => onOpenChange(false)}>
-          <Modal.Heading>چه چیزهایی جدید است؟</Modal.Heading>
+          <Modal.Heading>{t("چه چیزهایی جدید است؟")}</Modal.Heading>
           <p className="mt-1 text-sm text-muted">نسخه {APP_VERSION}</p>
         </AppModalHeader>
 

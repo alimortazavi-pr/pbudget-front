@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useState } from "react";
 import { Button, Modal } from "@heroui/react";
 
@@ -29,6 +31,7 @@ type CreateDebtModalProps = {
 };
 
 export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtModalProps) {
+  const { t } = useTranslation();
   const categories = useAppSelector(categoriesSelector);
   const user = useAppSelector(userSelector);
   const preferredCurrency = user?.preferences?.currency ?? "toman";
@@ -48,7 +51,7 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
 
   async function handleSubmit() {
     if (!person.trim() || !amount.trim() || !category) {
-      showToast("نام طرف حساب، مبلغ و دسته‌بندی الزامی است");
+      showToast(t("نام طرف حساب، مبلغ و دسته‌بندی الزامی است"));
       return;
     }
 
@@ -64,7 +67,7 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
         day: toEnglishDigits(day),
         description: description.trim(),
       });
-      showToast("طلب/بدهی ثبت شد", "success");
+      showToast(t("طلب/بدهی ثبت شد"), "success");
       onCreated?.(debt._id);
       onOpenChange(false);
       setPerson("");
@@ -82,7 +85,7 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
     <AppModal open={open} onOpenChange={onOpenChange}>
       <AppModalDialog className="max-w-lg">
         <AppModalHeader onClose={() => onOpenChange(false)}>
-          <Modal.Heading>ثبت طلب یا بدهی</Modal.Heading>
+          <Modal.Heading>{t("ثبت طلب یا بدهی")}</Modal.Heading>
         </AppModalHeader>
         <Modal.Body className="max-h-[70vh] space-y-4 overflow-x-visible overflow-y-auto overscroll-contain">
           <p className="text-sm text-muted">
@@ -111,25 +114,25 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
           </div>
 
           <FormPersonComboBox
-            label="نام طرف حساب"
+            label={t("نام طرف حساب")}
             value={person}
             onChange={setPerson}
             options={persons}
           />
           <FormPriceInput label={`مبلغ (${currencyLabel(preferredCurrency)})`} value={amount} onChange={setAmount} />
           <FormCategoryComboBox
-            label="دسته‌بندی"
+            label={t("دسته‌بندی")}
             selectedKey={category || undefined}
             onSelectionChange={(key) => setCategory(key)}
             options={categoryOptions}
           />
           <FormTextArea
-            label="توضیحات"
+            label={t("توضیحات")}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
           <FormDatePicker
-            label="تاریخ ثبت"
+            label={t("تاریخ ثبت")}
             year={year}
             month={month}
             day={day}

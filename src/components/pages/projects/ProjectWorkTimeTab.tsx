@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Button } from "@heroui/react";
@@ -39,6 +41,7 @@ export function ProjectWorkTimeTab({
   projectTitle,
   fixedIncome,
 }: ProjectWorkTimeTabProps) {
+  const { t } = useTranslation();
   const now = getJalaliNow();
   const [year, setYear] = useState(now.jYear());
   const [month, setMonth] = useState(now.jMonth() + 1);
@@ -100,7 +103,7 @@ export function ProjectWorkTimeTab({
     setActionLoading(true);
     try {
       await workTimeApi.clockOut(projectId);
-      showToast("خروج ثبت شد", "success");
+      showToast(t("خروج ثبت شد"), "success");
       await load();
     } catch (err) {
       showErrorToast(err);
@@ -112,7 +115,7 @@ export function ProjectWorkTimeTab({
   async function saveTarget() {
     const minutes = hoursInputToMinutes(toEnglishDigits(targetHours));
     if (!minutes) {
-      showToast("ساعت روزانه را وارد کنید");
+      showToast(t("ساعت روزانه را وارد کنید"));
       return;
     }
     setSavingTarget(true);
@@ -123,7 +126,7 @@ export function ProjectWorkTimeTab({
         requiredDailyMinutes: minutes,
         projectId,
       });
-      showToast("ساعت روزانه ذخیره شد", "success");
+      showToast(t("ساعت روزانه ذخیره شد"), "success");
       await load();
     } catch (err) {
       showErrorToast(err);
@@ -136,7 +139,7 @@ export function ProjectWorkTimeTab({
     if (!confirm("این ردیف حذف شود؟")) return;
     try {
       await workTimeApi.deleteWorkSession(projectId, session._id);
-      showToast("حذف شد", "success");
+      showToast(t("حذف شد"), "success");
       await load();
     } catch (err) {
       showErrorToast(err);
@@ -149,7 +152,7 @@ export function ProjectWorkTimeTab({
   }
 
   if (loading || !data) {
-    return <div className="glass rounded-2xl p-8 text-center text-muted">در حال بارگذاری…</div>;
+    return <div className="glass rounded-2xl p-8 text-center text-muted">{t("در حال بارگذاری…")}</div>;
   }
 
   const isActive = Boolean(data.activeSession);
@@ -222,11 +225,11 @@ export function ProjectWorkTimeTab({
       </section>
 
       <section className="glass space-y-3 rounded-2xl p-4">
-        <h3 className="font-semibold">ساعت موظف این پروژه (ماه جاری)</h3>
+        <h3 className="font-semibold">{t("ساعت موظف این پروژه (ماه جاری)")}</h3>
         <div className="flex flex-wrap items-end gap-2">
           <div className="min-w-[140px] flex-1">
             <FormInput
-              label="ساعت موظف"
+              label={t("ساعت موظف")}
               placeholder={fixedIncome ? "مثلاً ۱۷۶" : "مثلاً ۸۰"}
               value={targetHours}
               onChange={(e) => setTargetHours(e.target.value)}
@@ -289,8 +292,8 @@ export function ProjectWorkTimeTab({
                     ) : null}
                     {!linkedBudget && session.durationMinutes ? (
                       <AttachBudgetButton
-                        title="لینک تراکنش"
-                        description="درآمد یا پرداخت مرتبط با این ساعت را وصل کنید."
+                        title={t("لینک تراکنش")}
+                        description={t("درآمد یا پرداخت مرتبط با این ساعت را وصل کنید.")}
                         context={{ type: "project", contextId: projectId }}
                         selectionMode="single"
                         onAttach={async (budgetId) => {

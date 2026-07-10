@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useState } from "react";
 import { Call, Building, Moon, Refresh, Sun1 } from "iconsax-reactjs";
 import { Button, Switch } from "@heroui/react";
@@ -16,6 +18,7 @@ import { useTheme } from "@/components/providers/ThemeProvider";
 import { useVersion } from "@/components/providers/VersionProvider";
 
 export function SettingsPage() {
+  const { t } = useTranslation();
   const { theme, toggleTheme } = useTheme();
   const { hasUpdate, applyUpdate, showChangelog } = useVersion();
 
@@ -34,8 +37,8 @@ export function SettingsPage() {
   return (
     <div className="pb-form-page space-y-6">
       <div className="glass rounded-2xl p-5" data-tour="settings-theme">
-        <h2 className="text-lg font-bold">ظاهر</h2>
-        <p className="mt-1 text-sm text-muted">تم روشن یا تاریک اپلیکیشن</p>
+        <h2 className="text-lg font-bold">{t("ظاهر")}</h2>
+        <p className="mt-1 text-sm text-muted">{t("تم روشن یا تاریک اپلیکیشن")}</p>
         <button
           type="button"
           className="mt-4 flex w-full cursor-pointer items-center gap-3 rounded-xl border border-border/50 bg-surface-secondary px-4 py-3 text-sm font-medium transition-colors hover:bg-surface-secondary/80"
@@ -51,8 +54,8 @@ export function SettingsPage() {
       <div className="glass rounded-2xl p-5">
         <div className="flex items-center justify-between">
           <div className="min-w-0 pr-4 text-start">
-            <h2 className="text-lg font-bold">همگام‌سازی کسب‌وکار</h2>
-            <p className="mt-1 text-sm text-muted">نمایش پروژه‌ها و کارکردهایی که از میز کسب‌وکار متصل شده‌اند.</p>
+            <h2 className="text-lg font-bold">{t("همگام‌سازی کسب‌وکار")}</h2>
+            <p className="mt-1 text-sm text-muted">{t("نمایش پروژه‌ها و کارکردهایی که از میز کسب‌وکار متصل شده‌اند.")}</p>
           </div>
           <Switch isSelected={showSynced} onChange={handleToggleSynced} size="sm">
             <Switch.Control>
@@ -63,7 +66,7 @@ export function SettingsPage() {
       </div>
 
       <div className="glass rounded-2xl p-5" data-tour="settings-business-product">
-        <h2 className="text-lg font-bold">میز پردیس کسب‌وکار</h2>
+        <h2 className="text-lg font-bold">{t("میز پردیس کسب‌وکار")}</h2>
         <p className="mt-1 text-sm text-muted">
           حضور GPS، پرسنل، شیفت و مالی تیمی — برای تیم و کارمندان
         </p>
@@ -92,7 +95,7 @@ export function SettingsPage() {
 
       <div data-tour="settings-support" className="space-y-6">
       <div className="glass rounded-2xl p-5">
-        <h2 className="text-lg font-bold">نسخه اپ</h2>
+        <h2 className="text-lg font-bold">{t("نسخه اپ")}</h2>
         <p className="mt-1 text-sm text-muted">نسخه فعلی: {APP_VERSION}</p>
         <div className="mt-4 flex flex-col gap-2">
           <Button variant="secondary" className="w-full" onPress={showChangelog}>
@@ -108,8 +111,8 @@ export function SettingsPage() {
       </div>
 
       <div className="glass rounded-2xl p-5">
-        <h2 className="text-lg font-bold">پشتیبانی</h2>
-        <p className="mt-1 text-sm text-muted">در صورت نیاز با تیم پشتیبانی تماس بگیرید</p>
+        <h2 className="text-lg font-bold">{t("پشتیبانی")}</h2>
+        <p className="mt-1 text-sm text-muted">{t("در صورت نیاز با تیم پشتیبانی تماس بگیرید")}</p>
         <a
           href={SUPPORT_PHONE}
           className="mt-4 flex w-full items-center gap-3 rounded-xl border border-border/50 bg-surface-secondary px-4 py-3 text-sm font-medium transition-colors hover:bg-surface-secondary/80"

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import DateObject from "react-date-object";
 import persianCalendar from "react-date-object/calendars/persian";
 import persianLocale from "react-date-object/locales/persian_fa";
@@ -12,13 +14,14 @@ import { usePeriod } from "@/components/providers/PeriodProvider";
 import "react-multi-date-picker/styles/colors/teal.css";
 
 export function PeriodCalendarPanel() {
+  const { t } = useTranslation();
   const { duration, year, month, day, setDate, updatePeriod, shiftYear } =
     usePeriod();
 
   if (duration === "all") {
     return (
       <div className="pb-timeline-calendar-all">
-        <p className="text-sm font-medium">نمای کلی</p>
+        <p className="text-sm font-medium">{t("نمای کلی")}</p>
         <p className="mt-1 text-xs text-muted">
           همه داده‌ها بدون محدودیت زمانی نمایش داده می‌شوند
         </p>

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useCallback, useEffect, useState } from "react";
 import { Button, Modal, Switch } from "@heroui/react";
 import { Edit2, Lock, SearchNormal1, ShieldTick, Trash } from "iconsax-reactjs";
@@ -10,6 +12,7 @@ import { formatPrice, toPersianDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 
 export function AdminUsersPage() {
+  const { t } = useTranslation();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -39,7 +42,7 @@ export function AdminUsersPage() {
       setUsers(data.items);
       setTotalPages(data.pagination.totalPages);
     } catch {
-      showToast("بارگذاری کاربران ناموفق بود", "danger");
+      showToast(t("بارگذاری کاربران ناموفق بود"), "danger");
     } finally {
       setLoading(false);
     }
@@ -63,21 +66,21 @@ export function AdminUsersPage() {
     if (!editing) return;
     try {
       await adminApi.updateAdminUser(editing._id, editForm);
-      showToast("کاربر به‌روزرسانی شد", "success");
+      showToast(t("کاربر به‌روزرسانی شد"), "success");
       setEditing(null);
       void load();
     } catch {
-      showToast("ذخیره ناموفق بود", "danger");
+      showToast(t("ذخیره ناموفق بود"), "danger");
     }
   };
 
   const toggleAdmin = async (user: AdminUser) => {
     try {
       await adminApi.setAdminRole(user._id, !user.isAdmin);
-      showToast("نقش ادمین تغییر کرد", "success");
+      showToast(t("نقش ادمین تغییر کرد"), "success");
       void load();
     } catch {
-      showToast("تغییر نقش ناموفق بود", "danger");
+      showToast(t("تغییر نقش ناموفق بود"), "danger");
     }
   };
 
@@ -87,7 +90,7 @@ export function AdminUsersPage() {
       showToast(user.deleted ? "کاربر بازیابی شد" : "کاربر حذف شد", "success");
       void load();
     } catch {
-      showToast("عملیات ناموفق بود", "danger");
+      showToast(t("عملیات ناموفق بود"), "danger");
     }
   };
 
@@ -99,17 +102,17 @@ export function AdminUsersPage() {
   const savePassword = async () => {
     if (!passwordUser) return;
     if (newPassword.trim().length < 6) {
-      showToast("رمز عبور حداقل ۶ کاراکتر", "danger");
+      showToast(t("رمز عبور حداقل ۶ کاراکتر"), "danger");
       return;
     }
     try {
       await adminApi.setAdminUserPassword(passwordUser._id, newPassword.trim());
-      showToast("رمز عبور تنظیم شد", "success");
+      showToast(t("رمز عبور تنظیم شد"), "success");
       setPasswordUser(null);
       setNewPassword("");
       void load();
     } catch {
-      showToast("تنظیم رمز ناموفق بود", "danger");
+      showToast(t("تنظیم رمز ناموفق بود"), "danger");
     }
   };
 
@@ -117,7 +120,7 @@ export function AdminUsersPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h3 className="text-lg font-bold">مدیریت کاربران</h3>
+          <h3 className="text-lg font-bold">{t("مدیریت کاربران")}</h3>
           <p className="text-sm text-muted">
             جستجو، ویرایش، تعیین ادمین و حذف نرم
           </p>
@@ -139,7 +142,7 @@ export function AdminUsersPage() {
             <input
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="جستجو نام یا موبایل…"
+              placeholder={t("جستجو نام یا موبایل…")}
               className="w-full rounded-xl border border-border bg-surface px-10 py-2.5 text-sm outline-none focus:border-accent"
             />
           </div>
@@ -170,11 +173,11 @@ export function AdminUsersPage() {
           <table className="min-w-full text-sm">
             <thead className="bg-surface-secondary/70 text-muted">
               <tr>
-                <th className="px-4 py-3 text-start font-medium">کاربر</th>
-                <th className="px-4 py-3 text-start font-medium">موبایل</th>
-                <th className="px-4 py-3 text-start font-medium">موجودی</th>
-                <th className="px-4 py-3 text-start font-medium">وضعیت</th>
-                <th className="px-4 py-3 text-start font-medium">عملیات</th>
+                <th className="px-4 py-3 text-start font-medium">{t("کاربر")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("موبایل")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("موجودی")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("وضعیت")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("عملیات")}</th>
               </tr>
             </thead>
             <tbody>
@@ -234,7 +237,7 @@ export function AdminUsersPage() {
                           size="sm"
                           variant="ghost"
                           onPress={() => openPassword(user)}
-                          aria-label="تغییر رمز عبور"
+                          aria-label={t("تغییر رمز عبور")}
                         >
                           <Lock size={16} />
                         </Button>
@@ -297,7 +300,7 @@ export function AdminUsersPage() {
             <Modal.Dialog className="max-w-md">
               <Modal.CloseTrigger />
               <Modal.Header>
-                <Modal.Heading>ویرایش کاربر</Modal.Heading>
+                <Modal.Heading>{t("ویرایش کاربر")}</Modal.Heading>
               </Modal.Header>
               <Modal.Body className="space-y-3">
                 <input
@@ -306,7 +309,7 @@ export function AdminUsersPage() {
                     setEditForm((f) => ({ ...f, firstName: e.target.value }))
                   }
                   className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                  placeholder="نام"
+                  placeholder={t("نام")}
                 />
                 <input
                   value={editForm.lastName}
@@ -314,7 +317,7 @@ export function AdminUsersPage() {
                     setEditForm((f) => ({ ...f, lastName: e.target.value }))
                   }
                   className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                  placeholder="نام خانوادگی"
+                  placeholder={t("نام خانوادگی")}
                 />
                 <input
                   type="number"
@@ -326,7 +329,7 @@ export function AdminUsersPage() {
                     }))
                   }
                   className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                  placeholder="موجودی"
+                  placeholder={t("موجودی")}
                 />
                 <label className="flex items-center gap-2 text-sm">
                   <Switch
@@ -347,7 +350,7 @@ export function AdminUsersPage() {
                 <Button variant="secondary" onPress={() => setEditing(null)}>
                   انصراف
                 </Button>
-                <Button onPress={() => void saveEdit()}>ذخیره</Button>
+                <Button onPress={() => void saveEdit()}>{t("ذخیره")}</Button>
               </Modal.Footer>
             </Modal.Dialog>
           </Modal.Container>
@@ -360,7 +363,7 @@ export function AdminUsersPage() {
             <Modal.Dialog className="max-w-md">
               <Modal.CloseTrigger />
               <Modal.Header>
-                <Modal.Heading>تغییر رمز عبور</Modal.Heading>
+                <Modal.Heading>{t("تغییر رمز عبور")}</Modal.Heading>
               </Modal.Header>
               <Modal.Body className="space-y-3">
                 {passwordUser ? (
@@ -377,7 +380,7 @@ export function AdminUsersPage() {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                  placeholder="رمز عبور جدید (حداقل ۶ کاراکتر)"
+                  placeholder={t("رمز عبور جدید (حداقل ۶ کاراکتر)")}
                   autoComplete="new-password"
                 />
               </Modal.Body>
@@ -385,7 +388,7 @@ export function AdminUsersPage() {
                 <Button variant="secondary" onPress={() => setPasswordUser(null)}>
                   انصراف
                 </Button>
-                <Button onPress={() => void savePassword()}>ذخیره رمز</Button>
+                <Button onPress={() => void savePassword()}>{t("ذخیره رمز")}</Button>
               </Modal.Footer>
             </Modal.Dialog>
           </Modal.Container>

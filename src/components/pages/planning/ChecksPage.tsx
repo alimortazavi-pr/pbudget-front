@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "@heroui/react";
 import { Add } from "iconsax-reactjs";
@@ -16,6 +18,7 @@ import { usePeriodQuery } from "@/components/pages/planning/usePeriodQuery";
 import { CheckType } from "@/types/enums";
 
 export function ChecksPage() {
+  const { t } = useTranslation();
   const { year, month, goToToday, shiftMonth } = usePeriodQuery(PATHS.CHECKS);
 
   const [loading, setLoading] = useState(true);
@@ -55,8 +58,8 @@ export function ChecksPage() {
   return (
     <div className="space-y-5 pb-6">
       <section className="rounded-3xl bg-gradient-to-br from-amber-500 to-orange-600 p-5 text-white shadow-lg">
-        <p className="text-sm font-medium text-white/80">مدیریت چک</p>
-        <h1 className="mt-1 text-2xl font-bold">چک‌ها</h1>
+        <p className="text-sm font-medium text-white/80">{t("مدیریت چک")}</p>
+        <h1 className="mt-1 text-2xl font-bold">{t("چک‌ها")}</h1>
         <p className="mt-2 text-sm leading-7 text-white/80">
           ثبت چک دریافتی و پرداختی با سررسید و وصول خودکار به تراکنش.
         </p>
@@ -72,13 +75,13 @@ export function ChecksPage() {
       {checkSummary && (
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="glass rounded-2xl p-4">
-            <p className="text-sm text-muted">چک دریافتی باز</p>
+            <p className="text-sm text-muted">{t("چک دریافتی باز")}</p>
             <p className="mt-2 text-xl font-bold">
               {formatPrice(checkSummary.pendingReceivable)}
             </p>
           </div>
           <div className="glass rounded-2xl p-4">
-            <p className="text-sm text-muted">چک پرداختی باز</p>
+            <p className="text-sm text-muted">{t("چک پرداختی باز")}</p>
             <p className="mt-2 text-xl font-bold">
               {formatPrice(checkSummary.pendingPayable)}
             </p>
@@ -92,7 +95,7 @@ export function ChecksPage() {
       </Button>
 
       {loading ? (
-        <p className="text-center text-sm text-muted">در حال بارگذاری…</p>
+        <p className="text-center text-sm text-muted">{t("در حال بارگذاری…")}</p>
       ) : !checks.length ? (
         <p className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted">
           چکی برای این ماه ثبت نشده.
@@ -117,7 +120,7 @@ export function ChecksPage() {
               </div>
 
               {check.status === "cleared" ? (
-                <p className="mt-3 text-sm text-income">وصول / پرداخت شده</p>
+                <p className="mt-3 text-sm text-income">{t("وصول / پرداخت شده")}</p>
               ) : check.status === "pending" ? (
                 <Button
                   size="sm"

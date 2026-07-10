@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { Button, Modal } from "@heroui/react";
@@ -20,6 +22,7 @@ import { setUsers, tokenSelector } from "@/stores/auth";
 import { setProfile, userSelector } from "@/stores/profile";
 
 export function ProfilePage() {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const user = useAppSelector(userSelector);
   const token = useAppSelector(tokenSelector);
@@ -64,7 +67,7 @@ export function ProfilePage() {
       );
       dispatch(setUsers(nextUsers));
       saveDataToLocal({ token: token!, users: nextUsers });
-      showToast("پروفایل ذخیره شد", "success");
+      showToast(t("پروفایل ذخیره شد"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     } finally {
@@ -76,7 +79,7 @@ export function ProfilePage() {
     e?.preventDefault();
     try {
       await profileApi.setPassword(password);
-      showToast("رمز عبور تنظیم شد", "success");
+      showToast(t("رمز عبور تنظیم شد"), "success");
       setPasswordOpen(false);
       setPassword("");
     } catch (err) {
@@ -94,7 +97,7 @@ export function ProfilePage() {
       );
       dispatch(setUsers(nextUsers));
       saveDataToLocal({ token: token!, users: nextUsers });
-      showToast("موبایل تأیید شد", "success");
+      showToast(t("موبایل تأیید شد"), "success");
       setVerifyOpen(false);
       setCode("");
     } catch (err) {
@@ -106,7 +109,7 @@ export function ProfilePage() {
     if (!user?.mobile) return;
     try {
       await authApi.requestCode(user.mobile);
-      showToast("کد به تلگرام ارسال شد", "success");
+      showToast(t("کد به تلگرام ارسال شد"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     }
@@ -116,7 +119,7 @@ export function ProfilePage() {
     <div className="pb-form-page space-y-6">
       <form onSubmit={(e) => void saveProfile(e)}>
         <div className="glass space-y-4 rounded-2xl p-5">
-          <h2 className="text-lg font-bold">پروفایل</h2>
+          <h2 className="text-lg font-bold">{t("پروفایل")}</h2>
 
           {!user?.isVerifiedMobile && (
             <p className="rounded-xl bg-warning/15 px-3 py-2 text-sm text-warning-foreground">
@@ -130,12 +133,12 @@ export function ProfilePage() {
           )}
 
           <FormInput
-            label="نام"
+            label={t("نام")}
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
           />
           <FormInput
-            label="نام خانوادگی"
+            label={t("نام خانوادگی")}
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
           />
@@ -143,7 +146,7 @@ export function ProfilePage() {
           <div className="space-y-2">
             <div className="flex items-end gap-2">
               <div className="min-w-0 flex-1">
-                <FormInput label="موبایل" value={user?.mobile ?? ""} readOnly />
+                <FormInput label={t("موبایل")} value={user?.mobile ?? ""} readOnly />
               </div>
               <Button
                 type="button"
@@ -197,7 +200,7 @@ export function ProfilePage() {
         <div className="glass rounded-2xl p-5">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h2 className="text-lg font-bold">پنل ادمین</h2>
+              <h2 className="text-lg font-bold">{t("پنل ادمین")}</h2>
               <p className="mt-1 text-sm text-muted">
                 مدیریت کاربران، دیتابیس، بکاپ و مانیتورینگ
               </p>
@@ -224,12 +227,12 @@ export function ProfilePage() {
         <AppModalSheet>
           <form onSubmit={(e) => void savePassword(e)} className={modalSheetFormClass}>
             <AppModalHeader onClose={() => setPasswordOpen(false)}>
-              <Modal.Heading>رمز عبور</Modal.Heading>
+              <Modal.Heading>{t("رمز عبور")}</Modal.Heading>
             </AppModalHeader>
             <Modal.Body className={modalSheetBodyClass}>
               <FormInput
                 type="password"
-                label="رمز عبور جدید"
+                label={t("رمز عبور جدید")}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -238,7 +241,7 @@ export function ProfilePage() {
               <Button type="button" variant="ghost" onPress={() => setPasswordOpen(false)}>
                 انصراف
               </Button>
-              <Button type="submit">ذخیره</Button>
+              <Button type="submit">{t("ذخیره")}</Button>
             </Modal.Footer>
           </form>
         </AppModalSheet>
@@ -248,10 +251,10 @@ export function ProfilePage() {
         <AppModalSheet>
           <form onSubmit={(e) => void verifyMobile(e)} className={modalSheetFormClass}>
             <AppModalHeader onClose={() => setVerifyOpen(false)}>
-              <Modal.Heading>تأیید موبایل</Modal.Heading>
+              <Modal.Heading>{t("تأیید موبایل")}</Modal.Heading>
             </AppModalHeader>
             <Modal.Body className={`${modalSheetBodyClass} space-y-4`}>
-              <OtpCodeField label="کد تأیید تلگرام" value={code} onChange={setCode} />
+              <OtpCodeField label={t("کد تأیید تلگرام")} value={code} onChange={setCode} />
               <div className="flex justify-end">
                 <Button
                   type="button"
@@ -267,7 +270,7 @@ export function ProfilePage() {
               <Button type="button" variant="ghost" onPress={() => setVerifyOpen(false)}>
                 انصراف
               </Button>
-              <Button type="submit">تأیید</Button>
+              <Button type="submit">{t("تأیید")}</Button>
             </Modal.Footer>
           </form>
         </AppModalSheet>

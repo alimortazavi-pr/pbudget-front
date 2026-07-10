@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -59,6 +61,7 @@ function choiceIcon(kind: string) {
 }
 
 export function WorkspacePickerPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const isAuth = useAppSelector(isAuthSelector);
   const user = useAppSelector(userSelector);
@@ -130,7 +133,7 @@ export function WorkspacePickerPage() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-muted">{APP_NAME_FA}</p>
-            <h1 className="mt-1 text-2xl font-bold md:text-3xl">ادامه از کجا؟</h1>
+            <h1 className="mt-1 text-2xl font-bold md:text-3xl">{t("ادامه از کجا؟")}</h1>
           </div>
           <ThemeToggle />
         </div>

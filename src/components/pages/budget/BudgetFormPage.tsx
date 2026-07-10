@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
@@ -82,6 +84,7 @@ function buildMoreHint(parts: string[]) {
 }
 
 export function BudgetFormPage({ budget }: BudgetFormPageProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const user = useAppSelector(userSelector);
@@ -295,7 +298,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
 
     if (needsPreferencesOnboarding && !user?.preferences?.configured) {
       setPrefsModalOpen(true);
-      showToast("ابتدا نوع ارز و تاریخ را انتخاب کنید");
+      showToast(t("ابتدا نوع ارز و تاریخ را انتخاب کنید"));
       return;
     }
 
@@ -320,20 +323,20 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
     }
 
     if (ventureLedger.enabled && projectBlockedForVenture) {
-      showToast("تراکنش نمی‌تواند هم‌زمان به پروژه و کسب‌وکار مشترک وصل شود");
+      showToast(t("تراکنش نمی‌تواند هم‌زمان به پروژه و کسب‌وکار مشترک وصل شود"));
       return;
     }
 
     if (ventureLedger.enabled && !existingVentureId) {
       if (!ventureLedger.ventureId) {
         setMoreOpen(true);
-        showToast("کسب‌وکار مورد نظر را انتخاب کنید");
+        showToast(t("کسب‌وکار مورد نظر را انتخاب کنید"));
         return;
       }
     }
 
     if (!payload.price || !payload.category || !payload.year || !payload.month || !payload.day) {
-      showToast("مبلغ، دسته‌بندی و تاریخ الزامی است");
+      showToast(t("مبلغ، دسته‌بندی و تاریخ الزامی است"));
       return;
     }
 
@@ -342,12 +345,12 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
     if (debtLedger.enabled && canAttachDebt) {
       if (debtLedger.mode === "create" && !debtLedger.person.trim()) {
         setMoreOpen(true);
-        showToast("نام طرف حساب الزامی است");
+        showToast(t("نام طرف حساب الزامی است"));
         return;
       }
       if (isSettleDebtMode(debtLedger.mode) && !debtLedger.settleDebtId) {
         setMoreOpen(true);
-        showToast("طلب یا بدهی مورد نظر را انتخاب کنید");
+        showToast(t("طلب یا بدهی مورد نظر را انتخاب کنید"));
         return;
       }
     }
@@ -370,16 +373,16 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
               person: debtLedger.person.trim(),
               amount: toEnglishDigits(price),
             });
-            showToast("تراکنش ویرایش و طلب/بدهی ثبت شد", "success");
+            showToast(t("تراکنش ویرایش و طلب/بدهی ثبت شد"), "success");
           } else {
             await debtsApi.settleDebt(debtLedger.settleDebtId, {
               budgetId: budget._id,
               amount: toEnglishDigits(price),
             });
-            showToast("تراکنش ویرایش و طلب/بدهی تسویه شد", "success");
+            showToast(t("تراکنش ویرایش و طلب/بدهی تسویه شد"), "success");
           }
         } else {
-          showToast("تراکنش ویرایش شد", "success");
+          showToast(t("تراکنش ویرایش شد"), "success");
         }
       } else {
         const res = await budgetsApi.createBudget(payload);
@@ -394,16 +397,16 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
               person: debtLedger.person.trim(),
               amount: toEnglishDigits(price),
             });
-            showToast("تراکنش و طلب/بدهی ثبت شد", "success");
+            showToast(t("تراکنش و طلب/بدهی ثبت شد"), "success");
           } else {
             await debtsApi.settleDebt(debtLedger.settleDebtId, {
               budgetId: res.budget._id,
               amount: toEnglishDigits(price),
             });
-            showToast("تراکنش ثبت و طلب/بدهی تسویه شد", "success");
+            showToast(t("تراکنش ثبت و طلب/بدهی تسویه شد"), "success");
           }
         } else {
-          showToast("تراکنش ثبت شد", "success");
+          showToast(t("تراکنش ثبت شد"), "success");
         }
       }
 
@@ -521,8 +524,8 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
           />
 
           <FormCategoryComboBox
-            label="دسته‌بندی"
-            placeholder="جستجو یا انتخاب دسته‌بندی"
+            label={t("دسته‌بندی")}
+            placeholder={t("جستجو یا انتخاب دسته‌بندی")}
             selectedKey={category || undefined}
             onSelectionChange={(key) => setCategory(key)}
             options={categoryOptions}
@@ -542,7 +545,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
           ) : null}
 
           <FormTextArea
-            label="توضیحات"
+            label={t("توضیحات")}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
@@ -561,7 +564,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
                     ? "کارت پرداخت (مبدا)"
                     : "کارت دریافت (مقصد)"
                 }
-                placeholder="بدون کارت"
+                placeholder={t("بدون کارت")}
                 selectedKey={paymentCardId || "none"}
                 onSelectionChange={(key) =>
                   setPaymentCardId(key === "none" ? "" : key)

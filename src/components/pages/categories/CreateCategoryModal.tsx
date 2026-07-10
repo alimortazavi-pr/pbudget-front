@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useMemo, useState, type FormEvent } from "react";
 import { Button, Modal, Switch } from "@heroui/react";
 
@@ -28,6 +30,7 @@ export function CreateCategoryModal({
   onOpenChange,
   onCreated,
 }: CreateCategoryModalProps) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const categories = useAppSelector(categoriesSelector);
   const user = useAppSelector(userSelector);
@@ -47,7 +50,7 @@ export function CreateCategoryModal({
   async function save(e?: FormEvent) {
     e?.preventDefault();
     if (!title.trim()) {
-      showToast("عنوان دسته‌بندی الزامی است");
+      showToast(t("عنوان دسته‌بندی الزامی است"));
       return;
     }
 
@@ -61,7 +64,7 @@ export function CreateCategoryModal({
         monthlyLimit: monthlyLimit.trim() || "0",
       });
       dispatch(setCategories([...(categories ?? []), created]));
-      showToast("دسته‌بندی ایجاد شد", "success");
+      showToast(t("دسته‌بندی ایجاد شد"), "success");
       onCreated?.(created);
       setTitle("");
       setParentId("");
@@ -81,18 +84,18 @@ export function CreateCategoryModal({
       <AppModalDialog>
         <form onSubmit={(e) => void save(e)}>
           <AppModalHeader onClose={() => onOpenChange(false)}>
-            <Modal.Heading>ایجاد دسته‌بندی</Modal.Heading>
+            <Modal.Heading>{t("ایجاد دسته‌بندی")}</Modal.Heading>
           </AppModalHeader>
           <Modal.Body className="space-y-4">
             <FormInput
-              label="عنوان"
+              label={t("عنوان")}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               autoFocus
             />
             <FormSelect
-              label="دسته والد"
-              placeholder="بدون والد"
+              label={t("دسته والد")}
+              placeholder={t("بدون والد")}
               selectedKey={parentId || "none"}
               onSelectionChange={(key) => setParentId(key === "none" ? "" : key)}
               options={parentOptions}
@@ -102,12 +105,12 @@ export function CreateCategoryModal({
               label={`سقف ماهانه (${currencyLabel(preferredCurrency)})`}
               value={monthlyLimit}
               onChange={setMonthlyLimit}
-              placeholder="۰ = بدون محدودیت"
+              placeholder={t("۰ = بدون محدودیت")}
             />
             <div className="flex items-center justify-between rounded-xl border border-border/50 bg-surface-secondary px-3 py-3">
               <div>
-                <p className="text-sm font-medium">نوع پروژه</p>
-                <p className="text-xs text-muted">برای مدیریت قرارداد و پرداخت‌های خرد</p>
+                <p className="text-sm font-medium">{t("نوع پروژه")}</p>
+                <p className="text-xs text-muted">{t("برای مدیریت قرارداد و پرداخت‌های خرد")}</p>
               </div>
               <Switch isSelected={isProjectKind} onChange={setIsProjectKind} size="sm">
                 <Switch.Control>

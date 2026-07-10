@@ -1,11 +1,14 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import Link from "next/link";
 import { DocumentUpload } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 
 export function BankImportPromoBanner() {
+  const { t } = useTranslation();
   return (
     <Link
       href={PATHS.BANK_IMPORT}
@@ -15,12 +18,12 @@ export function BankImportPromoBanner() {
         <DocumentUpload size={22} variant="Bold" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-bold">ورود از صورتحساب بانک</p>
+        <p className="text-sm font-bold">{t("ورود از صورتحساب بانک")}</p>
         <p className="mt-0.5 text-xs text-muted">
           فایل Excel بلوبانک را آپلود کنید و تراکنش‌ها را یکجا ثبت کنید
         </p>
       </div>
-      <span className="shrink-0 text-xs font-semibold text-accent">شروع ←</span>
+      <span className="shrink-0 text-xs font-semibold text-accent">{t("شروع ←")}</span>
     </Link>
   );
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@heroui/react";
@@ -36,6 +38,7 @@ type DashboardPageProps = {
 };
 
 export function DashboardPage({ initialData }: DashboardPageProps) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { hydrated, get } = useHydratedSearchParams();
@@ -261,7 +264,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
       </div>
 
       <div className="flex items-center justify-between pt-1 lg:pt-2">
-        <h3 className="text-base font-semibold lg:text-lg">تراکنش‌ها</h3>
+        <h3 className="text-base font-semibold lg:text-lg">{t("تراکنش‌ها")}</h3>
         <Button
           size="sm"
           variant="ghost"
@@ -289,7 +292,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
       ) : filteredBudgets.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border p-8 text-center lg:p-12">
           <Filter size={32} className="mx-auto mb-3 text-muted" />
-          <p className="font-medium">تراکنشی یافت نشد</p>
+          <p className="font-medium">{t("تراکنشی یافت نشد")}</p>
           <p className="mt-1 text-sm text-muted">
             برای این بازه زمانی هنوز ثبت نشده
           </p>

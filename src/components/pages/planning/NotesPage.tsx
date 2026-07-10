@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Checkbox, Input, Label, Modal, TextField } from "@heroui/react";
@@ -54,6 +56,7 @@ function periodPayload(
 }
 
 export function NotesPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { get } = useHydratedSearchParams();
   const {
@@ -163,7 +166,7 @@ export function NotesPage() {
         setNoteDoc(note);
         lastSavedRef.current = serialized;
         if (!silent) {
-          showToast("ذخیره شد", "success");
+          showToast(t("ذخیره شد"), "success");
         }
       } catch (err) {
         showToast(err instanceof Error ? err.message : "خطا در ذخیره");
@@ -245,7 +248,7 @@ export function NotesPage() {
         });
         setCategories((prev) => [...prev, created]);
       }
-      showToast("ذخیره شد", "success");
+      showToast(t("ذخیره شد"), "success");
       setCategoryModalOpen(false);
       setCategoryTitle("");
       setEditCategory(null);
@@ -263,7 +266,7 @@ export function NotesPage() {
       if (categoryFilter === category._id) {
         setCategoryFilter();
       }
-      showToast("حذف شد", "success");
+      showToast(t("حذف شد"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     }
@@ -284,7 +287,7 @@ export function NotesPage() {
       setNoteDoc(null);
       setLines(linesFromNote(null));
       lastSavedRef.current = "";
-      showToast("یادداشت پاک شد", "success");
+      showToast(t("یادداشت پاک شد"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     } finally {
@@ -301,8 +304,8 @@ export function NotesPage() {
   return (
     <div className="space-y-5 pb-6">
       <section className="rounded-3xl bg-gradient-to-br from-teal-600 to-emerald-600 p-5 text-white shadow-lg">
-        <p className="text-sm font-medium text-white/80">یادداشت مالی</p>
-        <h1 className="mt-1 text-2xl font-bold">یادداشت‌ها</h1>
+        <p className="text-sm font-medium text-white/80">{t("یادداشت مالی")}</p>
+        <h1 className="mt-1 text-2xl font-bold">{t("یادداشت‌ها")}</h1>
         <p className="mt-2 text-sm leading-7 text-white/80">
           متن آزاد و چک‌لیست در یک صفحه، با دسته‌بندی جدا از تراکنش.
         </p>
@@ -347,7 +350,7 @@ export function NotesPage() {
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Note size={18} className="text-accent" variant="Bold" />
-            <h2 className="font-semibold">دسته‌بندی یادداشت</h2>
+            <h2 className="font-semibold">{t("دسته‌بندی یادداشت")}</h2>
           </div>
           <Button size="sm" variant="secondary" onPress={() => openCategoryModal()}>
             <Add size={16} />
@@ -415,7 +418,7 @@ export function NotesPage() {
       </section>
 
       {loading ? (
-        <p className="text-center text-sm text-muted">در حال بارگذاری…</p>
+        <p className="text-center text-sm text-muted">{t("در حال بارگذاری…")}</p>
       ) : !canEdit ? (
         <section className="space-y-4 rounded-2xl border border-border bg-surface p-4">
           <p className="text-sm leading-7 text-muted">
@@ -487,9 +490,9 @@ export function NotesPage() {
             </AppModalHeader>
             <Modal.Body>
               <TextField name="categoryTitle" isRequired>
-                <Label>عنوان</Label>
+                <Label>{t("عنوان")}</Label>
                 <Input
-                  placeholder="مثلاً: طلب و بدهی"
+                  placeholder={t("مثلاً: طلب و بدهی")}
                   value={categoryTitle}
                   onChange={(e) => setCategoryTitle(e.target.value)}
                 />

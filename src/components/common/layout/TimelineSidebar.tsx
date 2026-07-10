@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Add, Calendar, Category, Chart, Home2, Profile, Setting2 } from "iconsax-reactjs";
@@ -18,11 +20,12 @@ const TIMELINE_PRIMARY = [
 ] as const;
 
 export function TimelineSidebar() {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const { count: pendingInvitesCount } = usePendingInvitesCount();
 
   return (
-    <aside className="pb-timeline-sidebar" aria-label="ناوبری timeline">
+    <aside className="pb-timeline-sidebar" aria-label={t("ناوبری timeline")}>
       <div className="flex h-full flex-col overflow-y-auto p-5 xl:p-6">
         <Link href={PATHS.HOME} className="mb-6 block px-2">
           <AppLogo />

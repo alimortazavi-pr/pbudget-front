@@ -20,22 +20,22 @@ export const ClientProvider: FC<PropsWithChildren> = ({ children }) => {
     <SerwistProvider swUrl="/sw.js">
       <ReduxProvider>
         <ThemeProvider>
-          <VoiceAssistantPreferenceProvider>
-            <MobileOverlayProvider>
-              <VersionProvider>
-                <TourProvider>
-                  <I18nProvider locale="fa-IR">
-                    <RootProvider>
-                      <LanguageProvider>
+          <LanguageProvider>
+            <VoiceAssistantPreferenceProvider>
+              <MobileOverlayProvider>
+                <VersionProvider>
+                  <TourProvider>
+                    <I18nProvider locale="fa-IR">
+                      <RootProvider>
                         <AppShell>{children}</AppShell>
                         <PwaInstallPrompt />
-                      </LanguageProvider>
-                    </RootProvider>
-                  </I18nProvider>
-                </TourProvider>
-              </VersionProvider>
-            </MobileOverlayProvider>
-          </VoiceAssistantPreferenceProvider>
+                      </RootProvider>
+                    </I18nProvider>
+                  </TourProvider>
+                </VersionProvider>
+              </MobileOverlayProvider>
+            </VoiceAssistantPreferenceProvider>
+          </LanguageProvider>
         </ThemeProvider>
       </ReduxProvider>
     </SerwistProvider>

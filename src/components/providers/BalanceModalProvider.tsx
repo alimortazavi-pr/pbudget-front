@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import {
   createContext,
   useCallback,
@@ -50,6 +52,7 @@ function BalanceModalDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const user = useAppSelector(userSelector);
   const [price, setPrice] = useState("");
@@ -73,7 +76,7 @@ function BalanceModalDialog({
     e?.preventDefault();
     const delta = parseInt(parsePriceInput(price, true), 10);
     if (!price.trim() || Number.isNaN(delta) || delta === 0) {
-      showToast("مبلغ تغییر را وارد کنید (مثبت برای افزایش، منفی برای کاهش)");
+      showToast(t("مبلغ تغییر را وارد کنید (مثبت برای افزایش، منفی برای کاهش)"));
       return;
     }
 
@@ -106,7 +109,7 @@ function BalanceModalDialog({
       <AppModalDialog>
         <form onSubmit={(e) => void submit(e)}>
           <AppModalHeader onClose={() => onOpenChange(false)}>
-            <Modal.Heading>تنظیم موجودی</Modal.Heading>
+            <Modal.Heading>{t("تنظیم موجودی")}</Modal.Heading>
           </AppModalHeader>
           <Modal.Body>
             <p className="mb-3 text-sm text-muted">
@@ -138,7 +141,7 @@ function BalanceModalDialog({
               value={price}
               onChange={setPrice}
               allowNegative
-              placeholder="مثلاً ۵۰۰۰۰۰ یا -۲۰۰۰۰۰"
+              placeholder={t("مثلاً ۵۰۰۰۰۰ یا -۲۰۰۰۰۰")}
             />
           </Modal.Body>
           <Modal.Footer>

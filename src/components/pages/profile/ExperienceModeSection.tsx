@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useRouter } from "next/navigation";
 import { Element4, Calendar } from "iconsax-reactjs";
 
@@ -11,6 +13,7 @@ import { PATHS } from "@/common/constants";
 import { useExperience } from "@/components/providers/ExperienceProvider";
 
 export function ExperienceModeSection() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { experienceMode, setExperienceMode, mounted } = useExperience();
 
@@ -31,7 +34,7 @@ export function ExperienceModeSection() {
   return (
     <div className="glass space-y-4 rounded-2xl p-5">
       <div>
-        <h2 className="text-lg font-bold">حالت نمایش</h2>
+        <h2 className="text-lg font-bold">{t("حالت نمایش")}</h2>
         <p className="mt-1 text-sm text-muted">
           معماری و دیزاین کل سایت را عوض کن — کلاسیک همان پنل فعلی است
         </p>

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { Button } from "@heroui/react";
 import { ArrowLeft2, ArrowRight2 } from "iconsax-reactjs";
 
@@ -11,6 +13,7 @@ type PeriodScopeBarProps = {
 };
 
 export function PeriodScopeBar({ compact = false }: PeriodScopeBarProps) {
+  const { t } = useTranslation();
   const {
     duration,
     periodLabel,
@@ -62,7 +65,7 @@ export function PeriodScopeBar({ compact = false }: PeriodScopeBarProps) {
             type="button"
             className="pb-period-label"
             onClick={goToToday}
-            title="برو به امروز"
+            title={t("برو به امروز")}
           >
             {periodLabel}
           </button>

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import Link from "next/link";
 import { Button } from "@heroui/react";
 import { ArrowRight2 } from "iconsax-reactjs";
@@ -17,6 +19,7 @@ export function PricingPage({
 }: {
   initialContent?: ILandingContent;
 }) {
+  const { t } = useTranslation();
   const { content } = useLandingContent(initialContent);
   const isAuth = useAppSelector(isAuthSelector);
   const primaryCta = isAuth ? PATHS.HOME : PATHS.GET_STARTED;
@@ -58,12 +61,12 @@ export function PricingPage({
         />
 
         <div className="mt-14 rounded-3xl border lp-border lp-card p-8 text-center">
-          <h2 className="text-xl font-bold">سؤال دارید؟</h2>
+          <h2 className="text-xl font-bold">{t("سؤال دارید؟")}</h2>
           <p className="mt-2 text-sm lp-muted">
             برای دمو کسب‌وکار یا پلن سازمانی با ما در تماس باشید.
           </p>
           <Link href={`${PATHS.LANDING}#contact`} className="mt-6 inline-block">
-            <Button size="lg">تماس با ما</Button>
+            <Button size="lg">{t("تماس با ما")}</Button>
           </Link>
         </div>
       </main>

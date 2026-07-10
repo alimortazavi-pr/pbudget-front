@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
@@ -33,6 +35,7 @@ export function TimelineAppShell({
   hideTabBar = false,
   showPeriodBar = true,
 }: TimelineAppShellProps) {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const router = useRouter();
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -51,7 +54,7 @@ export function TimelineAppShell({
                   isIconOnly
                   variant="ghost"
                   size="sm"
-                  aria-label="بازگشت"
+                  aria-label={t("بازگشت")}
                   onPress={() => router.back()}
                 >
                   <ArrowRight2 size={20} />
@@ -70,7 +73,7 @@ export function TimelineAppShell({
                 variant="ghost"
                 size="sm"
                 className="lg:hidden"
-                aria-label="منو"
+                aria-label={t("منو")}
                 onPress={() => setDrawerOpen(true)}
               >
                 <Menu size={20} />
@@ -104,7 +107,7 @@ export function TimelineAppShell({
         </div>
 
         {!hideTabBar && (
-          <nav className="pb-tab-bar lg:hidden" aria-label="ناوبری timeline">
+          <nav className="pb-tab-bar lg:hidden" aria-label={t("ناوبری timeline")}>
             <div className="pb-tab-bar-inner">
               {TIMELINE_TAB_ITEMS.map((item) => {
                 if ("fab" in item && item.fab) {

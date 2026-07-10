@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useState, type FormEvent } from "react";
 import { Button, Modal } from "@heroui/react";
 import { Add, Card, Edit2, Star1, Trash } from "iconsax-reactjs";
@@ -24,6 +26,7 @@ import { useAppSelector } from "@/stores/hooks";
 import { userSelector } from "@/stores/profile";
 
 export function PaymentCardsPage() {
+  const { t } = useTranslation();
   const user = useAppSelector(userSelector);
   const [cards, setCards] = useState<IPaymentCard[]>([]);
   const [defaultCardId, setDefaultCardId] = useState<string | null>(null);
@@ -93,7 +96,7 @@ export function PaymentCardsPage() {
         setCards((prev) => [...prev, created]);
       }
 
-      showToast("ذخیره شد", "success");
+      showToast(t("ذخیره شد"), "success");
       setOpen(false);
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
@@ -110,7 +113,7 @@ export function PaymentCardsPage() {
         setDefaultPaymentCardId(null, user?._id);
         setDefaultCardId(null);
       }
-      showToast("حذف شد", "success");
+      showToast(t("حذف شد"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     }
@@ -120,7 +123,7 @@ export function PaymentCardsPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold">کارت‌های من</h2>
+          <h2 className="text-lg font-bold">{t("کارت‌های من")}</h2>
           <p className="text-sm text-muted">
             مبدا پرداخت یا مقصد دریافت تراکنش‌ها. با ستاره، کارت مبدا پیش‌فرض را
             انتخاب کنید.
@@ -133,11 +136,11 @@ export function PaymentCardsPage() {
       </div>
 
       {loading ? (
-        <div className="glass rounded-2xl p-10 text-center text-muted">در حال بارگذاری…</div>
+        <div className="glass rounded-2xl p-10 text-center text-muted">{t("در حال بارگذاری…")}</div>
       ) : cards.length === 0 ? (
         <div className="glass rounded-2xl p-10 text-center">
           <Card size={36} className="mx-auto mb-3 text-muted" />
-          <p className="text-muted">هنوز کارتی ثبت نشده</p>
+          <p className="text-muted">{t("هنوز کارتی ثبت نشده")}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -199,21 +202,21 @@ export function PaymentCardsPage() {
               <Modal.Heading>{editItem ? "ویرایش کارت" : "کارت جدید"}</Modal.Heading>
             </AppModalHeader>
             <Modal.Body className="space-y-4">
-              <FormInput label="نام کارت" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="مثلاً کارت ملی" />
-              <FormInput label="بانک — اختیاری" value={bankName} onChange={(e) => setBankName(e.target.value)} />
+              <FormInput label={t("نام کارت")} value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("مثلاً کارت ملی")} />
+              <FormInput label={t("بانک — اختیاری")} value={bankName} onChange={(e) => setBankName(e.target.value)} />
               <FormInput
-                label="شماره کارت — اختیاری"
+                label={t("شماره کارت — اختیاری")}
                 value={formatCardNumberDisplay(lastFour)}
                 onChange={(e) => setLastFour(normalizeCardNumber(e.target.value))}
                 inputMode="numeric"
-                placeholder="۱۶ رقم"
+                placeholder={t("۱۶ رقم")}
                 maxLength={19}
               />
               <CategoryColorPicker value={color} onChange={setColor} />
             </Modal.Body>
             <Modal.Footer>
-              <Button type="button" variant="ghost" onPress={() => setOpen(false)}>انصراف</Button>
-              <Button type="submit" isPending={saving}>ذخیره</Button>
+              <Button type="button" variant="ghost" onPress={() => setOpen(false)}>{t("انصراف")}</Button>
+              <Button type="submit" isPending={saving}>{t("ذخیره")}</Button>
             </Modal.Footer>
           </form>
         </AppModalDialog>

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@heroui/react";
 import { SearchNormal1, DocumentDownload } from "iconsax-reactjs";
@@ -17,6 +19,7 @@ const ACTION_LABELS: Record<string, string> = {
 };
 
 export function AdminAuthAuditPage() {
+  const { t } = useTranslation();
   const [logs, setLogs] = useState<AdminAuthAuditLog[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -34,7 +37,7 @@ export function AdminAuthAuditPage() {
       setLogs(data.items);
       setTotalPages(data.pagination.totalPages);
     } catch {
-      showToast("بارگذاری لاگ‌های ورود ناموفق بود", "danger");
+      showToast(t("بارگذاری لاگ‌های ورود ناموفق بود"), "danger");
     } finally {
       setLoading(false);
     }
@@ -48,7 +51,7 @@ export function AdminAuthAuditPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h3 className="text-lg font-bold">لاگ ورود و احراز هویت</h3>
+          <h3 className="text-lg font-bold">{t("لاگ ورود و احراز هویت")}</h3>
           <p className="text-sm text-muted">
             ثبت‌نام، ورود و انتخاب فضای کاری کاربران
           </p>
@@ -71,7 +74,7 @@ export function AdminAuthAuditPage() {
               <input
                 value={actionInput}
                 onChange={(e) => setActionInput(e.target.value)}
-                placeholder="فیلتر action…"
+                placeholder={t("فیلتر action…")}
                 className="w-full rounded-xl border border-border bg-surface px-10 py-2.5 text-sm outline-none focus:border-accent"
               />
             </div>
@@ -86,7 +89,7 @@ export function AdminAuthAuditPage() {
                 .downloadAuthAuditExport({
                   action: actionFilter || undefined,
                 })
-                .catch(() => showToast("خروجی CSV ناموفق بود", "danger"));
+                .catch(() => showToast(t("خروجی CSV ناموفق بود"), "danger"));
             }}
           >
             <DocumentDownload size={18} />
@@ -100,10 +103,10 @@ export function AdminAuthAuditPage() {
           <table className="min-w-full text-sm">
             <thead className="bg-surface-secondary/70 text-muted">
               <tr>
-                <th className="px-4 py-3 text-start font-medium">زمان</th>
-                <th className="px-4 py-3 text-start font-medium">کاربر</th>
-                <th className="px-4 py-3 text-start font-medium">عملیات</th>
-                <th className="px-4 py-3 text-start font-medium">جزئیات</th>
+                <th className="px-4 py-3 text-start font-medium">{t("زمان")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("کاربر")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("عملیات")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("جزئیات")}</th>
                 <th className="px-4 py-3 text-start font-medium">IP</th>
               </tr>
             </thead>

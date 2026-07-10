@@ -31,7 +31,7 @@ export function ShellSidebar() {
   );
 
   return (
-    <aside className="pb-sidebar" aria-label="ناوبری دسکتاپ" data-tour="sidebar">
+    <aside className="pb-sidebar" aria-label={t("ناوبری دسکتاپ")} data-tour="sidebar">
       <div className="flex h-full flex-col overflow-y-auto p-5 xl:p-6">
         <Link href={PATHS.HOME} className="mb-6 block px-2">
           <AppLogo />

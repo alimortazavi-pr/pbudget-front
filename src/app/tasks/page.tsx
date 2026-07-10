@@ -1,12 +1,19 @@
-import { Suspense } from "react";
+"use client";
 
+import { Suspense } from "react";
+import { useTranslation } from "@/components/providers/LanguageProvider";
 import { TasksPage } from "@/components/pages/tasks/TasksPage";
 
-export const dynamic = "force-dynamic";
+function TasksLoading() {
+  const { t } = useTranslation();
+  return (
+    <div className="p-6 text-center text-muted">{t("در حال بارگذاری…")}</div>
+  );
+}
 
 export default function Page() {
   return (
-    <Suspense fallback={<div className="p-6 text-center text-muted">در حال بارگذاری…</div>}>
+    <Suspense fallback={<TasksLoading />}>
       <TasksPage />
     </Suspense>
   );

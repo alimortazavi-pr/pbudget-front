@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import {
   formatDurationMinutes,
   formatDurationShort,
@@ -30,13 +32,14 @@ export function WorkMonthCalendar({
   onSelectDay,
   hint = "روی هر روز بزنید تا جزئیات را ببینید",
 }: WorkMonthCalendarProps) {
+  const { t } = useTranslation();
   const now = getJalaliNow();
   const daysInMonth = getJalaliDaysInMonth(year, month);
   const leadingBlanks = getJalaliFirstWeekdayIndex(year, month);
 
   return (
     <section className="glass space-y-3 rounded-2xl p-4">
-      <h2 className="font-semibold">تقویم کارکرد ماه</h2>
+      <h2 className="font-semibold">{t("تقویم کارکرد ماه")}</h2>
       <p className="text-xs text-muted">{hint}</p>
       <div className="grid grid-cols-7 gap-1.5 text-center text-xs text-muted">
         {JALALI_WEEKDAYS_SHORT.map((label) => (

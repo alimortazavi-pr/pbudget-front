@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@heroui/react";
 import DateObject from "react-date-object";
@@ -25,7 +27,8 @@ type ReminderDateTimePickerProps = ReminderDateTimeValue & {
   onDraftChange: (value: ReminderDateTimeValue) => void;
 };
 
-function toDateObject(value: ReminderDateTimeValue) {
+function toDateObject(value: ReminderDateTimeValue) {  const { t } = useTranslation();
+
   return new DateObject({
     year: value.year,
     month: value.month,
@@ -57,6 +60,7 @@ export function ReminderDateTimePicker({
   minute,
   onDraftChange,
 }: ReminderDateTimePickerProps) {
+  const { t } = useTranslation();
   const pickerRef = useRef<DatePickerRef>(null);
   const { calendarOpen, setCalendarOpen } = useDatePickerOverlay(false);
   const [draft, setDraft] = useState<ReminderDateTimeValue>({
@@ -108,7 +112,7 @@ export function ReminderDateTimePicker({
         calendarPosition="top-center"
         containerClassName="w-full"
         inputClass="pb-form-date-input"
-        placeholder="تاریخ و ساعت"
+        placeholder={t("تاریخ و ساعت")}
       />
       <div className="flex justify-end">
         <Button

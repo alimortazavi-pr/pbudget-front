@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@heroui/react";
 import { Chart, TrendDown, TrendUp } from "iconsax-reactjs";
@@ -30,6 +32,7 @@ export function PartnerSettlementPanel({
   isOwner = false,
   onSettlementApplied,
 }: PartnerSettlementPanelProps) {
+  const { t } = useTranslation();
   const categories = useAppSelector(categoriesSelector);
   const [settlement, setSettlement] = useState<IPartnerSettlement | null>(null);
   const [batches, setBatches] = useState<IPartnerSettlementBatch[]>([]);
@@ -75,7 +78,7 @@ export function PartnerSettlementPanel({
 
   async function applySettlement() {
     if (!categoryId) {
-      showToast("دسته‌بندی بدهی را انتخاب کنید");
+      showToast(t("دسته‌بندی بدهی را انتخاب کنید"));
       return;
     }
 
@@ -105,7 +108,7 @@ export function PartnerSettlementPanel({
   }
 
   if (loading) {
-    return <p className="text-sm text-muted">در حال محاسبه سهم‌ها…</p>;
+    return <p className="text-sm text-muted">{t("در حال محاسبه سهم‌ها…")}</p>;
   }
 
   if (!settlement) {
@@ -124,7 +127,7 @@ export function PartnerSettlementPanel({
             <Chart size={20} />
           </div>
           <div>
-            <h3 className="text-base font-bold">تقسیم درآمد و هزینه</h3>
+            <h3 className="text-base font-bold">{t("تقسیم درآمد و هزینه")}</h3>
             <p className="mt-0.5 text-xs text-muted">
               سهم هر نفر از کل تراکنش‌های مرتبط
             </p>
@@ -140,19 +143,19 @@ export function PartnerSettlementPanel({
         <>
           <div className="grid grid-cols-3 gap-px border-b border-border/50 bg-border/40">
             <div className="bg-background px-3 py-3 text-center sm:px-4">
-              <p className="text-[11px] text-muted">دریافت</p>
+              <p className="text-[11px] text-muted">{t("دریافت")}</p>
               <p className="mt-1 text-sm font-bold text-income sm:text-base">
                 {formatPrice(settlement.receivedAmount)}
               </p>
             </div>
             <div className="bg-background px-3 py-3 text-center sm:px-4">
-              <p className="text-[11px] text-muted">هزینه</p>
+              <p className="text-[11px] text-muted">{t("هزینه")}</p>
               <p className="mt-1 text-sm font-bold text-expense sm:text-base">
                 {formatPrice(settlement.spentAmount)}
               </p>
             </div>
             <div className="bg-background px-3 py-3 text-center sm:px-4">
-              <p className="text-[11px] text-muted">سود خالص</p>
+              <p className="text-[11px] text-muted">{t("سود خالص")}</p>
               <p
                 className={`mt-1 text-sm font-bold sm:text-base ${
                   settlement.profitAmount >= 0 ? "text-income" : "text-expense"
@@ -195,18 +198,18 @@ export function PartnerSettlementPanel({
                         )}{" "}
                         {formatPrice(Math.abs(row.profitShare))}
                       </p>
-                      <p className="text-[11px] text-muted">سهم از سود</p>
+                      <p className="text-[11px] text-muted">{t("سهم از سود")}</p>
                     </div>
                   </div>
                   <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
                     <div className="rounded-lg bg-income-soft/40 px-2 py-1.5">
-                      <span className="text-muted">سهم دریافت: </span>
+                      <span className="text-muted">{t("سهم دریافت:")}</span>
                       <span className="font-medium text-income">
                         {formatPrice(row.receivedShare)}
                       </span>
                     </div>
                     <div className="rounded-lg bg-expense-soft/40 px-2 py-1.5">
-                      <span className="text-muted">سهم هزینه: </span>
+                      <span className="text-muted">{t("سهم هزینه:")}</span>
                       <span className="font-medium text-expense">
                         {formatPrice(row.spentShare)}
                       </span>
@@ -227,10 +230,10 @@ export function PartnerSettlementPanel({
 
       {isOwner && settlement.hasFinancials && partnerDebts.length > 0 ? (
         <div className="space-y-3 border-t border-border/40 px-4 py-4 sm:px-5">
-          <p className="text-sm font-medium">ثبت رسمی در طلب و بدهی</p>
+          <p className="text-sm font-medium">{t("ثبت رسمی در طلب و بدهی")}</p>
           <FormSelect
-            label="دسته‌بندی"
-            placeholder="انتخاب دسته"
+            label={t("دسته‌بندی")}
+            placeholder={t("انتخاب دسته")}
             selectedKey={categoryId}
             onSelectionChange={setCategoryId}
             options={categoryOptions}
@@ -247,7 +250,7 @@ export function PartnerSettlementPanel({
 
       {isOwner && batches.length > 0 ? (
         <div className="space-y-2 border-t border-border/40 px-4 py-4 sm:px-5">
-          <p className="text-sm font-medium">تسویه‌های ثبت‌شده</p>
+          <p className="text-sm font-medium">{t("تسویه‌های ثبت‌شده")}</p>
           {batches.map((batch) => (
             <div
               key={batch._id}

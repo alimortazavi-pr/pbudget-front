@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useState } from "react";
 import { Button, Modal } from "@heroui/react";
 
@@ -31,6 +33,7 @@ export function AddPartnerModal({
   contextId,
   onCreated,
 }: AddPartnerModalProps) {
+  const { t } = useTranslation();
   const [step, setStep] = useState<Step>("mobile");
   const [mobile, setMobile] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -65,7 +68,7 @@ export function AddPartnerModal({
   async function checkMobile() {
     const normalized = toEnglishDigits(mobile.trim());
     if (normalized.length < 10) {
-      showToast("شماره موبایل معتبر نیست");
+      showToast(t("شماره موبایل معتبر نیست"));
       return;
     }
 
@@ -88,13 +91,13 @@ export function AddPartnerModal({
   async function submitPartner() {
     const normalized = toEnglishDigits(mobile.trim());
     if (!exists && !displayName.trim()) {
-      showToast("نام شریک الزامی است");
+      showToast(t("نام شریک الزامی است"));
       return;
     }
 
     const share = sharePercent ? Number(toEnglishDigits(sharePercent)) : 0;
     if (sharePercent && (share < 0 || share > 100)) {
-      showToast("سهم باید بین ۰ تا ۱۰۰ باشد");
+      showToast(t("سهم باید بین ۰ تا ۱۰۰ باشد"));
       return;
     }
 
@@ -129,9 +132,9 @@ export function AddPartnerModal({
     if (!inviteLink) return;
     try {
       await navigator.clipboard.writeText(inviteLink);
-      showToast("لینک کپی شد", "success");
+      showToast(t("لینک کپی شد"), "success");
     } catch {
-      showToast("کپی لینک ممکن نشد");
+      showToast(t("کپی لینک ممکن نشد"));
     }
   }
 
@@ -148,15 +151,15 @@ export function AddPartnerModal({
     <AppModal open={open} onOpenChange={onOpenChange}>
       <AppModalDialog className="max-w-lg">
         <AppModalHeader onClose={closeModal}>
-          <Modal.Heading>افزودن شریک</Modal.Heading>
+          <Modal.Heading>{t("افزودن شریک")}</Modal.Heading>
           <p className="mt-1 text-sm text-muted">{stepDescription}</p>
         </AppModalHeader>
         <Modal.Body className="space-y-4">
         {step === "mobile" ? (
           <>
             <FormInput
-              label="شماره موبایل"
-              placeholder="۰۹۱۲۳۴۵۶۷۸۹"
+              label={t("شماره موبایل")}
+              placeholder={t("۰۹۱۲۳۴۵۶۷۸۹")}
               value={mobile}
               onChange={(e) => setMobile(e.target.value)}
               inputMode="tel"
@@ -182,22 +185,22 @@ export function AddPartnerModal({
               </div>
             ) : (
               <FormInput
-                label="نام شریک"
-                placeholder="مثلاً علی رضایی"
+                label={t("نام شریک")}
+                placeholder={t("مثلاً علی رضایی")}
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
               />
             )}
 
             <FormInput
-              label="سهم (درصد) — اختیاری"
-              placeholder="مثلاً ۵۰"
+              label={t("سهم (درصد) — اختیاری")}
+              placeholder={t("مثلاً ۵۰")}
               value={sharePercent}
               onChange={(e) => setSharePercent(e.target.value)}
               inputMode="numeric"
             />
             <FormSelect
-              label="سطح دسترسی"
+              label={t("سطح دسترسی")}
               selectedKey={permissionLevel}
               onSelectionChange={setPermissionLevel}
               options={[
@@ -206,7 +209,7 @@ export function AddPartnerModal({
               ]}
             />
             <FormTextArea
-              label="یادداشت — اختیاری"
+              label={t("یادداشت — اختیاری")}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
             />
@@ -240,7 +243,7 @@ export function AddPartnerModal({
 
             {inviteLink ? (
               <div className="space-y-2 rounded-xl bg-surface-secondary p-3">
-                <p className="text-xs text-muted">لینک تأیید برای شریک</p>
+                <p className="text-xs text-muted">{t("لینک تأیید برای شریک")}</p>
                 <p className="break-all text-sm font-medium">{inviteLink}</p>
                 <Button
                   variant="secondary"
@@ -261,7 +264,7 @@ export function AddPartnerModal({
 
             {exists && !telegramSent && hasTelegram === false ? (
               <div className="space-y-2 rounded-xl bg-warning/10 px-3 py-2 text-sm text-warning-foreground">
-                <p>تلگرام این کاربر فعال نیست — لینک را دستی برایش بفرستید</p>
+                <p>{t("تلگرام این کاربر فعال نیست — لینک را دستی برایش بفرستید")}</p>
                 {inviteLink ? (
                   <>
                     <p className="break-all text-xs font-medium text-foreground">{inviteLink}</p>

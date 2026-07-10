@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import {
   ComboBox,
   Input,
@@ -107,7 +109,8 @@ export function FormCategoryComboBox({
   options,
   emptyMessage = "دسته‌ای یافت نشد",
   isDisabled,
-}: FormCategoryComboBoxProps) {
+}: FormCategoryComboBoxProps) {  const { t } = useTranslation();
+
   const { wrapperRef, portalProps } = useFormModalPortalPopover();
   const isNeutralSelection = !selectedKey || selectedKey === "all";
 
@@ -225,7 +228,8 @@ export function FormPriceInput({
   currency: _currency = "toman",
   onFocus,
   ...props
-}: FormPriceInputProps) {
+}: FormPriceInputProps) {  const { t } = useTranslation();
+
   function handleFocus(event: FocusEvent<HTMLInputElement>) {
     onFocus?.(event);
     scrollFieldIntoView(event.currentTarget);

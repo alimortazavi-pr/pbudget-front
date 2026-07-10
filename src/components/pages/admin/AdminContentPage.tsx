@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useCallback, useEffect, useState } from "react";
 import { Button, Modal, Switch } from "@heroui/react";
 import { Edit2, SearchNormal1, Trash } from "iconsax-reactjs";
@@ -16,6 +18,7 @@ import { showToast } from "@/common/utils/toast";
 type ContentTab = "budgets" | "categories" | "projects";
 
 export function AdminContentPage() {
+  const { t } = useTranslation();
   const [tab, setTab] = useState<ContentTab>("budgets");
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
@@ -59,7 +62,7 @@ export function AdminContentPage() {
         setTotalPages(data.pagination.totalPages);
       }
     } catch {
-      showToast("بارگذاری محتوا ناموفق بود", "danger");
+      showToast(t("بارگذاری محتوا ناموفق بود"), "danger");
     } finally {
       setLoading(false);
     }
@@ -79,7 +82,7 @@ export function AdminContentPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h3 className="text-lg font-bold">مدیریت محتوا</h3>
+          <h3 className="text-lg font-bold">{t("مدیریت محتوا")}</h3>
           <p className="text-sm text-muted">
             مشاهده و ویرایش تراکنش‌ها، دسته‌ها و پروژه‌های کاربران
           </p>
@@ -101,7 +104,7 @@ export function AdminContentPage() {
             <input
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="جستجو…"
+              placeholder={t("جستجو…")}
               className="w-full rounded-xl border border-border bg-surface px-10 py-2.5 text-sm outline-none focus:border-accent"
             />
           </div>
@@ -175,7 +178,7 @@ export function AdminContentPage() {
                     await adminApi.updateAdminBudget(item._id, {
                       deleted: !item.deleted,
                     });
-                    showToast("به‌روزرسانی شد", "success");
+                    showToast(t("به‌روزرسانی شد"), "success");
                     void load();
                   }}
                 />
@@ -223,7 +226,7 @@ export function AdminContentPage() {
                     await adminApi.updateAdminCategory(item._id, {
                       deleted: !item.deleted,
                     });
-                    showToast("به‌روزرسانی شد", "success");
+                    showToast(t("به‌روزرسانی شد"), "success");
                     void load();
                   }}
                 />
@@ -260,7 +263,7 @@ export function AdminContentPage() {
                     await adminApi.updateAdminProject(item._id, {
                       deleted: !item.deleted,
                     });
-                    showToast("به‌روزرسانی شد", "success");
+                    showToast(t("به‌روزرسانی شد"), "success");
                     void load();
                   }}
                 />
@@ -417,6 +420,7 @@ function BudgetEditModal({
   onClose: () => void;
   onSaved: () => void;
 }) {
+  const { t } = useTranslation();
   const [price, setPrice] = useState(0);
   const [description, setDescription] = useState("");
   const [type, setType] = useState(0);
@@ -433,10 +437,10 @@ function BudgetEditModal({
     if (!item) return;
     try {
       await adminApi.updateAdminBudget(item._id, { price, description, type });
-      showToast("تراکنش ذخیره شد", "success");
+      showToast(t("تراکنش ذخیره شد"), "success");
       onSaved();
     } catch {
-      showToast("ذخیره ناموفق بود", "danger");
+      showToast(t("ذخیره ناموفق بود"), "danger");
     }
   };
 
@@ -447,7 +451,7 @@ function BudgetEditModal({
           <Modal.Dialog className="max-w-md">
             <Modal.CloseTrigger />
             <Modal.Header>
-              <Modal.Heading>ویرایش تراکنش</Modal.Heading>
+              <Modal.Heading>{t("ویرایش تراکنش")}</Modal.Heading>
             </Modal.Header>
             <Modal.Body className="space-y-3">
               <input
@@ -455,21 +459,21 @@ function BudgetEditModal({
                 value={price}
                 onChange={(e) => setPrice(Number(e.target.value))}
                 className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                placeholder="مبلغ"
+                placeholder={t("مبلغ")}
               />
               <select
                 value={type}
                 onChange={(e) => setType(Number(e.target.value))}
                 className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
               >
-                <option value={0}>درآمد</option>
-                <option value={1}>هزینه</option>
+                <option value={0}>{t("درآمد")}</option>
+                <option value={1}>{t("هزینه")}</option>
               </select>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                placeholder="توضیح"
+                placeholder={t("توضیح")}
                 rows={3}
               />
             </Modal.Body>
@@ -477,7 +481,7 @@ function BudgetEditModal({
               <Button variant="secondary" onPress={onClose}>
                 انصراف
               </Button>
-              <Button onPress={() => void save()}>ذخیره</Button>
+              <Button onPress={() => void save()}>{t("ذخیره")}</Button>
             </Modal.Footer>
           </Modal.Dialog>
         </Modal.Container>
@@ -495,6 +499,7 @@ function CategoryEditModal({
   onClose: () => void;
   onSaved: () => void;
 }) {
+  const { t } = useTranslation();
   const [title, setTitle] = useState("");
   const [color, setColor] = useState("");
   const [monthlyLimit, setMonthlyLimit] = useState(0);
@@ -515,10 +520,10 @@ function CategoryEditModal({
         color,
         monthlyLimit,
       });
-      showToast("دسته ذخیره شد", "success");
+      showToast(t("دسته ذخیره شد"), "success");
       onSaved();
     } catch {
-      showToast("ذخیره ناموفق بود", "danger");
+      showToast(t("ذخیره ناموفق بود"), "danger");
     }
   };
 
@@ -529,34 +534,34 @@ function CategoryEditModal({
           <Modal.Dialog className="max-w-md">
             <Modal.CloseTrigger />
             <Modal.Header>
-              <Modal.Heading>ویرایش دسته</Modal.Heading>
+              <Modal.Heading>{t("ویرایش دسته")}</Modal.Heading>
             </Modal.Header>
             <Modal.Body className="space-y-3">
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                placeholder="عنوان"
+                placeholder={t("عنوان")}
               />
               <input
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
                 className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                placeholder="رنگ"
+                placeholder={t("رنگ")}
               />
               <input
                 type="number"
                 value={monthlyLimit}
                 onChange={(e) => setMonthlyLimit(Number(e.target.value))}
                 className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                placeholder="سقف ماهانه"
+                placeholder={t("سقف ماهانه")}
               />
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onPress={onClose}>
                 انصراف
               </Button>
-              <Button onPress={() => void save()}>ذخیره</Button>
+              <Button onPress={() => void save()}>{t("ذخیره")}</Button>
             </Modal.Footer>
           </Modal.Dialog>
         </Modal.Container>
@@ -574,6 +579,7 @@ function ProjectEditModal({
   onClose: () => void;
   onSaved: () => void;
 }) {
+  const { t } = useTranslation();
   const [description, setDescription] = useState("");
   const [totalAmount, setTotalAmount] = useState(0);
 
@@ -591,10 +597,10 @@ function ProjectEditModal({
         description,
         totalAmount,
       });
-      showToast("پروژه ذخیره شد", "success");
+      showToast(t("پروژه ذخیره شد"), "success");
       onSaved();
     } catch {
-      showToast("ذخیره ناموفق بود", "danger");
+      showToast(t("ذخیره ناموفق بود"), "danger");
     }
   };
 
@@ -605,14 +611,14 @@ function ProjectEditModal({
           <Modal.Dialog className="max-w-md">
             <Modal.CloseTrigger />
             <Modal.Header>
-              <Modal.Heading>ویرایش پروژه</Modal.Heading>
+              <Modal.Heading>{t("ویرایش پروژه")}</Modal.Heading>
             </Modal.Header>
             <Modal.Body className="space-y-3">
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                placeholder="توضیح"
+                placeholder={t("توضیح")}
                 rows={3}
               />
               <input
@@ -620,14 +626,14 @@ function ProjectEditModal({
                 value={totalAmount}
                 onChange={(e) => setTotalAmount(Number(e.target.value))}
                 className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                placeholder="مبلغ کل"
+                placeholder={t("مبلغ کل")}
               />
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onPress={onClose}>
                 انصراف
               </Button>
-              <Button onPress={() => void save()}>ذخیره</Button>
+              <Button onPress={() => void save()}>{t("ذخیره")}</Button>
             </Modal.Footer>
           </Modal.Dialog>
         </Modal.Container>

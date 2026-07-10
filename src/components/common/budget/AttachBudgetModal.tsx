@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button, Input, Modal } from "@heroui/react";
 import { Add, ArrowLeft2, ArrowRight2, SearchNormal1 } from "iconsax-reactjs";
@@ -61,6 +63,7 @@ export function AttachBudgetModal({
   selectionMode = "multiple",
   attachLabel = "انتخاب",
 }: AttachBudgetModalProps) {
+  const { t } = useTranslation();
   const multiSelect = selectionMode === "multiple";
   const categories = useAppSelector(categoriesSelector);
   const categoryOptions = getCategorySelectOptions(categories ?? []);
@@ -298,8 +301,8 @@ export function AttachBudgetModal({
             )}
 
             <FormCategoryComboBox
-              label="دسته‌بندی"
-              placeholder="همه دسته‌ها"
+              label={t("دسته‌بندی")}
+              placeholder={t("همه دسته‌ها")}
               selectedKey={category || "all"}
               onSelectionChange={(key) => setCategory(key === "all" ? "" : key)}
               options={[{ id: "all", label: "همه دسته‌ها" }, ...categoryOptions]}
@@ -312,7 +315,7 @@ export function AttachBudgetModal({
               />
               <Input
                 className="pr-10"
-                placeholder="جستجو در توضیحات یا دسته…"
+                placeholder={t("جستجو در توضیحات یا دسته…")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -321,7 +324,7 @@ export function AttachBudgetModal({
 
           <div ref={listRef} className={`${modalSheetBodyClass} min-h-0 flex-1`}>
             {loading ? (
-              <p className="py-8 text-center text-sm text-muted">در حال بارگذاری…</p>
+              <p className="py-8 text-center text-sm text-muted">{t("در حال بارگذاری…")}</p>
             ) : budgets.length === 0 ? (
               <p className="rounded-xl bg-surface-secondary p-6 text-center text-sm text-muted">
                 تراکنشی برای این بازه پیدا نشد
@@ -388,11 +391,11 @@ export function AttachBudgetModal({
                 <div ref={sentinelRef} className="h-1" aria-hidden />
 
                 {loadingMore && (
-                  <p className="py-3 text-center text-xs text-muted">بارگذاری بیشتر…</p>
+                  <p className="py-3 text-center text-xs text-muted">{t("بارگذاری بیشتر…")}</p>
                 )}
 
                 {!hasMore && budgets.length > 0 && (
-                  <p className="py-2 text-center text-xs text-muted">پایان لیست</p>
+                  <p className="py-2 text-center text-xs text-muted">{t("پایان لیست")}</p>
                 )}
               </div>
             )}

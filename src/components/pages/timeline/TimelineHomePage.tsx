@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@heroui/react";
@@ -37,6 +39,7 @@ import { useTimelineData } from "@/components/pages/timeline/useTimelineData";
 type DrawerKind = "finance" | "tasks" | "due" | null;
 
 export function TimelineHomePage() {
+  const { t } = useTranslation();
   return (
     <PeriodProvider>
       <TimelineHomePageContent />
@@ -44,7 +47,8 @@ export function TimelineHomePage() {
   );
 }
 
-function TimelineHomePageContent() {
+function TimelineHomePageContent() {  const { t } = useTranslation();
+
   usePeriodBootstrap();
   const period = usePeriod();
   const user = useAppSelector(userSelector);
@@ -95,7 +99,7 @@ function TimelineHomePageContent() {
             );
           })}
         </div>
-        <p className="mt-1 text-xs text-white/70">موجودی کیف پول</p>
+        <p className="mt-1 text-xs text-white/70">{t("موجودی کیف پول")}</p>
       </section>
 
       <PeriodScopeBar />
@@ -113,7 +117,7 @@ function TimelineHomePageContent() {
       ) : (
         <div className="pb-hmi-grid">
           <TimelineWidgetTile
-            title="خلاصه مالی"
+            title={t("خلاصه مالی")}
             value={formatPrice(data.net)}
             subtitle={`درآمد ${formatPrice(data.income)} · هزینه ${formatPrice(data.expense)}`}
             status={financeStatus}
@@ -121,7 +125,7 @@ function TimelineHomePageContent() {
             onPress={() => setDrawer("finance")}
           />
           <TimelineWidgetTile
-            title="کارها"
+            title={t("کارها")}
             value={toPersianDigits(String(data.taskSummary.pending))}
             subtitle={`${toPersianDigits(String(data.taskSummary.done))} انجام‌شده · ${toPersianDigits(String(data.taskSummary.overdue))} عقب‌افتاده`}
             status={taskStatus}
@@ -129,7 +133,7 @@ function TimelineHomePageContent() {
             onPress={() => setDrawer("tasks")}
           />
           <TimelineWidgetTile
-            title="سررسیدها"
+            title={t("سررسیدها")}
             value={toPersianDigits(String(data.dueCount))}
             subtitle={`${toPersianDigits(String(data.checkPendingCount))} چک · ${toPersianDigits(String(data.installmentPendingCount))} قسط`}
             status={dueStatus}
@@ -137,7 +141,7 @@ function TimelineHomePageContent() {
             onPress={() => setDrawer("due")}
           />
           <TimelineWidgetTile
-            title="تراکنش‌ها"
+            title={t("تراکنش‌ها")}
             value={toPersianDigits(String(data.budgets.length))}
             subtitle="مورد در این بازه"
             status="neutral"
@@ -150,27 +154,27 @@ function TimelineHomePageContent() {
       <TimelineWidgetDrawer
         open={drawer === "finance"}
         onOpenChange={(open) => !open && setDrawer(null)}
-        title="تراکنش‌های بازه"
+        title={t("تراکنش‌های بازه")}
       >
         {data.budgets.length === 0 ? (
-          <p className="text-center text-sm text-muted">تراکنشی یافت نشد</p>
+          <p className="text-center text-sm text-muted">{t("تراکنشی یافت نشد")}</p>
         ) : (
           data.budgets.map((budget) => (
             <TransactionCard key={budget._id} budget={budget} />
           ))
         )}
         <Link href={PATHS.CREATE_BUDGET} className="block pt-2">
-          <Button className="w-full">ثبت تراکنش جدید</Button>
+          <Button className="w-full">{t("ثبت تراکنش جدید")}</Button>
         </Link>
       </TimelineWidgetDrawer>
 
       <TimelineWidgetDrawer
         open={drawer === "tasks"}
         onOpenChange={(open) => !open && setDrawer(null)}
-        title="کارهای بازه"
+        title={t("کارهای بازه")}
       >
         {data.tasks.length === 0 ? (
-          <p className="text-center text-sm text-muted">کاری یافت نشد</p>
+          <p className="text-center text-sm text-muted">{t("کاری یافت نشد")}</p>
         ) : (
           data.tasks.map((task) => (
             <div
@@ -209,10 +213,10 @@ function TimelineHomePageContent() {
       <TimelineWidgetDrawer
         open={drawer === "due"}
         onOpenChange={(open) => !open && setDrawer(null)}
-        title="سررسیدهای بازه"
+        title={t("سررسیدهای بازه")}
       >
         {data.checks.length === 0 && data.installments.length === 0 ? (
-          <p className="text-center text-sm text-muted">سررسیدی یافت نشد</p>
+          <p className="text-center text-sm text-muted">{t("سررسیدی یافت نشد")}</p>
         ) : (
           <>
             {data.checks.map((check) => (

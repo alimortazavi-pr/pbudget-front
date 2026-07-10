@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useCallback, useEffect, useState } from "react";
 import { Button, Modal } from "@heroui/react";
 import { Add, Bank, Edit2, Trash } from "iconsax-reactjs";
@@ -13,6 +15,7 @@ import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui
 const PARSER_OPTIONS = [{ id: "blubank", label: "بلوبانک (Excel)" }];
 
 export function AdminBanksPage() {
+  const { t } = useTranslation();
   const [banks, setBanks] = useState<IBank[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -30,7 +33,7 @@ export function AdminBanksPage() {
       const data = await banksApi.fetchAdminBanks();
       setBanks(data);
     } catch {
-      showToast("بارگذاری بانک‌ها ناموفق بود", "danger");
+      showToast(t("بارگذاری بانک‌ها ناموفق بود"), "danger");
     } finally {
       setLoading(false);
     }
@@ -62,7 +65,7 @@ export function AdminBanksPage() {
 
   async function save() {
     if (!title.trim() || !slug.trim()) {
-      showToast("عنوان و شناسه بانک الزامی است", "danger");
+      showToast(t("عنوان و شناسه بانک الزامی است"), "danger");
       return;
     }
 
@@ -84,7 +87,7 @@ export function AdminBanksPage() {
         setBanks((prev) => [...prev, created]);
       }
 
-      showToast("ذخیره شد", "success");
+      showToast(t("ذخیره شد"), "success");
       setOpen(false);
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا در ذخیره", "danger");
@@ -98,9 +101,9 @@ export function AdminBanksPage() {
     try {
       await banksApi.deleteAdminBank(bank._id);
       setBanks((prev) => prev.filter((item) => item._id !== bank._id));
-      showToast("بانک حذف شد", "success");
+      showToast(t("بانک حذف شد"), "success");
     } catch {
-      showToast("حذف ناموفق بود", "danger");
+      showToast(t("حذف ناموفق بود"), "danger");
     }
   }
 
@@ -112,7 +115,7 @@ export function AdminBanksPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h3 className="text-lg font-bold">بانک‌ها</h3>
+          <h3 className="text-lg font-bold">{t("بانک‌ها")}</h3>
           <p className="text-sm text-muted">
             بانک‌های پشتیبانی‌شده برای ایمپورت صورتحساب — پارسر بلوبانک از قبل فعال است
           </p>
@@ -173,22 +176,22 @@ export function AdminBanksPage() {
             <Modal.Heading>{editItem ? "ویرایش بانک" : "بانک جدید"}</Modal.Heading>
           </AppModalHeader>
           <div className="space-y-4 p-4">
-            <FormInput label="نام بانک" value={title} onChange={(e) => setTitle(e.target.value)} />
+            <FormInput label={t("نام بانک")} value={title} onChange={(e) => setTitle(e.target.value)} />
             <FormInput
-              label="شناسه (slug)"
+              label={t("شناسه (slug)")}
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
               placeholder="blubank"
               dir="ltr"
             />
             <FormSelect
-              label="نوع پارسر"
+              label={t("نوع پارسر")}
               selectedKey={parserType}
               onSelectionChange={(key) => setParserType(key)}
               options={PARSER_OPTIONS}
             />
             <FormInput
-              label="ترتیب نمایش"
+              label={t("ترتیب نمایش")}
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value)}
               inputMode="numeric"

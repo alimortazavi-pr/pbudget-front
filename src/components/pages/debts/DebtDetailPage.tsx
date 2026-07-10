@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -66,6 +68,7 @@ function resolveBudgetTitle(budget: IBudget, categories: ICategory[]) {
 }
 
 export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [debt, setDebt] = useState<IDebt | null>(null);
   const [loading, setLoading] = useState(true);
@@ -109,7 +112,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
     setDeleting(true);
     try {
       await debtsApi.deleteDebt(debtId);
-      showToast("حذف شد", "success");
+      showToast(t("حذف شد"), "success");
       router.push(PATHS.DEBTS);
     } catch (err) {
       showErrorToast(err, "خطا در حذف");
@@ -124,7 +127,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
     setDetachingId("source");
     try {
       await debtsApi.detachDebtSource(debtId);
-      showToast("اتصال مبدأ قطع شد", "success");
+      showToast(t("اتصال مبدأ قطع شد"), "success");
       await load();
     } catch (err) {
       showErrorToast(err, "خطا در قطع اتصال");
@@ -139,7 +142,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
     setDetachingId(budgetId);
     try {
       await debtsApi.removeDebtSettlement(debtId, budgetId);
-      showToast("تسویه جدا شد", "success");
+      showToast(t("تسویه جدا شد"), "success");
       await load();
     } catch (err) {
       showErrorToast(err, "خطا در قطع اتصال");
@@ -150,7 +153,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
 
   if (loading || !debt) {
     return (
-      <div className="glass rounded-2xl p-10 text-center text-muted">در حال بارگذاری…</div>
+      <div className="glass rounded-2xl p-10 text-center text-muted">{t("در حال بارگذاری…")}</div>
     );
   }
 
@@ -194,15 +197,15 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
 
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
           <div className="rounded-xl bg-surface-secondary p-3">
-            <p className="text-xs text-muted">مبلغ کل</p>
+            <p className="text-xs text-muted">{t("مبلغ کل")}</p>
             <p className="mt-1 font-bold">{formatPrice(debt.totalAmount)}</p>
           </div>
           <div className="rounded-xl bg-income-soft/50 p-3">
-            <p className="text-xs text-muted">تسویه‌شده</p>
+            <p className="text-xs text-muted">{t("تسویه‌شده")}</p>
             <p className="mt-1 font-bold text-income">{formatPrice(settledAmount)}</p>
           </div>
           <div className="rounded-xl bg-expense-soft/50 p-3">
-            <p className="text-xs text-muted">باقی‌مانده</p>
+            <p className="text-xs text-muted">{t("باقی‌مانده")}</p>
             <p className="mt-1 font-bold text-expense">{formatPrice(debt.remainingAmount)}</p>
           </div>
         </div>
@@ -281,7 +284,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
                           variant="ghost"
                           onPress={() => void detachSettlement(budget._id)}
                           isPending={detachingId === budget._id}
-                          aria-label="جدا کردن تسویه"
+                          aria-label={t("جدا کردن تسویه")}
                         >
                           <Link1 size={16} className="rotate-45" />
                         </Button>
@@ -294,7 +297,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
           )}
 
           <section className="rounded-2xl border border-dashed border-danger/35 bg-danger/5 p-4">
-            <p className="text-sm font-medium text-danger">منطقه خطر</p>
+            <p className="text-sm font-medium text-danger">{t("منطقه خطر")}</p>
             <p className="mt-1 text-xs leading-6 text-muted">
               با حذف، رکورد طلب/بدهی پاک می‌شود؛ تراکنش‌های مبدأ و تسویه در لیست تراکنش‌ها باقی
               می‌مانند.
@@ -321,7 +324,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
             <div className="flex flex-wrap gap-2">
               {!hasSourceBudget && (
                 <AttachBudgetButton
-                  title="وصل تراکنش مبدأ"
+                  title={t("وصل تراکنش مبدأ")}
                   description={
                     isReceivable
                       ? "تراکنش پرداختی (برداشت از حساب شما) که با ایجاد این طلب مرتبط است را انتخاب کنید."
@@ -339,7 +342,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
               {debt.status !== "settled" && (
                 <>
                   <AttachBudgetButton
-                    title="وصل تراکنش تسویه"
+                    title={t("وصل تراکنش تسویه")}
                     description={
                       isReceivable
                         ? "یک یا چند تراکنش دریافتی (واریز) که طلب را تسویه کرده‌اند انتخاب کنید."
@@ -428,6 +431,7 @@ function BudgetRow({
   onDetach?: () => void;
   detaching?: boolean;
 }) {
+  const { t } = useTranslation();
   const categories = useAppSelector(categoriesSelector) ?? [];
   const isIncome = budget.type === BudgetType.INCOME;
   const title = resolveBudgetTitle(budget, categories);
@@ -465,7 +469,7 @@ function BudgetRow({
               variant="ghost"
               onPress={onDetach}
               isPending={detaching}
-              aria-label="قطع اتصال"
+              aria-label={t("قطع اتصال")}
             >
               <Link1 size={16} className="rotate-45" />
             </Button>

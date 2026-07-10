@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -19,6 +21,7 @@ import { PeriodNavigator } from "@/components/pages/planning/PeriodNavigator";
 import { usePeriodQuery } from "@/components/pages/planning/usePeriodQuery";
 
 export function InstallmentsPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { year, month, goToToday, shiftMonth } = usePeriodQuery(PATHS.INSTALLMENTS);
 
@@ -67,8 +70,8 @@ export function InstallmentsPage() {
   return (
     <div className="space-y-5 pb-6">
       <section className="rounded-3xl bg-gradient-to-br from-violet-600 to-indigo-600 p-5 text-white shadow-lg">
-        <p className="text-sm font-medium text-white/80">برنامه‌ریزی مالی</p>
-        <h1 className="mt-1 text-2xl font-bold">اقساط و پرداخت‌ها</h1>
+        <p className="text-sm font-medium text-white/80">{t("برنامه‌ریزی مالی")}</p>
+        <h1 className="mt-1 text-2xl font-bold">{t("اقساط و پرداخت‌ها")}</h1>
         <p className="mt-2 text-sm leading-7 text-white/80">
           برنامه پرداخت بسازید؛ اقساط، پرداخت‌ها و تراکنش‌ها را در صفحه هر برنامه ببینید.
         </p>
@@ -105,17 +108,17 @@ export function InstallmentsPage() {
       {plans.length > 0 && (
         <div className="grid gap-3 sm:grid-cols-3">
           <div className="glass rounded-2xl p-4">
-            <p className="text-sm text-muted">برنامه‌ها</p>
+            <p className="text-sm text-muted">{t("برنامه‌ها")}</p>
             <p className="mt-2 text-xl font-bold">{formatCount(planSummary.count)}</p>
           </div>
           <div className="glass rounded-2xl p-4">
-            <p className="text-sm text-muted">فعال</p>
+            <p className="text-sm text-muted">{t("فعال")}</p>
             <p className="mt-2 text-xl font-bold text-income">
               {formatCount(planSummary.active)}
             </p>
           </div>
           <div className="glass rounded-2xl p-4">
-            <p className="text-sm text-muted">اقساط پرداخت‌شده</p>
+            <p className="text-sm text-muted">{t("اقساط پرداخت‌شده")}</p>
             <p className="mt-2 text-xl font-bold">{formatCount(planSummary.installments)}</p>
           </div>
         </div>
@@ -130,11 +133,11 @@ export function InstallmentsPage() {
       </div>
 
       {loading ? (
-        <div className="glass rounded-2xl p-10 text-center text-muted">در حال بارگذاری…</div>
+        <div className="glass rounded-2xl p-10 text-center text-muted">{t("در حال بارگذاری…")}</div>
       ) : plans.length === 0 ? (
         <div className="glass rounded-2xl p-10 text-center">
           <Wallet size={40} className="mx-auto mb-3 text-muted" />
-          <p className="text-muted">هنوز برنامه پرداختی ثبت نشده</p>
+          <p className="text-muted">{t("هنوز برنامه پرداختی ثبت نشده")}</p>
           <Button className="mt-4" onPress={() => setCreatePlanOpen(true)}>
             <Add size={18} />
             اولین برنامه
@@ -178,17 +181,17 @@ export function InstallmentsPage() {
 
                 <div className="mt-4 grid grid-cols-2 gap-2 text-center text-xs sm:grid-cols-3">
                   <div className="rounded-xl bg-surface-secondary p-2">
-                    <p className="text-muted">هر قسط</p>
+                    <p className="text-muted">{t("هر قسط")}</p>
                     <p className="mt-1 font-semibold">{formatPrice(plan.amount)}</p>
                   </div>
                   <div className="rounded-xl bg-income-soft/50 p-2">
-                    <p className="text-muted">پرداخت‌شده</p>
+                    <p className="text-muted">{t("پرداخت‌شده")}</p>
                     <p className="mt-1 font-semibold text-income">
                       {formatCount(plan.completedInstallments)} قسط
                     </p>
                   </div>
                   <div className="rounded-xl bg-expense-soft/50 p-2 col-span-2 sm:col-span-1">
-                    <p className="text-muted">کل برنامه</p>
+                    <p className="text-muted">{t("کل برنامه")}</p>
                     <p className="mt-1 font-semibold">
                       {plan.totalInstallments
                         ? formatCount(plan.totalInstallments)
@@ -200,7 +203,7 @@ export function InstallmentsPage() {
                 {progress !== null && (
                   <div className="mt-3">
                     <div className="mb-1 flex justify-between text-xs text-muted">
-                      <span>پیشرفت</span>
+                      <span>{t("پیشرفت")}</span>
                       <span>{Math.round(progress)}٪</span>
                     </div>
                     <div className="h-2 overflow-hidden rounded-full bg-surface-secondary">

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useState } from "react";
 import { Button, Modal } from "@heroui/react";
 
@@ -29,6 +31,7 @@ export function ClearCheckModal({
   onOpenChange,
   onCleared,
 }: ClearCheckModalProps) {
+  const { t } = useTranslation();
   const user = useAppSelector(userSelector);
   const preferredCurrency = user?.preferences?.currency ?? "toman";
   const categories = useAppSelector(categoriesSelector);
@@ -49,7 +52,7 @@ export function ClearCheckModal({
 
   async function handleSubmit() {
     if (!check || !category) {
-      showToast("دسته‌بندی الزامی است");
+      showToast(t("دسته‌بندی الزامی است"));
       return;
     }
 
@@ -63,7 +66,7 @@ export function ClearCheckModal({
         day: String(now.jDate()),
         note,
       });
-      showToast("چک وصول شد و تراکنش ثبت شد", "success");
+      showToast(t("چک وصول شد و تراکنش ثبت شد"), "success");
       onCleared();
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
@@ -91,8 +94,8 @@ export function ClearCheckModal({
           <FormPriceInput label={`مبلغ (${currencyLabel(preferredCurrency)})`} value={amount} onChange={setAmount} />
 
           <FormCategoryComboBox
-            label="دسته‌بندی"
-            placeholder="جستجو یا انتخاب دسته‌بندی"
+            label={t("دسته‌بندی")}
+            placeholder={t("جستجو یا انتخاب دسته‌بندی")}
             selectedKey={category || undefined}
             onSelectionChange={(key) => setCategory(key)}
             options={categoryOptions}
@@ -100,7 +103,7 @@ export function ClearCheckModal({
           />
 
           <FormTextArea
-            label="یادداشت"
+            label={t("یادداشت")}
             value={note}
             onChange={(e) => setNote(e.target.value)}
           />

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@heroui/react";
 import { DocumentDownload, DocumentUpload, Mobile } from "iconsax-reactjs";
@@ -11,6 +13,7 @@ import { toPersianDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 
 export function AdminAppPage() {
+  const { t } = useTranslation();
   const [info, setInfo] = useState<AdminAndroidAppInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -26,7 +29,7 @@ export function AdminAppPage() {
       if (data.versionName) setVersionName(data.versionName);
       if (data.versionCode) setVersionCode(String(data.versionCode));
     } catch {
-      showToast("بارگذاری اطلاعات اپ ناموفق بود", "danger");
+      showToast(t("بارگذاری اطلاعات اپ ناموفق بود"), "danger");
     } finally {
       setLoading(false);
     }
@@ -39,13 +42,13 @@ export function AdminAppPage() {
   const handleUpload = async (file: File | undefined) => {
     if (!file) return;
     if (!file.name.toLowerCase().endsWith(".apk")) {
-      showToast("فقط فایل APK مجاز است", "danger");
+      showToast(t("فقط فایل APK مجاز است"), "danger");
       return;
     }
 
     const code = Number(versionCode);
     if (!versionName.trim() || !Number.isFinite(code) || code < 1) {
-      showToast("نسخه و کد نسخه را درست وارد کنید", "danger");
+      showToast(t("نسخه و کد نسخه را درست وارد کنید"), "danger");
       return;
     }
 
@@ -56,7 +59,7 @@ export function AdminAppPage() {
       showToast(result.message || "APK آپلود شد", "success");
       void load();
     } catch {
-      showToast("آپلود APK ناموفق بود", "danger");
+      showToast(t("آپلود APK ناموفق بود"), "danger");
     } finally {
       setUploading(false);
       if (apkInputRef.current) apkInputRef.current.value = "";
@@ -70,7 +73,7 @@ export function AdminAppPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-bold">اپ اندروید</h3>
+        <h3 className="text-lg font-bold">{t("اپ اندروید")}</h3>
         <p className="text-sm text-muted">
           آپلود APK برای صفحه دانلود عمومی — کاربران از pdesk.ir/download دریافت می‌کنند
         </p>
@@ -80,27 +83,27 @@ export function AdminAppPage() {
         <div className="glass rounded-2xl p-6">
           <div className="mb-4 flex items-center gap-2">
             <Mobile size={22} className="text-accent" variant="Bold" />
-            <h4 className="font-bold">وضعیت فعلی</h4>
+            <h4 className="font-bold">{t("وضعیت فعلی")}</h4>
           </div>
           <dl className="space-y-3 text-sm">
             <div className="flex justify-between gap-4">
-              <dt className="text-muted">در دسترس</dt>
+              <dt className="text-muted">{t("در دسترس")}</dt>
               <dd>{info?.available ? "بله" : "خیر — APK آپلود نشده"}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-muted">نسخه</dt>
+              <dt className="text-muted">{t("نسخه")}</dt>
               <dd dir="ltr">{info?.versionName ?? "—"}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-muted">کد نسخه</dt>
+              <dt className="text-muted">{t("کد نسخه")}</dt>
               <dd>{info?.versionCode ? toPersianDigits(info.versionCode) : "—"}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-muted">حجم</dt>
+              <dt className="text-muted">{t("حجم")}</dt>
               <dd>{info?.byteSize ? formatBytes(info.byteSize) : "—"}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-muted">آخرین به‌روزرسانی</dt>
+              <dt className="text-muted">{t("آخرین به‌روزرسانی")}</dt>
               <dd>
                 {info?.updatedAt
                   ? new Date(info.updatedAt).toLocaleString("fa-IR")
@@ -126,7 +129,7 @@ export function AdminAppPage() {
         <div className="glass rounded-2xl p-6">
           <div className="mb-4 flex items-center gap-2">
             <DocumentUpload size={22} className="text-accent" variant="Bold" />
-            <h4 className="font-bold">آپلود نسخه جدید</h4>
+            <h4 className="font-bold">{t("آپلود نسخه جدید")}</h4>
           </div>
           <p className="mb-4 text-sm text-muted">
             فایل release امضاشده را انتخاب کنید. پس از آپلود، لینک دانلود و نسخه صفحه عمومی
@@ -134,7 +137,7 @@ export function AdminAppPage() {
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-sm text-muted">نام نسخه</label>
+              <label className="mb-1 block text-sm text-muted">{t("نام نسخه")}</label>
               <input
                 value={versionName}
                 onChange={(e) => setVersionName(e.target.value)}
@@ -144,7 +147,7 @@ export function AdminAppPage() {
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm text-muted">کد نسخه (versionCode)</label>
+              <label className="mb-1 block text-sm text-muted">{t("کد نسخه (versionCode)")}</label>
               <input
                 value={versionCode}
                 onChange={(e) => setVersionCode(e.target.value)}

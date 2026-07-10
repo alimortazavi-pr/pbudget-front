@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Modal } from "@heroui/react";
@@ -15,6 +17,7 @@ import { authenticate, setUsers, usersSelector } from "@/stores/auth";
 import { setProfile, userSelector } from "@/stores/profile";
 
 export function ChangeAccountPopover() {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const router = useRouter();
   const users = useAppSelector(usersSelector);
@@ -47,7 +50,7 @@ export function ChangeAccountPopover() {
         isIconOnly
         variant="ghost"
         size="sm"
-        aria-label="تغییر حساب"
+        aria-label={t("تغییر حساب")}
         onPress={() => setOpen(true)}
       >
         <Profile2User size={20} />
@@ -60,7 +63,7 @@ export function ChangeAccountPopover() {
       >
         <AppModalDialog className={isDesktop ? "max-w-md" : "rounded-t-3xl"}>
           <AppModalHeader onClose={() => setOpen(false)}>
-            <Modal.Heading>تغییر حساب</Modal.Heading>
+            <Modal.Heading>{t("تغییر حساب")}</Modal.Heading>
           </AppModalHeader>
           <Modal.Body className="flex flex-col gap-2">
             {users.map((user) => (

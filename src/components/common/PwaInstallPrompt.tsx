@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@heroui/react";
@@ -15,6 +17,7 @@ type BeforeInstallPromptEvent = Event & {
 const SEEN_KEY = "pbudget-pwa-install-seen";
 
 export function PwaInstallPrompt() {
+  const { t } = useTranslation();
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
@@ -112,7 +115,7 @@ export function PwaInstallPrompt() {
         </div>
         <button
           type="button"
-          aria-label="بستن"
+          aria-label={t("بستن")}
           className="shrink-0 text-muted transition hover:text-foreground"
           onClick={dismiss}
         >

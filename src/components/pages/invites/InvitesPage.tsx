@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@heroui/react";
@@ -29,7 +31,8 @@ function formatExpiry(expiresAt: string) {
   }
 }
 
-function extractToken(link: string | null | undefined) {
+function extractToken(link: string | null | undefined) {  const { t } = useTranslation();
+
   if (!link) return null;
   const parts = link.split("/").filter(Boolean);
   return parts[parts.length - 1] ?? null;
@@ -47,6 +50,7 @@ function invitePath(link: string | null | undefined) {
 }
 
 export function InvitesPage() {
+  const { t } = useTranslation();
   const [partnerInvites, setPartnerInvites] = useState<IPendingPartnerInvite[]>(
     [],
   );
@@ -74,7 +78,7 @@ export function InvitesPage() {
     setActingId(id);
     try {
       await partnersApi.acceptPartnerInvite(token);
-      showToast("دعوت همکاری تأیید شد", "success");
+      showToast(t("دعوت همکاری تأیید شد"), "success");
       void load();
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
@@ -87,7 +91,7 @@ export function InvitesPage() {
     setActingId(id);
     try {
       await partnersApi.declinePartnerInvite(token);
-      showToast("دعوت رد شد", "success");
+      showToast(t("دعوت رد شد"), "success");
       void load();
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
@@ -99,7 +103,7 @@ export function InvitesPage() {
   return (
     <div className="space-y-5 pb-6" data-tour="invites-list">
       <section className="rounded-3xl bg-gradient-to-br from-violet-600 to-indigo-700 p-5 text-white shadow-lg">
-        <h1 className="text-2xl font-bold">دعوت‌ها</h1>
+        <h1 className="text-2xl font-bold">{t("دعوت‌ها")}</h1>
         <p className="mt-2 text-sm text-white/85">
           دعوت‌های همکاری پروژه — بپذیرید یا رد کنید
         </p>
@@ -117,7 +121,7 @@ export function InvitesPage() {
       ) : partnerInvites.length === 0 ? (
         <div className="glass rounded-2xl p-10 text-center">
           <Profile2User size={40} className="mx-auto text-muted" />
-          <p className="mt-4 text-muted">دعوت در انتظاری ندارید</p>
+          <p className="mt-4 text-muted">{t("دعوت در انتظاری ندارید")}</p>
           <Link href={PATHS.HOME} className="mt-4 inline-block text-sm text-accent">
             بازگشت به داشبورد
           </Link>

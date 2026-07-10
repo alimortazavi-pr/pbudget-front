@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { Button } from "@heroui/react";
 import { ArrowLeft2, ArrowRight2 } from "iconsax-reactjs";
 import { useEffect, useMemo, useState } from "react";
@@ -68,6 +70,7 @@ export function AnalysisFilters({
   categories,
   onChange,
 }: AnalysisFiltersProps) {
+  const { t } = useTranslation();
   const categoryOptions = useMemo(
     () => getCategorySelectOptions(categories),
     [categories],
@@ -149,7 +152,7 @@ export function AnalysisFilters({
     <section className="glass space-y-4 rounded-2xl p-4 lg:p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-base font-bold lg:text-lg">فیلترها</h2>
+          <h2 className="text-base font-bold lg:text-lg">{t("فیلترها")}</h2>
           <p className="text-sm text-muted">{periodTitle}</p>
         </div>
         {duration !== "all" && (
@@ -158,7 +161,7 @@ export function AnalysisFilters({
               isIconOnly
               size="sm"
               variant="secondary"
-              aria-label="دوره قبل"
+              aria-label={t("دوره قبل")}
               onPress={() => shiftPeriod(-1)}
             >
               <ArrowRight2 size={18} />
@@ -170,7 +173,7 @@ export function AnalysisFilters({
               isIconOnly
               size="sm"
               variant="secondary"
-              aria-label="دوره بعد"
+              aria-label={t("دوره بعد")}
               onPress={() => shiftPeriod(1)}
             >
               <ArrowLeft2 size={18} />
@@ -209,8 +212,8 @@ export function AnalysisFilters({
 
       <div className="grid gap-3 lg:grid-cols-3">
         <FormCategoryComboBox
-          label="دسته‌بندی"
-          placeholder="همه دسته‌ها"
+          label={t("دسته‌بندی")}
+          placeholder={t("همه دسته‌ها")}
           selectedKey={category || ""}
           onSelectionChange={(key) => onChange({ category: key === "all" ? "" : key })}
           options={[
@@ -219,8 +222,8 @@ export function AnalysisFilters({
           ]}
         />
         <FormSelect
-          label="کارت"
-          placeholder="همه کارت‌ها"
+          label={t("کارت")}
+          placeholder={t("همه کارت‌ها")}
           selectedKey={paymentCard || "all"}
           onSelectionChange={(key) =>
             onChange({ paymentCard: key === "all" ? "" : key })
@@ -232,7 +235,7 @@ export function AnalysisFilters({
           emptyMessage="کارتی ثبت نشده"
         />
         <FormSelect
-          label="نوع تراکنش"
+          label={t("نوع تراکنش")}
           selectedKey={type}
           onSelectionChange={(key) => onChange({ type: key })}
           options={TYPE_OPTIONS.map((option) => ({

@@ -1,11 +1,14 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { Button } from "@heroui/react";
 import { Moon, Sun1 } from "iconsax-reactjs";
 
 import { useTheme } from "@/components/providers/ThemeProvider";
 
 export function ThemeToggle() {
+  const { t } = useTranslation();
   const { theme, toggleTheme, mounted } = useTheme();
 
   if (!mounted) return <div className="size-9" />;
@@ -15,7 +18,7 @@ export function ThemeToggle() {
       isIconOnly
       variant="ghost"
       size="sm"
-      aria-label="تغییر تم"
+      aria-label={t("تغییر تم")}
       onPress={toggleTheme}
       className="text-muted"
     >

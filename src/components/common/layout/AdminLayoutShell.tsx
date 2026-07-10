@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -51,6 +53,7 @@ function NavLink({
 }
 
 export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
+  const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
   const isAuth = useAppSelector(isAuthSelector);
@@ -85,7 +88,7 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
         <div className="flex min-h-screen items-center justify-center bg-background p-6">
           <div className="glass max-w-md rounded-3xl p-8 text-center">
             <ShieldTick size={48} className="mx-auto text-accent" variant="Bold" />
-            <h1 className="mt-4 text-xl font-bold">دسترسی ادمین</h1>
+            <h1 className="mt-4 text-xl font-bold">{t("دسترسی ادمین")}</h1>
             <p className="mt-2 text-sm text-muted">
               در حال بررسی دسترسی شما…
             </p>
@@ -102,9 +105,9 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
         <div className="mx-auto flex min-h-screen max-w-[1600px]">
           <aside className="hidden w-64 shrink-0 border-e border-border/60 bg-surface/50 p-4 lg:block">
             <div className="mb-8 px-2">
-              <p className="text-xs font-medium text-muted">مدیریت سیستم</p>
+              <p className="text-xs font-medium text-muted">{t("مدیریت سیستم")}</p>
               <h1 className="mt-1 text-lg font-bold">{APP_NAME_FA}</h1>
-              <p className="mt-1 text-xs text-muted">پنل ادمین</p>
+              <p className="mt-1 text-xs text-muted">{t("پنل ادمین")}</p>
             </div>
 
             <nav className="space-y-1">
@@ -147,7 +150,7 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
             <header className="sticky top-0 z-20 border-b border-border/60 bg-background/80 px-4 py-4 backdrop-blur-xl lg:px-8">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-xs text-muted">پنل ادمین</p>
+                  <p className="text-xs text-muted">{t("پنل ادمین")}</p>
                   <h2 className="text-xl font-bold">{pageTitle}</h2>
                 </div>
                 <div className="pb-status-badge pb-status-badge-success">

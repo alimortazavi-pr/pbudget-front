@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useState, type FormEvent } from "react";
 import { Button, Modal } from "@heroui/react";
 
@@ -27,6 +29,7 @@ export function SignInModal({
   hasTelegram,
   onSuccess,
 }: SignInModalProps) {
+  const { t } = useTranslation();
   const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
   const [usePassword, setUsePassword] = useState(true);
@@ -50,7 +53,7 @@ export function SignInModal({
   async function requestCode() {
     try {
       await authApi.requestCode(mobile);
-      showToast("کد تأیید به تلگرام ارسال شد", "success");
+      showToast(t("کد تأیید به تلگرام ارسال شد"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     }
@@ -59,7 +62,7 @@ export function SignInModal({
   async function submit(e?: FormEvent) {
     e?.preventDefault();
     if (!canLogin) {
-      showToast("ابتدا با تعیین رمز عبور حساب بسازید");
+      showToast(t("ابتدا با تعیین رمز عبور حساب بسازید"));
       return;
     }
 
@@ -82,10 +85,10 @@ export function SignInModal({
       <AppModalSheet>
         <form onSubmit={(e) => void submit(e)} className={modalSheetFormClass}>
           <AppModalHeader onClose={() => onOpenChange(false)}>
-            <Modal.Heading>ورود</Modal.Heading>
+            <Modal.Heading>{t("ورود")}</Modal.Heading>
           </AppModalHeader>
           <Modal.Body className={`${modalSheetBodyClass} space-y-4`}>
-            <FormInput label="موبایل" value={mobile} readOnly />
+            <FormInput label={t("موبایل")} value={mobile} readOnly />
 
             {!canLogin ? (
               <p className="rounded-xl bg-surface-secondary px-3 py-2 text-sm leading-7 text-muted">
@@ -94,14 +97,14 @@ export function SignInModal({
               </p>
             ) : usePassword ? (
               <FormInput
-                label="رمز عبور"
+                label={t("رمز عبور")}
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             ) : (
               <>
-                <OtpCodeField label="کد تأیید تلگرام" value={code} onChange={setCode} />
+                <OtpCodeField label={t("کد تأیید تلگرام")} value={code} onChange={setCode} />
                 <p className="text-xs text-muted">
                   کد به تلگرام متصل‌شده شما ارسال می‌شود، نه پیامک.
                 </p>

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { Modal, useOverlayState } from "@heroui/react";
 import { useEffect, type ReactNode } from "react";
 
@@ -28,7 +30,8 @@ export function AppModal({
   isDismissable = true,
   backdropClassName,
   mobileFull = false,
-}: AppModalProps) {
+}: AppModalProps) {  const { t } = useTranslation();
+
   const state = useOverlayState({
     isOpen: open,
     onOpenChange,

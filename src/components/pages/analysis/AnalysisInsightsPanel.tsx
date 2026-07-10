@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import type { AnalyticsInsight } from "@/common/interfaces/analytics.interface";
 
 const SEVERITY_STYLES: Record<
@@ -37,10 +39,11 @@ export function AnalysisInsightsPanel({
   insights,
   periodLabel,
 }: AnalysisInsightsPanelProps) {
+  const { t } = useTranslation();
   return (
     <section className="glass rounded-2xl p-4 lg:p-5">
       <div className="mb-4">
-        <h2 className="text-base font-bold lg:text-lg">تحلیل هوشمند</h2>
+        <h2 className="text-base font-bold lg:text-lg">{t("تحلیل هوشمند")}</h2>
         <p className="text-sm text-muted">
           جمع‌بندی حرفه‌ای وضعیت مالی شما در «{periodLabel}»
         </p>

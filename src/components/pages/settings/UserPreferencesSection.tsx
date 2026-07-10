@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useState } from "react";
 import { Button, Modal } from "@heroui/react";
 
@@ -20,6 +22,7 @@ type UserPreferencesSettingsProps = {
 };
 
 export function UserPreferencesSettings({ compact }: UserPreferencesSettingsProps) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const user = useAppSelector(userSelector);
   const prefs = user?.preferences;
@@ -41,7 +44,7 @@ export function UserPreferencesSettings({ compact }: UserPreferencesSettingsProp
         dateCalendar,
       });
       dispatch(setProfile(updated));
-      showToast("تنظیمات ذخیره شد", "success");
+      showToast(t("تنظیمات ذخیره شد"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "ذخیره ناموفق");
     } finally {
@@ -57,7 +60,7 @@ export function UserPreferencesSettings({ compact }: UserPreferencesSettingsProp
     <div className={compact ? "space-y-4" : "glass rounded-2xl p-5 space-y-4"}>
       {!compact ? (
         <>
-          <h2 className="text-lg font-bold">ارز و تقویم</h2>
+          <h2 className="text-lg font-bold">{t("ارز و تقویم")}</h2>
           <p className="text-sm text-muted">
             تراکنش‌های جدید با این تنظیمات ثبت می‌شوند. تراکنش‌های قبلی ارز و
             تاریخ خودشان را حفظ می‌کنند.
@@ -66,7 +69,7 @@ export function UserPreferencesSettings({ compact }: UserPreferencesSettingsProp
       ) : null}
 
       <div className="space-y-2">
-        <p className="text-sm font-medium">نوع ارز پیش‌فرض</p>
+        <p className="text-sm font-medium">{t("نوع ارز پیش‌فرض")}</p>
         <div className="grid gap-2 sm:grid-cols-3">
           {CURRENCY_OPTIONS.map((option) => (
             <button
@@ -86,7 +89,7 @@ export function UserPreferencesSettings({ compact }: UserPreferencesSettingsProp
       </div>
 
       <div className="space-y-2">
-        <p className="text-sm font-medium">نوع تاریخ پیش‌فرض</p>
+        <p className="text-sm font-medium">{t("نوع تاریخ پیش‌فرض")}</p>
         <div className="grid gap-2">
           {CALENDAR_OPTIONS.map((option) => (
             <button
@@ -126,7 +129,8 @@ type UserPreferencesOnboardingModalProps = {
 export function UserPreferencesOnboardingModal({
   open,
   onConfigured,
-}: UserPreferencesOnboardingModalProps) {
+}: UserPreferencesOnboardingModalProps) {  const { t } = useTranslation();
+
   const dispatch = useAppDispatch();
   const [currency, setCurrency] = useState<UserCurrency>("toman");
   const [dateCalendar, setDateCalendar] = useState<UserDateCalendar>("jalali");
@@ -141,7 +145,7 @@ export function UserPreferencesOnboardingModal({
         configured: true,
       });
       dispatch(setProfile(user));
-      showToast("تنظیمات ذخیره شد", "success");
+      showToast(t("تنظیمات ذخیره شد"), "success");
       onConfigured();
     } catch (err) {
       showToast(err instanceof Error ? err.message : "ذخیره ناموفق");
@@ -155,7 +159,7 @@ export function UserPreferencesOnboardingModal({
       <Modal.Container size="md">
         <Modal.Dialog className="pb-form-page">
           <Modal.Header>
-            <Modal.Heading>تنظیمات اولیه</Modal.Heading>
+            <Modal.Heading>{t("تنظیمات اولیه")}</Modal.Heading>
           </Modal.Header>
           <Modal.Body className="space-y-5">
               <p className="text-sm text-muted">
@@ -165,7 +169,7 @@ export function UserPreferencesOnboardingModal({
               </p>
 
               <div className="space-y-2">
-                <p className="text-sm font-medium">نوع ارز</p>
+                <p className="text-sm font-medium">{t("نوع ارز")}</p>
                 <div className="grid gap-2">
                   {CURRENCY_OPTIONS.map((option) => (
                     <button
@@ -185,7 +189,7 @@ export function UserPreferencesOnboardingModal({
               </div>
 
               <div className="space-y-2">
-                <p className="text-sm font-medium">نوع تاریخ</p>
+                <p className="text-sm font-medium">{t("نوع تاریخ")}</p>
                 <div className="grid gap-2">
                   {CALENDAR_OPTIONS.map((option) => (
                     <button

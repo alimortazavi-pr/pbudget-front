@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Button, Modal } from "@heroui/react";
 
@@ -41,6 +43,7 @@ export function ManualWorkSessionModal({
   session,
   onSaved,
 }: ManualWorkSessionModalProps) {
+  const { t } = useTranslation();
   const now = getJalaliNow();
   const [year, setYear] = useState(String(defaultYear));
   const [month, setMonth] = useState(String(defaultMonth));
@@ -81,7 +84,7 @@ export function ManualWorkSessionModal({
     const startMinute = timeStringToMinute(toEnglishDigits(startTime));
     const endMinute = timeStringToMinute(toEnglishDigits(endTime));
     if (startMinute === null || endMinute === null) {
-      showToast("فرمت ساعت باید HH:MM باشد");
+      showToast(t("فرمت ساعت باید HH:MM باشد"));
       return;
     }
 
@@ -98,10 +101,10 @@ export function ManualWorkSessionModal({
     try {
       if (session) {
         await workTimeApi.updateWorkSession(projectId, session._id, payload);
-        showToast("ویرایش شد", "success");
+        showToast(t("ویرایش شد"), "success");
       } else {
         await workTimeApi.createManualWorkSession(projectId, payload);
-        showToast("ثبت شد", "success");
+        showToast(t("ثبت شد"), "success");
       }
       onOpenChange(false);
       onSaved();
@@ -124,37 +127,37 @@ export function ManualWorkSessionModal({
           <Modal.Body className="space-y-4">
             <div className="grid grid-cols-3 gap-2">
               <FormInput
-                label="سال"
+                label={t("سال")}
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
               />
               <FormInput
-                label="ماه"
+                label={t("ماه")}
                 value={month}
                 onChange={(e) => setMonth(e.target.value)}
               />
               <FormInput
-                label="روز"
+                label={t("روز")}
                 value={day}
                 onChange={(e) => setDay(e.target.value)}
               />
             </div>
             <div className="grid grid-cols-2 gap-2">
               <FormInput
-                label="شروع (HH:MM)"
+                label={t("شروع (HH:MM)")}
                 placeholder="09:00"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
               />
               <FormInput
-                label="پایان (HH:MM)"
+                label={t("پایان (HH:MM)")}
                 placeholder="17:00"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
               />
             </div>
             <FormTextArea
-              label="توضیح (اختیاری)"
+              label={t("توضیح (اختیاری)")}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
@@ -173,7 +176,8 @@ export function ManualWorkSessionModal({
   );
 }
 
-export function formatSessionRange(session: IWorkSession) {
+export function formatSessionRange(session: IWorkSession) {  const { t } = useTranslation();
+
   const date = formatJalaliDateSlashed(
     normalizeJalaliPart(session.year, ""),
     normalizeJalaliPart(session.month, ""),

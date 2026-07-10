@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { Button, Checkbox } from "@heroui/react";
 import { Edit2 } from "iconsax-reactjs";
 
@@ -29,6 +31,7 @@ export function BankImportRowCard({
   onCategoryChange,
   onEdit,
 }: BankImportRowCardProps) {
+  const { t } = useTranslation();
   const categoryOptions = getCategorySelectOptions(categories);
   const configured = isImportRowConfigured(row);
   const extraSummary = buildImportRowSummary(row, categories, paymentCards).filter(
@@ -119,8 +122,8 @@ export function BankImportRowCard({
                 onClick={(e) => e.stopPropagation()}
               >
                 <FormCategoryComboBox
-                  label="دسته‌بندی *"
-                  placeholder="انتخاب دسته‌بندی"
+                  label={t("دسته‌بندی *")}
+                  placeholder={t("انتخاب دسته‌بندی")}
                   selectedKey={row.categoryId || undefined}
                   isDisabled={!row.selected}
                   onSelectionChange={(key) => {

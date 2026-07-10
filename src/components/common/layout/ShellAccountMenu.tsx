@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
@@ -38,6 +40,7 @@ export function ShellAccountMenu({
   variant = "drawer",
   showPlanning = true,
 }: ShellAccountMenuProps) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const router = useRouter();
   const user = useAppSelector(userSelector);
@@ -162,7 +165,7 @@ export function ShellAccountMenu({
         ))}
 
       <ShellNavGroup
-        title="حساب کاربری"
+        title={t("حساب کاربری")}
         items={accountNavItems}
         variant={variant}
         onNavigate={onNavigate}

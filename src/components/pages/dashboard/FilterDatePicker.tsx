@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect } from "react";
 import DateObject from "react-date-object";
 import gregorianCalendar from "react-date-object/calendars/gregorian";
@@ -33,7 +35,8 @@ export function FilterDatePicker({
   hideHint,
   inModal = false,
   calendarType = "jalali",
-}: FilterDatePickerProps) {
+}: FilterDatePickerProps) {  const { t } = useTranslation();
+
   const {
     wrapperRef,
     calendarOpen,

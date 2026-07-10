@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import {
   ArrowDown,
   ArrowSwapHorizontal,
@@ -77,18 +79,19 @@ function KpiCard({
 }
 
 export function AnalysisKpiCards({ report }: AnalysisKpiCardsProps) {
+  const { t } = useTranslation();
   const { summary, comparison } = report;
 
   return (
     <section className="grid grid-cols-2 gap-3 lg:grid-cols-4 xl:grid-cols-4">
       <KpiCard
-        title="موجودی حساب"
+        title={t("موجودی حساب")}
         value={formatPrice(summary.userBalance)}
         suffix="تومان"
         icon={<Wallet2 size={20} variant="Bold" />}
       />
       <KpiCard
-        title="درآمد دوره"
+        title={t("درآمد دوره")}
         value={formatPrice(summary.income)}
         suffix="تومان"
         icon={<ArrowUp size={20} variant="Bold" />}
@@ -96,7 +99,7 @@ export function AnalysisKpiCards({ report }: AnalysisKpiCardsProps) {
         tone="income"
       />
       <KpiCard
-        title="هزینه دوره"
+        title={t("هزینه دوره")}
         value={formatPrice(summary.cost)}
         suffix="تومان"
         icon={<ArrowDown size={20} variant="Bold" />}
@@ -104,7 +107,7 @@ export function AnalysisKpiCards({ report }: AnalysisKpiCardsProps) {
         tone="cost"
       />
       <KpiCard
-        title="خالص دوره"
+        title={t("خالص دوره")}
         value={formatPrice(summary.net)}
         suffix="تومان"
         icon={<ArrowSwapHorizontal size={20} variant="Bold" />}
@@ -112,24 +115,24 @@ export function AnalysisKpiCards({ report }: AnalysisKpiCardsProps) {
         tone="net"
       />
       <KpiCard
-        title="نرخ پس‌انداز"
+        title={t("نرخ پس‌انداز")}
         value={toPersianDigits(summary.savingsRate.toFixed(1))}
         suffix="٪"
         icon={<PercentageCircle size={20} variant="Bold" />}
       />
       <KpiCard
-        title="تعداد تراکنش"
+        title={t("تعداد تراکنش")}
         value={toPersianDigits(summary.transactionCount)}
         icon={<Chart size={20} variant="Bold" />}
       />
       <KpiCard
-        title="میانگین هزینه روزانه"
+        title={t("میانگین هزینه روزانه")}
         value={formatPrice(Math.round(summary.avgDailyCost))}
         suffix="تومان"
         icon={<Coin1 size={20} variant="Bold" />}
       />
       <KpiCard
-        title="ارزش کل نقدی"
+        title={t("ارزش کل نقدی")}
         value={formatPrice(summary.netWorth)}
         suffix="تومان"
         icon={<Wallet2 size={20} variant="Bold" />}

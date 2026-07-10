@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import type { AnalyticsReport } from "@/common/interfaces/analytics.interface";
 import { paymentCardSubtitle } from "@/common/utils/payment-card";
 import { formatPrice } from "@/common/utils";
@@ -9,14 +11,15 @@ type AnalysisPaymentCardsPanelProps = {
 };
 
 export function AnalysisPaymentCardsPanel({ report }: AnalysisPaymentCardsPanelProps) {
+  const { t } = useTranslation();
   const rows = report.byPaymentCard ?? [];
   if (rows.length === 0) return null;
 
   return (
     <section className="glass rounded-2xl p-4 lg:p-5">
       <div className="mb-4">
-        <h3 className="font-bold">تراکنش‌ها بر اساس کارت</h3>
-        <p className="text-sm text-muted">مبدا پرداخت و مقصد دریافت در این بازه</p>
+        <h3 className="font-bold">{t("تراکنش‌ها بر اساس کارت")}</h3>
+        <p className="text-sm text-muted">{t("مبدا پرداخت و مقصد دریافت در این بازه")}</p>
       </div>
       <div className="space-y-2">
         {rows.map((row) => (

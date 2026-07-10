@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useRef } from "react";
 
 import { usePrefersReducedMotion } from "./landing-effects";
@@ -12,7 +14,8 @@ type Particle = {
   r: number;
 };
 
-export function LandingParticles() {
+export function LandingParticles() {  const { t } = useTranslation();
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const reduced = usePrefersReducedMotion();
 
@@ -32,7 +35,8 @@ export function LandingParticles() {
 
     const context = ctx;
 
-    function resize() {
+    function resize() {  const { t } = useTranslation();
+
       const c = canvasRef.current;
       if (!c) return;
       const parent = c.parentElement;
@@ -55,7 +59,8 @@ export function LandingParticles() {
       }));
     }
 
-    function draw() {
+    function draw() {  const { t } = useTranslation();
+
       context.clearRect(0, 0, w, h);
 
       for (const p of particles) {

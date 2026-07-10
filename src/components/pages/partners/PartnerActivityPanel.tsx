@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useCallback, useEffect, useState } from "react";
 
 import * as partnersApi from "@/common/api/partners";
@@ -53,6 +55,7 @@ export function PartnerActivityPanel({
   contextType,
   contextId,
 }: PartnerActivityPanelProps) {
+  const { t } = useTranslation();
   const [activities, setActivities] = useState<IPartnerActivity[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -73,21 +76,21 @@ export function PartnerActivityPanel({
   }, [load]);
 
   if (loading) {
-    return <p className="text-sm text-muted">در حال بارگذاری تاریخچه…</p>;
+    return <p className="text-sm text-muted">{t("در حال بارگذاری تاریخچه…")}</p>;
   }
 
   if (activities.length === 0) {
     return (
       <section className="rounded-2xl border border-border/50 bg-surface-secondary/30 p-4">
-        <h3 className="font-bold">تاریخچه همکاری</h3>
-        <p className="mt-2 text-sm text-muted">هنوز رویدادی ثبت نشده</p>
+        <h3 className="font-bold">{t("تاریخچه همکاری")}</h3>
+        <p className="mt-2 text-sm text-muted">{t("هنوز رویدادی ثبت نشده")}</p>
       </section>
     );
   }
 
   return (
     <section className="space-y-3 rounded-2xl border border-border/50 bg-surface-secondary/30 p-4">
-      <h3 className="font-bold">تاریخچه همکاری</h3>
+      <h3 className="font-bold">{t("تاریخچه همکاری")}</h3>
       <div className="space-y-2">
         {activities.map((activity) => (
           <article

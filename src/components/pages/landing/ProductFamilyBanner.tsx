@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Home2 } from "iconsax-reactjs";
@@ -13,6 +15,7 @@ type ProductFamilyBannerProps = {
 const bizLogo = "/assets/business-logo-mark.svg";
 
 export function ProductFamilyBanner({ variant = "section" }: ProductFamilyBannerProps) {
+  const { t } = useTranslation();
   const business = PRODUCT_FAMILY.business;
 
   if (variant === "header") {
@@ -35,7 +38,7 @@ export function ProductFamilyBanner({ variant = "section" }: ProductFamilyBanner
   if (variant === "footer") {
     return (
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3 border-t border-border/40 pt-6 md:justify-start">
-        <span className="text-xs lp-muted">محصولات مرتبط:</span>
+        <span className="text-xs lp-muted">{t("محصولات مرتبط:")}</span>
         <Link
           href={BUSINESS_SITE_URL}
           className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium transition hover:opacity-90"

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -12,7 +14,8 @@ import { useAppSelector } from "@/stores/hooks";
 import { isAuthSelector } from "@/stores/auth";
 import { userSelector } from "@/stores/profile";
 
-export function LandingPreviewPage() {
+export function LandingPreviewPage() {  const { t } = useTranslation();
+
   const router = useRouter();
   const isAuth = useAppSelector(isAuthSelector);
   const user = useAppSelector(userSelector);
