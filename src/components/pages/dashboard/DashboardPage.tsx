@@ -9,6 +9,8 @@ import * as budgetsApi from "@/common/api/budgets";
 import { PATHS } from "@/common/constants";
 import { useHydratedSearchParams } from "@/common/hooks/useHydratedSearchParams";
 import { getJalaliNow, JALALI_MONTHS, toPersianDigits } from "@/common/utils";
+import { getNowDateParts, GREGORIAN_MONTHS } from "@/common/utils/calendar-date";
+import moment from "moment-jalali";
 import { showToast } from "@/common/utils/toast";
 import { BudgetExportModal } from "@/components/pages/dashboard/BudgetExportModal";
 import { BudgetStats } from "@/components/pages/dashboard/BudgetStats";
@@ -49,11 +51,12 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
   const [exportOpen, setExportOpen] = useState(false);
   const hasLoadedOnce = useRef(Boolean(initialData));
 
-  const now = getJalaliNow();
+  const calendarType = user?.preferences?.dateCalendar || "jalali";
+  const nowParts = useMemo(() => getNowDateParts(calendarType), [calendarType]);
   const duration = hydrated ? get("duration", "monthly") : "monthly";
-  const year = hydrated ? get("year", String(now.jYear())) : String(now.jYear());
-  const month = hydrated ? get("month", String(now.jMonth() + 1)) : String(now.jMonth() + 1);
-  const day = hydrated ? get("day", String(now.jDate())) : String(now.jDate());
+  const year = hydrated ? get("year", nowParts.year) : nowParts.year;
+  const month = hydrated ? get("month", nowParts.month) : nowParts.month;
+  const day = hydrated ? get("day", nowParts.day) : nowParts.day;
   const category = hydrated ? get("category", "") : "";
 
   const queryString = useMemo(() => {
@@ -114,28 +117,53 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
   const filteredBudgets = budgets ?? [];
 
   function shiftMonth(delta: number) {
-    const m = getJalaliNow()
-      .jYear(parseInt(year, 10))
-      .jMonth(parseInt(month, 10) - 1)
-      .add(delta, "jMonth");
-    updateQuery({
-      year: String(m.jYear()),
-      month: String(m.jMonth() + 1),
-      day: String(m.jDate()),
-    });
+    if (calendarType === "gregorian") {
+      const m = moment()
+        .year(parseInt(year, 10))
+        .month(parseInt(month, 10) - 1)
+        .add(delta, "month");
+      updateQuery({
+        year: String(m.year()),
+        month: String(m.month() + 1),
+        day: String(m.date()),
+      });
+    } else {
+      const m = getJalaliNow()
+        .jYear(parseInt(year, 10))
+        .jMonth(parseInt(month, 10) - 1)
+        .add(delta, "jMonth");
+      updateQuery({
+        year: String(m.jYear()),
+        month: String(m.jMonth() + 1),
+        day: String(m.jDate()),
+      });
+    }
   }
 
   function shiftDay(delta: number) {
-    const m = getJalaliNow()
-      .jYear(parseInt(year, 10))
-      .jMonth(parseInt(month, 10) - 1)
-      .jDate(parseInt(day, 10))
-      .add(delta, "day");
-    updateQuery({
-      year: String(m.jYear()),
-      month: String(m.jMonth() + 1),
-      day: String(m.jDate()),
-    });
+    if (calendarType === "gregorian") {
+      const m = moment()
+        .year(parseInt(year, 10))
+        .month(parseInt(month, 10) - 1)
+        .date(parseInt(day, 10))
+        .add(delta, "day");
+      updateQuery({
+        year: String(m.year()),
+        month: String(m.month() + 1),
+        day: String(m.date()),
+      });
+    } else {
+      const m = getJalaliNow()
+        .jYear(parseInt(year, 10))
+        .jMonth(parseInt(month, 10) - 1)
+        .jDate(parseInt(day, 10))
+        .add(delta, "day");
+      updateQuery({
+        year: String(m.jYear()),
+        month: String(m.jMonth() + 1),
+        day: String(m.jDate()),
+      });
+    }
   }
 
   return (
@@ -192,9 +220,13 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
             <ArrowRight2 size={18} />
           </Button>
           <p className="text-sm font-medium lg:text-base">
-            {duration === "daily"
-              ? `${toPersianDigits(day)} ${JALALI_MONTHS[parseInt(month, 10) - 1]} ${toPersianDigits(year)}`
-              : `${JALALI_MONTHS[parseInt(month, 10) - 1]} ${toPersianDigits(year)}`}
+            {calendarType === "gregorian"
+              ? duration === "daily"
+                ? `${toPersianDigits(day)} ${GREGORIAN_MONTHS[parseInt(month, 10) - 1]} ${toPersianDigits(year)}`
+                : `${GREGORIAN_MONTHS[parseInt(month, 10) - 1]} ${toPersianDigits(year)}`
+              : duration === "daily"
+                ? `${toPersianDigits(day)} ${JALALI_MONTHS[parseInt(month, 10) - 1]} ${toPersianDigits(year)}`
+                : `${JALALI_MONTHS[parseInt(month, 10) - 1]} ${toPersianDigits(year)}`}
           </p>
           <Button
             isIconOnly

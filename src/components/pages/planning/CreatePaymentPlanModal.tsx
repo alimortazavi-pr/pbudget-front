@@ -13,6 +13,8 @@ import { useMergedPersons } from "@/common/hooks/useMergedPersons";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
+import { userSelector } from "@/stores/profile";
+import { currencyLabel } from "@/common/constants/user-preferences";
 
 type CreatePaymentPlanModalProps = {
   open: boolean;
@@ -27,6 +29,8 @@ export function CreatePaymentPlanModal({
   onCreated,
   defaultProjectId,
 }: CreatePaymentPlanModalProps) {
+  const user = useAppSelector(userSelector);
+  const preferredCurrency = user?.preferences?.currency ?? "toman";
   const categories = useAppSelector(categoriesSelector);
   const categoryOptions = getCategorySelectOptions(categories ?? []);
   const persons = useMergedPersons(open);
@@ -124,7 +128,7 @@ export function CreatePaymentPlanModal({
             options={persons}
           />
           <FormPriceInput
-            label="مبلغ هر قسط (تومان)"
+            label={`مبلغ هر قسط (${currencyLabel(preferredCurrency)})`}
             value={amount}
             onChange={setAmount}
           />

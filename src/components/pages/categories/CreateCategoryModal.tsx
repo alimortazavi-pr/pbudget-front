@@ -14,6 +14,8 @@ import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { categoriesSelector, setCategories } from "@/stores/category";
 import { CategoryKind } from "@/types/enums";
+import { userSelector } from "@/stores/profile";
+import { currencyLabel } from "@/common/constants/user-preferences";
 
 type CreateCategoryModalProps = {
   open: boolean;
@@ -28,6 +30,8 @@ export function CreateCategoryModal({
 }: CreateCategoryModalProps) {
   const dispatch = useAppDispatch();
   const categories = useAppSelector(categoriesSelector);
+  const user = useAppSelector(userSelector);
+  const preferredCurrency = user?.preferences?.currency ?? "toman";
   const [title, setTitle] = useState("");
   const [parentId, setParentId] = useState("");
   const [isProjectKind, setIsProjectKind] = useState(false);
@@ -95,7 +99,7 @@ export function CreateCategoryModal({
             />
             <CategoryColorPicker value={color} onChange={setColor} />
             <FormPriceInput
-              label="سقف ماهانه (تومان)"
+              label={`سقف ماهانه (${currencyLabel(preferredCurrency)})`}
               value={monthlyLimit}
               onChange={setMonthlyLimit}
               placeholder="۰ = بدون محدودیت"

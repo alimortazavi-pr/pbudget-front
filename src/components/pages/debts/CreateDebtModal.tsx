@@ -19,6 +19,8 @@ import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
 import { DebtType } from "@/types/enums";
+import { userSelector } from "@/stores/profile";
+import { currencyLabel } from "@/common/constants/user-preferences";
 
 type CreateDebtModalProps = {
   open: boolean;
@@ -28,6 +30,8 @@ type CreateDebtModalProps = {
 
 export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtModalProps) {
   const categories = useAppSelector(categoriesSelector);
+  const user = useAppSelector(userSelector);
+  const preferredCurrency = user?.preferences?.currency ?? "toman";
   const categoryOptions = getCategorySelectOptions(categories ?? []);
   const persons = useMergedPersons(open);
   const now = getJalaliNow();
@@ -112,7 +116,7 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
             onChange={setPerson}
             options={persons}
           />
-          <FormPriceInput label="مبلغ (تومان)" value={amount} onChange={setAmount} />
+          <FormPriceInput label={`مبلغ (${currencyLabel(preferredCurrency)})`} value={amount} onChange={setAmount} />
           <FormCategoryComboBox
             label="دسته‌بندی"
             selectedKey={category || undefined}

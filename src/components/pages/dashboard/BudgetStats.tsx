@@ -1,4 +1,7 @@
 import { formatPrice, toPersianDigits } from "@/common/utils";
+import { useAppSelector } from "@/stores/hooks";
+import { userSelector } from "@/stores/profile";
+import { currencyLabel } from "@/common/constants/user-preferences";
 
 type BudgetStatsProps = {
   count: number;
@@ -6,13 +9,16 @@ type BudgetStatsProps = {
 };
 
 export function BudgetStats({ count, periodBalance }: BudgetStatsProps) {
+  const user = useAppSelector(userSelector);
+  const preferredCurrency = user?.preferences?.currency ?? "toman";
+
   return (
     <div className="pb-stat-card lg:p-6">
       <p className="text-sm text-muted lg:text-base">تراز دوره</p>
       <p className="mt-2 text-2xl font-bold text-foreground lg:text-3xl">
         {formatPrice(periodBalance ?? 0)}{" "}
         <span className="text-sm font-normal text-muted lg:text-base">
-          تومان
+          {currencyLabel(preferredCurrency)}
         </span>
       </p>
       <p className="mt-2 text-xs text-muted lg:text-sm">

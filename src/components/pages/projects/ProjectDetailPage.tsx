@@ -22,6 +22,7 @@ import { ProjectItemType, ProjectStatus } from "@/types/enums";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { categoriesSelector, setCategories } from "@/stores/category";
 import { userSelector } from "@/stores/profile";
+import { currencyLabel } from "@/common/constants/user-preferences";
 
 type ProjectDetailPageProps = {
   projectId: string;
@@ -359,7 +360,11 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
             onChange={(e) => setTitle(e.target.value)}
           />
           <FormPriceInput
-            label={fixedIncome ? "حقوق ماهانه (تومان)" : "مبلغ کل قرارداد (تومان)"}
+            label={
+              fixedIncome
+                ? `حقوق ماهانه (${currencyLabel(currentUser?.preferences?.currency ?? "toman")})`
+                : `مبلغ کل قرارداد (${currencyLabel(currentUser?.preferences?.currency ?? "toman")})`
+            }
             value={totalAmount}
             onChange={setTotalAmount}
           />
@@ -425,7 +430,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
 
               {!fixedIncome ? (
                 <FormPriceInput
-                  label="نرخ ساعتی کار (تومان)"
+                  label={`نرخ ساعتی کار (${currencyLabel(currentUser?.preferences?.currency ?? "toman")})`}
                   value={hourlyRate}
                   onChange={setHourlyRate}
                 />

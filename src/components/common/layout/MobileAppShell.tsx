@@ -23,6 +23,8 @@ import {
   MOBILE_TAB_SIDE_ITEMS,
   PRIMARY_NAV_ITEMS,
 } from "./shell-nav";
+import { useTranslation } from "@/components/providers/LanguageProvider";
+import { LanguageSelector } from "./LanguageSelector";
 
 type MobileAppShellProps = {
   children: ReactNode;
@@ -49,6 +51,8 @@ export function MobileAppShell({
   const router = useRouter();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { startOnboarding, startPageTour } = useTour();
+  const { t } = useTranslation();
+  const displayTitle = t(title);
 
   return (
     <div className="min-h-screen w-full bg-background lg:flex lg:flex-row">
@@ -73,10 +77,10 @@ export function MobileAppShell({
               )}
               <div className="flex min-w-0 items-center gap-2">
                 <h1 className="truncate text-base font-semibold lg:text-xl">
-                  {title}
+                  {displayTitle}
                 </h1>
                 <span className="hidden shrink-0 rounded-full bg-rose-500/12 px-2 py-0.5 text-[10px] font-medium text-rose-600 dark:text-rose-400 sm:inline">
-                  میز شخصی
+                  {t("personalDesk")}
                 </span>
               </div>
             </div>
@@ -98,6 +102,7 @@ export function MobileAppShell({
                 <InfoCircle size={20} />
               </Button>
               <ChangeAccountPopover />
+              <LanguageSelector />
               <div className="lg:hidden">
                 <ThemeToggle />
               </div>

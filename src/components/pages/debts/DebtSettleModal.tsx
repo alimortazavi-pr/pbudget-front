@@ -11,6 +11,9 @@ import { showToast } from "@/common/utils/toast";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { FormPriceInput } from "@/components/common/form/FormFields";
 import { DebtType } from "@/types/enums";
+import { useAppSelector } from "@/stores/hooks";
+import { userSelector } from "@/stores/profile";
+import { currencyLabel } from "@/common/constants/user-preferences";
 
 type DebtSettleModalProps = {
   debt: IDebt | null;
@@ -25,6 +28,8 @@ export function DebtSettleModal({
   onOpenChange,
   onSettled,
 }: DebtSettleModalProps) {
+  const user = useAppSelector(userSelector);
+  const preferredCurrency = user?.preferences?.currency ?? "toman";
   const [candidates, setCandidates] = useState<IBudget[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -106,7 +111,7 @@ export function DebtSettleModal({
 
           {selectedIds.size <= 1 ? (
             <FormPriceInput
-              label="مبلغ تسویه (تومان)"
+              label={`مبلغ تسویه (${currencyLabel(preferredCurrency)})`}
               value={amount}
               onChange={setAmount}
             />

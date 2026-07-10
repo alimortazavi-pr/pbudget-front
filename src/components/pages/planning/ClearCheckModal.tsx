@@ -13,6 +13,8 @@ import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
 import { CheckType } from "@/types/enums";
+import { userSelector } from "@/stores/profile";
+import { currencyLabel } from "@/common/constants/user-preferences";
 
 type ClearCheckModalProps = {
   check: ICheck | null;
@@ -27,6 +29,8 @@ export function ClearCheckModal({
   onOpenChange,
   onCleared,
 }: ClearCheckModalProps) {
+  const user = useAppSelector(userSelector);
+  const preferredCurrency = user?.preferences?.currency ?? "toman";
   const categories = useAppSelector(categoriesSelector);
   const categoryOptions = getCategorySelectOptions(categories ?? []);
   const now = getJalaliNow();
@@ -84,7 +88,7 @@ export function ClearCheckModal({
             {check.person} · سررسید {check.dueYear}/{check.dueMonth}/{check.dueDay}
           </p>
 
-          <FormPriceInput label="مبلغ (تومان)" value={amount} onChange={setAmount} />
+          <FormPriceInput label={`مبلغ (${currencyLabel(preferredCurrency)})`} value={amount} onChange={setAmount} />
 
           <FormCategoryComboBox
             label="دسته‌بندی"

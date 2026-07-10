@@ -38,6 +38,7 @@ import { CreateCategoryModal } from "@/components/pages/categories/CreateCategor
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
 import { userSelector } from "@/stores/profile";
+import { currencyLabel } from "@/common/constants/user-preferences";
 import { BudgetType, CategoryKind, DebtType } from "@/types/enums";
 import type { ImportRowDraft } from "./import-row.types";
 import { validateImportRowDraft } from "./import-row.util";
@@ -64,6 +65,8 @@ export function BankImportRowEditorModal({
   onSave,
 }: BankImportRowEditorModalProps) {
   const categories = useAppSelector(categoriesSelector);
+  const user = useAppSelector(userSelector);
+  const preferredCurrency = user?.preferences?.currency ?? "toman";
   const categoryOptions = getCategorySelectOptions(categories ?? []);
 
   const [form, setForm] = useState<ImportRowDraft | null>(null);
@@ -287,7 +290,7 @@ export function BankImportRowEditorModal({
               ))}
             </div>
 
-            <FormPriceInput label="مبلغ (تومان)" value={form.price} onChange={(v) => patchForm({ price: v })} />
+            <FormPriceInput label={`مبلغ (${currencyLabel(preferredCurrency)})`} value={form.price} onChange={(v) => patchForm({ price: v })} />
 
             <FormDatePicker
               label="تاریخ (شمسی)"

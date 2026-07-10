@@ -13,7 +13,7 @@ import {
 } from "./jalali-date";
 import { toPersianDigits } from "./persian-digits";
 
-const GREGORIAN_MONTHS = [
+export const GREGORIAN_MONTHS = [
   "January",
   "February",
   "March",

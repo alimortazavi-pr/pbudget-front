@@ -12,6 +12,8 @@ import { FormCategoryComboBox, FormPriceInput, FormTextArea } from "@/components
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
+import { userSelector } from "@/stores/profile";
+import { currencyLabel } from "@/common/constants/user-preferences";
 
 type PayOccurrenceModalProps = {
   occurrence: IPaymentPlanOccurrence | null;
@@ -26,6 +28,8 @@ export function PayOccurrenceModal({
   onOpenChange,
   onPaid,
 }: PayOccurrenceModalProps) {
+  const user = useAppSelector(userSelector);
+  const preferredCurrency = user?.preferences?.currency ?? "toman";
   const categories = useAppSelector(categoriesSelector);
   const categoryOptions = getCategorySelectOptions(categories ?? []);
   const now = getJalaliNow();
@@ -81,7 +85,7 @@ export function PayOccurrenceModal({
             {occurrence.day}
           </p>
 
-          <FormPriceInput label="مبلغ (تومان)" value={amount} onChange={setAmount} />
+          <FormPriceInput label={`مبلغ (${currencyLabel(preferredCurrency)})`} value={amount} onChange={setAmount} />
 
           <FormCategoryComboBox
             label="دسته‌بندی"

@@ -67,14 +67,17 @@ type ShellNavRowProps = {
   badge?: number;
 };
 
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 function ShellNavRow({ item, active, className, onNavigate, badge }: ShellNavRowProps) {
+  const { t } = useTranslation();
   const Icon = item.icon as IconComponent;
   const badgeLabel = badge && badge > 9 ? "9+" : badge;
   const content: ReactNode = (
     <>
       <Icon size={20} variant={active ? "Bold" : "Linear"} />
       <span className="flex flex-1 items-center justify-between gap-2">
-        <span>{item.label}</span>
+        <span>{t(item.label)}</span>
         {badgeLabel ? (
           <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-accent-foreground">
             {badgeLabel}

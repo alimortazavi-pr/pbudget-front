@@ -15,6 +15,9 @@ import {
 } from "@/components/common/form/FormFields";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { CheckType } from "@/types/enums";
+import { useAppSelector } from "@/stores/hooks";
+import { userSelector } from "@/stores/profile";
+import { currencyLabel } from "@/common/constants/user-preferences";
 
 type CreateCheckModalProps = {
   open: boolean;
@@ -29,6 +32,8 @@ export function CreateCheckModal({
   persons,
   onCreated,
 }: CreateCheckModalProps) {
+  const user = useAppSelector(userSelector);
+  const preferredCurrency = user?.preferences?.currency ?? "toman";
   const now = getJalaliNow();
   const [type, setType] = useState(String(CheckType.PAYABLE));
   const [amount, setAmount] = useState("");
@@ -115,7 +120,7 @@ export function CreateCheckModal({
             ))}
           </div>
 
-          <FormPriceInput label="مبلغ (تومان)" value={amount} onChange={setAmount} />
+          <FormPriceInput label={`مبلغ (${currencyLabel(preferredCurrency)})`} value={amount} onChange={setAmount} />
           <FormPersonComboBox
             label="طرف حساب"
             value={person}

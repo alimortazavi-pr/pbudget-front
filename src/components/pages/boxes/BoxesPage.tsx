@@ -12,10 +12,14 @@ import { FormInput } from "@/components/common/form/FormFields";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { boxesSelector, setBoxes } from "@/stores/box";
+import { userSelector } from "@/stores/profile";
+import { currencyLabel } from "@/common/constants/user-preferences";
 
 export function BoxesPage() {
   const dispatch = useAppDispatch();
   const boxes = useAppSelector(boxesSelector);
+  const user = useAppSelector(userSelector);
+  const preferredCurrency = user?.preferences?.currency ?? "toman";
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
   const [editBox, setEditBox] = useState<IBox | null>(null);
@@ -130,7 +134,7 @@ export function BoxesPage() {
                   <h3 className="font-semibold">{box.title}</h3>
                   <p className="mt-1 text-2xl font-bold">
                     {formatPrice(box.budget)}{" "}
-                    <span className="text-sm font-normal text-muted">تومان</span>
+                    <span className="text-sm font-normal text-muted">{currencyLabel(preferredCurrency)}</span>
                   </p>
                 </div>
                 <div className="flex gap-1">

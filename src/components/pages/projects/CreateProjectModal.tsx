@@ -13,6 +13,8 @@ import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { categoriesSelector, setCategories } from "@/stores/category";
 import { CategoryKind } from "@/types/enums";
+import { userSelector } from "@/stores/profile";
+import { currencyLabel } from "@/common/constants/user-preferences";
 
 type CreateProjectModalProps = {
   open: boolean;
@@ -44,6 +46,8 @@ export function CreateProjectModal({
 }: CreateProjectModalProps) {
   const dispatch = useAppDispatch();
   const categories = useAppSelector(categoriesSelector);
+  const user = useAppSelector(userSelector);
+  const preferredCurrency = user?.preferences?.currency ?? "toman";
   const [mode, setMode] = useState<Mode>("new");
   const [title, setTitle] = useState("");
   const [categoryId, setCategoryId] = useState("");
@@ -198,7 +202,11 @@ export function CreateProjectModal({
             )}
 
             <FormPriceInput
-              label={fixedIncome ? "حقوق ماهانه (تومان)" : "مبلغ کل قرارداد (تومان)"}
+              label={
+                fixedIncome
+                  ? `حقوق ماهانه (${currencyLabel(preferredCurrency)})`
+                  : `مبلغ کل قرارداد (${currencyLabel(preferredCurrency)})`
+              }
               value={totalAmount}
               onChange={setTotalAmount}
             />
@@ -250,7 +258,7 @@ export function CreateProjectModal({
                 </div>
                 {!fixedIncome ? (
                   <FormPriceInput
-                    label="نرخ ساعتی کار (تومان)"
+                    label={`نرخ ساعتی کار (${currencyLabel(preferredCurrency)})`}
                     value={hourlyRate}
                     onChange={setHourlyRate}
                   />

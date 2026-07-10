@@ -16,9 +16,11 @@ import {
 import { PATHS } from "@/common/constants";
 import { usePendingInvitesCount } from "@/common/hooks/usePendingInvitesCount";
 import { AppLogo } from "@/components/common/brand/AppLogo";
+import { useTranslation } from "@/components/providers/LanguageProvider";
 
 export function ShellSidebar() {
   const pathname = usePathname();
+  const { t } = useTranslation();
   const { count: pendingInvitesCount } = usePendingInvitesCount();
   const navBadges = useMemo(
     () =>
@@ -37,13 +39,13 @@ export function ShellSidebar() {
 
         <div>
           <p className="mb-2 px-3 text-xs font-semibold tracking-wide text-muted">
-            اصلی
+            {t("اصلی")}
           </p>
           <nav className="flex flex-col gap-0.5">
             {PRIMARY_NAV_ITEMS.map((item) => {
               const active =
                 item.href === PATHS.HOME
-                  ? pathname === PATHS.HOME
+                   ? pathname === PATHS.HOME
                   : pathname.startsWith(item.href);
 
               return (
@@ -55,7 +57,7 @@ export function ShellSidebar() {
                   data-tour={`nav-${item.href.replace(/\//g, "") || "home"}`}
                 >
                   <item.icon size={20} variant={active ? "Bold" : "Linear"} />
-                  <span>{item.label}</span>
+                  <span>{t(item.label)}</span>
                 </Link>
               );
             })}
@@ -68,18 +70,18 @@ export function ShellSidebar() {
           data-tour="nav-create"
         >
           <Add size={20} variant="Bold" />
-          {CREATE_NAV_ITEM.label}
+          {t(CREATE_NAV_ITEM.label)}
         </Link>
 
         <Link href={BANK_IMPORT_NAV_ITEM.href} className="pb-sidebar-secondary-cta mt-2">
           <BANK_IMPORT_NAV_ITEM.icon size={18} variant="Bold" />
-          {BANK_IMPORT_NAV_ITEM.label}
+          {t(BANK_IMPORT_NAV_ITEM.label)}
         </Link>
 
         {PLANNING_NAV_GROUPS.map((group) => (
           <ShellNavGroup
             key={group.title}
-            title={group.title}
+            title={t(group.title)}
             items={group.items}
             variant="sidebar"
             itemBadges={navBadges}
