@@ -55,7 +55,7 @@
   }
 
   .pb-header-full {
-    @apply fixed inset-x-0 top-0 z-40 w-full border-b border-border/40 bg-surface/95 backdrop-blur-xl;
+    @apply fixed inset-x-0 top-0 z-50 w-full border-b border-border/40 bg-surface/95 backdrop-blur-xl;
   }
 
   .pb-header-inner {

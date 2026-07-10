@@ -8,12 +8,16 @@ import {
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-const MENU_MIN_WIDTH = 120;
+const MENU_MIN_WIDTH = 132;
+const MENU_ITEM_HEIGHT = 36;
+const MENU_PADDING = 8;
+const MENU_Z_INDEX = 10_100;
 
 export function LanguageSelector() {
   const { language, setLanguage } = useLanguage();
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [menuPosition, setMenuPosition] = useState<{
     top: number;
     left: number;
@@ -28,6 +32,7 @@ export function LanguageSelector() {
   ];
 
   const currentOpt = options.find((o) => o.value === language) || options[0];
+  const menuHeight = options.length * MENU_ITEM_HEIGHT + MENU_PADDING;
 
   const updateMenuPosition = useCallback(() => {
     const trigger = triggerRef.current;
@@ -35,14 +40,22 @@ export function LanguageSelector() {
 
     const rect = trigger.getBoundingClientRect();
     const isRtl = document.documentElement.dir === "rtl";
+    const isMobile = window.matchMedia("(max-width: 1023px)").matches;
     const left = isRtl
       ? rect.left
       : Math.max(8, rect.right - MENU_MIN_WIDTH);
 
-    setMenuPosition({
-      top: rect.bottom + 4,
-      left,
-    });
+    // On mobile the dashboard hero sits directly under the header; open upward.
+    const openUpward = isMobile || rect.bottom + menuHeight > window.innerHeight - 16;
+    const top = openUpward
+      ? Math.max(8, rect.top - menuHeight - 4)
+      : rect.bottom + 4;
+
+    setMenuPosition({ top, left });
+  }, [menuHeight]);
+
+  useEffect(() => {
+    setMounted(true);
   }, []);
 
   useLayoutEffect(() => {
@@ -87,19 +100,21 @@ export function LanguageSelector() {
   }, [isOpen]);
 
   const menu =
-    isOpen && menuPosition
+    mounted && isOpen && menuPosition
       ? createPortal(
           <div
             ref={menuRef}
             role="listbox"
+            data-language-menu=""
             style={{
               position: "fixed",
               top: menuPosition.top,
               left: menuPosition.left,
-              zIndex: 9999,
+              zIndex: MENU_Z_INDEX,
               minWidth: MENU_MIN_WIDTH,
+              isolation: "isolate",
             }}
-            className="rounded-xl border border-border/40 bg-background p-1 shadow-lg"
+            className="rounded-xl border border-border/60 bg-surface p-1 shadow-2xl ring-1 ring-black/5"
           >
             {options.map((opt) => (
               <button
@@ -108,11 +123,12 @@ export function LanguageSelector() {
                 role="option"
                 data-testid={`language-option-${opt.value}`}
                 aria-selected={language === opt.value}
+                onPointerDown={(event) => event.stopPropagation()}
                 onClick={() => {
                   setLanguage(opt.value);
                   setIsOpen(false);
                 }}
-                className={`flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-sm transition-colors hover:bg-surface-secondary ${
+                className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-surface-secondary ${
                   language === opt.value
                     ? "bg-accent/10 font-medium text-accent"
                     : "text-foreground"
