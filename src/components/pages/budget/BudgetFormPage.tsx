@@ -459,22 +459,22 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
         <div className="glass space-y-4 rounded-2xl p-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <p className="text-sm text-muted">
-              {budget ? "ویرایش تراکنش" : "ثبت تراکنش جدید"}
+              {budget ? t("budget.editTransaction") : t("budget.newTransaction")}
             </p>
             {!budget ? (
               <Link
                 href={PATHS.BANK_IMPORT}
                 className="text-xs font-semibold text-accent underline-offset-2 hover:underline"
               >
-                ورود گروهی از صورتحساب بانک
+                {t("budget.bankImportBulkLink")}
               </Link>
             ) : null}
           </div>
 
           <div className="flex gap-2">
             {[
-              { id: String(BudgetType.INCOME), label: "دریافتی" },
-              { id: String(BudgetType.COST), label: "پرداختی" },
+              { id: String(BudgetType.INCOME), label: t("budget.income") },
+              { id: String(BudgetType.COST), label: t("budget.expense") },
             ].map((item) => (
               <button
                 key={item.id}
@@ -509,14 +509,20 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
           </div>
 
           <FormPriceInput
-            label={`مبلغ (${currencyLabel(formCurrency)})`}
+            label={t("budget.amountWithCurrency", {
+              currency: currencyLabel(formCurrency),
+            })}
             value={price}
             onChange={setPrice}
             currency={formCurrency}
           />
 
           <FormDatePicker
-            label={formCalendar === "gregorian" ? "تاریخ (میلادی)" : "تاریخ (شمسی)"}
+            label={
+              formCalendar === "gregorian"
+                ? t("budget.dateGregorian")
+                : t("budget.dateJalali")
+            }
             year={year}
             month={month}
             day={day}
@@ -530,7 +536,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
             selectedKey={category || undefined}
             onSelectionChange={(key) => setCategory(key)}
             options={categoryOptions}
-            emptyMessage="دسته‌ای ثبت نشده"
+            emptyMessage={t("common.noCategoryRegistered")}
           />
 
           {categorySpendHint ? (
@@ -562,24 +568,24 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
               <FormSelect
                 label={
                   type === String(BudgetType.COST)
-                    ? "کارت پرداخت (مبدا)"
-                    : "کارت دریافت (مقصد)"
+                    ? t("budget.paymentCardSource")
+                    : t("budget.paymentCardDestination")
                 }
                 placeholder={t("auto.k33fcba0b6e")}
                 selectedKey={paymentCardId || "none"}
                 onSelectionChange={(key) =>
                   setPaymentCardId(key === "none" ? "" : key)
                 }
-                options={[{ id: "none", label: "بدون کارت" }, ...paymentCardOptions]}
-                emptyMessage="کارتی ثبت نشده"
+                options={[{ id: "none", label: t("budget.noCard") }, ...paymentCardOptions]}
+                emptyMessage={t("budget.noCardRegistered")}
               />
               {paymentCards.length === 0 ? (
                 <p className="text-xs text-muted">
-                  هنوز کارتی ثبت نکرده‌اید. از{" "}
+                  {t("budget.noCardsYetPrefix")}{" "}
                   <Link href={PATHS.PAYMENT_CARDS} className="text-accent underline">
-                    کارت‌های من
+                    {t("budget.myCardsLink")}
                   </Link>{" "}
-                  اضافه کنید.
+                  {t("budget.noCardsYetSuffix")}
                 </p>
               ) : null}
 
@@ -624,13 +630,13 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
               onPress={() => setCategoryModalOpen(true)}
             >
               <Add size={18} />
-              ایجاد دسته‌بندی
+              {t("budget.createCategory")}
             </Button>
           </div>
 
           <div className="flex flex-col gap-2 border-t border-border/50 pt-4">
             <Button type="submit" className="w-full" size="lg" isPending={loading}>
-              {budget ? "ذخیره تغییرات" : "ثبت تراکنش"}
+              {budget ? t("common.saveChanges") : t("nav.createTransaction")}
             </Button>
             <Button
               type="button"
@@ -638,7 +644,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
               variant="ghost"
               onPress={() => router.back()}
             >
-              انصراف
+              {t("common.cancel")}
             </Button>
           </div>
         </div>

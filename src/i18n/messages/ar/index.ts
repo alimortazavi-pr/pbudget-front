@@ -9,6 +9,7 @@ import { adminMessages } from "./admin";
 import { voiceMessages } from "./voice";
 import { planningMessages } from "./planning";
 import { categoriesMessages } from "./categories";
+import { budgetMessages } from "./budget";
 import { autoMessages } from "./auto";
 
 function merge(...trees: MessageTree[]): Record<string, string> {
@@ -30,6 +31,7 @@ export const messages = {
     { voice: voiceMessages },
     { planning: planningMessages },
     { categories: categoriesMessages },
+    { budget: budgetMessages },
   ),
   ...autoFlat,
 };

@@ -392,13 +392,13 @@ export function BankImportRowEditorModal({
               onPress={() => setCategoryModalOpen(true)}
             >
               <Add size={18} />
-              ایجاد دسته‌بندی
+              {t("budget.createCategory")}
             </Button>
           </Modal.Body>
 
           <Modal.Footer className="border-t border-border/40 px-5 py-4">
             <Button variant="ghost" onPress={() => onOpenChange(false)}>
-              انصراف
+              {t("common.cancel")}
             </Button>
             <Button onPress={handleSave}>{t("auto.k5c388be097")}</Button>
           </Modal.Footer>
