@@ -234,7 +234,7 @@ export function FormPriceInput({
   currency: _currency = "toman",
   onFocus,
   ...props
-}: FormPriceInputProps) {  const { t } = useTranslation();
+}: FormPriceInputProps) {
 
   function handleFocus(event: FocusEvent<HTMLInputElement>) {
     onFocus?.(event);

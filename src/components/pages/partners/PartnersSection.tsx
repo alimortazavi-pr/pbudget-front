@@ -56,7 +56,7 @@ function isOwnerPartner(partner: IPartner) {
   return partner.isOwner === true || partner.permissionLevel === "owner";
 }
 
-function partnerInitials(name: string) {  const { t } = useTranslation();
+function partnerInitials(name: string) {
 
   const parts = name.trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return "؟";

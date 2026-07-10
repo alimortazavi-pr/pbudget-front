@@ -176,7 +176,7 @@ export function ManualWorkSessionModal({
   );
 }
 
-export function formatSessionRange(session: IWorkSession) {  const { t } = useTranslation();
+export function formatSessionRange(session: IWorkSession) {
 
   const date = formatJalaliDateSlashed(
     normalizeJalaliPart(session.year, ""),

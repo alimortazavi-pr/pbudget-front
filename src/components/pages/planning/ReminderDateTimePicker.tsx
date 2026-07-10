@@ -27,7 +27,7 @@ type ReminderDateTimePickerProps = ReminderDateTimeValue & {
   onDraftChange: (value: ReminderDateTimeValue) => void;
 };
 
-function toDateObject(value: ReminderDateTimeValue) {  const { t } = useTranslation();
+function toDateObject(value: ReminderDateTimeValue) {
 
   return new DateObject({
     year: value.year,

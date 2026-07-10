@@ -28,7 +28,7 @@ function balanceForPartner(
   return balances.find((row) => row.partnerId === partnerId);
 }
 
-function partnerInitials(name: string) {  const { t } = useTranslation();
+function partnerInitials(name: string) {
 
   const parts = name.trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return "؟";

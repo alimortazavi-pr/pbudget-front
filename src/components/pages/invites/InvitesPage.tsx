@@ -31,7 +31,7 @@ function formatExpiry(expiresAt: string) {
   }
 }
 
-function extractToken(link: string | null | undefined) {  const { t } = useTranslation();
+function extractToken(link: string | null | undefined) {
 
   if (!link) return null;
   const parts = link.split("/").filter(Boolean);
