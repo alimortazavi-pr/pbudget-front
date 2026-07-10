@@ -129,7 +129,7 @@ export function WorkAttendancePage() {
     try {
       const blob = await workTimeApi.exportWorkTimeExcel(year, month);
       workTimeApi.downloadWorkTimeExport(blob, year, month);
-      showToast(t("فایل اکسل دانلود شد"), "success");
+      showToast(t("auto.k70ee136fff"), "success");
     } catch (err) {
       showErrorToast(err);
     } finally {
@@ -155,7 +155,7 @@ export function WorkAttendancePage() {
     setActionProjectId(projectId);
     try {
       await workTimeApi.clockOut(projectId);
-      showToast(t("خروج ثبت شد"), "success");
+      showToast(t("projects.clockOutRecorded"), "success");
       await load();
     } catch (err) {
       showErrorToast(err);
@@ -185,8 +185,8 @@ export function WorkAttendancePage() {
   return (
     <div className="space-y-5 pb-6">
       <section className="rounded-3xl bg-gradient-to-br from-emerald-600 to-teal-700 p-5 text-white shadow-lg">
-        <p className="text-sm font-medium text-white/80">{t("پروژه‌ها")}</p>
-        <h1 className="mt-1 text-2xl font-bold">{t("حضور و غیاب")}</h1>
+        <p className="text-sm font-medium text-white/80">{t("nav.projects")}</p>
+        <h1 className="mt-1 text-2xl font-bold">{t("auto.ka4b30b68b9")}</h1>
         <p className="mt-2 text-sm leading-7 text-white/80">
           ساعت روزانه را برای هر پروژه تعریف کنید — هدف ماه با احتساب جمعه و تعطیلات
           رسمی محاسبه می‌شود.
@@ -226,7 +226,7 @@ export function WorkAttendancePage() {
             variant="ghost"
             onPress={() => void handleExport()}
             isPending={exporting}
-            aria-label={t("خروجی اکسل")}
+            aria-label={t("auto.k9169b66177")}
           >
             <DocumentDownload size={18} />
           </Button>
@@ -237,7 +237,7 @@ export function WorkAttendancePage() {
       </div>
 
       {loading || !data ? (
-        <div className="glass rounded-2xl p-10 text-center text-muted">{t("در حال بارگذاری…")}</div>
+        <div className="glass rounded-2xl p-10 text-center text-muted">{t("common.loading")}</div>
       ) : (
         <>
           {alerts.length > 0 ? (
@@ -250,7 +250,7 @@ export function WorkAttendancePage() {
 
           {activeProjectId && activeProjectTitle ? (
             <section className="rounded-2xl border-2 border-accent/50 bg-accent/10 p-4">
-              <p className="text-sm font-medium text-accent">{t("در حال کار")}</p>
+              <p className="text-sm font-medium text-accent">{t("auto.k0810e79393")}</p>
               <p className="mt-1 font-bold">{activeProjectTitle}</p>
               {data.activeSessionDailyStatus ? (
                 <p className="mt-1 text-xs text-muted">
@@ -425,7 +425,7 @@ export function WorkAttendancePage() {
                       </p>
                     ) : null}
                     {row.dailyStatus?.isWorkingDay === false ? (
-                      <p className="mt-2 text-xs text-muted">{t("امروز روز کاری نیست.")}</p>
+                      <p className="mt-2 text-xs text-muted">{t("auto.kbb9c35a582")}</p>
                     ) : null}
                   </article>
                 );
@@ -442,8 +442,8 @@ export function WorkAttendancePage() {
               <div className="flex items-center gap-2">
                 <Chart size={18} className="text-accent" />
                 <div>
-                  <p className="font-semibold">{t("تحلیل و تقویم ماه")}</p>
-                  <p className="text-xs text-muted">{t("نمودارها، تقویم و جزئیات کارکرد")}</p>
+                  <p className="font-semibold">{t("auto.k31f8e2c168")}</p>
+                  <p className="text-xs text-muted">{t("auto.ka7ebcbaf18")}</p>
                 </div>
               </div>
               {showAnalysis ? <ArrowUp2 size={18} /> : <ArrowDown2 size={18} />}

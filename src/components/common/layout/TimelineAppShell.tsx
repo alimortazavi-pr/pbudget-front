@@ -54,7 +54,7 @@ export function TimelineAppShell({
                   isIconOnly
                   variant="ghost"
                   size="sm"
-                  aria-label={t("بازگشت")}
+                  aria-label={t("common.back")}
                   onPress={() => router.back()}
                 >
                   <ArrowRight2 size={20} />
@@ -73,7 +73,7 @@ export function TimelineAppShell({
                 variant="ghost"
                 size="sm"
                 className="lg:hidden"
-                aria-label={t("منو")}
+                aria-label={t("nav.menu")}
                 onPress={() => setDrawerOpen(true)}
               >
                 <Menu size={20} />
@@ -107,7 +107,7 @@ export function TimelineAppShell({
         </div>
 
         {!hideTabBar && (
-          <nav className="pb-tab-bar lg:hidden" aria-label={t("ناوبری timeline")}>
+          <nav className="pb-tab-bar lg:hidden" aria-label={t("nav.timeline")}>
             <div className="pb-tab-bar-inner">
               {TIMELINE_TAB_ITEMS.map((item) => {
                 if ("fab" in item && item.fab) {
@@ -116,7 +116,7 @@ export function TimelineAppShell({
                       key={item.href}
                       href={item.href}
                       className="relative -top-4 flex flex-col items-center"
-                      aria-label={item.label}
+                      aria-label={t(item.labelKey)}
                     >
                       <span className="pb-fab">
                         <Add size={26} color="#fff" variant="Bold" />
@@ -141,7 +141,7 @@ export function TimelineAppShell({
                       size={22}
                       variant={active ? "Bold" : "Linear"}
                     />
-                    <span>{item.label}</span>
+                    <span>{t(item.labelKey)}</span>
                   </Link>
                 );
               })}

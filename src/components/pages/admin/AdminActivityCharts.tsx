@@ -35,7 +35,7 @@ export function AdminActivityCharts({ activity }: AdminActivityChartsProps) {
   return (
     <section className="grid gap-4 xl:grid-cols-2">
       <div className="glass rounded-2xl p-5">
-        <h4 className="mb-4 font-bold">{t("رشد کاربران و تراکنش‌ها (۳۰ روز)")}</h4>
+        <h4 className="mb-4 font-bold">{t("auto.kbb30b23ed0")}</h4>
         <div className="h-72">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData}>
@@ -73,7 +73,7 @@ export function AdminActivityCharts({ activity }: AdminActivityChartsProps) {
       </div>
 
       <div className="glass rounded-2xl p-5">
-        <h4 className="mb-4 font-bold">{t("درآمد و هزینه (۳۰ روز)")}</h4>
+        <h4 className="mb-4 font-bold">{t("auto.kc33aef22c2")}</h4>
         <div className="h-72">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData}>

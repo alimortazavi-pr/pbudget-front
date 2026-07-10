@@ -78,9 +78,9 @@ export function DownloadPage() {
     const url = pageUrl || `${window.location.origin}${PATHS.DOWNLOAD}`;
     try {
       await navigator.clipboard.writeText(url);
-      showToast(t("لینک کپی شد"), "success");
+      showToast(t("auto.k16d6c6a3bd"), "success");
     } catch {
-      showToast(t("کپی لینک ممکن نشد"));
+      showToast(t("auto.kfc3060ba28"));
     }
   }, [pageUrl]);
 
@@ -191,19 +191,19 @@ export function DownloadPage() {
                 </div>
                 <div className="space-y-3 p-4">
                   <div className="rounded-2xl bg-surface-secondary/80 p-3">
-                    <p className="text-xs text-muted">{t("موجودی امروز")}</p>
+                    <p className="text-xs text-muted">{t("auto.k4497cf2376")}</p>
                     <p className="mt-1 text-xl font-bold text-income" dir="ltr">
                       +۲۴,۵۰۰,۰۰۰
                     </p>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div className="rounded-xl bg-expense/10 p-2.5 text-center">
-                      <p className="text-[10px] text-muted">{t("هزینه")}</p>
-                      <p className="text-sm font-bold text-expense">{t("۸.۲M")}</p>
+                      <p className="text-[10px] text-muted">{t("common.expense")}</p>
+                      <p className="text-sm font-bold text-expense">{t("auto.k295aa1774f")}</p>
                     </div>
                     <div className="rounded-xl bg-income/10 p-2.5 text-center">
-                      <p className="text-[10px] text-muted">{t("درآمد")}</p>
-                      <p className="text-sm font-bold text-income">{t("۱۲M")}</p>
+                      <p className="text-[10px] text-muted">{t("common.income")}</p>
+                      <p className="text-sm font-bold text-income">{t("auto.k6a6156b0d7")}</p>
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -228,7 +228,7 @@ export function DownloadPage() {
 
       <section className="relative z-10 mx-auto max-w-3xl px-5 pb-[max(2rem,env(safe-area-inset-bottom))] lg:px-10">
         <div className="glass rounded-3xl border border-border/50 p-6 lg:p-8">
-          <h2 className="text-lg font-bold">{t("راهنمای نصب")}</h2>
+          <h2 className="text-lg font-bold">{t("auto.k9a42f8d863")}</h2>
           <ol className="mt-4 space-y-3">
             {STEPS.map((step, index) => (
               <li key={step} className="flex items-start gap-3 text-sm leading-7">

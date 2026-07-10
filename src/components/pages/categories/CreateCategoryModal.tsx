@@ -17,7 +17,7 @@ import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { categoriesSelector, setCategories } from "@/stores/category";
 import { CategoryKind } from "@/types/enums";
 import { userSelector } from "@/stores/profile";
-import { currencyLabel } from "@/common/constants/user-preferences";
+import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 
 type CreateCategoryModalProps = {
   open: boolean;
@@ -31,6 +31,7 @@ export function CreateCategoryModal({
   onCreated,
 }: CreateCategoryModalProps) {
   const { t } = useTranslation();
+  const { currencyLabel } = useCurrencyLabels();
   const dispatch = useAppDispatch();
   const categories = useAppSelector(categoriesSelector);
   const user = useAppSelector(userSelector);
@@ -50,7 +51,7 @@ export function CreateCategoryModal({
   async function save(e?: FormEvent) {
     e?.preventDefault();
     if (!title.trim()) {
-      showToast(t("عنوان دسته‌بندی الزامی است"));
+      showToast(t("auto.ka57e5cdb67"));
       return;
     }
 
@@ -64,7 +65,7 @@ export function CreateCategoryModal({
         monthlyLimit: monthlyLimit.trim() || "0",
       });
       dispatch(setCategories([...(categories ?? []), created]));
-      showToast(t("دسته‌بندی ایجاد شد"), "success");
+      showToast(t("auto.kff352f6015"), "success");
       onCreated?.(created);
       setTitle("");
       setParentId("");
@@ -84,33 +85,33 @@ export function CreateCategoryModal({
       <AppModalDialog>
         <form onSubmit={(e) => void save(e)}>
           <AppModalHeader onClose={() => onOpenChange(false)}>
-            <Modal.Heading>{t("ایجاد دسته‌بندی")}</Modal.Heading>
+            <Modal.Heading>{t("auto.kbaf9aec1dd")}</Modal.Heading>
           </AppModalHeader>
           <Modal.Body className="space-y-4">
             <FormInput
-              label={t("عنوان")}
+              label={t("common.title")}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               autoFocus
             />
             <FormSelect
-              label={t("دسته والد")}
-              placeholder={t("بدون والد")}
+              label={t("auto.k0abe3491a1")}
+              placeholder={t("auto.k646a63bb02")}
               selectedKey={parentId || "none"}
               onSelectionChange={(key) => setParentId(key === "none" ? "" : key)}
               options={parentOptions}
             />
             <CategoryColorPicker value={color} onChange={setColor} />
             <FormPriceInput
-              label={`سقف ماهانه (${currencyLabel(preferredCurrency)})`}
+              label={`${t("common.monthlyLimit")} (${currencyLabel(preferredCurrency)})`}
               value={monthlyLimit}
               onChange={setMonthlyLimit}
-              placeholder={t("۰ = بدون محدودیت")}
+              placeholder={t("auto.kf69c4f20a2")}
             />
             <div className="flex items-center justify-between rounded-xl border border-border/50 bg-surface-secondary px-3 py-3">
               <div>
-                <p className="text-sm font-medium">{t("نوع پروژه")}</p>
-                <p className="text-xs text-muted">{t("برای مدیریت قرارداد و پرداخت‌های خرد")}</p>
+                <p className="text-sm font-medium">{t("auto.k4dc8456bac")}</p>
+                <p className="text-xs text-muted">{t("auto.kb29b714930")}</p>
               </div>
               <Switch isSelected={isProjectKind} onChange={setIsProjectKind} size="sm">
                 <Switch.Control>
@@ -125,10 +126,10 @@ export function CreateCategoryModal({
               variant="ghost"
               onPress={() => onOpenChange(false)}
             >
-              بستن
+              {t("common.close")}
             </Button>
             <Button type="submit" isPending={saving}>
-              ایجاد
+              {t("common.create")}
             </Button>
           </Modal.Footer>
         </form>

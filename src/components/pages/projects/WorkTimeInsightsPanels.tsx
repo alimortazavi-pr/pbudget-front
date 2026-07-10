@@ -53,7 +53,7 @@ export function WorkTimeInsightsPanels({
     <div className="space-y-4">
       {alerts.length > 0 ? (
         <section className="space-y-2">
-          <h3 className="text-sm font-semibold text-muted">{t("هشدارها")}</h3>
+          <h3 className="text-sm font-semibold text-muted">{t("auto.k371c438e13")}</h3>
           {alerts.map((alert) => (
             <article
               key={alert.id}
@@ -90,7 +90,7 @@ export function WorkTimeInsightsPanels({
 
       {insights.length > 0 ? (
         <section className="space-y-2">
-          <h3 className="text-sm font-semibold text-muted">{t("بینش‌های کارکرد")}</h3>
+          <h3 className="text-sm font-semibold text-muted">{t("auto.kdc4f1189e8")}</h3>
           <div className="grid gap-2 sm:grid-cols-2">
             {insights.map((insight, index) => (
               <article

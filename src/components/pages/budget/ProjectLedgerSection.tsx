@@ -32,22 +32,26 @@ function resolveProjectId(project: IBudget["project"]): string {
   return project._id;
 }
 
-function resolveProjectTitle(project: NonNullable<IBudget["project"]>): string {
-  if (typeof project === "string") return "پروژه";
-  return project.category?.title ?? "پروژه";
+function resolveProjectTitle(
+  project: NonNullable<IBudget["project"]>,
+  t: (key: string) => string,
+): string {
+  if (typeof project === "string") return t("common.project");
+  return project.category?.title ?? t("common.project");
 }
 
 export function LinkedProjectSummary({ project }: LinkedProjectSummaryProps) {
   const { t } = useTranslation();
   return (
     <div className="space-y-2 rounded-2xl border border-border/60 bg-surface-secondary/60 p-4">
-      <p className="text-sm font-medium">{t("مرتبط با پروژه")}</p>
+      <p className="text-sm font-medium">{t("auto.k3cabc7ed28")}</p>
       <div className="rounded-xl bg-accent/10 px-3 py-3 text-sm text-accent">
-        <p className="font-semibold">{resolveProjectTitle(project)}</p>
+        <p className="font-semibold">{resolveProjectTitle(project, t)}</p>
       </div>
       <p className="text-xs leading-6 text-muted">
-        این تراکنش در صفحه پروژه‌ها نمایش داده می‌شود. برای تغییر اتصال، دسته‌بندی یا
-        پروژه را از بخش بیشتر ویرایش کنید.
+        {t(
+          "این تراکنش در صفحه پروژه‌ها نمایش داده می‌شود. برای تغییر اتصال، دسته‌بندی یا پروژه را از بخش بیشتر ویرایش کنید.",
+        )}
       </p>
     </div>
   );
@@ -74,25 +78,25 @@ export function ProjectLedgerSection({
     () =>
       projects.map((project) => ({
         id: project._id,
-        label: project.category?.title ?? "پروژه",
+        label: project.category?.title ?? t("common.project"),
       })),
-    [projects],
+    [projects, t],
   );
 
   return (
     <div className="space-y-3 rounded-2xl border border-border/60 bg-surface-secondary/60 p-4">
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-sm font-medium">{t("مرتبط با پروژه")}</p>
+          <p className="text-sm font-medium">{t("auto.k3cabc7ed28")}</p>
           <p className="mt-1 text-xs text-muted">
-            ثبت تراکنش در حساب یک پروژه مشخص
+            {t("ثبت تراکنش در حساب یک پروژه مشخص")}
           </p>
         </div>
         <Switch
           isSelected={value.enabled}
           onChange={(selected) => onChange({ enabled: selected })}
           size="sm"
-          aria-label={t("مرتبط با پروژه")}
+          aria-label={t("auto.k3cabc7ed28")}
         >
           <Switch.Control>
             <Switch.Thumb />
@@ -102,22 +106,24 @@ export function ProjectLedgerSection({
 
       {isProjectCategory && !value.enabled ? (
         <p className="rounded-xl bg-accent/10 px-3 py-2 text-xs leading-6 text-accent">
-          با دسته «{categoryTitle}» این تراکنش خودکار به پروژه مرتبط وصل می‌شود.
+          {t("با دسته «{{category}}» این تراکنش خودکار به پروژه مرتبط وصل می‌شود.", {
+            category: categoryTitle ?? "",
+          })}
         </p>
       ) : null}
 
       {value.enabled ? (
         <div className="space-y-3 border-t border-border/40 pt-3">
           <FormSelect
-            label={t("کدام پروژه؟")}
-            placeholder={t("یک پروژه انتخاب کنید")}
+            label={t("auto.kb91f3aa09a")}
+            placeholder={t("auto.k87961dabdb")}
             selectedKey={value.projectId || undefined}
             onSelectionChange={(key) => onChange({ projectId: key })}
             options={projectOptions}
-            emptyMessage="پروژه‌ای ثبت نشده"
+            emptyMessage={t("common.noItemsFound")}
           />
           <p className="text-xs leading-6 text-muted">
-            تراکنش در صفحه پروژه و گزارش‌های مالی آن نمایش داده می‌شود.
+            {t("تراکنش در صفحه پروژه و گزارش‌های مالی آن نمایش داده می‌شود.")}
           </p>
         </div>
       ) : null}

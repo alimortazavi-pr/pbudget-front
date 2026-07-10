@@ -181,7 +181,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-bold lg:text-xl">{t("نمودارها")}</h2>
+          <h2 className="text-lg font-bold lg:text-xl">{t("auto.kf8c419ec92")}</h2>
           <p className="text-sm text-muted">
             نمای تصویری درآمد، هزینه و توزیع دسته‌بندی‌ها
           </p>
@@ -189,7 +189,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
-        <ChartCard title={t("ترکیب دوره")} subtitle="سهم درآمد و هزینه">
+        <ChartCard title={t("auto.k94c6c32903")} subtitle="سهم درآمد و هزینه">
           {overviewData.length > 0 ? (
             <div className="pb-chart-canvas h-64 w-full min-h-[16rem]" dir="ltr">
               <ResponsiveContainer width="100%" height="100%" minHeight={256}>
@@ -228,7 +228,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
           )}
         </ChartCard>
 
-        <ChartCard title={t("درآمد در برابر هزینه")} subtitle="خلاصه همین بازه">
+        <ChartCard title={t("auto.ke6ad730907")} subtitle="خلاصه همین بازه">
           <div className="pb-chart-canvas h-64 w-full min-h-[16rem]" dir="ltr">
             <ResponsiveContainer width="100%" height="100%" minHeight={256}>
               <BarChart data={overviewBarData}>
@@ -247,7 +247,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
 
       <div className="grid gap-4 xl:grid-cols-2">
         <ChartCard
-          title={t("روند درآمد و هزینه")}
+          title={t("auto.kb9aad2b7eb")}
           subtitle={
             duration === "monthly"
               ? "نمودار روزانه ماه جاری"
@@ -293,7 +293,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
           </div>
         </ChartCard>
 
-        <ChartCard title={t("خالص دوره")} subtitle="درآمد منهای هزینه">
+        <ChartCard title={t("auto.k35b908d245")} subtitle="درآمد منهای هزینه">
           <div className="pb-chart-canvas h-72 w-full min-h-[18rem]" dir="ltr">
             <ResponsiveContainer width="100%" height="100%" minHeight={288}>
               <BarChart data={cashFlowData}>
@@ -316,7 +316,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
-        <ChartCard title={t("توزیع هزینه‌ها")} subtitle="بر اساس دسته‌بندی">
+        <ChartCard title={t("auto.k3e3995d7f3")} subtitle="بر اساس دسته‌بندی">
           {expensePieData.length > 0 ? (
             <div className="pb-chart-canvas h-72 w-full min-h-[18rem]" dir="ltr">
               <ResponsiveContainer width="100%" height="100%" minHeight={288}>
@@ -346,11 +346,11 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
               </ResponsiveContainer>
             </div>
           ) : (
-            <p className="py-12 text-center text-sm text-muted">{t("هزینه‌ای ثبت نشده")}</p>
+            <p className="py-12 text-center text-sm text-muted">{t("auto.kc845e40048")}</p>
           )}
         </ChartCard>
 
-        <ChartCard title={t("توزیع درآمدها")} subtitle="بر اساس دسته‌بندی">
+        <ChartCard title={t("auto.kb161d91f75")} subtitle="بر اساس دسته‌بندی">
           {incomePieData.length > 0 ? (
             <div className="pb-chart-canvas h-72 w-full min-h-[18rem]" dir="ltr">
               <ResponsiveContainer width="100%" height="100%" minHeight={288}>
@@ -380,12 +380,12 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
               </ResponsiveContainer>
             </div>
           ) : (
-            <p className="py-12 text-center text-sm text-muted">{t("درآمدی ثبت نشده")}</p>
+            <p className="py-12 text-center text-sm text-muted">{t("auto.k800efb967e")}</p>
           )}
         </ChartCard>
       </div>
 
-      <ChartCard title={t("مقایسه دسته‌ها")} subtitle="درآمد و هزینه هر دسته">
+      <ChartCard title={t("auto.k06b64776cc")} subtitle="درآمد و هزینه هر دسته">
         {categoryBarData.length > 0 ? (
           <div className="pb-chart-canvas h-80 w-full min-h-[20rem]" dir="ltr">
             <ResponsiveContainer width="100%" height="100%" minHeight={320}>
@@ -401,12 +401,12 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
             </ResponsiveContainer>
           </div>
         ) : (
-          <p className="py-12 text-center text-sm text-muted">{t("داده‌ای موجود نیست")}</p>
+          <p className="py-12 text-center text-sm text-muted">{t("auto.ke4966467bc")}</p>
         )}
       </ChartCard>
 
       {paymentCardBarData.length > 0 && (
-        <ChartCard title={t("تراکنش‌ها بر اساس کارت")} subtitle="پرداخت و دریافت در این بازه">
+        <ChartCard title={t("auto.k337e6243ed")} subtitle="پرداخت و دریافت در این بازه">
           <div className="pb-chart-canvas h-72 w-full min-h-[18rem]" dir="ltr">
             <ResponsiveContainer width="100%" height="100%" minHeight={288}>
               <BarChart data={paymentCardBarData}>
@@ -425,7 +425,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
 
       <div className="grid gap-4 xl:grid-cols-2">
         {boxData.length > 0 && (
-          <ChartCard title={t("تخصیص صندوق‌ها")} subtitle="سهم از کل دارایی نقدی">
+          <ChartCard title={t("auto.kcac5d51cfc")} subtitle="سهم از کل دارایی نقدی">
             <div className="pb-chart-canvas h-64 w-full min-h-[16rem]" dir="ltr">
               <ResponsiveContainer width="100%" height="100%" minHeight={256}>
                 <PieChart>
@@ -470,7 +470,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
 
       <div className="grid gap-4 xl:grid-cols-2">
         <CategoryTable
-          title={t("پرتکرارترین هزینه‌ها")}
+          title={t("auto.k56dac9be10")}
           rows={report.topExpenses.map((item, index) => ({
             title: item.title,
             amount: item.amount,
@@ -481,7 +481,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
           amountLabel="هزینه"
         />
         <CategoryTable
-          title={t("بیشترین درآمدها")}
+          title={t("auto.k9e91112d6d")}
           rows={report.topIncomes.map((item, index) => ({
             title: item.title,
             amount: item.amount,
@@ -516,16 +516,16 @@ function CategoryTable({
     <section className="glass rounded-2xl p-4 lg:p-5">
       <h3 className="mb-4 font-bold">{title}</h3>
       {rows.length === 0 ? (
-        <p className="text-sm text-muted">{t("داده‌ای موجود نیست")}</p>
+        <p className="text-sm text-muted">{t("auto.ke4966467bc")}</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border/60 text-muted">
-                <th className="pb-2 text-start font-medium">{t("دسته")}</th>
+                <th className="pb-2 text-start font-medium">{t("auto.k32034c98af")}</th>
                 <th className="pb-2 text-start font-medium">{amountLabel}</th>
-                <th className="pb-2 text-start font-medium">{t("سهم")}</th>
-                <th className="pb-2 text-start font-medium">{t("تعداد")}</th>
+                <th className="pb-2 text-start font-medium">{t("auto.k77e1e41b61")}</th>
+                <th className="pb-2 text-start font-medium">{t("auto.kff10995101")}</th>
               </tr>
             </thead>
             <tbody>

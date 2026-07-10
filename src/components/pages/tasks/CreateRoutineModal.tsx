@@ -101,7 +101,7 @@ export function CreateRoutineModal({
   async function save(e?: FormEvent) {
     e?.preventDefault();
     if (!title.trim()) {
-      showToast(t("عنوان الزامی است"));
+      showToast(t("auto.kc684d17ce8"));
       return;
     }
 
@@ -121,7 +121,7 @@ export function CreateRoutineModal({
       (payload.startHour !== undefined && payload.endHour === undefined) ||
       (payload.endHour !== undefined && payload.startHour === undefined)
     ) {
-      showToast(t("ساعت شروع و پایان را با هم وارد کنید"));
+      showToast(t("auto.kb2668f12b5"));
       return;
     }
 
@@ -155,27 +155,27 @@ export function CreateRoutineModal({
               می‌شوند.
             </p>
             <FormInput
-              label={t("عنوان")}
-              placeholder={t("مثلاً رفتن سرکار")}
+              label={t("common.title")}
+              placeholder={t("auto.k254ee38dd0")}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               autoFocus
             />
             <FormTextArea
-              label={t("توضیحات")}
+              label={t("common.description")}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
             <div className="grid grid-cols-2 gap-3">
               <FormSelect
-                label={t("از ساعت")}
+                label={t("auto.kf5b7ae829c")}
                 placeholder="—"
                 selectedKey={startHour || undefined}
                 onSelectionChange={(key) => setStartHour(key)}
                 options={HOUR_OPTIONS}
               />
               <FormSelect
-                label={t("تا ساعت")}
+                label={t("auto.k210756c67c")}
                 placeholder="—"
                 selectedKey={endHour || undefined}
                 onSelectionChange={(key) => setEndHour(key)}
@@ -183,20 +183,20 @@ export function CreateRoutineModal({
               />
             </div>
             <FormSelect
-              label={t("اولویت")}
+              label={t("auto.k44e7afcf53")}
               selectedKey={priority}
               onSelectionChange={(key) => setPriority(key as TaskPriority)}
               options={PRIORITY_OPTIONS}
             />
             <FormSelect
-              label={t("پروژه مرتبط")}
+              label={t("auto.ke1b21454fe")}
               selectedKey={projectId || "none"}
               onSelectionChange={(key) => setProjectId(key === "none" ? "" : key)}
               options={projectOptions}
             />
             <div>
               <div className="mb-2 flex items-center justify-between">
-                <p className="text-sm font-medium">{t("روزهای تکرار")}</p>
+                <p className="text-sm font-medium">{t("auto.k9c745396cc")}</p>
                 <label className="flex items-center gap-2 text-xs text-muted">
                   <Switch
                     isSelected={everyDay}
@@ -235,8 +235,8 @@ export function CreateRoutineModal({
             <div className="space-y-3 rounded-xl border border-border/50 bg-surface-secondary p-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium">{t("فعال")}</p>
-                  <p className="text-xs text-muted">{t("غیرفعال = دیگر اضافه نمی‌شود")}</p>
+                  <p className="text-sm font-medium">{t("auto.k25c499f433")}</p>
+                  <p className="text-xs text-muted">{t("auto.k719e663de0")}</p>
                 </div>
                 <Switch isSelected={active} onChange={setActive} size="sm">
                   <Switch.Control>
@@ -246,8 +246,8 @@ export function CreateRoutineModal({
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium">{t("یادآوری تلگرام")}</p>
-                  <p className="text-xs text-muted">{t("صبح در بات ارسال می‌شود")}</p>
+                  <p className="text-sm font-medium">{t("planning.telegramReminder")}</p>
+                  <p className="text-xs text-muted">{t("auto.k4aa62dee28")}</p>
                 </div>
                 <Switch
                   isSelected={remindTelegram}

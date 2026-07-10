@@ -152,7 +152,7 @@ export function AnalysisFilters({
     <section className="glass space-y-4 rounded-2xl p-4 lg:p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-base font-bold lg:text-lg">{t("فیلترها")}</h2>
+          <h2 className="text-base font-bold lg:text-lg">{t("auto.k988325ed2c")}</h2>
           <p className="text-sm text-muted">{periodTitle}</p>
         </div>
         {duration !== "all" && (
@@ -161,7 +161,7 @@ export function AnalysisFilters({
               isIconOnly
               size="sm"
               variant="secondary"
-              aria-label={t("دوره قبل")}
+              aria-label={t("auto.k20c3d22b78")}
               onPress={() => shiftPeriod(-1)}
             >
               <ArrowRight2 size={18} />
@@ -173,7 +173,7 @@ export function AnalysisFilters({
               isIconOnly
               size="sm"
               variant="secondary"
-              aria-label={t("دوره بعد")}
+              aria-label={t("auto.kaea448a60f")}
               onPress={() => shiftPeriod(1)}
             >
               <ArrowLeft2 size={18} />
@@ -212,8 +212,8 @@ export function AnalysisFilters({
 
       <div className="grid gap-3 lg:grid-cols-3">
         <FormCategoryComboBox
-          label={t("دسته‌بندی")}
-          placeholder={t("همه دسته‌ها")}
+          label={t("auto.kb561a47a9b")}
+          placeholder={t("auto.k8215849f02")}
           selectedKey={category || ""}
           onSelectionChange={(key) => onChange({ category: key === "all" ? "" : key })}
           options={[
@@ -222,8 +222,8 @@ export function AnalysisFilters({
           ]}
         />
         <FormSelect
-          label={t("کارت")}
-          placeholder={t("همه کارت‌ها")}
+          label={t("auto.k16902e87e2")}
+          placeholder={t("auto.kf02e485ebb")}
           selectedKey={paymentCard || "all"}
           onSelectionChange={(key) =>
             onChange({ paymentCard: key === "all" ? "" : key })
@@ -235,7 +235,7 @@ export function AnalysisFilters({
           emptyMessage="کارتی ثبت نشده"
         />
         <FormSelect
-          label={t("نوع تراکنش")}
+          label={t("auto.kc69c46bb9b")}
           selectedKey={type}
           onSelectionChange={(key) => onChange({ type: key })}
           options={TYPE_OPTIONS.map((option) => ({

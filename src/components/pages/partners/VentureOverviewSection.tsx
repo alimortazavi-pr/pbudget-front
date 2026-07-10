@@ -89,7 +89,7 @@ export function VentureOverviewSection({
         description: description.trim(),
       });
       onUpdated?.(updated);
-      showToast(t("توضیحات ذخیره شد"), "success");
+      showToast(t("auto.k34fc88b9d4"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا در ذخیره");
     } finally {
@@ -100,7 +100,7 @@ export function VentureOverviewSection({
   return (
     <div className="space-y-4">
       <section className="overflow-hidden rounded-3xl border border-border/60 bg-gradient-to-br from-accent/8 via-background to-background p-5">
-        <p className="text-sm text-muted">{t("خلاصه کسب‌وکار")}</p>
+        <p className="text-sm text-muted">{t("auto.kb56cd3ac95")}</p>
         <h2 className="mt-1 text-2xl font-bold">{venture.title}</h2>
         {venture.description ? (
           <p className="mt-3 max-w-2xl text-sm leading-7 text-muted">
@@ -113,7 +113,7 @@ export function VentureOverviewSection({
         <div className="rounded-2xl border border-border/50 bg-background p-4">
           <div className="flex items-center gap-2 text-muted">
             <People size={18} />
-            <span className="text-xs">{t("شرکا")}</span>
+            <span className="text-xs">{t("auto.kae6a285197")}</span>
           </div>
           <p className="mt-2 text-2xl font-bold">{formatCount(activePartners.length)}</p>
           <p className="mt-1 text-xs text-muted">جمع سهم: {totalShare}٪</p>
@@ -122,18 +122,18 @@ export function VentureOverviewSection({
         <div className="rounded-2xl border border-border/50 bg-background p-4">
           <div className="flex items-center gap-2 text-muted">
             <Receipt size={18} />
-            <span className="text-xs">{t("تراکنش‌ها")}</span>
+            <span className="text-xs">{t("auto.k4ad10a7f11")}</span>
           </div>
           <p className="mt-2 text-2xl font-bold">
             {formatCount(stats?.transactionCount ?? 0)}
           </p>
-          <p className="mt-1 text-xs text-muted">{t("متصل به این کسب‌وکار")}</p>
+          <p className="mt-1 text-xs text-muted">{t("auto.kfcddba4529")}</p>
         </div>
 
         <div className="rounded-2xl border border-border/50 bg-background p-4">
           <div className="flex items-center gap-2 text-muted">
             <Chart size={18} />
-            <span className="text-xs">{t("سود خالص")}</span>
+            <span className="text-xs">{t("auto.k0df4572857")}</span>
           </div>
           <p
             className={`mt-2 text-2xl font-bold ${
@@ -151,25 +151,25 @@ export function VentureOverviewSection({
         <div className="rounded-2xl border border-border/50 bg-background p-4">
           <div className="flex items-center gap-2 text-muted">
             <Wallet size={18} />
-            <span className="text-xs">{t("طلب شما از شرکا")}</span>
+            <span className="text-xs">{t("auto.k51ae7de4a7")}</span>
           </div>
           <p className="mt-2 text-2xl font-bold text-income">
             {debtLoading ? "…" : formatPrice(totalReceivable)}
           </p>
-          <p className="mt-1 text-xs text-muted">{t("بر اساس پرداخت‌های انجام‌شده")}</p>
+          <p className="mt-1 text-xs text-muted">{t("auto.kd60a8ece48")}</p>
         </div>
       </div>
 
       {!readOnly ? (
         <section className="rounded-2xl border border-border/50 bg-background p-4">
-          <h3 className="font-bold">{t("توضیحات کسب‌وکار")}</h3>
+          <h3 className="font-bold">{t("auto.k1779754adc")}</h3>
           <p className="mt-1 text-xs text-muted">
             این متن در خلاصه و برای شرکا نمایش داده می‌شود
           </p>
           <div className="mt-3 space-y-3">
             <FormTextArea
-              label={t("توضیحات")}
-              placeholder={t("مثلاً نوع فعالیت، اهداف، نحوه تقسیم کار…")}
+              label={t("common.description")}
+              placeholder={t("auto.k7c1a76c981")}
               value={description}
               onChange={(event) => setDescription(event.target.value)}
             />
@@ -190,7 +190,7 @@ export function VentureOverviewSection({
 
       {activePartners.length > 0 ? (
         <section className="rounded-2xl border border-border/50 bg-background p-4">
-          <h3 className="font-bold">{t("شرکای فعال")}</h3>
+          <h3 className="font-bold">{t("auto.k59b0fbff9b")}</h3>
           <div className="mt-3 space-y-2">
             {activePartners.slice(0, 4).map((partner) => (
               <div
@@ -210,7 +210,7 @@ export function VentureOverviewSection({
         </section>
       ) : (
         <section className="rounded-2xl border border-dashed border-border px-4 py-8 text-center">
-          <p className="text-sm text-muted">{t("هنوز شریکی اضافه نشده")}</p>
+          <p className="text-sm text-muted">{t("auto.k59b990ce1d")}</p>
           <p className="mt-1 text-xs text-muted">
             از تب شرکا، اولین شریک را با شماره موبایل دعوت کنید
           </p>

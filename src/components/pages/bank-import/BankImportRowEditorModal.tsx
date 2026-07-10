@@ -40,7 +40,7 @@ import { CreateCategoryModal } from "@/components/pages/categories/CreateCategor
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
 import { userSelector } from "@/stores/profile";
-import { currencyLabel } from "@/common/constants/user-preferences";
+import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 import { BudgetType, CategoryKind, DebtType } from "@/types/enums";
 import type { ImportRowDraft } from "./import-row.types";
 import { validateImportRowDraft } from "./import-row.util";
@@ -67,6 +67,7 @@ export function BankImportRowEditorModal({
   onSave,
 }: BankImportRowEditorModalProps) {
   const { t } = useTranslation();
+  const { currencyLabel } = useCurrencyLabels();
   const categories = useAppSelector(categoriesSelector);
   const user = useAppSelector(userSelector);
   const preferredCurrency = user?.preferences?.currency ?? "toman";
@@ -248,7 +249,7 @@ export function BankImportRowEditorModal({
       <AppModal open={open} onOpenChange={onOpenChange} size="lg" mobileFull>
         <AppModalDialog className="flex max-h-[92dvh] flex-col sm:max-w-lg">
           <AppModalHeader>
-            <Modal.Heading>{t("تنظیم تراکنش")}</Modal.Heading>
+            <Modal.Heading>{t("auto.kb29198488a")}</Modal.Heading>
             <p className="mt-1 text-xs text-muted">{form.transactionKind}</p>
             <p className="mt-0.5 text-xs text-muted">
               {formatJalaliDateWithTime(
@@ -296,7 +297,7 @@ export function BankImportRowEditorModal({
             <FormPriceInput label={`مبلغ (${currencyLabel(preferredCurrency)})`} value={form.price} onChange={(v) => patchForm({ price: v })} />
 
             <FormDatePicker
-              label={t("تاریخ (شمسی)")}
+              label={t("auto.k349c7bedff")}
               year={form.year}
               month={form.month}
               day={form.day}
@@ -307,8 +308,8 @@ export function BankImportRowEditorModal({
             />
 
             <FormCategoryComboBox
-              label={t("دسته‌بندی *")}
-              placeholder={t("انتخاب دسته‌بندی")}
+              label={t("auto.k9f1d861765")}
+              placeholder={t("auto.k34ca0cc3ac")}
               selectedKey={form.categoryId || undefined}
               onSelectionChange={(key) => patchForm({ categoryId: key === "all" ? "" : key })}
               options={categoryOptions}
@@ -327,7 +328,7 @@ export function BankImportRowEditorModal({
             ) : null}
 
             <FormTextArea
-              label={t("توضیحات")}
+              label={t("common.description")}
               value={form.description}
               onChange={(e) => patchForm({ description: e.target.value })}
             />
@@ -346,7 +347,7 @@ export function BankImportRowEditorModal({
                       ? "کارت پرداخت (مبدا)"
                       : "کارت دریافت (مقصد)"
                   }
-                  placeholder={t("بدون کارت")}
+                  placeholder={t("auto.k33fcba0b6e")}
                   selectedKey={form.paymentCardId || "none"}
                   onSelectionChange={(key) =>
                     patchForm({ paymentCardId: key === "none" ? "" : key })
@@ -399,7 +400,7 @@ export function BankImportRowEditorModal({
             <Button variant="ghost" onPress={() => onOpenChange(false)}>
               انصراف
             </Button>
-            <Button onPress={handleSave}>{t("ذخیره تنظیمات")}</Button>
+            <Button onPress={handleSave}>{t("auto.k5c388be097")}</Button>
           </Modal.Footer>
         </AppModalDialog>
       </AppModal>

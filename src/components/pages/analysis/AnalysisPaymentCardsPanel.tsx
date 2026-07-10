@@ -18,8 +18,8 @@ export function AnalysisPaymentCardsPanel({ report }: AnalysisPaymentCardsPanelP
   return (
     <section className="glass rounded-2xl p-4 lg:p-5">
       <div className="mb-4">
-        <h3 className="font-bold">{t("تراکنش‌ها بر اساس کارت")}</h3>
-        <p className="text-sm text-muted">{t("مبدا پرداخت و مقصد دریافت در این بازه")}</p>
+        <h3 className="font-bold">{t("auto.k337e6243ed")}</h3>
+        <p className="text-sm text-muted">{t("auto.k0dafa44a87")}</p>
       </div>
       <div className="space-y-2">
         {rows.map((row) => (

@@ -84,7 +84,7 @@ export function ManualWorkSessionModal({
     const startMinute = timeStringToMinute(toEnglishDigits(startTime));
     const endMinute = timeStringToMinute(toEnglishDigits(endTime));
     if (startMinute === null || endMinute === null) {
-      showToast(t("فرمت ساعت باید HH:MM باشد"));
+      showToast(t("auto.k297d72a16b"));
       return;
     }
 
@@ -101,10 +101,10 @@ export function ManualWorkSessionModal({
     try {
       if (session) {
         await workTimeApi.updateWorkSession(projectId, session._id, payload);
-        showToast(t("ویرایش شد"), "success");
+        showToast(t("auto.k9d0e05949b"), "success");
       } else {
         await workTimeApi.createManualWorkSession(projectId, payload);
-        showToast(t("ثبت شد"), "success");
+        showToast(t("auto.ka04952d57e"), "success");
       }
       onOpenChange(false);
       onSaved();
@@ -127,37 +127,37 @@ export function ManualWorkSessionModal({
           <Modal.Body className="space-y-4">
             <div className="grid grid-cols-3 gap-2">
               <FormInput
-                label={t("سال")}
+                label={t("auto.kd67d6b73c4")}
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
               />
               <FormInput
-                label={t("ماه")}
+                label={t("auto.k1c9e87a670")}
                 value={month}
                 onChange={(e) => setMonth(e.target.value)}
               />
               <FormInput
-                label={t("روز")}
+                label={t("auto.k6702edb75e")}
                 value={day}
                 onChange={(e) => setDay(e.target.value)}
               />
             </div>
             <div className="grid grid-cols-2 gap-2">
               <FormInput
-                label={t("شروع (HH:MM)")}
+                label={t("auto.kd897dfd9ac")}
                 placeholder="09:00"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
               />
               <FormInput
-                label={t("پایان (HH:MM)")}
+                label={t("auto.kb93dbb459a")}
                 placeholder="17:00"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
               />
             </div>
             <FormTextArea
-              label={t("توضیح (اختیاری)")}
+              label={t("auto.kcc83fbb490")}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />

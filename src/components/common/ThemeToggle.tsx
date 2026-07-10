@@ -18,7 +18,7 @@ export function ThemeToggle() {
       isIconOnly
       variant="ghost"
       size="sm"
-      aria-label={t("تغییر تم")}
+      aria-label={t("common.changeTheme")}
       onPress={toggleTheme}
       className="text-muted"
     >

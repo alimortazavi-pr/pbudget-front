@@ -65,7 +65,7 @@ export function PeriodScopeBar({ compact = false }: PeriodScopeBarProps) {
             type="button"
             className="pb-period-label"
             onClick={goToToday}
-            title={t("برو به امروز")}
+            title={t("auto.k4c72379ed3")}
           >
             {periodLabel}
           </button>

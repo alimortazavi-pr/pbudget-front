@@ -16,7 +16,7 @@ import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { categoriesSelector, setCategories } from "@/stores/category";
 import { CategoryKind } from "@/types/enums";
 import { userSelector } from "@/stores/profile";
-import { currencyLabel } from "@/common/constants/user-preferences";
+import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 
 type CreateProjectModalProps = {
   open: boolean;
@@ -47,6 +47,7 @@ export function CreateProjectModal({
   usedCategoryIds,
 }: CreateProjectModalProps) {
   const { t } = useTranslation();
+  const { currencyLabel } = useCurrencyLabels();
   const dispatch = useAppDispatch();
   const categories = useAppSelector(categoriesSelector);
   const user = useAppSelector(userSelector);
@@ -108,15 +109,15 @@ export function CreateProjectModal({
     e?.preventDefault();
 
     if (!toEnglishDigits(totalAmount)) {
-      showToast(t("مبلغ کل الزامی است"));
+      showToast(t("auto.k4e18962524"));
       return;
     }
     if (mode === "new" && !title.trim()) {
-      showToast(t("عنوان پروژه الزامی است"));
+      showToast(t("auto.ka2bf0280bf"));
       return;
     }
     if (mode === "existing" && !categoryId) {
-      showToast(t("دسته پروژه را انتخاب کنید"));
+      showToast(t("auto.k84aa5cb491"));
       return;
     }
 
@@ -144,7 +145,7 @@ export function CreateProjectModal({
           trackWorkTime && !fixedIncome ? toEnglishDigits(hourlyRate) : undefined,
       });
 
-      showToast(t("پروژه ایجاد شد"), "success");
+      showToast(t("auto.kf52df98639"), "success");
       closeModal();
       onCreated?.(project._id);
     } catch (err) {
@@ -159,7 +160,7 @@ export function CreateProjectModal({
       <AppModalDialog>
         <form onSubmit={(e) => void save(e)}>
           <AppModalHeader onClose={() => onOpenChange(false)}>
-            <Modal.Heading>{t("پروژه جدید")}</Modal.Heading>
+            <Modal.Heading>{t("auto.ka82d423cdf")}</Modal.Heading>
           </AppModalHeader>
           <Modal.Body className="space-y-4">
             {hasExistingCategories && (
@@ -188,16 +189,16 @@ export function CreateProjectModal({
 
             {mode === "new" ? (
               <FormInput
-                label={t("عنوان پروژه")}
-                placeholder={t("مثلاً طراحی سایت شرکت X")}
+                label={t("auto.k7614acb64f")}
+                placeholder={t("auto.kf09a60a915")}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 autoFocus
               />
             ) : (
               <FormSelect
-                label={t("دسته پروژه")}
-                placeholder={t("انتخاب دسته")}
+                label={t("auto.k3ea2dbba5d")}
+                placeholder={t("auto.k7fcd990e2d")}
                 selectedKey={categoryId || undefined}
                 onSelectionChange={(key) => setCategoryId(key)}
                 options={projectCategoryOptions}
@@ -214,14 +215,14 @@ export function CreateProjectModal({
               onChange={setTotalAmount}
             />
             <FormTextArea
-              label={t("توضیحات (اختیاری)")}
+              label={t("auto.k98fdf54bad")}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
             <div className="flex items-center justify-between rounded-xl bg-surface-secondary p-3">
               <div>
-                <p className="text-sm font-medium">{t("ثبت ساعت کاری")}</p>
-                <p className="mt-1 text-xs text-muted">{t("ورود/خروج و حضور و غیاب")}</p>
+                <p className="text-sm font-medium">{t("auto.k89de01636e")}</p>
+                <p className="mt-1 text-xs text-muted">{t("auto.k6123cbdde0")}</p>
               </div>
               <Switch isSelected={trackWorkTime} onChange={setTrackWorkTime} size="sm">
                 <Switch.Control>
@@ -233,7 +234,7 @@ export function CreateProjectModal({
               <>
                 <div className="flex items-center justify-between rounded-xl bg-surface-secondary p-3">
                   <div>
-                    <p className="text-sm font-medium">{t("نمایش در صفحه اصلی")}</p>
+                    <p className="text-sm font-medium">{t("auto.kebf7642934")}</p>
                     <p className="mt-1 text-xs text-muted">
                       میانبر ورود/خروج و حضور امروز در داشبورد
                     </p>
@@ -250,8 +251,8 @@ export function CreateProjectModal({
                 </div>
                 <div className="flex items-center justify-between rounded-xl bg-surface-secondary p-3">
                   <div>
-                    <p className="text-sm font-medium">{t("درآمد ثابت")}</p>
-                    <p className="mt-1 text-xs text-muted">{t("مثل حقوق ماهانه با ساعت موظف ثابت")}</p>
+                    <p className="text-sm font-medium">{t("auto.k063dde53ff")}</p>
+                    <p className="mt-1 text-xs text-muted">{t("auto.k7e5214ce7e")}</p>
                   </div>
                   <Switch isSelected={fixedIncome} onChange={setFixedIncome} size="sm">
                     <Switch.Control>

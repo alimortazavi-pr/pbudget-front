@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowLeft2, ArrowRight2 } from "iconsax-reactjs";
+import { useTranslation } from "@/components/providers/LanguageProvider";
 
 type PeriodNavigatorProps = {
   label: string;
@@ -17,6 +18,8 @@ export function PeriodNavigator({
   onNext,
   onToday,
 }: PeriodNavigatorProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="glass flex items-center justify-between gap-2 rounded-2xl p-3">
       {showNav ? (
@@ -38,7 +41,7 @@ export function PeriodNavigator({
             className="mt-1 cursor-pointer text-xs text-accent"
             onClick={onToday}
           >
-            برو به امروز
+            {t("common.goToToday")}
           </button>
         )}
       </div>

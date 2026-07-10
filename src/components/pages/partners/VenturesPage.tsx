@@ -48,7 +48,7 @@ export function VenturesPage() {
 
   async function createVenture() {
     if (!title.trim()) {
-      showToast(t("نام کسب‌وکار الزامی است"));
+      showToast(t("auto.k2ed047dbfc"));
       return;
     }
 
@@ -58,7 +58,7 @@ export function VenturesPage() {
         title: title.trim(),
         description: description.trim(),
       });
-      showToast(t("کسب‌وکار ایجاد شد"), "success");
+      showToast(t("auto.kbcc548aabc"), "success");
       setCreateOpen(false);
       setTitle("");
       setDescription("");
@@ -73,8 +73,8 @@ export function VenturesPage() {
   return (
     <div className="space-y-5 pb-6">
       <section className="rounded-3xl bg-gradient-to-br from-violet-600 to-indigo-700 p-5 text-white shadow-lg">
-        <p className="text-sm font-medium text-white/80">{t("همکاری و شراکت")}</p>
-        <h1 className="mt-1 text-2xl font-bold">{t("کسب‌وکارها و شرکا")}</h1>
+        <p className="text-sm font-medium text-white/80">{t("auto.k682a9bb9f7")}</p>
+        <h1 className="mt-1 text-2xl font-bold">{t("auto.k574410888f")}</h1>
         <p className="mt-2 text-sm leading-7 text-white/85">
           برای مشارکت‌هایی که فقط پروژه نیستند — رستوران، فروشگاه، سرمایه‌گذاری
           مشترک و هر کسب‌وکار دیگر.
@@ -97,7 +97,7 @@ export function VenturesPage() {
       ) : ventures.length === 0 ? (
         <div className="glass rounded-2xl p-10 text-center">
           <Profile2User size={40} className="mx-auto text-muted" />
-          <p className="mt-3 text-muted">{t("هنوز کسب‌وکاری ثبت نشده")}</p>
+          <p className="mt-3 text-muted">{t("auto.k09f9dfbe13")}</p>
           <p className="mt-1 text-sm text-muted">
             یا از تب شرکا در هر پروژه استفاده کنید
           </p>
@@ -136,20 +136,20 @@ export function VenturesPage() {
       <AppModal open={createOpen} onOpenChange={setCreateOpen}>
         <AppModalDialog className="sm:max-w-md">
           <AppModalHeader onClose={() => setCreateOpen(false)}>
-            <Modal.Heading>{t("کسب‌وکار جدید")}</Modal.Heading>
+            <Modal.Heading>{t("auto.k6048d21e0c")}</Modal.Heading>
             <p className="mt-1 text-sm text-muted">
               برای مشارکت‌هایی جدا از پروژه‌های ثبت‌شده
             </p>
           </AppModalHeader>
           <Modal.Body className="space-y-4">
             <FormInput
-              label={t("نام کسب‌وکار")}
-              placeholder={t("مثلاً کافه مشترک")}
+              label={t("auto.kab314cebea")}
+              placeholder={t("auto.kc60c592d2c")}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
             <FormTextArea
-              label={t("توضیحات — اختیاری")}
+              label={t("auto.kac3c0cb65a")}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />

@@ -14,39 +14,12 @@ import {
   type BudgetExportType,
 } from "@/common/api/budgets";
 import type { ICategory } from "@/common/interfaces/category.interface";
-import { JALALI_MONTHS } from "@/common/utils/jalali-date";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showToast } from "@/common/utils/toast";
 import { FormCategoryComboBox } from "@/components/common/form/FormFields";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
-
-const DURATION_OPTIONS: Array<{ id: BudgetDuration; label: string; hint: string }> = [
-  { id: "daily", label: "روزانه", hint: "تراکنش‌های یک روز مشخص" },
-  { id: "monthly", label: "ماهانه", hint: "کل ماه انتخاب‌شده" },
-  { id: "yearly", label: "سالانه", hint: "تمام ماه‌های یک سال" },
-  { id: "all", label: "همه", hint: "تمام تراکنش‌های ثبت‌شده" },
-];
-
-const EXPORT_OPTIONS: Array<{
-  id: BudgetExportType;
-  label: string;
-  hint: string;
-  icon: typeof DocumentDownload;
-}> = [
-  {
-    id: "excel",
-    label: "Excel",
-    hint: "۳ شیت: خلاصه گزارش، تراکنش‌ها (با توضیحات)، تفکیک دسته",
-    icon: DocumentDownload,
-  },
-  {
-    id: "html",
-    label: "گزارش وب",
-    hint: "صفحه زیبا با کاور، آمار، جدول توضیحات و دکمه چاپ/PDF",
-    icon: DocumentText,
-  },
-];
+import { useLocalizedDate } from "@/i18n/hooks/useLocalizedDate";
 
 type BudgetExportModalProps = {
   open: boolean;
@@ -78,6 +51,7 @@ export function BudgetExportModal({
   initialDuration = "monthly",
 }: BudgetExportModalProps) {
   const { t } = useTranslation();
+  const { formatMonthYear, formatDayMonthYear } = useLocalizedDate();
   const [category, setCategory] = useState(initialCategory);
   const [date, setDate] = useState({
     year: initialYear,
@@ -93,13 +67,69 @@ export function BudgetExportModal({
     [categories],
   );
 
+  const durationOptions = useMemo(
+    () =>
+      [
+        {
+          id: "daily" as const,
+          label: t("dashboard.durationDaily"),
+          hint: t("dashboard.durationDailyHint"),
+        },
+        {
+          id: "monthly" as const,
+          label: t("dashboard.durationMonthly"),
+          hint: t("dashboard.durationMonthlyHint"),
+        },
+        {
+          id: "yearly" as const,
+          label: t("dashboard.durationYearly"),
+          hint: t("dashboard.durationYearlyHint"),
+        },
+        {
+          id: "all" as const,
+          label: t("dashboard.durationAll"),
+          hint: t("dashboard.durationAllHint"),
+        },
+      ] satisfies Array<{ id: BudgetDuration; label: string; hint: string }>,
+    [t],
+  );
+
+  const exportOptions = useMemo(
+    () =>
+      [
+        {
+          id: "excel" as const,
+          label: "Excel",
+          hint: t("dashboard.exportExcelHint"),
+          icon: DocumentDownload,
+        },
+        {
+          id: "html" as const,
+          label: t("dashboard.exportWebReport"),
+          hint: t("dashboard.exportWebReportHint"),
+          icon: DocumentText,
+        },
+      ] satisfies Array<{
+        id: BudgetExportType;
+        label: string;
+        hint: string;
+        icon: typeof DocumentDownload;
+      }>,
+    [t],
+  );
+
   const periodPreview = useMemo(() => {
-    const monthName = JALALI_MONTHS[Number(date.month) - 1] ?? date.month;
-    if (duration === "all") return "تمام تراکنش‌ها";
-    if (duration === "yearly") return `سال ${date.year}`;
-    if (duration === "monthly") return `${monthName} ${date.year}`;
-    return `${date.day} ${monthName} ${date.year}`;
-  }, [duration, date]);
+    const monthNum = Number(date.month);
+    const dayNum = Number(date.day);
+    if (duration === "all") return t("dashboard.allTransactions");
+    if (duration === "yearly") {
+      return t("dashboard.yearLabel", { year: date.year });
+    }
+    if (duration === "monthly") {
+      return formatMonthYear(monthNum, date.year, "jalali");
+    }
+    return formatDayMonthYear(dayNum, monthNum, date.year, "jalali");
+  }, [duration, date, formatDayMonthYear, formatMonthYear, t]);
 
   useEffect(() => {
     if (!open) return;
@@ -123,15 +153,15 @@ export function BudgetExportModal({
   function validateFilters() {
     if (duration === "all") return true;
     if (!date.year) {
-      showToast(t("سال را انتخاب کنید"));
+      showToast(t("dashboard.exportDateRequired"));
       return false;
     }
     if ((duration === "monthly" || duration === "daily") && !date.month) {
-      showToast(t("ماه را انتخاب کنید"));
+      showToast(t("dashboard.exportMonthRequired"));
       return false;
     }
     if (duration === "daily" && !date.day) {
-      showToast(t("روز را انتخاب کنید"));
+      showToast(t("dashboard.exportDayRequired"));
       return false;
     }
     return true;
@@ -159,14 +189,16 @@ export function BudgetExportModal({
 
       if (mode === "preview" && exportType === "html") {
         openExportInBrowser(blob);
-        showToast(t("گزارش در تب جدید باز شد"), "success");
+        showToast(t("dashboard.exportPreviewSuccess"), "success");
       } else {
         downloadExportFile(blob, exportType, duration, date);
-        showToast(t("فایل خروجی دانلود شد"), "success");
+        showToast(t("dashboard.exportDownloadSuccess"), "success");
         onOpenChange(false);
       }
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در دریافت خروجی");
+      showToast(
+        err instanceof Error ? err.message : t("dashboard.exportFetchError"),
+      );
     } finally {
       setExporting(false);
     }
@@ -178,27 +210,29 @@ export function BudgetExportModal({
         <AppModalHeader onClose={() => onOpenChange(false)}>
           <div className="flex items-center gap-2">
             <Export size={22} className="text-accent" />
-            <Modal.Heading>{t("خروجی گزارش مالی")}</Modal.Heading>
+            <Modal.Heading>{t("dashboard.exportFinancialReport")}</Modal.Heading>
           </div>
         </AppModalHeader>
         <Modal.Body className="space-y-5 overflow-visible">
           <div className="rounded-2xl border border-border/60 bg-surface-secondary/70 px-4 py-3 text-sm leading-7 text-muted">
-            گزارش شامل <strong className="text-foreground">{t("خلاصه آماری")}</strong>،{" "}
-            <strong className="text-foreground">{t("تفکیک دسته‌بندی")}</strong>،{" "}
-            <strong className="text-foreground">{t("توضیحات هر تراکنش")}</strong> و اطلاعات
-            کاربر است. بازه انتخابی: <strong className="text-foreground">{periodPreview}</strong>
+            {t("dashboard.exportReportIntro", {
+              summary: t("dashboard.statisticalSummary"),
+              categories: t("dashboard.categoryBreakdown"),
+              descriptions: t("dashboard.transactionDescriptions"),
+              range: periodPreview,
+            })}
           </div>
 
           <FormCategoryComboBox
-            label={t("دسته‌بندی")}
-            placeholder={t("همه دسته‌بندی‌ها")}
+            label={t("dashboard.filterByCategory")}
+            placeholder={t("dashboard.allCategories")}
             selectedKey={category || "all"}
             onSelectionChange={(key) => setCategory(key === "all" ? "" : key)}
             options={[
-              { id: "all", label: "همه دسته‌بندی‌ها" },
+              { id: "all", label: t("dashboard.allCategories") },
               ...categoryOptions,
             ]}
-            emptyMessage="دسته‌ای ثبت نشده"
+            emptyMessage={t("dashboard.noCategoryCreatedYet")}
           />
 
           {duration !== "all" ? (
@@ -212,9 +246,9 @@ export function BudgetExportModal({
           ) : null}
 
           <div className="space-y-2">
-            <p className="text-sm font-medium">{t("بازه زمانی")}</p>
+            <p className="text-sm font-medium">{t("dashboard.timeRange")}</p>
             <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
-              {DURATION_OPTIONS.map((option) => (
+              {durationOptions.map((option) => (
                 <button
                   key={option.id}
                   type="button"
@@ -229,9 +263,9 @@ export function BudgetExportModal({
           </div>
 
           <div className="space-y-2">
-            <p className="text-sm font-medium">{t("فرمت خروجی")}</p>
+            <p className="text-sm font-medium">{t("dashboard.exportFormat")}</p>
             <div className="grid gap-2 sm:grid-cols-2">
-              {EXPORT_OPTIONS.map((option) => {
+              {exportOptions.map((option) => {
                 const Icon = option.icon;
                 const active = exportType === option.id;
                 return (
@@ -264,7 +298,7 @@ export function BudgetExportModal({
         </Modal.Body>
         <Modal.Footer className="flex-wrap gap-2">
           <Button type="button" variant="ghost" onPress={() => onOpenChange(false)}>
-            بستن
+            {t("common.close")}
           </Button>
           {exportType === "html" && (
             <Button
@@ -273,7 +307,7 @@ export function BudgetExportModal({
               isPending={exporting}
               onPress={() => void handleExport("preview")}
             >
-              مشاهده در مرورگر
+              {t("dashboard.viewInBrowser")}
             </Button>
           )}
           <Button
@@ -281,7 +315,7 @@ export function BudgetExportModal({
             isPending={exporting}
             onPress={() => void handleExport("download")}
           >
-            دانلود خروجی
+            {t("dashboard.downloadExport")}
           </Button>
         </Modal.Footer>
       </AppModalDialog>

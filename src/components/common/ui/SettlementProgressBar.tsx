@@ -1,3 +1,7 @@
+"use client";
+
+import { useTranslation } from "@/components/providers/LanguageProvider";
+
 type SettlementProgressBarProps = {
   progress: number;
   tone: "receivable" | "payable";
@@ -7,8 +11,10 @@ type SettlementProgressBarProps = {
 export function SettlementProgressBar({
   progress,
   tone,
-  label = "پیشرفت تسویه",
+  label,
 }: SettlementProgressBarProps) {
+  const { t } = useTranslation();
+  const displayLabel = label ?? t("common.settlementProgress");
   const clamped = Math.min(Math.max(progress, 0), 100);
   const fillColor =
     tone === "receivable" ? "var(--brand-teal-deep)" : "var(--brand-rose-deep)";
@@ -16,7 +22,7 @@ export function SettlementProgressBar({
   return (
     <div>
       <div className="mb-1 flex justify-between text-xs text-muted">
-        <span>{label}</span>
+        <span>{displayLabel}</span>
         <span>{Math.round(clamped)}٪</span>
       </div>
       <div

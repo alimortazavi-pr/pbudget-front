@@ -10,8 +10,9 @@ import { ArrowLeft2, ArrowRight2, Export, Filter } from "iconsax-reactjs";
 import * as budgetsApi from "@/common/api/budgets";
 import { PATHS } from "@/common/constants";
 import { useHydratedSearchParams } from "@/common/hooks/useHydratedSearchParams";
-import { getJalaliNow, JALALI_MONTHS, toPersianDigits } from "@/common/utils";
-import { getNowDateParts, GREGORIAN_MONTHS } from "@/common/utils/calendar-date";
+import { useLocalizedDate } from "@/i18n/hooks/useLocalizedDate";
+import { getJalaliNow } from "@/common/utils";
+import { getNowDateParts } from "@/common/utils/calendar-date";
 import moment from "moment-jalali";
 import { showToast } from "@/common/utils/toast";
 import { BudgetExportModal } from "@/components/pages/dashboard/BudgetExportModal";
@@ -39,6 +40,7 @@ type DashboardPageProps = {
 
 export function DashboardPage({ initialData }: DashboardPageProps) {
   const { t } = useTranslation();
+  const { formatMonthYear, formatDayMonthYear } = useLocalizedDate();
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { hydrated, get } = useHydratedSearchParams();
@@ -102,7 +104,9 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         if (!cancelled) dispatch(setBudgets(data));
       } catch (err) {
         showToast(
-          err instanceof Error ? err.message : "خطا در دریافت تراکنش‌ها",
+          err instanceof Error
+            ? err.message
+            : t("dashboard.fetchTransactionsError"),
         );
       } finally {
         if (!cancelled) {
@@ -198,7 +202,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
                 : "bg-surface-secondary text-muted"
             }`}
           >
-            ماهانه
+            {t("common.monthly")}
           </button>
           <button
             type="button"
@@ -209,7 +213,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
                 : "bg-surface-secondary text-muted"
             }`}
           >
-            روزانه
+            {t("common.daily")}
           </button>
         </div>
 
@@ -225,11 +229,21 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
           <p className="text-sm font-medium lg:text-base">
             {calendarType === "gregorian"
               ? duration === "daily"
-                ? `${toPersianDigits(day)} ${GREGORIAN_MONTHS[parseInt(month, 10) - 1]} ${toPersianDigits(year)}`
-                : `${GREGORIAN_MONTHS[parseInt(month, 10) - 1]} ${toPersianDigits(year)}`
+                ? formatDayMonthYear(
+                    parseInt(day, 10),
+                    parseInt(month, 10),
+                    year,
+                    "gregorian",
+                  )
+                : formatMonthYear(parseInt(month, 10), year, "gregorian")
               : duration === "daily"
-                ? `${toPersianDigits(day)} ${JALALI_MONTHS[parseInt(month, 10) - 1]} ${toPersianDigits(year)}`
-                : `${JALALI_MONTHS[parseInt(month, 10) - 1]} ${toPersianDigits(year)}`}
+                ? formatDayMonthYear(
+                    parseInt(day, 10),
+                    parseInt(month, 10),
+                    year,
+                    "jalali",
+                  )
+                : formatMonthYear(parseInt(month, 10), year, "jalali")}
           </p>
           <Button
             isIconOnly
@@ -264,7 +278,9 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
       </div>
 
       <div className="flex items-center justify-between pt-1 lg:pt-2">
-        <h3 className="text-base font-semibold lg:text-lg">{t("تراکنش‌ها")}</h3>
+        <h3 className="text-base font-semibold lg:text-lg">
+          {t("dashboard.transactions")}
+        </h3>
         <Button
           size="sm"
           variant="ghost"
@@ -272,7 +288,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
           onPress={() => setExportOpen(true)}
         >
           <Export size={16} />
-          خروجی
+          {t("common.export")}
         </Button>
       </div>
 
@@ -292,9 +308,9 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
       ) : filteredBudgets.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border p-8 text-center lg:p-12">
           <Filter size={32} className="mx-auto mb-3 text-muted" />
-          <p className="font-medium">{t("تراکنشی یافت نشد")}</p>
+          <p className="font-medium">{t("dashboard.noTransactionsFound")}</p>
           <p className="mt-1 text-sm text-muted">
-            برای این بازه زمانی هنوز ثبت نشده
+            {t("dashboard.noTransactionsInRange")}
           </p>
         </div>
       ) : (

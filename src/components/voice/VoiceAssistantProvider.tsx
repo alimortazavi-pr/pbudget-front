@@ -189,7 +189,7 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) { 
       {showFab && (
         <button
           type="button"
-          aria-label={t("دستیار صوتی")}
+          aria-label={t("voice.title")}
           data-tour="voice-fab"
           onClick={open}
           className="fixed z-[70] flex size-14 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-lg shadow-accent/30 transition hover:scale-105 active:scale-95 end-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] lg:bottom-8"
@@ -202,7 +202,7 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) { 
         <AppModal open={modalOpen} onOpenChange={(v) => !v && void handleCancel()} mobileFull>
           <AppModalDialog className="flex max-h-[100dvh] flex-col sm:max-w-lg">
           <AppModalHeader>
-            <h2 className="text-lg font-bold">{t("دستیار صوتی")}</h2>
+            <h2 className="text-lg font-bold">{t("voice.title")}</h2>
             <p className="mt-1 text-sm text-muted">
               محیط آزمایشی — پس از تشخیص، یک‌بار جزئیات را بررسی کنید
             </p>
@@ -226,7 +226,7 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) { 
                       {voice.interimTranscript || "در حال گوش دادن…"}
                     </span>
                   ) : voice.state === "processing" ? (
-                    <span className="text-muted">{t("در حال پردازش…")}</span>
+                    <span className="text-muted">{t("voice.processing")}</span>
                   ) : (
                     <span className="text-muted">
                       مثال: «مبلغ ۱۰ ت برای کافه امروز پرداخت شد»
@@ -237,7 +237,7 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) { 
                 <textarea
                   value={manualText}
                   onChange={(e) => setManualText(e.target.value)}
-                  placeholder={t("یا متن را اینجا بنویسید…")}
+                  placeholder={t("voice.typePlaceholder")}
                   rows={3}
                   className="w-full rounded-2xl border border-border bg-surface px-4 py-3 text-sm outline-none focus:border-accent"
                 />
@@ -249,12 +249,12 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) { 
                 </div>
 
                 <div>
-                  <p className="text-xs text-muted">{t("متن تشخیص‌داده‌شده")}</p>
+                  <p className="text-xs text-muted">{t("voice.recognizedText")}</p>
                   <p className="mt-1 text-sm font-medium">{pending.log.transcript}</p>
                 </div>
 
                 <div>
-                  <p className="text-xs text-muted">{t("خلاصه عملیات")}</p>
+                  <p className="text-xs text-muted">{t("voice.actionSummary")}</p>
                   <p className="mt-1 text-base font-bold">{pending.interpretation.summary}</p>
                   <p className="mt-1 text-xs text-muted">
                     اطمینان: {toPersianDigits(String(Math.round(pending.interpretation.confidence * 100)))}٪

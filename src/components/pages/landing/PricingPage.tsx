@@ -61,12 +61,12 @@ export function PricingPage({
         />
 
         <div className="mt-14 rounded-3xl border lp-border lp-card p-8 text-center">
-          <h2 className="text-xl font-bold">{t("سؤال دارید؟")}</h2>
+          <h2 className="text-xl font-bold">{t("auto.k8777c8ead8")}</h2>
           <p className="mt-2 text-sm lp-muted">
             برای دمو کسب‌وکار یا پلن سازمانی با ما در تماس باشید.
           </p>
           <Link href={`${PATHS.LANDING}#contact`} className="mt-6 inline-block">
-            <Button size="lg">{t("تماس با ما")}</Button>
+            <Button size="lg">{t("auto.k26dbf2a80c")}</Button>
           </Link>
         </div>
       </main>

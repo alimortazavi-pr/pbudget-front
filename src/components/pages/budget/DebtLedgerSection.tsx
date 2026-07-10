@@ -52,7 +52,7 @@ export function LinkedDebtSummary({ debt }: LinkedDebtSummaryProps) {
 
   return (
     <div className="space-y-2 rounded-2xl border border-border/60 bg-surface-secondary/60 p-4">
-      <p className="text-sm font-medium">{t("مرتبط با طلب یا بدهی")}</p>
+      <p className="text-sm font-medium">{t("auto.k801512f58a")}</p>
       <div
         className={`rounded-xl px-3 py-3 text-sm ${
           isReceivable ? "bg-income-soft/50 text-income" : "bg-expense-soft/50 text-expense"
@@ -115,7 +115,7 @@ export function DebtLedgerSection({
     <div className="space-y-3 rounded-2xl border border-border/60 bg-surface-secondary/60 p-4">
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-sm font-medium">{t("مرتبط با طلب یا بدهی")}</p>
+          <p className="text-sm font-medium">{t("auto.k801512f58a")}</p>
           <p className="mt-1 text-xs text-muted">
             ثبت تعهد جدید یا تسویه موردی که قبلاً ثبت شده
           </p>
@@ -124,7 +124,7 @@ export function DebtLedgerSection({
           isSelected={value.enabled}
           onChange={(selected) => onChange({ enabled: selected })}
           size="sm"
-          aria-label={t("مرتبط با طلب یا بدهی")}
+          aria-label={t("auto.k801512f58a")}
         >
           <Switch.Control>
             <Switch.Thumb />
@@ -176,11 +176,11 @@ export function DebtLedgerSection({
               </div>
 
               <FormPersonComboBox
-                label={t("نام طرف حساب")}
+                label={t("auto.k8feed14e36")}
                 value={value.person}
                 onChange={(person) => onChange({ person })}
                 options={persons}
-                placeholder={t("مثلاً علی، فروشگاه X")}
+                placeholder={t("auto.kbd05753639")}
               />
 
               <p className="text-xs leading-6 text-muted">
@@ -199,7 +199,7 @@ export function DebtLedgerSection({
                     ? "کدام طلب تسویه می‌شود؟"
                     : "کدام بدهی پرداخت می‌شود؟"
                 }
-                placeholder={t("یک مورد انتخاب کنید")}
+                placeholder={t("auto.keb1dc98120")}
                 selectedKey={value.settleDebtId || undefined}
                 onSelectionChange={(key) => onChange({ settleDebtId: key })}
                 options={settleOptions}

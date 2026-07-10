@@ -23,6 +23,7 @@ export const navMessages: MessageTree = {
   more: "More",
   create: "Add",
   createTransaction: "Add Transaction",
+  editTransaction: "Edit transaction",
   planning: "Planning",
   advancedFinance: "Advanced Finance",
   partnership: "Collaboration",
@@ -36,4 +37,6 @@ export const navMessages: MessageTree = {
   timeline: "Timeline",
   modules: "Modules",
   controlCenter: "Control Center",
+  manageProject: "Manage project",
+  paymentPlan: "Payment plan",
 };

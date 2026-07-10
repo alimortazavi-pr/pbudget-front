@@ -40,7 +40,7 @@ export function AdminVoiceLogsPage() {
       setLogs(data.items);
       setTotalPages(data.pagination.totalPages);
     } catch {
-      showToast(t("بارگذاری لاگ‌های صوتی ناموفق بود"), "danger");
+      showToast(t("auto.kf556ae68a1"), "danger");
     } finally {
       setLoading(false);
     }
@@ -53,7 +53,7 @@ export function AdminVoiceLogsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-bold">{t("لاگ دستیار صوتی")}</h3>
+        <h3 className="text-lg font-bold">{t("auto.kbe301b4fc3")}</h3>
         <p className="text-sm text-muted">
           تمام درخواست‌های تشخیص و اجرای دستورات صوتی (محیط تست)
         </p>
@@ -86,7 +86,7 @@ export function AdminVoiceLogsPage() {
               setPage(1);
               setIntent(e.target.value);
             }}
-            placeholder={t("فیلتر intent…")}
+            placeholder={t("auto.k1a8ad7a277")}
             className="w-full rounded-xl border border-border bg-surface px-10 py-2.5 text-sm outline-none focus:border-accent"
           />
         </div>
@@ -97,11 +97,11 @@ export function AdminVoiceLogsPage() {
           <table className="min-w-full text-sm">
             <thead className="bg-surface-secondary/70 text-muted">
               <tr>
-                <th className="px-4 py-3 text-start font-medium">{t("زمان")}</th>
-                <th className="px-4 py-3 text-start font-medium">{t("کاربر")}</th>
-                <th className="px-4 py-3 text-start font-medium">{t("متن")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.k299c8c9aa7")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.k883da9f030")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.k38e921a220")}</th>
                 <th className="px-4 py-3 text-start font-medium">Intent</th>
-                <th className="px-4 py-3 text-start font-medium">{t("وضعیت")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.k2f3c6cf127")}</th>
                 <th className="px-4 py-3 text-start font-medium" />
               </tr>
             </thead>
@@ -154,13 +154,13 @@ export function AdminVoiceLogsPage() {
                         <td colSpan={6} className="px-4 py-4">
                           <div className="grid gap-3 text-xs lg:grid-cols-2">
                             <div>
-                              <p className="font-medium text-muted">{t("تفسیر")}</p>
+                              <p className="font-medium text-muted">{t("auto.kca6847cd66")}</p>
                               <pre className="mt-1 overflow-x-auto rounded-xl bg-surface p-3 text-[11px] leading-5">
                                 {JSON.stringify(log.interpretation, null, 2)}
                               </pre>
                             </div>
                             <div>
-                              <p className="font-medium text-muted">{t("نتیجه اجرا")}</p>
+                              <p className="font-medium text-muted">{t("auto.kaffc1120a3")}</p>
                               <pre className="mt-1 overflow-x-auto rounded-xl bg-surface p-3 text-[11px] leading-5">
                                 {JSON.stringify(
                                   {

@@ -109,7 +109,7 @@ export function CategoriesPage() {
         dispatch(setCategories([...(categories ?? []), created]));
       }
 
-      showToast(t("ذخیره شد"), "success");
+      showToast(t("common.saved"), "success");
       setOpen(false);
       setTitle("");
       setParentId("");
@@ -129,7 +129,7 @@ export function CategoriesPage() {
       dispatch(
         setCategories((categories ?? []).filter((category) => !removeIds.has(category._id))),
       );
-      showToast(t("حذف شد"), "success");
+      showToast(t("common.deleted"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     }
@@ -139,8 +139,8 @@ export function CategoriesPage() {
     <div className="space-y-4 pt-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold">{t("دسته‌بندی‌ها")}</h2>
-          <p className="text-sm text-muted">{t("دسته‌های اصلی و زیردسته‌ها")}</p>
+          <h2 className="text-lg font-bold">{t("nav.categories")}</h2>
+          <p className="text-sm text-muted">{t("auto.k6ec6a2f0d8")}</p>
         </div>
         <Button
           isIconOnly
@@ -152,16 +152,20 @@ export function CategoriesPage() {
       </div>
 
       <FormInput
-        label={t("جستجو")}
+        label={t("common.search")}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder={t("نام دسته‌بندی…")}
+        placeholder={t("auto.k829e9722e7")}
       />
 
       {!filteredCategoryRows.length ? (
         <div className="rounded-2xl border border-dashed border-border p-10 text-center">
           <Category size={36} className="mx-auto mb-3 text-muted" />
-          <p>{search.trim() ? "دسته‌ای با این نام پیدا نشد" : "دسته‌بندی‌ای وجود ندارد"}</p>
+          <p>
+            {search.trim()
+              ? t("categories.noCategoryBySearch")
+              : t("categories.noCategories")}
+          </p>
         </div>
       ) : (
         <div className="pb-card-grid">
@@ -183,17 +187,19 @@ export function CategoriesPage() {
                   <span className="font-medium">{category.title}</span>
                   {category.kind === CategoryKind.PROJECT ? (
                     <span className="rounded-md bg-accent/15 px-1.5 py-0.5 text-[10px] font-semibold text-accent">
-                      پروژه
+                      {t("common.project")}
                     </span>
                   ) : null}
                   {category.monthlyLimit && category.monthlyLimit > 0 ? (
                     <span className="rounded-md bg-surface-secondary px-1.5 py-0.5 text-[10px] text-muted">
-                      سقف {category.monthlyLimit.toLocaleString("fa-IR")}
+                      {t("categories.limitBadge", {
+                        amount: category.monthlyLimit.toLocaleString("fa-IR"),
+                      })}
                     </span>
                   ) : null}
                 </div>
                 {depth > 0 ? (
-                  <p className="text-xs text-muted">{t("زیردسته")}</p>
+                  <p className="text-xs text-muted">{t("auto.kd403e0e5c6")}</p>
                 ) : null}
                 </div>
               </div>
@@ -225,35 +231,35 @@ export function CategoriesPage() {
           <form onSubmit={(e) => void save(e)}>
             <AppModalHeader onClose={() => setOpen(false)}>
               <Modal.Heading>
-                {editItem ? "ویرایش دسته" : "دسته جدید"}
+                {editItem ? t("categories.editCategory") : t("categories.newCategory")}
               </Modal.Heading>
             </AppModalHeader>
             <Modal.Body className="space-y-4">
               <FormInput
-                label={t("عنوان")}
+                label={t("common.title")}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />
               <FormSelect
-                label={t("دسته والد")}
-                placeholder={t("بدون والد")}
+                label={t("auto.k0abe3491a1")}
+                placeholder={t("auto.k646a63bb02")}
                 selectedKey={parentId || "none"}
                 onSelectionChange={(key) => setParentId(key === "none" ? "" : key)}
                 options={parentOptions}
               />
               <CategoryColorPicker value={color} onChange={setColor} />
               <FormPriceInput
-                label={t("سقف خرج ماهانه (اختیاری)")}
+                label={t("auto.k46aceba377")}
                 value={monthlyLimit}
                 onChange={setMonthlyLimit}
               />
               <p className="text-xs text-muted">
-                ۰ یعنی بدون محدودیت — عبور از سقف مجاز است ولی مانده منفی می‌شود
+                {t("categories.zeroLimitHint")}
               </p>
               <div className="flex items-center justify-between rounded-xl border border-border/50 bg-surface-secondary px-3 py-3">
                 <div>
-                  <p className="text-sm font-medium">{t("نوع پروژه")}</p>
-                  <p className="text-xs text-muted">{t("برای مدیریت قرارداد و پرداخت‌های خرد")}</p>
+                  <p className="text-sm font-medium">{t("auto.k4dc8456bac")}</p>
+                  <p className="text-xs text-muted">{t("auto.kb29b714930")}</p>
                 </div>
                 <Switch isSelected={isProjectKind} onChange={setIsProjectKind} size="sm">
                   <Switch.Control>
@@ -264,10 +270,10 @@ export function CategoriesPage() {
             </Modal.Body>
             <Modal.Footer>
               <Button type="button" variant="ghost" onPress={() => setOpen(false)}>
-                انصراف
+                {t("common.cancel")}
               </Button>
               <Button type="submit" isPending={saving}>
-                ذخیره
+                {t("common.save")}
               </Button>
             </Modal.Footer>
           </form>

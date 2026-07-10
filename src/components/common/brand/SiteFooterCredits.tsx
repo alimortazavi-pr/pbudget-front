@@ -13,7 +13,7 @@ export function SiteFooterCredits({ className = "" }: { className?: string }) {
     <div
       className={`flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs lp-muted ${className}`}
     >
-      <span>{t("توسعه:")}</span>
+      <span>{t("common.developedBy")}</span>
       <Link
         href={DEVELOPER_SITE_URL}
         target="_blank"

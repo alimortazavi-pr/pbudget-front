@@ -92,10 +92,10 @@ export function PwaInstallPrompt() {
         </div>
         <div className="min-w-0 flex-1 space-y-3">
           <div>
-            <p className="font-semibold text-foreground">نصب {APP_NAME_FA}</p>
-            <p className="mt-1 text-sm text-muted">
-              اپ را روی گوشی یا دسکتاپ نصب کنید و مثل برنامه native بازش کنید.
+            <p className="font-semibold text-foreground">
+              {t("common.installAppTitle", { appName: APP_NAME_FA })}
             </p>
+            <p className="mt-1 text-sm text-muted">{t("common.installAppDesc")}</p>
           </div>
           <div className="flex flex-wrap gap-2">
             {deferredPrompt ? (
@@ -105,17 +105,17 @@ export function PwaInstallPrompt() {
                 onPress={install}
                 isDisabled={installing}
               >
-                {installing ? "در حال نصب…" : "نصب اپ"}
+                {installing ? t("common.installing") : t("common.installAppButton")}
               </Button>
             ) : null}
             <Button size="sm" variant="ghost" onPress={dismiss}>
-              {deferredPrompt ? "بعداً" : "متوجه شدم"}
+              {deferredPrompt ? t("common.later") : t("common.gotIt")}
             </Button>
           </div>
         </div>
         <button
           type="button"
-          aria-label={t("بستن")}
+          aria-label={t("common.close")}
           className="shrink-0 text-muted transition hover:text-foreground"
           onClick={dismiss}
         >

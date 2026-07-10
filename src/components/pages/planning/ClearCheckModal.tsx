@@ -16,7 +16,7 @@ import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
 import { CheckType } from "@/types/enums";
 import { userSelector } from "@/stores/profile";
-import { currencyLabel } from "@/common/constants/user-preferences";
+import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 
 type ClearCheckModalProps = {
   check: ICheck | null;
@@ -32,6 +32,7 @@ export function ClearCheckModal({
   onCleared,
 }: ClearCheckModalProps) {
   const { t } = useTranslation();
+  const { currencyLabel } = useCurrencyLabels();
   const user = useAppSelector(userSelector);
   const preferredCurrency = user?.preferences?.currency ?? "toman";
   const categories = useAppSelector(categoriesSelector);
@@ -52,7 +53,7 @@ export function ClearCheckModal({
 
   async function handleSubmit() {
     if (!check || !category) {
-      showToast(t("دسته‌بندی الزامی است"));
+      showToast(t("auto.k23b386cfec"));
       return;
     }
 
@@ -66,7 +67,7 @@ export function ClearCheckModal({
         day: String(now.jDate()),
         note,
       });
-      showToast(t("چک وصول شد و تراکنش ثبت شد"), "success");
+      showToast(t("auto.kadc2f3e58b"), "success");
       onCleared();
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
@@ -94,8 +95,8 @@ export function ClearCheckModal({
           <FormPriceInput label={`مبلغ (${currencyLabel(preferredCurrency)})`} value={amount} onChange={setAmount} />
 
           <FormCategoryComboBox
-            label={t("دسته‌بندی")}
-            placeholder={t("جستجو یا انتخاب دسته‌بندی")}
+            label={t("auto.kb561a47a9b")}
+            placeholder={t("common.searchCategoryPlaceholder")}
             selectedKey={category || undefined}
             onSelectionChange={(key) => setCategory(key)}
             options={categoryOptions}
@@ -103,7 +104,7 @@ export function ClearCheckModal({
           />
 
           <FormTextArea
-            label={t("یادداشت")}
+            label={t("auto.k3ec8c91053")}
             value={note}
             onChange={(e) => setNote(e.target.value)}
           />

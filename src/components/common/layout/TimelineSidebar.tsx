@@ -13,10 +13,10 @@ import { ShellAccountMenu } from "@/components/common/layout/ShellAccountMenu";
 import { CREATE_NAV_ITEM, BANK_IMPORT_NAV_ITEM, PLANNING_NAV_ITEMS } from "@/components/common/layout/shell-nav";
 
 const TIMELINE_PRIMARY = [
-  { href: PATHS.HOME, label: "خط زمانی", icon: Calendar },
-  { href: PATHS.ANALYSIS, label: "تحلیل", icon: Chart },
-  { href: PATHS.CATEGORIES, label: "دسته‌ها", icon: Category },
-  { href: PATHS.PROFILE, label: "تنظیمات", icon: Setting2 },
+  { href: PATHS.HOME, labelKey: "nav.timeline", icon: Calendar },
+  { href: PATHS.ANALYSIS, labelKey: "nav.analysis", icon: Chart },
+  { href: PATHS.CATEGORIES, labelKey: "nav.categoriesShort", icon: Category },
+  { href: PATHS.PROFILE, labelKey: "nav.settings", icon: Setting2 },
 ] as const;
 
 export function TimelineSidebar() {
@@ -25,14 +25,14 @@ export function TimelineSidebar() {
   const { count: pendingInvitesCount } = usePendingInvitesCount();
 
   return (
-    <aside className="pb-timeline-sidebar" aria-label={t("ناوبری timeline")}>
+    <aside className="pb-timeline-sidebar" aria-label={t("nav.timeline")}>
       <div className="flex h-full flex-col overflow-y-auto p-5 xl:p-6">
         <Link href={PATHS.HOME} className="mb-6 block px-2">
           <AppLogo />
         </Link>
 
         <p className="mb-2 px-3 text-xs font-semibold tracking-wide text-muted">
-          مرکز کنترل
+          {t("nav.controlCenter")}
         </p>
         <nav className="flex flex-col gap-0.5">
           {TIMELINE_PRIMARY.map((item) => {
@@ -49,7 +49,7 @@ export function TimelineSidebar() {
                 data-active={active ? "true" : "false"}
               >
                 <item.icon size={20} variant={active ? "Bold" : "Linear"} />
-                <span>{item.label}</span>
+                <span>{t(item.labelKey)}</span>
               </Link>
             );
           })}
@@ -57,16 +57,16 @@ export function TimelineSidebar() {
 
         <Link href={CREATE_NAV_ITEM.href} className="pb-sidebar-cta mt-4">
           <Add size={20} variant="Bold" />
-          {CREATE_NAV_ITEM.label}
+          {t("nav.create")}
         </Link>
 
         <Link href={BANK_IMPORT_NAV_ITEM.href} className="pb-sidebar-secondary-cta mt-2">
           <BANK_IMPORT_NAV_ITEM.icon size={18} variant="Bold" />
-          {BANK_IMPORT_NAV_ITEM.label}
+          {t(BANK_IMPORT_NAV_ITEM.label)}
         </Link>
 
         <p className="mb-2 mt-6 px-3 text-xs font-semibold tracking-wide text-muted">
-          ماژول‌ها
+          {t("nav.modules")}
         </p>
         <nav className="flex flex-col gap-0.5">
           {PLANNING_NAV_ITEMS.map((item) => {
@@ -86,7 +86,7 @@ export function TimelineSidebar() {
               >
                 <item.icon size={20} variant={active ? "Bold" : "Linear"} />
                 <span className="flex flex-1 items-center justify-between gap-2">
-                  <span>{item.label}</span>
+                  <span>{t(item.label)}</span>
                   {badge ? (
                     <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-accent-foreground">
                       {badge}
@@ -107,8 +107,8 @@ export function TimelineSidebar() {
 }
 
 export const TIMELINE_TAB_ITEMS = [
-  { href: PATHS.HOME, label: "خانه", icon: Home2 },
-  { href: PATHS.ANALYSIS, label: "تحلیل", icon: Chart },
-  { href: CREATE_NAV_ITEM.href, label: "ثبت", icon: Add, fab: true as const },
-  { href: PATHS.PROFILE, label: "تنظیمات", icon: Profile },
+  { href: PATHS.HOME, labelKey: "nav.home", icon: Home2 },
+  { href: PATHS.ANALYSIS, labelKey: "nav.analysis", icon: Chart },
+  { href: CREATE_NAV_ITEM.href, labelKey: "nav.create", icon: Add, fab: true as const },
+  { href: PATHS.PROFILE, labelKey: "nav.settings", icon: Profile },
 ] as const;

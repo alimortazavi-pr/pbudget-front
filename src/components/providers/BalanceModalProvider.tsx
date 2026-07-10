@@ -20,11 +20,11 @@ import { formatPriceWithCurrency } from "@/common/utils/format-currency";
 import {
   CURRENCY_OPTIONS,
   DEFAULT_USER_PREFERENCES,
-  currencyLabel,
   type UserCurrency,
 } from "@/common/constants/user-preferences";
 import { getWalletBalance } from "@/common/utils/wallet-balances";
 import { showToast } from "@/common/utils/toast";
+import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { FormPriceInput } from "@/components/common/form/FormFields";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
@@ -53,6 +53,7 @@ function BalanceModalDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const { t } = useTranslation();
+  const { currencyLabel } = useCurrencyLabels();
   const dispatch = useAppDispatch();
   const user = useAppSelector(userSelector);
   const [price, setPrice] = useState("");
@@ -76,7 +77,7 @@ function BalanceModalDialog({
     e?.preventDefault();
     const delta = parseInt(parsePriceInput(price, true), 10);
     if (!price.trim() || Number.isNaN(delta) || delta === 0) {
-      showToast(t("مبلغ تغییر را وارد کنید (مثبت برای افزایش، منفی برای کاهش)"));
+      showToast(t("dashboard.amountChangeRequired"));
       return;
     }
 
@@ -86,15 +87,18 @@ function BalanceModalDialog({
       dispatch(setProfile(updated));
       dispatch(bumpBudgetRevision());
       showToast(
-        `موجودی ${currencyLabel(currency)}: ${formatPriceWithCurrency(
-          getWalletBalance(updated, currency),
-          currency,
-        )}`,
+        t("dashboard.balanceUpdated", {
+          currency: currencyLabel(currency),
+          amount: formatPriceWithCurrency(
+            getWalletBalance(updated, currency),
+            currency,
+          ),
+        }),
         "success",
       );
       onOpenChange(false);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     } finally {
       setLoading(false);
     }
@@ -109,16 +113,17 @@ function BalanceModalDialog({
       <AppModalDialog>
         <form onSubmit={(e) => void submit(e)}>
           <AppModalHeader onClose={() => onOpenChange(false)}>
-            <Modal.Heading>{t("تنظیم موجودی")}</Modal.Heading>
+            <Modal.Heading>{t("dashboard.adjustBalance")}</Modal.Heading>
           </AppModalHeader>
           <Modal.Body>
             <p className="mb-3 text-sm text-muted">
-              موجودی فعلی ({currencyLabel(currency)}):{" "}
-              {formatPriceWithCurrency(currentBalance, currency)}
+              {t("dashboard.currentBalance", {
+                currency: currencyLabel(currency),
+                amount: formatPriceWithCurrency(currentBalance, currency),
+              })}
             </p>
             <p className="mb-3 text-xs leading-6 text-muted">
-              ارز را انتخاب کنید و مبلغ تغییر را وارد کنید — مثبت برای افزایش،
-              منفی برای کاهش. هر ارز موجودی جداگانه دارد.
+              {t("dashboard.balanceChangeHint")}
             </p>
             <div className="mb-4 flex flex-wrap gap-2">
               {CURRENCY_OPTIONS.map((option) => (
@@ -132,24 +137,26 @@ function BalanceModalDialog({
                       : "bg-surface-secondary text-muted"
                   }`}
                 >
-                  {option.label}
+                  {currencyLabel(option.id)}
                 </button>
               ))}
             </div>
             <FormPriceInput
-              label={`مبلغ افزایش/کاهش (${currencyLabel(currency)})`}
+              label={t("dashboard.amountChangeLabel", {
+                currency: currencyLabel(currency),
+              })}
               value={price}
               onChange={setPrice}
               allowNegative
-              placeholder={t("مثلاً ۵۰۰۰۰۰ یا -۲۰۰۰۰۰")}
+              placeholder={t("dashboard.amountChangePlaceholder")}
             />
           </Modal.Body>
           <Modal.Footer>
             <Button type="button" variant="ghost" onPress={() => onOpenChange(false)}>
-              انصراف
+              {t("common.cancel")}
             </Button>
             <Button type="submit" isPending={loading}>
-              اعمال تغییر
+              {t("dashboard.applyChange")}
             </Button>
           </Modal.Footer>
         </form>

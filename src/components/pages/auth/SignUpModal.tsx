@@ -43,7 +43,7 @@ export function SignUpModal({
   async function submit(e?: FormEvent) {
     e?.preventDefault();
     if (!password.trim() || password.trim().length < 6) {
-      showToast(t("رمز عبور باید حداقل ۶ کاراکتر باشد"));
+      showToast(t("auto.k82e0ee6fcd"));
       return;
     }
 
@@ -74,15 +74,15 @@ export function SignUpModal({
             </Modal.Heading>
           </AppModalHeader>
           <Modal.Body className={`${modalSheetBodyClass} space-y-4`}>
-            <FormInput label={t("نام")} value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-            <FormInput label={t("نام خانوادگی")} value={lastName} onChange={(e) => setLastName(e.target.value)} />
-            <FormInput label={t("موبایل")} value={mobile} readOnly />
+            <FormInput label={t("common.name")} value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+            <FormInput label={t("auto.k342616c4fb")} value={lastName} onChange={(e) => setLastName(e.target.value)} />
+            <FormInput label={t("common.mobile")} value={mobile} readOnly />
             <FormInput
-              label={t("رمز عبور")}
+              label={t("common.password")}
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder={t("حداقل ۶ کاراکتر")}
+              placeholder={t("auto.k8fdfe05e9a")}
             />
             <p className="text-xs leading-6 text-muted">
               با تعیین رمز عبور حساب شما ساخته می‌شود. اتصال تلگرام اختیاری است

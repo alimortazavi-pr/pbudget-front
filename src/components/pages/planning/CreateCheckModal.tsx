@@ -19,7 +19,7 @@ import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui
 import { CheckType } from "@/types/enums";
 import { useAppSelector } from "@/stores/hooks";
 import { userSelector } from "@/stores/profile";
-import { currencyLabel } from "@/common/constants/user-preferences";
+import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 
 type CreateCheckModalProps = {
   open: boolean;
@@ -35,6 +35,7 @@ export function CreateCheckModal({
   onCreated,
 }: CreateCheckModalProps) {
   const { t } = useTranslation();
+  const { currencyLabel } = useCurrencyLabels();
   const user = useAppSelector(userSelector);
   const preferredCurrency = user?.preferences?.currency ?? "toman";
   const now = getJalaliNow();
@@ -69,7 +70,7 @@ export function CreateCheckModal({
 
   async function handleSubmit() {
     if (!person.trim() || !amount.trim()) {
-      showToast(t("طرف حساب و مبلغ الزامی است"));
+      showToast(t("auto.k34dd4a0b0c"));
       return;
     }
 
@@ -86,7 +87,7 @@ export function CreateCheckModal({
         dueDay: toEnglishDigits(dueDay),
         description,
       });
-      showToast(t("چک ثبت شد"), "success");
+      showToast(t("auto.k4781ebf878"), "success");
       onCreated();
       onOpenChange(false);
     } catch (err) {
@@ -100,7 +101,7 @@ export function CreateCheckModal({
     <AppModal open={open} onOpenChange={onOpenChange}>
       <AppModalDialog className="max-w-lg">
         <AppModalHeader onClose={() => onOpenChange(false)}>
-          <Modal.Heading>{t("ثبت چک جدید")}</Modal.Heading>
+          <Modal.Heading>{t("auto.k32f84c08aa")}</Modal.Heading>
         </AppModalHeader>
         <Modal.Body className="max-h-[70vh] space-y-4 overflow-y-auto">
           <div className="flex gap-2">
@@ -125,23 +126,23 @@ export function CreateCheckModal({
 
           <FormPriceInput label={`مبلغ (${currencyLabel(preferredCurrency)})`} value={amount} onChange={setAmount} />
           <FormPersonComboBox
-            label={t("طرف حساب")}
+            label={t("auto.k4617f9a4f6")}
             value={person}
             onChange={setPerson}
             options={persons}
           />
           <FormInput
-            label={t("بانک")}
+            label={t("auto.k83e336be2b")}
             value={bankName}
             onChange={(e) => setBankName(e.target.value)}
           />
           <FormInput
-            label={t("شماره چک")}
+            label={t("auto.kdbb09da3c6")}
             value={checkNumber}
             onChange={(e) => setCheckNumber(e.target.value)}
           />
           <FormDatePicker
-            label={t("تاریخ سررسید")}
+            label={t("auto.kbe0c3db3c3")}
             year={dueYear}
             month={dueMonth}
             day={dueDay}
@@ -149,7 +150,7 @@ export function CreateCheckModal({
             onChange={handleDueDateChange}
           />
           <FormTextArea
-            label={t("توضیحات")}
+            label={t("common.description")}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />

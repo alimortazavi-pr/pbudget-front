@@ -1,17 +1,18 @@
 "use client";
 
-import { useLanguage, type Language } from "@/components/providers/LanguageProvider";
+import { useLanguage, useTranslation, type Language } from "@/components/providers/LanguageProvider";
 import { Popover, Button } from "@heroui/react";
 import { useState } from "react";
 
 export function LanguageSelector() {
   const { language, setLanguage } = useLanguage();
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
-  const options: { value: Language; label: string; flag: string }[] = [
-    { value: "fa", label: "فارسی", flag: "🇮🇷" },
-    { value: "ar", label: "العربية", flag: "🇸🇦" },
-    { value: "en", label: "English", flag: "🇬🇧" },
+  const options: { value: Language; labelKey: string; flag: string }[] = [
+    { value: "fa", labelKey: "common.languagePersian", flag: "🇮🇷" },
+    { value: "ar", labelKey: "common.languageArabic", flag: "🇸🇦" },
+    { value: "en", labelKey: "common.languageEnglish", flag: "🇬🇧" },
   ];
 
   const currentOpt = options.find((o) => o.value === language) || options[0];
@@ -25,7 +26,7 @@ export function LanguageSelector() {
           className="min-w-0 px-2 text-xs font-semibold hover:bg-surface-secondary gap-1"
         >
           <span>{currentOpt.flag}</span>
-          <span className="hidden sm:inline">{currentOpt.label}</span>
+          <span className="hidden sm:inline">{t(currentOpt.labelKey)}</span>
         </Button>
       </Popover.Trigger>
       <Popover.Content placement="bottom end" className="p-1 min-w-[120px] bg-background border border-border/40 shadow-lg rounded-xl">
@@ -46,7 +47,7 @@ export function LanguageSelector() {
                 style={{ direction: opt.value === "en" ? "ltr" : "rtl" }}
               >
                 <span>{opt.flag}</span>
-                <span>{opt.label}</span>
+                <span>{t(opt.labelKey)}</span>
               </button>
             ))}
           </div>

@@ -74,11 +74,11 @@ export function ForgotPasswordStep({
 
   async function handleReset() {
     if (newPassword.trim().length < 6) {
-      showToast(t("رمز عبور حداقل ۶ کاراکتر"));
+      showToast(t("auto.k19c70f8d7e"));
       return;
     }
     if (toEnglishDigits(code).length !== 6) {
-      showToast(t("کد ۶ رقمی را کامل وارد کنید"));
+      showToast(t("auto.k5e54d70ae2"));
       return;
     }
     setError("");
@@ -89,7 +89,7 @@ export function ForgotPasswordStep({
         code: toEnglishDigits(code),
         password: newPassword.trim(),
       });
-      showToast(t("رمز عبور تغییر کرد — اکنون وارد شوید"), "success");
+      showToast(t("auto.k2a9824ab89"), "success");
       onSuccess();
     } catch (err) {
       const msg = err instanceof Error ? err.message : "خطا در تغییر رمز";
@@ -118,15 +118,15 @@ export function ForgotPasswordStep({
         بازگشت به ورود
       </button>
 
-      <FormInput label={t("موبایل")} value={mobile} readOnly />
+      <FormInput label={t("common.mobile")} value={mobile} readOnly />
 
       {telegramRequired ? (
         <div className="space-y-4 rounded-2xl border border-amber-500/35 bg-amber-500/10 px-4 py-4">
           <p className="text-sm leading-7 text-foreground">{telegramRequired.message}</p>
           <ul className="list-disc space-y-1 ps-5 text-sm leading-7 text-muted">
-            <li>{t("بات تلگرام را باز کنید و «شروع» را بزنید.")}</li>
-            <li>{t("فقط با دکمه «اشتراک‌گذاری شماره تلگرام» شماره را بفرستید — تایپ دستی پذیرفته نمی‌شود.")}</li>
-            <li>{t("شماره تلگرام باید دقیقاً با شماره ثبت‌نام شما یکی باشد.")}</li>
+            <li>{t("auto.k1fc8184977")}</li>
+            <li>{t("auto.k9b282f07bf")}</li>
+            <li>{t("auto.kff744f8fc9")}</li>
           </ul>
           {recoverUrl ? (
             <Button
@@ -162,9 +162,9 @@ export function ForgotPasswordStep({
         </Button>
       ) : (
         <>
-          <OtpCodeField label={t("کد تلگرام")} value={code} onChange={setCode} />
+          <OtpCodeField label={t("auto.ka8ac5bb350")} value={code} onChange={setCode} />
           <FormInput
-            label={t("رمز عبور جدید")}
+            label={t("auto.k8492d224f5")}
             type="password"
             value={newPassword}
             onChange={(e) => {

@@ -22,7 +22,7 @@ import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
 import { DebtType } from "@/types/enums";
 import { userSelector } from "@/stores/profile";
-import { currencyLabel } from "@/common/constants/user-preferences";
+import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 
 type CreateDebtModalProps = {
   open: boolean;
@@ -32,6 +32,7 @@ type CreateDebtModalProps = {
 
 export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtModalProps) {
   const { t } = useTranslation();
+  const { currencyLabel } = useCurrencyLabels();
   const categories = useAppSelector(categoriesSelector);
   const user = useAppSelector(userSelector);
   const preferredCurrency = user?.preferences?.currency ?? "toman";
@@ -51,7 +52,7 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
 
   async function handleSubmit() {
     if (!person.trim() || !amount.trim() || !category) {
-      showToast(t("نام طرف حساب، مبلغ و دسته‌بندی الزامی است"));
+      showToast(t("auto.k0abe282ca2"));
       return;
     }
 
@@ -67,7 +68,7 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
         day: toEnglishDigits(day),
         description: description.trim(),
       });
-      showToast(t("طلب/بدهی ثبت شد"), "success");
+      showToast(t("auto.k89c1a0f1f5"), "success");
       onCreated?.(debt._id);
       onOpenChange(false);
       setPerson("");
@@ -85,18 +86,19 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
     <AppModal open={open} onOpenChange={onOpenChange}>
       <AppModalDialog className="max-w-lg">
         <AppModalHeader onClose={() => onOpenChange(false)}>
-          <Modal.Heading>{t("ثبت طلب یا بدهی")}</Modal.Heading>
+          <Modal.Heading>{t("auto.k8d1417e166")}</Modal.Heading>
         </AppModalHeader>
         <Modal.Body className="max-h-[70vh] space-y-4 overflow-x-visible overflow-y-auto overscroll-contain">
           <p className="text-sm text-muted">
-            مثل پروژه، ابتدا طرف حساب را ثبت کنید. بعداً می‌توانید تراکنش مبدأ یا تسویه را
-            از لیست تراکنش‌ها وصل کنید.
+            {t(
+              "مثل پروژه، ابتدا طرف حساب را ثبت کنید. بعداً می‌توانید تراکنش مبدأ یا تسویه را از لیست تراکنش‌ها وصل کنید.",
+            )}
           </p>
 
           <div className="flex gap-2">
             {[
-              { id: String(DebtType.RECEIVABLE), label: "طلب" },
-              { id: String(DebtType.PAYABLE), label: "بدهی" },
+              { id: String(DebtType.RECEIVABLE), label: t("common.receivable") },
+              { id: String(DebtType.PAYABLE), label: t("common.payable") },
             ].map((item) => (
               <button
                 key={item.id}
@@ -114,25 +116,29 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
           </div>
 
           <FormPersonComboBox
-            label={t("نام طرف حساب")}
+            label={t("auto.k8feed14e36")}
             value={person}
             onChange={setPerson}
             options={persons}
           />
-          <FormPriceInput label={`مبلغ (${currencyLabel(preferredCurrency)})`} value={amount} onChange={setAmount} />
+          <FormPriceInput
+            label={`${t("common.amount")} (${currencyLabel(preferredCurrency)})`}
+            value={amount}
+            onChange={setAmount}
+          />
           <FormCategoryComboBox
-            label={t("دسته‌بندی")}
+            label={t("auto.kb561a47a9b")}
             selectedKey={category || undefined}
             onSelectionChange={(key) => setCategory(key)}
             options={categoryOptions}
           />
           <FormTextArea
-            label={t("توضیحات")}
+            label={t("common.description")}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
           <FormDatePicker
-            label={t("تاریخ ثبت")}
+            label={t("auto.k80d27df1cd")}
             year={year}
             month={month}
             day={day}
@@ -146,10 +152,10 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
         </Modal.Body>
         <Modal.Footer>
           <Button variant="ghost" onPress={() => onOpenChange(false)}>
-            انصراف
+            {t("common.cancel")}
           </Button>
           <Button isPending={submitting} onPress={() => void handleSubmit()}>
-            ثبت
+            {t("common.create")}
           </Button>
         </Modal.Footer>
       </AppModalDialog>

@@ -23,6 +23,7 @@ export const navMessages: MessageTree = {
   more: "بیشتر",
   create: "ثبت",
   createTransaction: "ثبت تراکنش",
+  editTransaction: "ویرایش تراکنش",
   planning: "برنامه‌ریزی",
   advancedFinance: "مالی پیشرفته",
   partnership: "مشارکت",
@@ -36,4 +37,6 @@ export const navMessages: MessageTree = {
   timeline: "خط زمانی",
   modules: "ماژول‌ها",
   controlCenter: "مرکز کنترل",
+  manageProject: "مدیریت پروژه",
+  paymentPlan: "برنامه پرداخت",
 };

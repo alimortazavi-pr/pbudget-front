@@ -33,7 +33,7 @@ export function AdminBanksPage() {
       const data = await banksApi.fetchAdminBanks();
       setBanks(data);
     } catch {
-      showToast(t("بارگذاری بانک‌ها ناموفق بود"), "danger");
+      showToast(t("auto.kc30b8bd654"), "danger");
     } finally {
       setLoading(false);
     }
@@ -65,7 +65,7 @@ export function AdminBanksPage() {
 
   async function save() {
     if (!title.trim() || !slug.trim()) {
-      showToast(t("عنوان و شناسه بانک الزامی است"), "danger");
+      showToast(t("auto.kcf531861e6"), "danger");
       return;
     }
 
@@ -87,7 +87,7 @@ export function AdminBanksPage() {
         setBanks((prev) => [...prev, created]);
       }
 
-      showToast(t("ذخیره شد"), "success");
+      showToast(t("common.saved"), "success");
       setOpen(false);
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا در ذخیره", "danger");
@@ -101,9 +101,9 @@ export function AdminBanksPage() {
     try {
       await banksApi.deleteAdminBank(bank._id);
       setBanks((prev) => prev.filter((item) => item._id !== bank._id));
-      showToast(t("بانک حذف شد"), "success");
+      showToast(t("auto.kd7af44f5a8"), "success");
     } catch {
-      showToast(t("حذف ناموفق بود"), "danger");
+      showToast(t("auto.k39c946fb1c"), "danger");
     }
   }
 
@@ -115,7 +115,7 @@ export function AdminBanksPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h3 className="text-lg font-bold">{t("بانک‌ها")}</h3>
+          <h3 className="text-lg font-bold">{t("auto.ke69411b3f7")}</h3>
           <p className="text-sm text-muted">
             بانک‌های پشتیبانی‌شده برای ایمپورت صورتحساب — پارسر بلوبانک از قبل فعال است
           </p>
@@ -176,22 +176,22 @@ export function AdminBanksPage() {
             <Modal.Heading>{editItem ? "ویرایش بانک" : "بانک جدید"}</Modal.Heading>
           </AppModalHeader>
           <div className="space-y-4 p-4">
-            <FormInput label={t("نام بانک")} value={title} onChange={(e) => setTitle(e.target.value)} />
+            <FormInput label={t("auto.kd58cb05310")} value={title} onChange={(e) => setTitle(e.target.value)} />
             <FormInput
-              label={t("شناسه (slug)")}
+              label={t("auto.k503016e279")}
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
               placeholder="blubank"
               dir="ltr"
             />
             <FormSelect
-              label={t("نوع پارسر")}
+              label={t("auto.k5bcb84b225")}
               selectedKey={parserType}
               onSelectionChange={(key) => setParserType(key)}
               options={PARSER_OPTIONS}
             />
             <FormInput
-              label={t("ترتیب نمایش")}
+              label={t("auto.kbd34880aa6")}
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value)}
               inputMode="numeric"

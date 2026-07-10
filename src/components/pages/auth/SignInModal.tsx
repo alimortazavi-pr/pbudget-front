@@ -53,7 +53,7 @@ export function SignInModal({
   async function requestCode() {
     try {
       await authApi.requestCode(mobile);
-      showToast(t("کد تأیید به تلگرام ارسال شد"), "success");
+      showToast(t("auto.k7d82e2b7f5"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     }
@@ -62,7 +62,7 @@ export function SignInModal({
   async function submit(e?: FormEvent) {
     e?.preventDefault();
     if (!canLogin) {
-      showToast(t("ابتدا با تعیین رمز عبور حساب بسازید"));
+      showToast(t("auto.kaac3ff48e7"));
       return;
     }
 
@@ -85,10 +85,10 @@ export function SignInModal({
       <AppModalSheet>
         <form onSubmit={(e) => void submit(e)} className={modalSheetFormClass}>
           <AppModalHeader onClose={() => onOpenChange(false)}>
-            <Modal.Heading>{t("ورود")}</Modal.Heading>
+            <Modal.Heading>{t("auto.k32a81e5587")}</Modal.Heading>
           </AppModalHeader>
           <Modal.Body className={`${modalSheetBodyClass} space-y-4`}>
-            <FormInput label={t("موبایل")} value={mobile} readOnly />
+            <FormInput label={t("common.mobile")} value={mobile} readOnly />
 
             {!canLogin ? (
               <p className="rounded-xl bg-surface-secondary px-3 py-2 text-sm leading-7 text-muted">
@@ -97,14 +97,14 @@ export function SignInModal({
               </p>
             ) : usePassword ? (
               <FormInput
-                label={t("رمز عبور")}
+                label={t("common.password")}
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             ) : (
               <>
-                <OtpCodeField label={t("کد تأیید تلگرام")} value={code} onChange={setCode} />
+                <OtpCodeField label={t("auto.k4713c59240")} value={code} onChange={setCode} />
                 <p className="text-xs text-muted">
                   کد به تلگرام متصل‌شده شما ارسال می‌شود، نه پیامک.
                 </p>

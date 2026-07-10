@@ -46,7 +46,7 @@ export function AdminAuditPage() {
       setLogs(data.items);
       setTotalPages(data.pagination.totalPages);
     } catch {
-      showToast(t("بارگذاری لاگ‌ها ناموفق بود"), "danger");
+      showToast(t("auto.k49b54a8f04"), "danger");
     } finally {
       setLoading(false);
     }
@@ -60,7 +60,7 @@ export function AdminAuditPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h3 className="text-lg font-bold">{t("لاگ عملیات ادمین")}</h3>
+          <h3 className="text-lg font-bold">{t("auto.kd1d2fbf802")}</h3>
           <p className="text-sm text-muted">
             ثبت تمام عملیات حساس پنل مدیریت
           </p>
@@ -82,7 +82,7 @@ export function AdminAuditPage() {
             <input
               value={actionInput}
               onChange={(e) => setActionInput(e.target.value)}
-              placeholder={t("فیلتر action…")}
+              placeholder={t("auto.k132a1a1fb2")}
               className="w-full rounded-xl border border-border bg-surface px-10 py-2.5 text-sm outline-none focus:border-accent"
             />
           </div>
@@ -97,10 +97,10 @@ export function AdminAuditPage() {
           <table className="min-w-full text-sm">
             <thead className="bg-surface-secondary/70 text-muted">
               <tr>
-                <th className="px-4 py-3 text-start font-medium">{t("زمان")}</th>
-                <th className="px-4 py-3 text-start font-medium">{t("ادمین")}</th>
-                <th className="px-4 py-3 text-start font-medium">{t("عملیات")}</th>
-                <th className="px-4 py-3 text-start font-medium">{t("منبع")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.k299c8c9aa7")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.k65497ce419")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.k0f0dff2dfc")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.k66f403b6e5")}</th>
                 <th className="px-4 py-3 text-start font-medium">IP</th>
               </tr>
             </thead>

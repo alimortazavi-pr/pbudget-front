@@ -5,6 +5,7 @@ import Link from "next/link";
 import { PATHS } from "@/common/constants";
 import type { IBudget } from "@/common/interfaces/budget.interface";
 import { formatJalaliDate, formatPrice } from "@/common/utils";
+import { useTranslation } from "@/components/providers/LanguageProvider";
 import { BudgetType } from "@/types/enums";
 
 type PartnerBudgetCardProps = {
@@ -12,29 +13,37 @@ type PartnerBudgetCardProps = {
   currentUserId?: string | null;
 };
 
-function performerLabel(
+function usePerformerLabel(
   budget: IBudget,
   currentUserId?: string | null,
 ): string | null {
+  const { t } = useTranslation();
   const performer = budget.performer;
   if (!performer) return null;
 
   const isMe = Boolean(currentUserId && performer.userId === currentUserId);
-  const name = isMe ? `${performer.displayName} (شما)` : performer.displayName;
+  const name = isMe
+    ? `${performer.displayName} ${t("common.youSuffix")}`
+    : performer.displayName;
 
   if (performer.sharePercent > 0) {
-    return `ثبت توسط ${name} · سهم ${performer.sharePercent}٪ (${formatPrice(performer.shareAmount)})`;
+    return t("common.registeredByShare", {
+      name,
+      percent: performer.sharePercent,
+      amount: formatPrice(performer.shareAmount),
+    });
   }
 
-  return `ثبت توسط ${name}`;
+  return t("common.registeredBy", { name });
 }
 
 export function PartnerBudgetCard({
   budget,
   currentUserId,
 }: PartnerBudgetCardProps) {
+  const { t } = useTranslation();
   const isIncome = budget.type === BudgetType.INCOME;
-  const attribution = performerLabel(budget, currentUserId);
+  const attribution = usePerformerLabel(budget, currentUserId);
 
   return (
     <Link
@@ -44,7 +53,7 @@ export function PartnerBudgetCard({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="font-medium">
-            {isIncome ? "دریافت" : "پرداخت"}
+            {isIncome ? t("common.incomeShort") : t("common.paymentShort")}
             {budget.description ? ` · ${budget.description}` : ""}
           </p>
           <p className="mt-1 text-xs text-muted">

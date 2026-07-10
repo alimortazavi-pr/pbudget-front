@@ -61,9 +61,10 @@ export function AttachBudgetModal({
   onAttach,
   onAttachMultiple,
   selectionMode = "multiple",
-  attachLabel = "انتخاب",
+  attachLabel = "",
 }: AttachBudgetModalProps) {
   const { t } = useTranslation();
+  const resolvedAttachLabel = attachLabel || t("common.attachSelect");
   const multiSelect = selectionMode === "multiple";
   const categories = useAppSelector(categoriesSelector);
   const categoryOptions = getCategorySelectOptions(categories ?? []);
@@ -107,7 +108,7 @@ export function AttachBudgetModal({
   );
 
   const periodLabel = useMemo(() => {
-    if (duration === "all") return "همه تراکنش‌ها";
+    if (duration === "all") return t("common.allTransactions");
     if (duration === "yearly") return formatJalaliYear(year);
     return formatJalaliMonthYear(year, month);
   }, [duration, year, month]);
@@ -258,9 +259,9 @@ export function AttachBudgetModal({
             <div className="flex flex-wrap gap-2">
               {(
                 [
-                  { id: "monthly" as const, label: "ماهانه" },
-                  { id: "yearly" as const, label: "سالانه" },
-                  { id: "all" as const, label: "همه" },
+                  { id: "monthly" as const, label: t("common.monthly") },
+                  { id: "yearly" as const, label: t("common.yearly") },
+                  { id: "all" as const, label: t("common.all") },
                 ] as const
               ).map((item) => (
                 <button
@@ -301,11 +302,11 @@ export function AttachBudgetModal({
             )}
 
             <FormCategoryComboBox
-              label={t("دسته‌بندی")}
-              placeholder={t("همه دسته‌ها")}
+              label={t("common.category")}
+              placeholder={t("common.allCategories")}
               selectedKey={category || "all"}
               onSelectionChange={(key) => setCategory(key === "all" ? "" : key)}
-              options={[{ id: "all", label: "همه دسته‌ها" }, ...categoryOptions]}
+              options={[{ id: "all", label: t("common.allCategories") }, ...categoryOptions]}
             />
 
             <div className="relative">
@@ -315,7 +316,7 @@ export function AttachBudgetModal({
               />
               <Input
                 className="pr-10"
-                placeholder={t("جستجو در توضیحات یا دسته…")}
+                placeholder={t("common.searchEllipsis")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -324,23 +325,24 @@ export function AttachBudgetModal({
 
           <div ref={listRef} className={`${modalSheetBodyClass} min-h-0 flex-1`}>
             {loading ? (
-              <p className="py-8 text-center text-sm text-muted">{t("در حال بارگذاری…")}</p>
+              <p className="py-8 text-center text-sm text-muted">{t("common.loading")}</p>
             ) : budgets.length === 0 ? (
               <p className="rounded-xl bg-surface-secondary p-6 text-center text-sm text-muted">
-                تراکنشی برای این بازه پیدا نشد
+                {t("تراکنشی برای این بازه پیدا نشد")}
               </p>
             ) : (
               <div className="space-y-2">
                 <p className="text-xs text-muted">
                   {toPersianDigits(budgets.length)}
-                  {total > budgets.length ? ` از ${toPersianDigits(total)}` : ""} تراکنش
+                  {total > budgets.length ? ` ${t("dashboard.ofDuration")} ${toPersianDigits(total)}` : ""}{" "}
+                  {t("تراکنش")}
                 </p>
                 {budgets.map((budget) => {
                   const isIncome = budget.type === BudgetType.INCOME;
                   const categoryTitle =
                     typeof budget.category === "object" && budget.category
                       ? budget.category.title
-                      : "بدون دسته";
+                      : t("common.noCategory");
                   const isSelected = selectedIds.has(budget._id);
 
                   return (
@@ -391,11 +393,11 @@ export function AttachBudgetModal({
                 <div ref={sentinelRef} className="h-1" aria-hidden />
 
                 {loadingMore && (
-                  <p className="py-3 text-center text-xs text-muted">{t("بارگذاری بیشتر…")}</p>
+                  <p className="py-3 text-center text-xs text-muted">{t("auto.k0d33909087")}</p>
                 )}
 
                 {!hasMore && budgets.length > 0 && (
-                  <p className="py-2 text-center text-xs text-muted">{t("پایان لیست")}</p>
+                  <p className="py-2 text-center text-xs text-muted">{t("auto.k1d1b0a94cb")}</p>
                 )}
               </div>
             )}
@@ -403,7 +405,7 @@ export function AttachBudgetModal({
         </Modal.Body>
         <Modal.Footer className="border-t border-border/40">
           <Button variant="ghost" onPress={() => onOpenChange(false)}>
-            انصراف
+            {t("common.cancel")}
           </Button>
           <Button
             onPress={() => void handleConfirmSelection()}
@@ -412,11 +414,13 @@ export function AttachBudgetModal({
           >
             {selectedIds.size > 0
               ? multiSelect
-                ? `وصل کردن ${toPersianDigits(selectedIds.size)} تراکنش`
-                : attachLabel
+                ? t("وصل کردن {{count}} تراکنش", {
+                    count: toPersianDigits(selectedIds.size),
+                  })
+                : resolvedAttachLabel
               : multiSelect
-                ? "تراکنش انتخاب کنید"
-                : "یک تراکنش انتخاب کنید"}
+                ? t("تراکنش انتخاب کنید")
+                : t("یک تراکنش انتخاب کنید")}
           </Button>
         </Modal.Footer>
       </AppModalDialog>

@@ -7,7 +7,7 @@ import { TasksPage } from "@/components/pages/tasks/TasksPage";
 function TasksLoading() {
   const { t } = useTranslation();
   return (
-    <div className="p-6 text-center text-muted">{t("در حال بارگذاری…")}</div>
+    <div className="p-6 text-center text-muted">{t("common.loading")}</div>
   );
 }
 

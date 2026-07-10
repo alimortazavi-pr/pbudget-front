@@ -166,7 +166,7 @@ export function NotesPage() {
         setNoteDoc(note);
         lastSavedRef.current = serialized;
         if (!silent) {
-          showToast(t("ذخیره شد"), "success");
+          showToast(t("common.saved"), "success");
         }
       } catch (err) {
         showToast(err instanceof Error ? err.message : "خطا در ذخیره");
@@ -248,7 +248,7 @@ export function NotesPage() {
         });
         setCategories((prev) => [...prev, created]);
       }
-      showToast(t("ذخیره شد"), "success");
+      showToast(t("common.saved"), "success");
       setCategoryModalOpen(false);
       setCategoryTitle("");
       setEditCategory(null);
@@ -266,7 +266,7 @@ export function NotesPage() {
       if (categoryFilter === category._id) {
         setCategoryFilter();
       }
-      showToast(t("حذف شد"), "success");
+      showToast(t("common.deleted"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     }
@@ -287,7 +287,7 @@ export function NotesPage() {
       setNoteDoc(null);
       setLines(linesFromNote(null));
       lastSavedRef.current = "";
-      showToast(t("یادداشت پاک شد"), "success");
+      showToast(t("auto.k48eda39ee6"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     } finally {
@@ -304,8 +304,8 @@ export function NotesPage() {
   return (
     <div className="space-y-5 pb-6">
       <section className="rounded-3xl bg-gradient-to-br from-teal-600 to-emerald-600 p-5 text-white shadow-lg">
-        <p className="text-sm font-medium text-white/80">{t("یادداشت مالی")}</p>
-        <h1 className="mt-1 text-2xl font-bold">{t("یادداشت‌ها")}</h1>
+        <p className="text-sm font-medium text-white/80">{t("auto.k71b5e14613")}</p>
+        <h1 className="mt-1 text-2xl font-bold">{t("nav.notes")}</h1>
         <p className="mt-2 text-sm leading-7 text-white/80">
           متن آزاد و چک‌لیست در یک صفحه، با دسته‌بندی جدا از تراکنش.
         </p>
@@ -350,7 +350,7 @@ export function NotesPage() {
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Note size={18} className="text-accent" variant="Bold" />
-            <h2 className="font-semibold">{t("دسته‌بندی یادداشت")}</h2>
+            <h2 className="font-semibold">{t("auto.k5aa16e45c0")}</h2>
           </div>
           <Button size="sm" variant="secondary" onPress={() => openCategoryModal()}>
             <Add size={16} />
@@ -418,7 +418,7 @@ export function NotesPage() {
       </section>
 
       {loading ? (
-        <p className="text-center text-sm text-muted">{t("در حال بارگذاری…")}</p>
+        <p className="text-center text-sm text-muted">{t("common.loading")}</p>
       ) : !canEdit ? (
         <section className="space-y-4 rounded-2xl border border-border bg-surface p-4">
           <p className="text-sm leading-7 text-muted">
@@ -490,9 +490,9 @@ export function NotesPage() {
             </AppModalHeader>
             <Modal.Body>
               <TextField name="categoryTitle" isRequired>
-                <Label>{t("عنوان")}</Label>
+                <Label>{t("common.title")}</Label>
                 <Input
-                  placeholder={t("مثلاً: طلب و بدهی")}
+                  placeholder={t("auto.k008aa82c4f")}
                   value={categoryTitle}
                   onChange={(e) => setCategoryTitle(e.target.value)}
                 />

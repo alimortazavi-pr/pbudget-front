@@ -27,7 +27,7 @@ export function VoiceAssistantSection() {
             <span className="flex size-9 items-center justify-center rounded-xl bg-accent/15 text-accent">
               <Microphone2 size={20} variant="Bold" />
             </span>
-            <h2 className="text-lg font-bold">{t("دستیار صوتی")}</h2>
+            <h2 className="text-lg font-bold">{t("voice.title")}</h2>
           </div>
           <p className="mt-2 text-sm text-muted">
             دکمه شناور میکروفون در تمام صفحات — تراکنش، تسک، یادداشت،
@@ -38,7 +38,7 @@ export function VoiceAssistantSection() {
           isSelected={enabled}
           onChange={setEnabled}
           size="sm"
-          aria-label={t("نمایش دستیار صوتی")}
+          aria-label={t("auto.kcb5c1989db")}
         >
           <Switch.Control>
             <Switch.Thumb />

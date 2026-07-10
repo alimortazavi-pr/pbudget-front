@@ -94,8 +94,8 @@ export function ProjectsPage() {
   return (
     <div className="space-y-5 pb-6">
       <section className="rounded-3xl bg-gradient-to-br from-violet-600 to-indigo-600 p-5 text-white shadow-lg">
-        <p className="text-sm font-medium text-white/80">{t("مدیریت پروژه‌ها")}</p>
-        <h1 className="mt-1 text-2xl font-bold">{t("پروژه‌ها")}</h1>
+        <p className="text-sm font-medium text-white/80">{t("auto.k86ddef3a3c")}</p>
+        <h1 className="mt-1 text-2xl font-bold">{t("nav.projects")}</h1>
         <p className="mt-2 text-sm leading-7 text-white/80">
           مبلغ کل قرارداد، پرداخت‌های خرد و یادداشت‌های جلسه را در یک جا ببینید.
         </p>
@@ -104,17 +104,17 @@ export function ProjectsPage() {
       {projects.length > 0 && (
         <div className="grid gap-3 sm:grid-cols-3">
           <div className="glass rounded-2xl p-4">
-            <p className="text-sm text-muted">{t("مجموع قراردادها")}</p>
+            <p className="text-sm text-muted">{t("auto.k277c53ca60")}</p>
             <p className="mt-2 text-xl font-bold">{formatPrice(summary.total)}</p>
           </div>
           <div className="glass rounded-2xl p-4">
-            <p className="text-sm text-muted">{t("دریافت‌شده")}</p>
+            <p className="text-sm text-muted">{t("auto.kc95929267d")}</p>
             <p className="mt-2 text-xl font-bold text-income">
               {formatPrice(summary.received)}
             </p>
           </div>
           <div className="glass rounded-2xl p-4">
-            <p className="text-sm text-muted">{t("باقی‌مانده")}</p>
+            <p className="text-sm text-muted">{t("debts.remaining")}</p>
             <p className="mt-2 text-xl font-bold text-expense">
               {formatPrice(summary.remaining)}
             </p>
@@ -143,11 +143,11 @@ export function ProjectsPage() {
       </div>
 
       {loading ? (
-        <div className="glass rounded-2xl p-10 text-center text-muted">{t("در حال بارگذاری…")}</div>
+        <div className="glass rounded-2xl p-10 text-center text-muted">{t("common.loading")}</div>
       ) : visibleProjects.length === 0 ? (
         <div className="glass rounded-2xl p-10 text-center">
           <Briefcase size={40} className="mx-auto mb-3 text-muted" />
-          <p className="text-muted">{t("هنوز پروژه‌ای ثبت نشده")}</p>
+          <p className="text-muted">{t("auto.kf26286709b")}</p>
           <Button className="mt-4" onPress={() => setCreateOpen(true)}>
             <Add size={18} />
             اولین پروژه
@@ -223,7 +223,7 @@ export function ProjectsPage() {
 
                 <div className="mt-3">
                   <div className="mb-1 flex justify-between text-xs text-muted">
-                    <span>{t("پیشرفت دریافت")}</span>
+                    <span>{t("auto.k033ab31f95")}</span>
                     <span>{Math.round(progress)}٪</span>
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-surface-secondary">

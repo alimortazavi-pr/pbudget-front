@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation, useLanguage } from "@/components/providers/LanguageProvider";
 
 import { useEffect } from "react";
 import DateObject from "react-date-object";
@@ -35,7 +35,9 @@ export function FilterDatePicker({
   hideHint,
   inModal = false,
   calendarType = "jalali",
-}: FilterDatePickerProps) {  const { t } = useTranslation();
+}: FilterDatePickerProps) {
+  const { t } = useTranslation();
+  const { language } = useLanguage();
 
   const {
     wrapperRef,
@@ -86,8 +88,8 @@ export function FilterDatePicker({
       {!hideHint && (
         <p className="text-xs leading-5 text-muted">
           {isGregorian
-            ? "تقویم میلادی — تاریخ تراکنش به‌صورت سال/ماه/روز میلادی ذخیره می‌شود"
-            : "اگر تاریخ را در حالت ماهانه قرار داده باشید روز تاریخ محاسبه نمی‌شود"}
+            ? t("dashboard.gregorianDateHint")
+            : t("dashboard.monthlyDateHint")}
         </p>
       )}
       <DatePicker
@@ -110,7 +112,11 @@ export function FilterDatePicker({
         offsetY={inModal ? 8 : undefined}
         containerClassName="w-full"
         inputClass="pb-form-date-input"
-        placeholder={isGregorian ? "Gregorian date" : "تاریخ"}
+        placeholder={
+          isGregorian
+            ? t("dashboard.gregorianDatePlaceholder")
+            : t("dashboard.datePlaceholder")
+        }
       />
     </div>
   );

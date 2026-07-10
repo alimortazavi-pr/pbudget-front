@@ -15,7 +15,7 @@ import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
 import { userSelector } from "@/stores/profile";
-import { currencyLabel } from "@/common/constants/user-preferences";
+import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 
 type PayOccurrenceModalProps = {
   occurrence: IPaymentPlanOccurrence | null;
@@ -31,6 +31,7 @@ export function PayOccurrenceModal({
   onPaid,
 }: PayOccurrenceModalProps) {
   const { t } = useTranslation();
+  const { currencyLabel } = useCurrencyLabels();
   const user = useAppSelector(userSelector);
   const preferredCurrency = user?.preferences?.currency ?? "toman";
   const categories = useAppSelector(categoriesSelector);
@@ -51,7 +52,7 @@ export function PayOccurrenceModal({
 
   async function handleSubmit() {
     if (!occurrence || !category) {
-      showToast(t("دسته‌بندی الزامی است"));
+      showToast(t("auto.k23b386cfec"));
       return;
     }
 
@@ -65,7 +66,7 @@ export function PayOccurrenceModal({
         day: String(now.jDate()),
         note,
       });
-      showToast(t("پرداخت ثبت و تراکنش ساخته شد"), "success");
+      showToast(t("auto.kb92d05c117"), "success");
       onPaid();
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
@@ -91,8 +92,8 @@ export function PayOccurrenceModal({
           <FormPriceInput label={`مبلغ (${currencyLabel(preferredCurrency)})`} value={amount} onChange={setAmount} />
 
           <FormCategoryComboBox
-            label={t("دسته‌بندی")}
-            placeholder={t("جستجو یا انتخاب دسته‌بندی")}
+            label={t("auto.kb561a47a9b")}
+            placeholder={t("common.searchCategoryPlaceholder")}
             selectedKey={category || undefined}
             onSelectionChange={(key) => setCategory(key)}
             options={categoryOptions}
@@ -100,8 +101,8 @@ export function PayOccurrenceModal({
           />
 
           <FormTextArea
-            label={t("یادداشت این پرداخت")}
-            placeholder={t("مثلاً از کارت بانک X پرداخت شد")}
+            label={t("auto.k1a27826525")}
+            placeholder={t("auto.kc2edacde6d")}
             value={note}
             onChange={(e) => setNote(e.target.value)}
           />

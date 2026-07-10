@@ -74,7 +74,7 @@ export function VentureBudgetSection({
     setAttachingId(budgetId);
     try {
       await partnersApi.attachVentureBudget(ventureId, budgetId);
-      showToast(t("تراکنش وصل شد"), "success");
+      showToast(t("auto.k8d4d55dab7"), "success");
       setAttachOpen(false);
       await load();
     } catch (err) {
@@ -88,7 +88,7 @@ export function VentureBudgetSection({
     <section className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h2 className="text-lg font-bold">{t("تراکنش‌های کسب‌وکار")}</h2>
+          <h2 className="text-lg font-bold">{t("auto.k25af44580b")}</h2>
           <p className="mt-1 text-sm text-muted">
             تراکنش‌های وصل‌شده برای محاسبه تسویه مالی
           </p>
@@ -132,14 +132,14 @@ export function VentureBudgetSection({
       <AppModal open={attachOpen} onOpenChange={setAttachOpen}>
         <AppModalDialog className="flex max-h-[min(90dvh,640px)] max-w-lg flex-col overflow-hidden">
           <AppModalHeader onClose={() => setAttachOpen(false)}>
-            <Modal.Heading>{t("وصل کردن تراکنش")}</Modal.Heading>
+            <Modal.Heading>{t("auto.kd4b3befc1f")}</Modal.Heading>
             <p className="mt-1 text-sm text-muted">
               تراکنش‌های آزاد را به این کسب‌وکار وصل کنید
             </p>
           </AppModalHeader>
           <Modal.Body className={`${modalSheetBodyClass} space-y-2`}>
             {candidatesLoading ? (
-              <p className="py-8 text-center text-sm text-muted">{t("در حال بارگذاری…")}</p>
+              <p className="py-8 text-center text-sm text-muted">{t("common.loading")}</p>
             ) : candidates.length === 0 ? (
               <p className="py-8 text-center text-sm text-muted">
                 تراکنش آزادی برای وصل کردن نیست

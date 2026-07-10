@@ -47,17 +47,17 @@ export function ChangeMobileModal({
 
   async function requestCode() {
     if (!telegramLinked) {
-      showToast(t("ابتدا تلگرام را از پروفایل وصل کنید"));
+      showToast(t("auto.k5991535a7b"));
       return;
     }
 
     const normalized = toEnglishDigits(mobile.trim());
     if (!/^09\d{9}$/.test(normalized)) {
-      showToast(t("شماره موبایل معتبر نیست"));
+      showToast(t("auto.ke5ea291b1e"));
       return;
     }
     if (normalized === currentMobile) {
-      showToast(t("شماره واردشده همان شماره فعلی شماست"));
+      showToast(t("auto.kd698f15913"));
       return;
     }
 
@@ -66,7 +66,7 @@ export function ChangeMobileModal({
       await authApi.requestCode(normalized);
       setMobile(normalized);
       setCodeSent(true);
-      showToast(t("کد تأیید به تلگرام ارسال شد"), "success");
+      showToast(t("auto.k7d82e2b7f5"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     } finally {
@@ -77,7 +77,7 @@ export function ChangeMobileModal({
   async function submit(e?: FormEvent) {
     e?.preventDefault();
     if (!telegramLinked) {
-      showToast(t("ابتدا تلگرام را وصل کنید"));
+      showToast(t("auto.k09e4ad52ec"));
       return;
     }
     if (!codeSent) {
@@ -98,10 +98,10 @@ export function ChangeMobileModal({
       );
       dispatch(setUsers(nextUsers));
       saveDataToLocal({ token: newToken, users: nextUsers });
-      showToast(t("شماره موبایل تغییر کرد"), "success");
+      showToast(t("auto.kdb5b306d40"), "success");
       onOpenChange(false);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     } finally {
       setLoading(false);
     }
@@ -112,17 +112,16 @@ export function ChangeMobileModal({
       <AppModalSheet>
         <form onSubmit={(e) => void submit(e)} className={modalSheetFormClass}>
           <AppModalHeader onClose={() => onOpenChange(false)}>
-            <Modal.Heading>{t("تغییر شماره موبایل")}</Modal.Heading>
+            <Modal.Heading>{t("auto.kd4d234a99e")}</Modal.Heading>
           </AppModalHeader>
           <Modal.Body className={`${modalSheetBodyClass} space-y-4`}>
             {!telegramLinked ? (
               <p className="rounded-xl bg-surface-secondary px-3 py-2 text-sm leading-7 text-muted">
-                تغییر شماره با کد فقط وقتی فعال است که تلگرام وصل باشد. کد به
-                تلگرام شما ارسال می‌شود.
+                {t("common.changeMobileTelegramHint")}
               </p>
             ) : null}
             <FormInput
-              label={t("شماره موبایل جدید")}
+              label={t("auto.k57b15c0a5d")}
               inputMode="tel"
               value={mobile}
               onChange={(e) => setMobile(e.target.value)}
@@ -131,7 +130,7 @@ export function ChangeMobileModal({
             />
             {codeSent ? (
               <>
-                <OtpCodeField label={t("کد تأیید تلگرام")} value={code} onChange={setCode} />
+                <OtpCodeField label={t("auto.k4713c59240")} value={code} onChange={setCode} />
                 <div className="flex justify-end">
                   <Button
                     type="button"
@@ -140,7 +139,7 @@ export function ChangeMobileModal({
                     isPending={loading}
                     onPress={() => void requestCode()}
                   >
-                    ارسال مجدد به تلگرام
+                    {t("common.resendToTelegram")}
                   </Button>
                 </div>
               </>
@@ -148,14 +147,14 @@ export function ChangeMobileModal({
           </Modal.Body>
           <Modal.Footer className={modalSheetFooterClass}>
             <Button type="button" variant="ghost" onPress={() => onOpenChange(false)}>
-              بستن
+              {t("common.close")}
             </Button>
             <Button
               type="submit"
               isPending={loading}
               isDisabled={!telegramLinked}
             >
-              {codeSent ? "تغییر شماره موبایل" : "درخواست کد در تلگرام"}
+              {codeSent ? t("auto.kd95391891a") : t("common.requestCodeViaTelegram")}
             </Button>
           </Modal.Footer>
         </form>

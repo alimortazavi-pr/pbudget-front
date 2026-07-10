@@ -34,9 +34,9 @@ export function ExperienceModeSection() {
   return (
     <div className="glass space-y-4 rounded-2xl p-5">
       <div>
-        <h2 className="text-lg font-bold">{t("حالت نمایش")}</h2>
+        <h2 className="text-lg font-bold">{t("common.displayMode")}</h2>
         <p className="mt-1 text-sm text-muted">
-          معماری و دیزاین کل سایت را عوض کن — کلاسیک همان پنل فعلی است
+          {t("common.displayModeDesc")}
         </p>
       </div>
 

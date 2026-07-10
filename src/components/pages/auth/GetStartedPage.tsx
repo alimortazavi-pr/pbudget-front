@@ -178,7 +178,7 @@ export function GetStartedPage() {
   async function handleRegister(e?: FormEvent) {
     e?.preventDefault();
     if (password.trim().length < 6) {
-      showToast(t("رمز عبور حداقل ۶ کاراکتر"));
+      showToast(t("auto.k19c70f8d7e"));
       return;
     }
     setLoading(true);
@@ -200,7 +200,7 @@ export function GetStartedPage() {
   async function requestCode() {
     try {
       await authApi.requestCode(mobile);
-      showToast(t("کد به تلگرام ارسال شد"), "success");
+      showToast(t("auto.kf00a557956"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     }
@@ -277,10 +277,10 @@ export function GetStartedPage() {
                     {step === "mobile" ? (
                       <form className="mt-10 space-y-7" onSubmit={(e) => void handleMobile(e)}>
                         <FormInput
-                          label={t("شماره موبایل")}
+                          label={t("auto.k1d0204302f")}
                           type="tel"
                           inputMode="tel"
-                          placeholder={t("۰۹۱۲۳۴۵۶۷۸۹")}
+                          placeholder={t("auto.k31b5be1e8a")}
                           value={mobile}
                           onChange={(e) => { setMobile(e.target.value); setError(""); }}
                           aria-invalid={Boolean(error)}
@@ -300,10 +300,10 @@ export function GetStartedPage() {
                             حساب شما از قبل ساخته شده — فقط رمز عبور را تکمیل کنید.
                           </p>
                         ) : null}
-                        <FormInput label={t("نام")} value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-                        <FormInput label={t("نام خانوادگی")} value={lastName} onChange={(e) => setLastName(e.target.value)} />
-                        <FormInput label={t("موبایل")} value={mobile} readOnly />
-                        <FormInput label={t("رمز عبور")} type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                        <FormInput label={t("common.name")} value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                        <FormInput label={t("auto.k342616c4fb")} value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                        <FormInput label={t("common.mobile")} value={mobile} readOnly />
+                        <FormInput label={t("common.password")} type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
                         <Button type="submit" size="lg" className="w-full" isPending={loading}>
                           {needsPasswordSetup ? "تکمیل و ورود" : "ثبت‌نام"}
                         </Button>
@@ -312,12 +312,12 @@ export function GetStartedPage() {
 
                     {step === "signin" ? (
                       <form className="mt-10 space-y-6" onSubmit={(e) => void handleSignIn(e)}>
-                        <FormInput label={t("موبایل")} value={mobile} readOnly />
+                        <FormInput label={t("common.mobile")} value={mobile} readOnly />
                         {usePassword ? (
-                          <FormInput label={t("رمز عبور")} type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                          <FormInput label={t("common.password")} type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
                         ) : (
                           <>
-                            <OtpCodeField label={t("کد تلگرام")} value={code} onChange={setCode} />
+                            <OtpCodeField label={t("auto.ka8ac5bb350")} value={code} onChange={setCode} />
                             <Button type="button" variant="secondary" className="w-full" onPress={() => void requestCode()}>
                               <Sms size={16} />
                               ارسال کد به تلگرام

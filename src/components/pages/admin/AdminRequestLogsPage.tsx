@@ -100,7 +100,7 @@ export function AdminRequestLogsPage() {
       setTotalPages(data.pagination.totalPages);
       setTotal(data.pagination.total);
     } catch {
-      showToast(t("بارگذاری لاگ‌ها ناموفق بود"), "danger");
+      showToast(t("auto.k49b54a8f04"), "danger");
     } finally {
       setLoading(false);
     }
@@ -114,7 +114,7 @@ export function AdminRequestLogsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h3 className="text-lg font-bold">{t("لاگ سیستم")}</h3>
+          <h3 className="text-lg font-bold">{t("auto.k75a1ca17c7")}</h3>
           <p className="mt-1 text-sm text-muted">
             ثبت تمام درخواست‌های API — چه کسی چه مسیری را صدا زده و با چه
             نتیجه‌ای
@@ -137,7 +137,7 @@ export function AdminRequestLogsPage() {
             <input
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder={t("جستجو در مسیر، کاربر، خطا…")}
+              placeholder={t("auto.ka34ffb4aeb")}
               className="w-full rounded-xl border border-border bg-surface px-10 py-2.5 text-sm outline-none focus:border-accent"
             />
           </div>
@@ -184,12 +184,12 @@ export function AdminRequestLogsPage() {
           <table className="min-w-full text-sm">
             <thead className="bg-surface-secondary/70 text-muted">
               <tr>
-                <th className="px-4 py-3 text-start font-medium">{t("زمان")}</th>
-                <th className="px-4 py-3 text-start font-medium">{t("کاربر")}</th>
-                <th className="px-4 py-3 text-start font-medium">{t("متد")}</th>
-                <th className="px-4 py-3 text-start font-medium">{t("مسیر")}</th>
-                <th className="px-4 py-3 text-start font-medium">{t("وضعیت")}</th>
-                <th className="px-4 py-3 text-start font-medium">{t("مدت")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.k299c8c9aa7")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.k883da9f030")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.k9c7525a1d8")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.k361e11301d")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.k2f3c6cf127")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.kfee7ec99a8")}</th>
                 <th className="px-4 py-3 text-start font-medium">IP</th>
                 <th className="px-4 py-3 text-start font-medium" />
               </tr>

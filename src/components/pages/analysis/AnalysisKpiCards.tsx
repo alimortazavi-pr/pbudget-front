@@ -85,13 +85,13 @@ export function AnalysisKpiCards({ report }: AnalysisKpiCardsProps) {
   return (
     <section className="grid grid-cols-2 gap-3 lg:grid-cols-4 xl:grid-cols-4">
       <KpiCard
-        title={t("موجودی حساب")}
+        title={t("auto.k1a6ef51534")}
         value={formatPrice(summary.userBalance)}
         suffix="تومان"
         icon={<Wallet2 size={20} variant="Bold" />}
       />
       <KpiCard
-        title={t("درآمد دوره")}
+        title={t("auto.k8dc3b9a771")}
         value={formatPrice(summary.income)}
         suffix="تومان"
         icon={<ArrowUp size={20} variant="Bold" />}
@@ -99,7 +99,7 @@ export function AnalysisKpiCards({ report }: AnalysisKpiCardsProps) {
         tone="income"
       />
       <KpiCard
-        title={t("هزینه دوره")}
+        title={t("auto.kbd6109e27e")}
         value={formatPrice(summary.cost)}
         suffix="تومان"
         icon={<ArrowDown size={20} variant="Bold" />}
@@ -107,7 +107,7 @@ export function AnalysisKpiCards({ report }: AnalysisKpiCardsProps) {
         tone="cost"
       />
       <KpiCard
-        title={t("خالص دوره")}
+        title={t("auto.k35b908d245")}
         value={formatPrice(summary.net)}
         suffix="تومان"
         icon={<ArrowSwapHorizontal size={20} variant="Bold" />}
@@ -115,24 +115,24 @@ export function AnalysisKpiCards({ report }: AnalysisKpiCardsProps) {
         tone="net"
       />
       <KpiCard
-        title={t("نرخ پس‌انداز")}
+        title={t("auto.kb784dfefb5")}
         value={toPersianDigits(summary.savingsRate.toFixed(1))}
         suffix="٪"
         icon={<PercentageCircle size={20} variant="Bold" />}
       />
       <KpiCard
-        title={t("تعداد تراکنش")}
+        title={t("auto.k4af4c17de7")}
         value={toPersianDigits(summary.transactionCount)}
         icon={<Chart size={20} variant="Bold" />}
       />
       <KpiCard
-        title={t("میانگین هزینه روزانه")}
+        title={t("auto.k05b0a3e75c")}
         value={formatPrice(Math.round(summary.avgDailyCost))}
         suffix="تومان"
         icon={<Coin1 size={20} variant="Bold" />}
       />
       <KpiCard
-        title={t("ارزش کل نقدی")}
+        title={t("auto.k76d12f4b06")}
         value={formatPrice(summary.netWorth)}
         suffix="تومان"
         icon={<Wallet2 size={20} variant="Bold" />}

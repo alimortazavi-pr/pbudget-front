@@ -52,7 +52,7 @@ export function PartnerInvitePage({ token }: PartnerInvitePageProps) {
     setActing(true);
     try {
       await partnersApi.acceptPartnerInvite(token);
-      showToast(t("دعوت تأیید شد"), "success");
+      showToast(t("auto.k833c338585"), "success");
       router.push(
         contextType === "project" ? PATHS.PROJECTS : PATHS.VENTURES,
       );
@@ -67,7 +67,7 @@ export function PartnerInvitePage({ token }: PartnerInvitePageProps) {
     setActing(true);
     try {
       await partnersApi.declinePartnerInvite(token);
-      showToast(t("دعوت رد شد"));
+      showToast(t("auto.kbaa8f3b1c7"));
       router.push(PATHS.HOME);
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
@@ -89,7 +89,7 @@ export function PartnerInvitePage({ token }: PartnerInvitePageProps) {
       <div className="mx-auto max-w-md space-y-4 py-16 text-center">
         <p className="text-danger">{error ?? "دعوت یافت نشد"}</p>
         <Link href={PATHS.HOME}>
-          <Button variant="secondary">{t("بازگشت به خانه")}</Button>
+          <Button variant="secondary">{t("common.backToHome")}</Button>
         </Link>
       </div>
     );
@@ -110,7 +110,7 @@ export function PartnerInvitePage({ token }: PartnerInvitePageProps) {
   return (
     <div className="mx-auto max-w-md space-y-5 py-8">
       <section className="glass rounded-3xl p-6 text-center">
-        <p className="text-sm text-muted">{t("دعوت همکاری")}</p>
+        <p className="text-sm text-muted">{t("auto.kaed62bd3e2")}</p>
         <h1 className="mt-2 text-2xl font-bold">{invite.contextTitle}</h1>
         <p className="mt-3 text-sm leading-7 text-muted">
           <span className="font-medium text-foreground">{invite.ownerName}</span>{" "}

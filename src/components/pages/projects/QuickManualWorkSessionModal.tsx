@@ -54,11 +54,11 @@ export function QuickManualWorkSessionModal({
   return (
     <AppModal open={open} onOpenChange={onOpenChange}>
       <AppModalDialog>
-        <AppModalHeader>{t("ثبت دستی ساعت")}</AppModalHeader>
+        <AppModalHeader>{t("auto.k874bd0048a")}</AppModalHeader>
         <div className="space-y-2 p-4">
-          <p className="text-sm text-muted">{t("پروژه را انتخاب کنید:")}</p>
+          <p className="text-sm text-muted">{t("auto.k723423f3e7")}</p>
           {projects.length === 0 ? (
-            <p className="text-sm text-muted">{t("پروژه‌ای با ثبت ساعت فعال نیست.")}</p>
+            <p className="text-sm text-muted">{t("auto.k4f4cb60647")}</p>
           ) : (
             projects.map((project) => (
               <Button

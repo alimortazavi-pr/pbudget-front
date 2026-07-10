@@ -20,11 +20,11 @@ import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
 import { getJalaliNow, normalizeJalaliPart, toEnglishDigits, formatPrice, getNowDateParts } from "@/common/utils";
 import { formatPriceWithCurrency } from "@/common/utils/format-currency";
 import {
-  currencyLabel,
   DEFAULT_USER_PREFERENCES,
   resolveBudgetCurrency,
   resolveBudgetDateCalendar,
 } from "@/common/constants/user-preferences";
+import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { mergeProfileWallet } from "@/common/utils/wallet-balances";
 import { showErrorToast, showToast } from "@/common/utils/toast";
@@ -85,6 +85,7 @@ function buildMoreHint(parts: string[]) {
 
 export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   const { t } = useTranslation();
+  const { currencyLabel } = useCurrencyLabels();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const user = useAppSelector(userSelector);
@@ -298,7 +299,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
 
     if (needsPreferencesOnboarding && !user?.preferences?.configured) {
       setPrefsModalOpen(true);
-      showToast(t("ابتدا نوع ارز و تاریخ را انتخاب کنید"));
+      showToast(t("auto.k5e9c511366"));
       return;
     }
 
@@ -323,20 +324,20 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
     }
 
     if (ventureLedger.enabled && projectBlockedForVenture) {
-      showToast(t("تراکنش نمی‌تواند هم‌زمان به پروژه و کسب‌وکار مشترک وصل شود"));
+      showToast(t("auto.k5b91c2c10b"));
       return;
     }
 
     if (ventureLedger.enabled && !existingVentureId) {
       if (!ventureLedger.ventureId) {
         setMoreOpen(true);
-        showToast(t("کسب‌وکار مورد نظر را انتخاب کنید"));
+        showToast(t("auto.ka4a8534355"));
         return;
       }
     }
 
     if (!payload.price || !payload.category || !payload.year || !payload.month || !payload.day) {
-      showToast(t("مبلغ، دسته‌بندی و تاریخ الزامی است"));
+      showToast(t("auto.kae3c7316cd"));
       return;
     }
 
@@ -345,12 +346,12 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
     if (debtLedger.enabled && canAttachDebt) {
       if (debtLedger.mode === "create" && !debtLedger.person.trim()) {
         setMoreOpen(true);
-        showToast(t("نام طرف حساب الزامی است"));
+        showToast(t("auto.ka7190d81dc"));
         return;
       }
       if (isSettleDebtMode(debtLedger.mode) && !debtLedger.settleDebtId) {
         setMoreOpen(true);
-        showToast(t("طلب یا بدهی مورد نظر را انتخاب کنید"));
+        showToast(t("auto.k55cf141e8e"));
         return;
       }
     }
@@ -373,16 +374,16 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
               person: debtLedger.person.trim(),
               amount: toEnglishDigits(price),
             });
-            showToast(t("تراکنش ویرایش و طلب/بدهی ثبت شد"), "success");
+            showToast(t("auto.k0771d7584c"), "success");
           } else {
             await debtsApi.settleDebt(debtLedger.settleDebtId, {
               budgetId: budget._id,
               amount: toEnglishDigits(price),
             });
-            showToast(t("تراکنش ویرایش و طلب/بدهی تسویه شد"), "success");
+            showToast(t("auto.k3cfdaf1315"), "success");
           }
         } else {
-          showToast(t("تراکنش ویرایش شد"), "success");
+          showToast(t("auto.ka1c79727b7"), "success");
         }
       } else {
         const res = await budgetsApi.createBudget(payload);
@@ -397,16 +398,16 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
               person: debtLedger.person.trim(),
               amount: toEnglishDigits(price),
             });
-            showToast(t("تراکنش و طلب/بدهی ثبت شد"), "success");
+            showToast(t("auto.kd0a4241bd6"), "success");
           } else {
             await debtsApi.settleDebt(debtLedger.settleDebtId, {
               budgetId: res.budget._id,
               amount: toEnglishDigits(price),
             });
-            showToast(t("تراکنش ثبت و طلب/بدهی تسویه شد"), "success");
+            showToast(t("auto.kaafb9fefce"), "success");
           }
         } else {
-          showToast(t("تراکنش ثبت شد"), "success");
+          showToast(t("auto.k99542d84e0"), "success");
         }
       }
 
@@ -524,8 +525,8 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
           />
 
           <FormCategoryComboBox
-            label={t("دسته‌بندی")}
-            placeholder={t("جستجو یا انتخاب دسته‌بندی")}
+            label={t("auto.kb561a47a9b")}
+            placeholder={t("common.searchCategoryPlaceholder")}
             selectedKey={category || undefined}
             onSelectionChange={(key) => setCategory(key)}
             options={categoryOptions}
@@ -545,7 +546,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
           ) : null}
 
           <FormTextArea
-            label={t("توضیحات")}
+            label={t("common.description")}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
@@ -564,7 +565,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
                     ? "کارت پرداخت (مبدا)"
                     : "کارت دریافت (مقصد)"
                 }
-                placeholder={t("بدون کارت")}
+                placeholder={t("auto.k33fcba0b6e")}
                 selectedKey={paymentCardId || "none"}
                 onSelectionChange={(key) =>
                   setPaymentCardId(key === "none" ? "" : key)

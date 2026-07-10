@@ -99,7 +99,7 @@ export function WorkTimeAnalysisCharts({
         </h3>
         <p className="mb-4 text-sm text-muted">{report.periodLabel}</p>
         {weeklyData.length === 0 ? (
-          <p className="py-8 text-center text-sm text-muted">{t("داده‌ای برای نمودار نیست")}</p>
+          <p className="py-8 text-center text-sm text-muted">{t("auto.k94f3193c70")}</p>
         ) : (
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -120,10 +120,10 @@ export function WorkTimeAnalysisCharts({
 
       {!isProjectScope ? (
         <section className="glass rounded-2xl p-4 lg:p-5">
-          <h3 className="font-bold">{t("ساعت کار به تفکیک پروژه")}</h3>
-          <p className="mb-4 text-sm text-muted">{t("کارکرد در مقابل هدف (ساعت)")}</p>
+          <h3 className="font-bold">{t("auto.kb48f1768df")}</h3>
+          <p className="mb-4 text-sm text-muted">{t("auto.kfa0cc779ea")}</p>
           {projectHoursData.length === 0 ? (
-            <p className="py-8 text-center text-sm text-muted">{t("هنوز ساعتی ثبت نشده")}</p>
+            <p className="py-8 text-center text-sm text-muted">{t("auto.kbce314df94")}</p>
           ) : (
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">

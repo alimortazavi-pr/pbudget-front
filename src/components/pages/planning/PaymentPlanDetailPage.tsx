@@ -108,7 +108,7 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
 
   async function saveOverview() {
     if (!title.trim()) {
-      showToast(t("عنوان الزامی است"));
+      showToast(t("auto.kc684d17ce8"));
       return;
     }
 
@@ -126,7 +126,7 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
       setData((current) =>
         current ? { ...current, plan: { ...current.plan, ...updated } } : current,
       );
-      showToast(t("ذخیره شد"), "success");
+      showToast(t("common.saved"), "success");
       await load();
     } catch (err) {
       showErrorToast(err);
@@ -147,7 +147,7 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
     setDeleting(true);
     try {
       await paymentPlansApi.deletePaymentPlan(planId);
-      showToast(t("برنامه حذف شد"), "success");
+      showToast(t("auto.k499a5b8b80"), "success");
       router.push(PATHS.INSTALLMENTS);
     } catch (err) {
       showErrorToast(err, "خطا در حذف");
@@ -159,7 +159,7 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
   async function skipOccurrence(item: IPaymentPlanOccurrence) {
     try {
       await paymentPlansApi.skipOccurrence(item._id);
-      showToast(t("قسط رد شد"), "success");
+      showToast(t("auto.kaa8a79d7df"), "success");
       await load();
     } catch (err) {
       showErrorToast(err);
@@ -168,7 +168,7 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
 
   if (loading || !data) {
     return (
-      <div className="glass rounded-2xl p-10 text-center text-muted">{t("در حال بارگذاری…")}</div>
+      <div className="glass rounded-2xl p-10 text-center text-muted">{t("common.loading")}</div>
     );
   }
 
@@ -179,7 +179,7 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
       <section className="glass rounded-3xl p-5">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-sm text-muted">{t("برنامه پرداخت")}</p>
+            <p className="text-sm text-muted">{t("auto.k2234933fad")}</p>
             <h1 className="mt-1 text-2xl font-bold">{plan.title}</h1>
             {plan.person ? (
               <p className="mt-1 text-sm text-muted">{plan.person}</p>
@@ -204,19 +204,19 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
 
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
           <div className="rounded-xl bg-surface-secondary p-3">
-            <p className="text-xs text-muted">{t("مبلغ هر قسط")}</p>
+            <p className="text-xs text-muted">{t("auto.k76fecf8c03")}</p>
             <p className="mt-1 font-bold">{formatPrice(plan.amount)}</p>
           </div>
           <div className="rounded-xl bg-income-soft/50 p-3">
-            <p className="text-xs text-muted">{t("پرداخت‌شده")}</p>
+            <p className="text-xs text-muted">{t("auto.k4db2de0c95")}</p>
             <p className="mt-1 font-bold text-income">{formatPrice(paidAmount)}</p>
           </div>
           <div className="rounded-xl bg-expense-soft/50 p-3">
-            <p className="text-xs text-muted">{t("باقی‌مانده")}</p>
+            <p className="text-xs text-muted">{t("debts.remaining")}</p>
             <p className="mt-1 font-bold text-expense">{formatPrice(pendingAmount)}</p>
           </div>
           <div className="rounded-xl bg-surface-secondary p-3">
-            <p className="text-xs text-muted">{t("اقساط")}</p>
+            <p className="text-xs text-muted">{t("nav.installments")}</p>
             <p className="mt-1 font-bold">
               {plan.totalInstallments
                 ? `${formatCount(plan.completedInstallments)}/${formatCount(plan.totalInstallments)}`
@@ -227,7 +227,7 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
 
         <div className="mt-4">
           <div className="mb-1 flex justify-between text-xs text-muted">
-            <span>{t("پیشرفت پرداخت")}</span>
+            <span>{t("auto.k28e53343c5")}</span>
             <span>
               {Math.round(progress)}٪ · روز {plan.dueDayOfMonth} هر ماه
             </span>
@@ -267,35 +267,35 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
       {tab === "overview" && (
         <div className="glass space-y-4 rounded-2xl p-4">
           <FormInput
-            label={t("عنوان")}
+            label={t("common.title")}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
           <FormPersonComboBox
-            label={t("شخص / طرف حساب")}
+            label={t("auto.k27a778910e")}
             value={person}
             onChange={setPerson}
             options={persons}
           />
-          <FormPriceInput label={t("مبلغ هر قسط")} value={amount} onChange={setAmount} />
+          <FormPriceInput label={t("auto.k76fecf8c03")} value={amount} onChange={setAmount} />
           <FormCategoryComboBox
-            label={t("دسته")}
+            label={t("auto.k32034c98af")}
             selectedKey={category || undefined}
             onSelectionChange={(key) => setCategory(key)}
             options={categoryOptions}
           />
           <FormInput
-            label={t("روز سررسید (۱–۳۱)")}
+            label={t("auto.k3ea7c5f3b4")}
             value={dueDayOfMonth}
             onChange={(e) => setDueDayOfMonth(e.target.value)}
           />
           <FormTextArea
-            label={t("توضیحات")}
+            label={t("common.description")}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
           <div className="flex items-center justify-between rounded-xl bg-surface-secondary px-3 py-2">
-            <span className="text-sm">{t("برنامه فعال باشد")}</span>
+            <span className="text-sm">{t("auto.k9668f460cf")}</span>
             <Switch isSelected={active} onChange={setActive} size="sm">
               <Switch.Control>
                 <Switch.Thumb />
@@ -308,7 +308,7 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
           </Button>
 
           <section className="rounded-2xl border border-dashed border-danger/35 bg-danger/5 p-4">
-            <p className="text-sm font-medium text-danger">{t("منطقه خطر")}</p>
+            <p className="text-sm font-medium text-danger">{t("common.dangerZone")}</p>
             <p className="mt-1 text-xs leading-6 text-muted">
               با حذف برنامه، اقساط در انتظار حذف می‌شوند؛ تراکنش‌های ثبت‌شده از پرداخت اقساط باقی
               می‌مانند.
@@ -373,8 +373,8 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
                       پرداخت شد
                     </Button>
                     <AttachBudgetButton
-                      title={t("وصل تراکنش")}
-                      description={t("یک تراکنش پرداختی قبلی را به این قسط وصل کنید.")}
+                      title={t("auto.k601e74383b")}
+                      description={t("auto.k3d1d0337c0")}
                       context={{ type: "occurrence", contextId: planId }}
                       selectionMode="single"
                       onAttach={async (budgetId) => {

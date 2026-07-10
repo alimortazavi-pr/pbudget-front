@@ -171,7 +171,7 @@ export function AdminDashboardPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h3 className="text-lg font-bold">{t("نمای کلی سیستم")}</h3>
+          <h3 className="text-lg font-bold">{t("auto.k3a7b1b4d58")}</h3>
           <p className="text-sm text-muted">
             آمار لحظه‌ای کاربران، تراکنش‌ها و دیتابیس
           </p>
@@ -181,27 +181,27 @@ export function AdminDashboardPage() {
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard
-          title={t("کل کاربران")}
+          title={t("auto.k81289a2cf6")}
           value={toPersianDigits(overview.users.total)}
           subtitle={`${toPersianDigits(overview.users.newThisMonth)} کاربر جدید این ماه`}
           icon={<People size={22} variant="Bold" />}
         />
         <KpiCard
-          title={t("کاربران فعال")}
+          title={t("auto.k6baa9cfb85")}
           value={toPersianDigits(overview.users.active)}
           subtitle={`${toPersianDigits(overview.users.admins)} ادمین`}
           icon={<Activity size={22} variant="Bold" />}
           tone="success"
         />
         <KpiCard
-          title={t("کل تراکنش‌ها")}
+          title={t("auto.k4868be73ce")}
           value={toPersianDigits(overview.transactions.total)}
           subtitle={`${toPersianDigits(overview.transactions.thisWeek)} تراکنش این هفته`}
           icon={<Wallet2 size={22} variant="Bold" />}
           tone="accent"
         />
         <KpiCard
-          title={t("حجم دیتابیس")}
+          title={t("auto.k1410347753")}
           value={formatBytes(overview.database.totalSizeBytes)}
           subtitle={`${toPersianDigits(overview.database.collections)} کالکشن`}
           icon={<Data size={22} variant="Bold" />}
@@ -214,7 +214,7 @@ export function AdminDashboardPage() {
         <div className="glass rounded-2xl p-5">
           <div className="mb-4 flex items-center gap-2">
             <Chart size={20} className="text-accent" variant="Bold" />
-            <h4 className="font-bold">{t("بیشترین کالکشن‌ها")}</h4>
+            <h4 className="font-bold">{t("auto.kee0303975f")}</h4>
           </div>
           <div className="space-y-3">
             {overview.topCollections.map((collection) => (
@@ -240,11 +240,11 @@ export function AdminDashboardPage() {
           <div className="glass rounded-2xl p-5">
             <div className="mb-4 flex items-center gap-2">
               <Cpu size={20} className="text-accent" variant="Bold" />
-              <h4 className="font-bold">{t("سلامت سرور")}</h4>
+              <h4 className="font-bold">{t("auto.ka8b50ffe7e")}</h4>
             </div>
             <dl className="space-y-3 text-sm">
               <div className="flex justify-between gap-4">
-                <dt className="text-muted">{t("آپتایم")}</dt>
+                <dt className="text-muted">{t("auto.ke66493bb3d")}</dt>
                 <dd className="font-medium">
                   {formatUptime(health.uptimeSeconds)}
                 </dd>
@@ -258,29 +258,29 @@ export function AdminDashboardPage() {
                 </dd>
               </div>
               <div className="flex justify-between gap-4">
-                <dt className="text-muted">{t("حافظه Heap")}</dt>
+                <dt className="text-muted">{t("auto.kaaee936d10")}</dt>
                 <dd className="font-medium">
                   {formatBytes(health.memory.heapUsedBytes)}
                 </dd>
               </div>
               <div className="flex justify-between gap-4">
-                <dt className="text-muted">{t("محیط")}</dt>
+                <dt className="text-muted">{t("auto.ke820e30a5b")}</dt>
                 <dd className="font-medium">{health.environment}</dd>
               </div>
               <div className="flex justify-between gap-4">
-                <dt className="text-muted">{t("بکاپ تلگرام")}</dt>
+                <dt className="text-muted">{t("auto.kfb3c0b0e11")}</dt>
                 <dd className="font-medium">
                   {health.backup.telegramEnabled ? "فعال" : "غیرفعال"}
                 </dd>
               </div>
               <div className="flex justify-between gap-4">
-                <dt className="text-muted">{t("اسناد DB")}</dt>
+                <dt className="text-muted">{t("auto.k031675aa41")}</dt>
                 <dd className="font-medium">
                   {toPersianDigits(overview.database.documents)}
                 </dd>
               </div>
               <div className="flex justify-between gap-4">
-                <dt className="text-muted">{t("درآمد ۳۰ روز (تجمیع)")}</dt>
+                <dt className="text-muted">{t("auto.k1c97d0b9a0")}</dt>
                 <dd className="font-medium text-emerald-600">
                   {formatPrice(
                     activity?.income.reduce((sum, n) => sum + n, 0) ?? 0,

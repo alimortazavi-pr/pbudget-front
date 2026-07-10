@@ -73,19 +73,19 @@ export function MoreFilterModal({
     <AppModal open={open} onOpenChange={onOpenChange}>
       <AppModalDialog className="overflow-visible">
         <AppModalHeader onClose={() => onOpenChange(false)}>
-          <Modal.Heading>{t("فیلتر تراکنش‌ها")}</Modal.Heading>
+          <Modal.Heading>{t("dashboard.transactionFilters")}</Modal.Heading>
         </AppModalHeader>
         <Modal.Body className="space-y-4 overflow-visible">
           <FormCategoryComboBox
-            label={t("دسته‌بندی")}
-            placeholder={t("همه دسته‌بندی‌ها")}
+            label={t("dashboard.filterByCategory")}
+            placeholder={t("dashboard.allCategories")}
             selectedKey={category || "all"}
             onSelectionChange={(key) => setCategory(key === "all" ? "" : key)}
             options={[
-              { id: "all", label: "همه دسته‌بندی‌ها" },
+              { id: "all", label: t("dashboard.allCategories") },
               ...categoryOptions,
             ]}
-            emptyMessage="دسته‌ای ثبت نشده"
+            emptyMessage={t("dashboard.noCategoryCreatedYet")}
           />
           <FilterDatePicker
             year={date.year}
@@ -97,10 +97,10 @@ export function MoreFilterModal({
         </Modal.Body>
         <Modal.Footer>
           <Button type="button" variant="ghost" onPress={() => onOpenChange(false)}>
-            بستن
+            {t("common.close")}
           </Button>
           <Button type="button" onPress={apply}>
-            فیلتر
+            {t("common.filter")}
           </Button>
         </Modal.Footer>
       </AppModalDialog>

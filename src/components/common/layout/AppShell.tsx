@@ -10,21 +10,21 @@ import { MobileAppShell } from "@/components/common/layout/MobileAppShell";
 import { BalanceModalProvider } from "@/components/providers/BalanceModalProvider";
 import { VoiceAssistantProvider } from "@/components/voice/VoiceAssistantProvider";
 
-const PAGE_TITLES: Record<string, string> = {
-  [PATHS.HOME]: "داشبورد",
-  [PATHS.ANALYSIS]: "تحلیل مالی",
-  [PATHS.BOXES]: "صندوق‌ها",
-  [PATHS.CREATE_BUDGET]: "ثبت تراکنش",
-  [PATHS.CATEGORIES]: "دسته‌بندی‌ها",
-  [PATHS.DEBTS]: "طلب و بدهی",
-  [PATHS.INSTALLMENTS]: "اقساط",
-  [PATHS.CHECKS]: "چک‌ها",
-  [PATHS.COMMITMENTS]: "تعهدات جاری",
-  [PATHS.NOTES]: "یادداشت‌ها",
-  [PATHS.PROJECTS]: "پروژه‌ها",
-  [PATHS.TASKS]: "برنامه روزانه",
-  [PATHS.PROFILE]: "پروفایل",
-  [PATHS.SETTINGS]: "تنظیمات",
+const PAGE_TITLE_KEYS: Record<string, string> = {
+  [PATHS.HOME]: "nav.dashboard",
+  [PATHS.ANALYSIS]: "nav.financialAnalysis",
+  [PATHS.BOXES]: "nav.boxes",
+  [PATHS.CREATE_BUDGET]: "nav.createTransaction",
+  [PATHS.CATEGORIES]: "nav.categories",
+  [PATHS.DEBTS]: "nav.debts",
+  [PATHS.INSTALLMENTS]: "nav.installments",
+  [PATHS.CHECKS]: "nav.checks",
+  [PATHS.COMMITMENTS]: "nav.commitments",
+  [PATHS.NOTES]: "nav.notes",
+  [PATHS.PROJECTS]: "nav.projects",
+  [PATHS.TASKS]: "nav.dailyPlanner",
+  [PATHS.PROFILE]: "nav.profile",
+  [PATHS.SETTINGS]: "nav.settings",
 };
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -71,19 +71,19 @@ export function AppShell({ children }: { children: ReactNode }) {
   const isInstallmentDetail =
     pathname.startsWith("/installments/") && pathname !== PATHS.INSTALLMENTS;
   const isDebtDetail = pathname.startsWith("/debts/") && pathname !== PATHS.DEBTS;
-  const title =
+  const titleKey =
     (isBudgetEdit
-      ? "ویرایش تراکنش"
+      ? "nav.editTransaction"
       : isProjectDetail && pathname !== PATHS.PROJECTS
-        ? "مدیریت پروژه"
+        ? "nav.manageProject"
         : isInstallmentDetail
-          ? "برنامه پرداخت"
+          ? "nav.paymentPlan"
           : isDebtDetail
-            ? "طلب و بدهی"
-            : PAGE_TITLES[pathname]) ?? APP_NAME_FA;
+            ? "nav.debts"
+            : PAGE_TITLE_KEYS[pathname]) ?? APP_NAME_FA;
 
   const shellProps = {
-    title,
+    title: titleKey,
     showBack: pathname !== PATHS.HOME,
     hideTabBar:
       pathname === PATHS.CREATE_BUDGET ||

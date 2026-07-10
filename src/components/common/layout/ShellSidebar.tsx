@@ -31,7 +31,7 @@ export function ShellSidebar() {
   );
 
   return (
-    <aside className="pb-sidebar" aria-label={t("ناوبری دسکتاپ")} data-tour="sidebar">
+    <aside className="pb-sidebar" aria-label={t("common.desktopNavigation")} data-tour="sidebar">
       <div className="flex h-full flex-col overflow-y-auto p-5 xl:p-6">
         <Link href={PATHS.HOME} className="mb-6 block px-2">
           <AppLogo />
@@ -39,7 +39,7 @@ export function ShellSidebar() {
 
         <div>
           <p className="mb-2 px-3 text-xs font-semibold tracking-wide text-muted">
-            {t("اصلی")}
+            {t("nav.primary")}
           </p>
           <nav className="flex flex-col gap-0.5">
             {PRIMARY_NAV_ITEMS.map((item) => {

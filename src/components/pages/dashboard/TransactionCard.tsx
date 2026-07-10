@@ -68,9 +68,11 @@ export function TransactionCard({ budget }: TransactionCardProps) {
         dispatch(setProfile(mergeProfileWallet(user, res)));
       }
       dispatch(bumpBudgetRevision());
-      showToast(t("تراکنش حذف شد"), "success");
+      showToast(t("common.deleted"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در حذف");
+      showToast(
+        err instanceof Error ? err.message : t("dashboard.deleteTransactionError"),
+      );
     } finally {
       setDeleting(false);
     }
@@ -93,7 +95,9 @@ export function TransactionCard({ budget }: TransactionCardProps) {
               aria-hidden
             />
             <p className="truncate font-medium">
-              {isPendingCategory ? "نیاز به دسته‌بندی" : budget.category?.title}
+              {isPendingCategory
+                ? t("dashboard.needsCategory")
+                : budget.category?.title}
             </p>
           </div>
           <p className="mt-0.5 text-xs text-muted">
@@ -105,7 +109,7 @@ export function TransactionCard({ budget }: TransactionCardProps) {
           </p>
           {isPendingCategory && (
             <span className="mt-1 inline-flex rounded-md bg-warning/15 px-1.5 py-0.5 text-[10px] font-semibold text-warning-foreground">
-              ایمپورت بانکی
+              {t("dashboard.bankImportBadge")}
             </span>
           )}
           {debt && (
@@ -116,7 +120,10 @@ export function TransactionCard({ budget }: TransactionCardProps) {
                   : "bg-expense-soft text-expense"
               }`}
             >
-              {debt.type === DebtType.RECEIVABLE ? "طلب" : "بدهی"} · {debt.person}
+              {debt.type === DebtType.RECEIVABLE
+                ? t("dashboard.receivableLabel")
+                : t("dashboard.debtLabel")}{" "}
+              · {debt.person}
               {debt.status !== "settled" ? ` · ${formatPriceWithCurrency(debt.remainingAmount, budgetCurrency)}` : ""}
             </span>
           )}
@@ -149,7 +156,7 @@ export function TransactionCard({ budget }: TransactionCardProps) {
             <Link href={PATHS.BUDGET(budget._id)} className="flex-1">
               <Button size="sm" variant="secondary" className="w-full">
                 <Edit2 size={16} />
-                ویرایش
+                {t("common.edit")}
               </Button>
             </Link>
             <Button
@@ -160,7 +167,7 @@ export function TransactionCard({ budget }: TransactionCardProps) {
               onPress={() => void handleDelete()}
             >
               <Trash size={16} />
-              حذف
+              {t("common.delete")}
             </Button>
           </div>
         </div>

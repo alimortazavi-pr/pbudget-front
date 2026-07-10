@@ -16,9 +16,9 @@ export default function OfflinePage() {
         <WifiSquare size={40} variant="Bold" />
       </div>
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold text-foreground">{t("اتصال اینترنت نیست")}</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t("common.noInternet")}</h1>
         <p className="max-w-sm text-sm text-muted">
-          {t("برای استفاده از اپ به اینترنت نیاز دارید. وقتی وصل شدید دوباره تلاش کنید.")}
+          {t("common.noInternetDesc")}
         </p>
       </div>
       <Button
@@ -26,7 +26,7 @@ export default function OfflinePage() {
         className="min-w-40"
         onPress={() => router.push("/")}
       >
-        {t("تلاش مجدد")}
+        {t("common.tryAgain")}
       </Button>
     </main>
   );

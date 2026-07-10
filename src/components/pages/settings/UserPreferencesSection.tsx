@@ -13,6 +13,7 @@ import {
   type UserCurrency,
 } from "@/common/constants/user-preferences";
 import { showToast } from "@/common/utils/toast";
+import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 import { AppModal } from "@/components/common/ui/AppModal";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { setProfile, userSelector } from "@/stores/profile";
@@ -23,6 +24,7 @@ type UserPreferencesSettingsProps = {
 
 export function UserPreferencesSettings({ compact }: UserPreferencesSettingsProps) {
   const { t } = useTranslation();
+  const { currencyLabel, calendarLabel, calendarDescription } = useCurrencyLabels();
   const dispatch = useAppDispatch();
   const user = useAppSelector(userSelector);
   const prefs = user?.preferences;
@@ -44,9 +46,9 @@ export function UserPreferencesSettings({ compact }: UserPreferencesSettingsProp
         dateCalendar,
       });
       dispatch(setProfile(updated));
-      showToast(t("تنظیمات ذخیره شد"), "success");
+      showToast(t("common.settingsSaved"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "ذخیره ناموفق");
+      showToast(err instanceof Error ? err.message : t("common.saveFailed"));
     } finally {
       setSaving(false);
     }
@@ -60,16 +62,13 @@ export function UserPreferencesSettings({ compact }: UserPreferencesSettingsProp
     <div className={compact ? "space-y-4" : "glass rounded-2xl p-5 space-y-4"}>
       {!compact ? (
         <>
-          <h2 className="text-lg font-bold">{t("ارز و تقویم")}</h2>
-          <p className="text-sm text-muted">
-            تراکنش‌های جدید با این تنظیمات ثبت می‌شوند. تراکنش‌های قبلی ارز و
-            تاریخ خودشان را حفظ می‌کنند.
-          </p>
+          <h2 className="text-lg font-bold">{t("common.currencyAndCalendar")}</h2>
+          <p className="text-sm text-muted">{t("common.currencyAndCalendarDesc")}</p>
         </>
       ) : null}
 
       <div className="space-y-2">
-        <p className="text-sm font-medium">{t("نوع ارز پیش‌فرض")}</p>
+        <p className="text-sm font-medium">{t("common.defaultCurrencyType")}</p>
         <div className="grid gap-2 sm:grid-cols-3">
           {CURRENCY_OPTIONS.map((option) => (
             <button
@@ -82,14 +81,14 @@ export function UserPreferencesSettings({ compact }: UserPreferencesSettingsProp
               }`}
               onClick={() => setCurrency(option.id)}
             >
-              {option.label}
+              {currencyLabel(option.id)}
             </button>
           ))}
         </div>
       </div>
 
       <div className="space-y-2">
-        <p className="text-sm font-medium">{t("نوع تاریخ پیش‌فرض")}</p>
+        <p className="text-sm font-medium">{t("common.defaultDateType")}</p>
         <div className="grid gap-2">
           {CALENDAR_OPTIONS.map((option) => (
             <button
@@ -102,8 +101,8 @@ export function UserPreferencesSettings({ compact }: UserPreferencesSettingsProp
               }`}
               onClick={() => setDateCalendar(option.id)}
             >
-              <p className="text-sm font-medium">{option.label}</p>
-              <p className="mt-0.5 text-xs text-muted">{option.description}</p>
+              <p className="text-sm font-medium">{calendarLabel(option.id)}</p>
+              <p className="mt-0.5 text-xs text-muted">{calendarDescription(option.id)}</p>
             </button>
           ))}
         </div>
@@ -115,7 +114,7 @@ export function UserPreferencesSettings({ compact }: UserPreferencesSettingsProp
         isPending={saving}
         onPress={() => void handleSave()}
       >
-        ذخیره تنظیمات
+        {t("common.saveSettings")}
       </Button>
     </div>
   );
@@ -129,8 +128,9 @@ type UserPreferencesOnboardingModalProps = {
 export function UserPreferencesOnboardingModal({
   open,
   onConfigured,
-}: UserPreferencesOnboardingModalProps) {  const { t } = useTranslation();
-
+}: UserPreferencesOnboardingModalProps) {
+  const { t } = useTranslation();
+  const { currencyLabel, calendarLabel, calendarDescription } = useCurrencyLabels();
   const dispatch = useAppDispatch();
   const [currency, setCurrency] = useState<UserCurrency>("toman");
   const [dateCalendar, setDateCalendar] = useState<UserDateCalendar>("jalali");
@@ -145,10 +145,10 @@ export function UserPreferencesOnboardingModal({
         configured: true,
       });
       dispatch(setProfile(user));
-      showToast(t("تنظیمات ذخیره شد"), "success");
+      showToast(t("common.settingsSaved"), "success");
       onConfigured();
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "ذخیره ناموفق");
+      showToast(err instanceof Error ? err.message : t("common.saveFailed"));
     } finally {
       setSaving(false);
     }
@@ -159,17 +159,13 @@ export function UserPreferencesOnboardingModal({
       <Modal.Container size="md">
         <Modal.Dialog className="pb-form-page">
           <Modal.Header>
-            <Modal.Heading>{t("تنظیمات اولیه")}</Modal.Heading>
+            <Modal.Heading>{t("common.initialSettings")}</Modal.Heading>
           </Modal.Header>
           <Modal.Body className="space-y-5">
-              <p className="text-sm text-muted">
-                قبل از اولین تراکنش، نوع ارز و تقویم پیش‌فرض خود را انتخاب کنید.
-                تراکنش‌های بعدی با همین تنظیمات ثبت می‌شوند و هر تراکنش ارز و
-                تاریخ خودش را حفظ می‌کند.
-              </p>
+              <p className="text-sm text-muted">{t("common.onboardingPrefsDesc")}</p>
 
               <div className="space-y-2">
-                <p className="text-sm font-medium">{t("نوع ارز")}</p>
+                <p className="text-sm font-medium">{t("common.currencyType")}</p>
                 <div className="grid gap-2">
                   {CURRENCY_OPTIONS.map((option) => (
                     <button
@@ -182,14 +178,14 @@ export function UserPreferencesOnboardingModal({
                       }`}
                       onClick={() => setCurrency(option.id)}
                     >
-                      {option.label}
+                      {currencyLabel(option.id)}
                     </button>
                   ))}
                 </div>
               </div>
 
               <div className="space-y-2">
-                <p className="text-sm font-medium">{t("نوع تاریخ")}</p>
+                <p className="text-sm font-medium">{t("common.dateType")}</p>
                 <div className="grid gap-2">
                   {CALENDAR_OPTIONS.map((option) => (
                     <button
@@ -202,9 +198,9 @@ export function UserPreferencesOnboardingModal({
                       }`}
                       onClick={() => setDateCalendar(option.id)}
                     >
-                      <p className="text-sm font-medium">{option.label}</p>
+                      <p className="text-sm font-medium">{calendarLabel(option.id)}</p>
                       <p className="mt-0.5 text-xs text-muted">
-                        {option.description}
+                        {calendarDescription(option.id)}
                       </p>
                     </button>
                   ))}
@@ -217,7 +213,7 @@ export function UserPreferencesOnboardingModal({
                 isPending={saving}
                 onPress={() => void handleSave()}
               >
-                ذخیره و ادامه
+                {t("common.saveAndContinue")}
               </Button>
             </Modal.Footer>
           </Modal.Dialog>

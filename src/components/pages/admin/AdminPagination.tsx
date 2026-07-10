@@ -3,6 +3,7 @@
 import { Button } from "@heroui/react";
 
 import { toPersianDigits } from "@/common/utils";
+import { useTranslation } from "@/components/providers/LanguageProvider";
 
 type AdminPaginationProps = {
   page: number;
@@ -17,13 +18,15 @@ export function AdminPagination({
   total,
   onPage,
 }: AdminPaginationProps) {
+  const { t } = useTranslation();
+
   if (totalPages <= 1 && !total) return null;
 
   return (
     <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-between">
       {total != null ? (
         <p className="text-sm text-muted">
-          مجموع {toPersianDigits(total)} رکورد
+          {t("common.totalRecords", { count: toPersianDigits(total) })}
         </p>
       ) : (
         <span />
@@ -35,17 +38,20 @@ export function AdminPagination({
             isDisabled={page <= 1}
             onPress={() => onPage(page - 1)}
           >
-            قبلی
+            {t("common.tourPrevious")}
           </Button>
           <span className="text-sm text-muted">
-            صفحه {toPersianDigits(page)} از {toPersianDigits(totalPages)}
+            {t("common.pageOf", {
+              page: toPersianDigits(page),
+              totalPages: toPersianDigits(totalPages),
+            })}
           </span>
           <Button
             variant="secondary"
             isDisabled={page >= totalPages}
             onPress={() => onPage(page + 1)}
           >
-            بعدی
+            {t("common.tourNext")}
           </Button>
         </div>
       ) : null}

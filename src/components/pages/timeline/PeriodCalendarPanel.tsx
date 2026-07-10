@@ -21,7 +21,7 @@ export function PeriodCalendarPanel() {
   if (duration === "all") {
     return (
       <div className="pb-timeline-calendar-all">
-        <p className="text-sm font-medium">{t("نمای کلی")}</p>
+        <p className="text-sm font-medium">{t("auto.kea47ebd31e")}</p>
         <p className="mt-1 text-xs text-muted">
           همه داده‌ها بدون محدودیت زمانی نمایش داده می‌شوند
         </p>

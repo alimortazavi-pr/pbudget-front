@@ -99,7 +99,7 @@ function TimelineHomePageContent() {  const { t } = useTranslation();
             );
           })}
         </div>
-        <p className="mt-1 text-xs text-white/70">{t("موجودی کیف پول")}</p>
+        <p className="mt-1 text-xs text-white/70">{t("common.walletBalance")}</p>
       </section>
 
       <PeriodScopeBar />
@@ -117,7 +117,7 @@ function TimelineHomePageContent() {  const { t } = useTranslation();
       ) : (
         <div className="pb-hmi-grid">
           <TimelineWidgetTile
-            title={t("خلاصه مالی")}
+            title={t("auto.kbead1798a0")}
             value={formatPrice(data.net)}
             subtitle={`درآمد ${formatPrice(data.income)} · هزینه ${formatPrice(data.expense)}`}
             status={financeStatus}
@@ -125,7 +125,7 @@ function TimelineHomePageContent() {  const { t } = useTranslation();
             onPress={() => setDrawer("finance")}
           />
           <TimelineWidgetTile
-            title={t("کارها")}
+            title={t("auto.k93becfb5eb")}
             value={toPersianDigits(String(data.taskSummary.pending))}
             subtitle={`${toPersianDigits(String(data.taskSummary.done))} انجام‌شده · ${toPersianDigits(String(data.taskSummary.overdue))} عقب‌افتاده`}
             status={taskStatus}
@@ -133,7 +133,7 @@ function TimelineHomePageContent() {  const { t } = useTranslation();
             onPress={() => setDrawer("tasks")}
           />
           <TimelineWidgetTile
-            title={t("سررسیدها")}
+            title={t("auto.kd1226f849e")}
             value={toPersianDigits(String(data.dueCount))}
             subtitle={`${toPersianDigits(String(data.checkPendingCount))} چک · ${toPersianDigits(String(data.installmentPendingCount))} قسط`}
             status={dueStatus}
@@ -141,7 +141,7 @@ function TimelineHomePageContent() {  const { t } = useTranslation();
             onPress={() => setDrawer("due")}
           />
           <TimelineWidgetTile
-            title={t("تراکنش‌ها")}
+            title={t("auto.k4ad10a7f11")}
             value={toPersianDigits(String(data.budgets.length))}
             subtitle="مورد در این بازه"
             status="neutral"
@@ -154,27 +154,27 @@ function TimelineHomePageContent() {  const { t } = useTranslation();
       <TimelineWidgetDrawer
         open={drawer === "finance"}
         onOpenChange={(open) => !open && setDrawer(null)}
-        title={t("تراکنش‌های بازه")}
+        title={t("auto.k6d1b24c32e")}
       >
         {data.budgets.length === 0 ? (
-          <p className="text-center text-sm text-muted">{t("تراکنشی یافت نشد")}</p>
+          <p className="text-center text-sm text-muted">{t("auto.k22a5c47aec")}</p>
         ) : (
           data.budgets.map((budget) => (
             <TransactionCard key={budget._id} budget={budget} />
           ))
         )}
         <Link href={PATHS.CREATE_BUDGET} className="block pt-2">
-          <Button className="w-full">{t("ثبت تراکنش جدید")}</Button>
+          <Button className="w-full">{t("auto.k5af9c84809")}</Button>
         </Link>
       </TimelineWidgetDrawer>
 
       <TimelineWidgetDrawer
         open={drawer === "tasks"}
         onOpenChange={(open) => !open && setDrawer(null)}
-        title={t("کارهای بازه")}
+        title={t("auto.k7a32178d46")}
       >
         {data.tasks.length === 0 ? (
-          <p className="text-center text-sm text-muted">{t("کاری یافت نشد")}</p>
+          <p className="text-center text-sm text-muted">{t("auto.kea5ea656cd")}</p>
         ) : (
           data.tasks.map((task) => (
             <div
@@ -213,10 +213,10 @@ function TimelineHomePageContent() {  const { t } = useTranslation();
       <TimelineWidgetDrawer
         open={drawer === "due"}
         onOpenChange={(open) => !open && setDrawer(null)}
-        title={t("سررسیدهای بازه")}
+        title={t("auto.kb184d80ea0")}
       >
         {data.checks.length === 0 && data.installments.length === 0 ? (
-          <p className="text-center text-sm text-muted">{t("سررسیدی یافت نشد")}</p>
+          <p className="text-center text-sm text-muted">{t("auto.k1d66ab7422")}</p>
         ) : (
           <>
             {data.checks.map((check) => (

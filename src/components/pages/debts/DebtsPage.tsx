@@ -80,8 +80,8 @@ export function DebtsPage() {
   return (
     <div className="space-y-5 pb-6">
       <section className="rounded-3xl bg-gradient-to-br from-rose-500 to-rose-600 p-5 text-white shadow-lg">
-        <p className="text-sm font-medium text-white/80">{t("مدیریت تعهدات مالی")}</p>
-        <h1 className="mt-1 text-2xl font-bold">{t("طلب و بدهی")}</h1>
+        <p className="text-sm font-medium text-white/80">{t("auto.k1735904a60")}</p>
+        <h1 className="mt-1 text-2xl font-bold">{t("nav.debts")}</h1>
         <p className="mt-2 text-sm leading-7 text-white/80">
           هر طلب یا بدهی را باز کنید؛ تسویه‌ها، تراکنش‌ها و تحلیل را در یک صفحه ببینید.
         </p>
@@ -92,7 +92,7 @@ export function DebtsPage() {
           <div className="glass rounded-2xl p-4">
             <div className="flex items-center gap-2 text-income">
               <ArrowDown size={18} variant="Bold" />
-              <span className="text-sm font-medium">{t("طلب باز")}</span>
+              <span className="text-sm font-medium">{t("auto.k26835ea41b")}</span>
             </div>
             <p className="mt-2 text-2xl font-bold">{formatPrice(summary.openReceivable)}</p>
             <p className="mt-1 text-xs text-muted">
@@ -102,7 +102,7 @@ export function DebtsPage() {
           <div className="glass rounded-2xl p-4">
             <div className="flex items-center gap-2 text-expense">
               <ArrowUp size={18} variant="Bold" />
-              <span className="text-sm font-medium">{t("بدهی باز")}</span>
+              <span className="text-sm font-medium">{t("auto.k4b51a6b0f8")}</span>
             </div>
             <p className="mt-2 text-2xl font-bold">{formatPrice(summary.openPayable)}</p>
             <p className="mt-1 text-xs text-muted">
@@ -113,7 +113,7 @@ export function DebtsPage() {
       )}
 
       <div className="flex items-center justify-between gap-2">
-        <p className="text-sm text-muted">{t("فیلتر وضعیت")}</p>
+        <p className="text-sm text-muted">{t("auto.k2bd34550a6")}</p>
         <Button size="sm" onPress={() => setCreateOpen(true)}>
           <Add size={18} />
           طلب/بدهی جدید
@@ -144,10 +144,10 @@ export function DebtsPage() {
       </div>
 
       {loading ? (
-        <div className="glass rounded-2xl p-10 text-center text-muted">{t("در حال بارگذاری…")}</div>
+        <div className="glass rounded-2xl p-10 text-center text-muted">{t("common.loading")}</div>
       ) : sortedDebts.length === 0 ? (
         <div className="glass rounded-2xl p-10 text-center text-muted">
-          <p>{t("هنوز طلب یا بدهی ثبت نشده.")}</p>
+          <p>{t("auto.k4db948a344")}</p>
           <p className="mt-2 text-sm leading-7">
             از دکمه «طلب/بدهی جدید» طرف حساب را اضافه کنید، یا هنگام ثبت تراکنش گزینه
             «مرتبط با طلب یا بدهی» را فعال کنید.

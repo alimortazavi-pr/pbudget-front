@@ -50,7 +50,7 @@ export function SsoCallbackPage() {
       {error ? (
         <p className="text-rose-600">{error}</p>
       ) : (
-        <p className="text-muted">{t("در حال ورود خودکار…")}</p>
+        <p className="text-muted">{t("auto.kf762d35953")}</p>
       )}
     </div>
   );

@@ -6,10 +6,11 @@ import { formatPriceWithCurrency } from "@/common/utils/format-currency";
 import {
   CURRENCY_OPTIONS,
   DEFAULT_USER_PREFERENCES,
-  currencyLabel,
   type UserCurrency,
 } from "@/common/constants/user-preferences";
 import { getWalletBalance } from "@/common/utils/wallet-balances";
+import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
+import { useTranslation } from "@/components/providers/LanguageProvider";
 import { useAppSelector } from "@/stores/hooks";
 import { userSelector } from "@/stores/profile";
 
@@ -35,6 +36,8 @@ export function DashboardHero({
   expense,
   "data-tour": dataTour,
 }: DashboardHeroProps) {
+  const { t } = useTranslation();
+  const { currencyLabel } = useCurrencyLabels();
   const user = useAppSelector(userSelector);
   const preferred =
     user?.preferences?.currency ?? DEFAULT_USER_PREFERENCES.currency;
@@ -53,10 +56,12 @@ export function DashboardHero({
         <div className="mb-5 flex items-start justify-between gap-3 lg:mb-0">
           <div>
             <p className="text-sm font-medium text-white/85 lg:text-base">
-              سلام، {firstName ?? "کاربر"} 👋
+              {t("dashboard.greeting", {
+                name: firstName ?? t("dashboard.defaultUserName"),
+              })}
             </p>
             <h2 className="mt-0.5 text-lg font-bold text-white lg:text-2xl">
-              داشبورد مالی
+              {t("dashboard.financialDashboard")}
             </h2>
           </div>
           <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm lg:size-12">
@@ -68,7 +73,7 @@ export function DashboardHero({
           <div className="mt-5 lg:mt-6">
             <div className="rounded-2xl border border-white/20 bg-white/12 p-4 shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-md lg:p-6">
               <p className="text-xs font-medium text-white/75 lg:text-sm">
-                موجودی کیف پول
+                {t("dashboard.walletBalance")}
               </p>
               <div className="mt-3 space-y-3">
                 {orderedCurrencies.map((walletCurrency) => {
@@ -90,7 +95,9 @@ export function DashboardHero({
                     >
                       {isNegative ? (
                         <p className="text-xs font-medium text-rose-200">
-                          (کمبود وجه — {currencyLabel(walletCurrency)})
+                          {t("dashboard.insufficientFunds", {
+                            currency: currencyLabel(walletCurrency),
+                          })}
                         </p>
                       ) : null}
                       <div className="flex items-end justify-between gap-4">
@@ -118,7 +125,7 @@ export function DashboardHero({
             <div className="rounded-xl border border-white/15 bg-black/10 px-3 py-2.5 backdrop-blur-sm lg:px-4 lg:py-4">
               <div className="flex items-center gap-1 text-xs text-white/75 lg:text-sm">
                 <ArrowDown size={14} variant="Bold" />
-                دریافتی دوره
+                {t("dashboard.periodIncome")}
               </div>
               <p className="mt-1 text-left text-sm font-bold text-white lg:text-lg">
                 {formatPriceWithCurrency(income, currency)}
@@ -127,7 +134,7 @@ export function DashboardHero({
             <div className="rounded-xl border border-white/15 bg-black/10 px-3 py-2.5 backdrop-blur-sm lg:px-4 lg:py-4">
               <div className="flex items-center gap-1 text-xs text-white/75 lg:text-sm">
                 <ArrowUp size={14} variant="Bold" />
-                پرداختی دوره
+                {t("dashboard.periodExpense")}
               </div>
               <p className="mt-1 text-left text-sm font-bold text-white lg:text-lg">
                 {formatPriceWithCurrency(expense, currency)}

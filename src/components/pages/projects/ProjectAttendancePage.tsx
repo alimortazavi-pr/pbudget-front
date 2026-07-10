@@ -170,7 +170,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
     setActionLoading(true);
     try {
       await workTimeApi.clockOut(projectId);
-      showToast(t("خروج ثبت شد"), "success");
+      showToast(t("projects.clockOutRecorded"), "success");
       await load();
     } catch (err) {
       showErrorToast(err);
@@ -182,7 +182,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
   async function saveTarget() {
     const minutes = hoursInputToMinutes(toEnglishDigits(targetHours));
     if (!minutes) {
-      showToast(t("ساعت روزانه را وارد کنید"));
+      showToast(t("auto.k0a897a8d3c"));
       return;
     }
     setSavingTarget(true);
@@ -195,7 +195,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
       });
       setSavedMonthTarget(result.monthTargetMinutes);
       setWorkingDaysInMonth(result.workingDaysInMonth);
-      showToast(t("ساعت روزانه ذخیره شد"), "success");
+      showToast(t("auto.k2bc89de926"), "success");
       await load();
     } catch (err) {
       showErrorToast(err);
@@ -208,7 +208,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
     if (!confirm("این ردیف حذف شود؟")) return;
     try {
       await workTimeApi.deleteWorkSession(projectId, session._id);
-      showToast(t("حذف شد"), "success");
+      showToast(t("common.deleted"), "success");
       await load();
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
@@ -220,7 +220,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
       setActionLoading(true);
       try {
         await workTimeApi.clockOut(projectId);
-        showToast(t("خروج ثبت شد"), "success");
+        showToast(t("projects.clockOutRecorded"), "success");
         await load();
       } catch (err) {
         showErrorToast(err);
@@ -276,7 +276,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
   return (
     <div className="space-y-5 pb-6">
       <section className="rounded-3xl bg-gradient-to-br from-emerald-600 to-teal-700 p-5 text-white shadow-lg">
-        <p className="text-sm font-medium text-white/80">{t("حضور و غیاب پروژه")}</p>
+        <p className="text-sm font-medium text-white/80">{t("auto.ka38440a09c")}</p>
         <h1 className="mt-1 text-2xl font-bold">{projectTitle}</h1>
         <p className="mt-2 text-sm leading-7 text-white/80">
           ورود و خروج، ثبت دستی ساعات و تحلیل کارکرد این پروژه
@@ -310,7 +310,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
       </div>
 
       {loading || !data ? (
-        <div className="glass rounded-2xl p-10 text-center text-muted">{t("در حال بارگذاری…")}</div>
+        <div className="glass rounded-2xl p-10 text-center text-muted">{t("common.loading")}</div>
       ) : (
         <>
           {alerts.length > 0 ? (
@@ -420,7 +420,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
           >
             <div className="flex items-center gap-2">
               <Setting2 size={18} className="text-accent" />
-              <h2 className="font-semibold">{t("ساعت روزانه (روزهای کاری)")}</h2>
+              <h2 className="font-semibold">{t("auto.k1f55474ae3")}</h2>
             </div>
             <p className="text-xs text-muted">
               جمعه‌ها و تعطیلات رسمی از محاسبه کم می‌شوند.
@@ -434,7 +434,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
             <div className="flex flex-wrap items-end gap-2">
               <div className="min-w-[140px] flex-1">
                 <FormInput
-                  label={t("ساعت در هر روز کاری")}
+                  label={t("auto.k4179f5e242")}
                   placeholder={fixedIncome ? "مثلاً ۸" : "مثلاً ۳"}
                   value={targetHours}
                   onChange={(e) => setTargetHours(e.target.value)}
@@ -471,7 +471,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
             </div>
           ) : (
             <section className="space-y-2">
-              <h2 className="text-sm font-semibold text-muted">{t("جلسات کاری")}</h2>
+              <h2 className="text-sm font-semibold text-muted">{t("auto.k5c57193ffe")}</h2>
               {data.sessions.map((session) => {
                 const range = formatSessionRange(session);
                 const linkedBudget =
@@ -517,8 +517,8 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
                         ) : null}
                         {!linkedBudget && session.durationMinutes ? (
                           <AttachBudgetButton
-                            title={t("لینک تراکنش")}
-                            description={t("درآمد یا پرداخت مرتبط با این ساعت را وصل کنید.")}
+                            title={t("auto.k0fa31fbe97")}
+                            description={t("auto.k3eb20c455b")}
                             context={{ type: "project", contextId: projectId }}
                             selectionMode="single"
                             onAttach={async (budgetId) => {

@@ -67,9 +67,9 @@ export function ProfilePage() {
       );
       dispatch(setUsers(nextUsers));
       saveDataToLocal({ token: token!, users: nextUsers });
-      showToast(t("پروفایل ذخیره شد"), "success");
+      showToast(t("common.profileSaved"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     } finally {
       setSaving(false);
     }
@@ -79,11 +79,11 @@ export function ProfilePage() {
     e?.preventDefault();
     try {
       await profileApi.setPassword(password);
-      showToast(t("رمز عبور تنظیم شد"), "success");
+      showToast(t("common.passwordSet"), "success");
       setPasswordOpen(false);
       setPassword("");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     }
   }
 
@@ -97,11 +97,11 @@ export function ProfilePage() {
       );
       dispatch(setUsers(nextUsers));
       saveDataToLocal({ token: token!, users: nextUsers });
-      showToast(t("موبایل تأیید شد"), "success");
+      showToast(t("common.mobileVerified"), "success");
       setVerifyOpen(false);
       setCode("");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     }
   }
 
@@ -109,9 +109,9 @@ export function ProfilePage() {
     if (!user?.mobile) return;
     try {
       await authApi.requestCode(user.mobile);
-      showToast(t("کد به تلگرام ارسال شد"), "success");
+      showToast(t("common.codeSentToTelegram"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     }
   }
 
@@ -119,26 +119,26 @@ export function ProfilePage() {
     <div className="pb-form-page space-y-6">
       <form onSubmit={(e) => void saveProfile(e)}>
         <div className="glass space-y-4 rounded-2xl p-5">
-          <h2 className="text-lg font-bold">{t("پروفایل")}</h2>
+          <h2 className="text-lg font-bold">{t("nav.profile")}</h2>
 
           {!user?.isVerifiedMobile && (
             <p className="rounded-xl bg-warning/15 px-3 py-2 text-sm text-warning-foreground">
-              موبایل شما تأیید نشده است
+              {t("common.mobileNotVerified")}
             </p>
           )}
           {user?.isVerifiedMobile && (
             <p className="rounded-xl bg-success/15 px-3 py-2 text-sm text-success-foreground">
-              موبایل شما تأیید شده است
+              {t("common.mobileVerifiedStatus")}
             </p>
           )}
 
           <FormInput
-            label={t("نام")}
+            label={t("common.firstName")}
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
           />
           <FormInput
-            label={t("نام خانوادگی")}
+            label={t("common.lastName")}
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
           />
@@ -146,7 +146,7 @@ export function ProfilePage() {
           <div className="space-y-2">
             <div className="flex items-end gap-2">
               <div className="min-w-0 flex-1">
-                <FormInput label={t("موبایل")} value={user?.mobile ?? ""} readOnly />
+                <FormInput label={t("common.mobile")} value={user?.mobile ?? ""} readOnly />
               </div>
               <Button
                 type="button"
@@ -154,14 +154,14 @@ export function ProfilePage() {
                 className="mb-0.5 shrink-0"
                 onPress={() => setMobileOpen(true)}
               >
-                تغییر شماره
+                {t("common.changeMobileNumber")}
               </Button>
             </div>
 
             {!user?.isVerifiedMobile && telegramLinked && (
               <div className="flex items-center justify-between gap-2 rounded-xl bg-surface-secondary px-3 py-2.5">
                 <span className="text-sm text-warning-foreground">
-                  شماره موبایل تأیید نشده
+                  {t("common.mobileNotVerifiedShort")}
                 </span>
                 <Button
                   type="button"
@@ -169,13 +169,13 @@ export function ProfilePage() {
                   variant="secondary"
                   onPress={() => setVerifyOpen(true)}
                 >
-                  تأیید با تلگرام
+                  {t("common.verifyViaTelegram")}
                 </Button>
               </div>
             )}
             {!user?.isVerifiedMobile && !telegramLinked && (
               <p className="rounded-xl bg-surface-secondary px-3 py-2 text-sm text-muted">
-                برای تأیید شماره، ابتدا تلگرام را وصل کنید.
+                {t("common.connectTelegramToVerify")}
               </p>
             )}
           </div>
@@ -187,10 +187,10 @@ export function ProfilePage() {
               className="w-full"
               onPress={() => setPasswordOpen(true)}
             >
-              تنظیم رمز عبور
+              {t("common.setPassword")}
             </Button>
             <Button type="submit" className="w-full" size="lg" isPending={saving}>
-              ذخیره تغییرات
+              {t("common.saveChanges")}
             </Button>
           </div>
         </div>
@@ -200,9 +200,9 @@ export function ProfilePage() {
         <div className="glass rounded-2xl p-5">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h2 className="text-lg font-bold">{t("پنل ادمین")}</h2>
+              <h2 className="text-lg font-bold">{t("common.adminPanel")}</h2>
               <p className="mt-1 text-sm text-muted">
-                مدیریت کاربران، دیتابیس، بکاپ و مانیتورینگ
+                {t("common.adminPanelDesc")}
               </p>
             </div>
             <Link
@@ -210,7 +210,7 @@ export function ProfilePage() {
               className="inline-flex items-center gap-2 rounded-xl bg-surface-secondary px-4 py-2.5 text-sm font-medium hover:bg-surface-secondary/80"
             >
               <ShieldTick size={18} variant="Bold" />
-              ورود به پنل
+              {t("common.enterAdminPanel")}
             </Link>
           </div>
         </div>
@@ -227,21 +227,21 @@ export function ProfilePage() {
         <AppModalSheet>
           <form onSubmit={(e) => void savePassword(e)} className={modalSheetFormClass}>
             <AppModalHeader onClose={() => setPasswordOpen(false)}>
-              <Modal.Heading>{t("رمز عبور")}</Modal.Heading>
+              <Modal.Heading>{t("common.password")}</Modal.Heading>
             </AppModalHeader>
             <Modal.Body className={modalSheetBodyClass}>
               <FormInput
                 type="password"
-                label={t("رمز عبور جدید")}
+                label={t("common.newPassword")}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </Modal.Body>
             <Modal.Footer className={modalSheetFooterClass}>
               <Button type="button" variant="ghost" onPress={() => setPasswordOpen(false)}>
-                انصراف
+                {t("common.cancel")}
               </Button>
-              <Button type="submit">{t("ذخیره")}</Button>
+              <Button type="submit">{t("common.save")}</Button>
             </Modal.Footer>
           </form>
         </AppModalSheet>
@@ -251,10 +251,10 @@ export function ProfilePage() {
         <AppModalSheet>
           <form onSubmit={(e) => void verifyMobile(e)} className={modalSheetFormClass}>
             <AppModalHeader onClose={() => setVerifyOpen(false)}>
-              <Modal.Heading>{t("تأیید موبایل")}</Modal.Heading>
+              <Modal.Heading>{t("common.verifyMobileHeading")}</Modal.Heading>
             </AppModalHeader>
             <Modal.Body className={`${modalSheetBodyClass} space-y-4`}>
-              <OtpCodeField label={t("کد تأیید تلگرام")} value={code} onChange={setCode} />
+              <OtpCodeField label={t("common.telegramVerifyCode")} value={code} onChange={setCode} />
               <div className="flex justify-end">
                 <Button
                   type="button"
@@ -262,15 +262,15 @@ export function ProfilePage() {
                   variant="secondary"
                   onPress={() => void requestVerifyCode()}
                 >
-                  ارسال کد به تلگرام
+                  {t("common.sendCodeToTelegram")}
                 </Button>
               </div>
             </Modal.Body>
             <Modal.Footer className={modalSheetFooterClass}>
               <Button type="button" variant="ghost" onPress={() => setVerifyOpen(false)}>
-                انصراف
+                {t("common.cancel")}
               </Button>
-              <Button type="submit">{t("تأیید")}</Button>
+              <Button type="submit">{t("common.verify")}</Button>
             </Modal.Footer>
           </form>
         </AppModalSheet>

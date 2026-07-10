@@ -111,7 +111,7 @@ export function BankImportWizardPage() {
         setSelectedBankId(data[0]._id);
       }
     } catch {
-      showToast(t("بارگذاری بانک‌ها ناموفق بود"), "danger");
+      showToast(t("auto.kc30b8bd654"), "danger");
     } finally {
       setLoadingBanks(false);
     }
@@ -126,7 +126,7 @@ export function BankImportWizardPage() {
 
   async function handleParse(selectedFile: File) {
     if (!selectedBankId) {
-      showToast(t("ابتدا بانک را انتخاب کنید"), "danger");
+      showToast(t("auto.k4eabca2f1d"), "danger");
       return;
     }
 
@@ -156,12 +156,12 @@ export function BankImportWizardPage() {
 
   async function handleConfirm() {
     if (!selectedBankId || !selectedRows.length) {
-      showToast(t("حداقل یک تراکنش انتخاب کنید"), "danger");
+      showToast(t("auto.ka39107688f"), "danger");
       return;
     }
 
     if (incompleteSelectedCount > 0) {
-      showToast(t("برای همه تراکنش‌های انتخاب‌شده دسته‌بندی الزامی است"), "danger");
+      showToast(t("auto.kfb42934376"), "danger");
       return;
     }
 
@@ -241,7 +241,7 @@ export function BankImportWizardPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">{t("ایمپورت صورتحساب بانکی")}</h1>
+        <h1 className="text-2xl font-bold">{t("auto.k3785afd116")}</h1>
         <p className="mt-1 text-sm text-muted">
           تراکنش‌ها را انتخاب کنید، با دکمه ویرایش تنظیمات کامل ثبت تراکنش را
           اعمال کنید، سپس اتمام را بزنید
@@ -271,7 +271,7 @@ export function BankImportWizardPage() {
 
       {step === 1 && (
         <section className="glass space-y-4 rounded-2xl p-6">
-          <h2 className="font-bold">{t("بانک خود را انتخاب کنید")}</h2>
+          <h2 className="font-bold">{t("auto.ke6b33719b2")}</h2>
           {loadingBanks ? (
             <div className="h-24 animate-pulse rounded-xl bg-surface-secondary" />
           ) : banks.length ? (
@@ -288,12 +288,12 @@ export function BankImportWizardPage() {
                   }`}
                 >
                   <p className="font-bold">{bank.title}</p>
-                  <p className="mt-1 text-xs text-muted">{t("فرمت Excel")}</p>
+                  <p className="mt-1 text-xs text-muted">{t("auto.kc13249516f")}</p>
                 </button>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-muted">{t("بانک فعالی ثبت نشده — از پنل ادمین اضافه کنید.")}</p>
+            <p className="text-sm text-muted">{t("auto.kb8d57243f9")}</p>
           )}
           <Button className="w-full" isDisabled={!selectedBankId} onPress={() => setStep(2)}>
             ادامه
@@ -305,7 +305,7 @@ export function BankImportWizardPage() {
       {step === 2 && (
         <section className="glass space-y-4 rounded-2xl p-6">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="font-bold">{t("آپلود فایل Excel")}</h2>
+            <h2 className="font-bold">{t("auto.ke25a7b312c")}</h2>
             {selectedBank ? (
               <span className="rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
                 {selectedBank.title}
@@ -316,7 +316,7 @@ export function BankImportWizardPage() {
           <label className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-border/70 bg-surface-secondary/40 px-6 py-12 transition-colors hover:border-accent/50">
             <DocumentUpload size={40} className="text-accent" />
             <div className="text-center">
-              <p className="font-medium">{t("فایل .xlsx را انتخاب کنید")}</p>
+              <p className="font-medium">{t("auto.k1a605f5534")}</p>
               <p className="mt-1 text-xs text-muted">
                 همان خروجی Excel که از اپ بلوبانک می‌گیرید
               </p>
@@ -334,7 +334,7 @@ export function BankImportWizardPage() {
           </label>
 
           {parsing ? (
-            <p className="text-center text-sm text-muted">{t("در حال خواندن فایل…")}</p>
+            <p className="text-center text-sm text-muted">{t("auto.kab3cce4567")}</p>
           ) : null}
 
           <Button variant="secondary" onPress={() => setStep(1)}>
@@ -373,7 +373,7 @@ export function BankImportWizardPage() {
                   {toPersianDigits(incompleteSelectedCount)} مورد هنوز دسته‌بندی نشده
                 </p>
               ) : selectedRows.length > 0 ? (
-                <p className="mt-1 text-xs text-success-foreground">{t("آماده ثبت")}</p>
+                <p className="mt-1 text-xs text-success-foreground">{t("auto.k6559c79735")}</p>
               ) : null}
             </div>
             <div className="flex flex-wrap gap-2">
@@ -428,7 +428,7 @@ export function BankImportWizardPage() {
         <section className="glass space-y-5 rounded-2xl p-6 text-center">
           <TickCircle size={56} className="mx-auto text-success" variant="Bold" />
           <div>
-            <h2 className="text-xl font-bold">{t("ایمپورت انجام شد")}</h2>
+            <h2 className="text-xl font-bold">{t("auto.k99c78fd8ee")}</h2>
             <p className="mt-2 text-sm text-muted">
               {toPersianDigits(importResult.importedCount)} تراکنش ثبت شد
               {importResult.skippedDuplicates

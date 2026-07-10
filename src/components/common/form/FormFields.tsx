@@ -34,9 +34,12 @@ export function FormPersonComboBox({
   value,
   onChange,
   options,
-  placeholder = "نام طرف حساب را انتخاب یا وارد کنید",
+  placeholder,
 }: FormPersonComboBoxProps) {
+  const { t } = useTranslation();
   const { wrapperRef, portalProps } = useFormModalPortalPopover();
+  const resolvedPlaceholder =
+    placeholder ?? t("common.personAccountPlaceholder");
 
   const items = useMemo(
     () => options.map((person) => ({ id: person, label: person })),
@@ -69,7 +72,7 @@ export function FormPersonComboBox({
       >
         <Label className="mb-1.5 text-sm font-medium">{label}</Label>
         <ComboBox.InputGroup>
-          <Input placeholder={placeholder} dir="rtl" className="text-start" />
+          <Input placeholder={resolvedPlaceholder} dir="rtl" className="text-start" />
           <ComboBox.Trigger />
         </ComboBox.InputGroup>
         <ComboBox.Popover {...portalProps}>
@@ -103,13 +106,16 @@ type FormCategoryComboBoxProps = {
 
 export function FormCategoryComboBox({
   label,
-  placeholder = "جستجو یا انتخاب دسته‌بندی",
+  placeholder,
   selectedKey,
   onSelectionChange,
   options,
-  emptyMessage = "دسته‌ای یافت نشد",
+  emptyMessage,
   isDisabled,
-}: FormCategoryComboBoxProps) {  const { t } = useTranslation();
+}: FormCategoryComboBoxProps) {
+  const { t } = useTranslation();
+  const resolvedPlaceholder = placeholder ?? t("common.searchCategoryPlaceholder");
+  const resolvedEmptyMessage = emptyMessage ?? t("common.noCategoryFound");
 
   const { wrapperRef, portalProps } = useFormModalPortalPopover();
   const isNeutralSelection = !selectedKey || selectedKey === "all";
@@ -177,7 +183,7 @@ export function FormCategoryComboBox({
         <Label className="mb-1.5 text-sm font-medium">{label}</Label>
         <ComboBox.InputGroup>
           <Input
-            placeholder={placeholder}
+            placeholder={resolvedPlaceholder}
             dir="rtl"
             className="text-start"
             onFocus={handleFocus}
@@ -187,7 +193,7 @@ export function FormCategoryComboBox({
         </ComboBox.InputGroup>
         <ComboBox.Popover {...portalProps}>
           {filteredItems.length === 0 ? (
-            <p className="px-3 py-6 text-center text-sm text-muted">{emptyMessage}</p>
+            <p className="px-3 py-6 text-center text-sm text-muted">{resolvedEmptyMessage}</p>
           ) : (
             <ListBox
               aria-label={label}
@@ -305,13 +311,16 @@ type FormSelectProps = {
 
 export function FormSelect({
   label,
-  placeholder = "انتخاب کنید",
+  placeholder,
   selectedKey,
   onSelectionChange,
   options,
-  emptyMessage = "موردی یافت نشد",
+  emptyMessage,
   isDisabled,
 }: FormSelectProps) {
+  const { t } = useTranslation();
+  const resolvedPlaceholder = placeholder ?? t("common.select");
+  const resolvedEmptyMessage = emptyMessage ?? t("common.noItemsFound");
   const { wrapperRef, portalProps } = useFormModalPortalPopover();
   const resolvedKey = selectedKey || null;
 
@@ -326,7 +335,7 @@ export function FormSelect({
           if (key == null) return;
           onSelectionChange?.(String(key));
         }}
-        placeholder={placeholder}
+        placeholder={resolvedPlaceholder}
       >
         <Label className="mb-1.5 text-sm font-medium">{label}</Label>
         <Select.Trigger className="min-h-11 w-full">
@@ -335,7 +344,7 @@ export function FormSelect({
         </Select.Trigger>
         <Select.Popover {...portalProps}>
           {options.length === 0 ? (
-            <p className="px-3 py-6 text-center text-sm text-muted">{emptyMessage}</p>
+            <p className="px-3 py-6 text-center text-sm text-muted">{resolvedEmptyMessage}</p>
           ) : (
             <ListBox
               aria-label={label}

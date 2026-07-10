@@ -56,7 +56,7 @@ export function FullscreenOverlay({
       className="fixed inset-0 z-[10000] flex h-dvh flex-col bg-background"
       role="dialog"
       aria-modal="true"
-      aria-label={title ?? "تمام‌صفحه"}
+      aria-label={title ?? t("common.fullscreen")}
     >
       {children}
     </div>,

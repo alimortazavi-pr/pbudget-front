@@ -62,7 +62,7 @@ export function AdminContentPage() {
         setTotalPages(data.pagination.totalPages);
       }
     } catch {
-      showToast(t("بارگذاری محتوا ناموفق بود"), "danger");
+      showToast(t("admin.contentLoadFailed"), "danger");
     } finally {
       setLoading(false);
     }
@@ -82,7 +82,7 @@ export function AdminContentPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h3 className="text-lg font-bold">{t("مدیریت محتوا")}</h3>
+          <h3 className="text-lg font-bold">{t("admin.contentManagement")}</h3>
           <p className="text-sm text-muted">
             مشاهده و ویرایش تراکنش‌ها، دسته‌ها و پروژه‌های کاربران
           </p>
@@ -104,7 +104,7 @@ export function AdminContentPage() {
             <input
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder={t("جستجو…")}
+              placeholder={t("common.searchEllipsis")}
               className="w-full rounded-xl border border-border bg-surface px-10 py-2.5 text-sm outline-none focus:border-accent"
             />
           </div>
@@ -178,7 +178,7 @@ export function AdminContentPage() {
                     await adminApi.updateAdminBudget(item._id, {
                       deleted: !item.deleted,
                     });
-                    showToast(t("به‌روزرسانی شد"), "success");
+                    showToast(t("common.updated"), "success");
                     void load();
                   }}
                 />
@@ -226,7 +226,7 @@ export function AdminContentPage() {
                     await adminApi.updateAdminCategory(item._id, {
                       deleted: !item.deleted,
                     });
-                    showToast(t("به‌روزرسانی شد"), "success");
+                    showToast(t("common.updated"), "success");
                     void load();
                   }}
                 />
@@ -263,7 +263,7 @@ export function AdminContentPage() {
                     await adminApi.updateAdminProject(item._id, {
                       deleted: !item.deleted,
                     });
-                    showToast(t("به‌روزرسانی شد"), "success");
+                    showToast(t("common.updated"), "success");
                     void load();
                   }}
                 />
@@ -437,10 +437,10 @@ function BudgetEditModal({
     if (!item) return;
     try {
       await adminApi.updateAdminBudget(item._id, { price, description, type });
-      showToast(t("تراکنش ذخیره شد"), "success");
+      showToast(t("admin.transactionSaved"), "success");
       onSaved();
     } catch {
-      showToast(t("ذخیره ناموفق بود"), "danger");
+      showToast(t("common.saveFailed"), "danger");
     }
   };
 
@@ -451,7 +451,7 @@ function BudgetEditModal({
           <Modal.Dialog className="max-w-md">
             <Modal.CloseTrigger />
             <Modal.Header>
-              <Modal.Heading>{t("ویرایش تراکنش")}</Modal.Heading>
+              <Modal.Heading>{t("nav.editTransaction")}</Modal.Heading>
             </Modal.Header>
             <Modal.Body className="space-y-3">
               <input
@@ -459,21 +459,21 @@ function BudgetEditModal({
                 value={price}
                 onChange={(e) => setPrice(Number(e.target.value))}
                 className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                placeholder={t("مبلغ")}
+                placeholder={t("common.amount")}
               />
               <select
                 value={type}
                 onChange={(e) => setType(Number(e.target.value))}
                 className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
               >
-                <option value={0}>{t("درآمد")}</option>
-                <option value={1}>{t("هزینه")}</option>
+                <option value={0}>{t("common.income")}</option>
+                <option value={1}>{t("common.expense")}</option>
               </select>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                placeholder={t("توضیح")}
+                placeholder={t("common.description")}
                 rows={3}
               />
             </Modal.Body>
@@ -481,7 +481,7 @@ function BudgetEditModal({
               <Button variant="secondary" onPress={onClose}>
                 انصراف
               </Button>
-              <Button onPress={() => void save()}>{t("ذخیره")}</Button>
+              <Button onPress={() => void save()}>{t("common.save")}</Button>
             </Modal.Footer>
           </Modal.Dialog>
         </Modal.Container>
@@ -520,10 +520,10 @@ function CategoryEditModal({
         color,
         monthlyLimit,
       });
-      showToast(t("دسته ذخیره شد"), "success");
+      showToast(t("categories.categorySaved"), "success");
       onSaved();
     } catch {
-      showToast(t("ذخیره ناموفق بود"), "danger");
+      showToast(t("common.saveFailed"), "danger");
     }
   };
 
@@ -534,34 +534,34 @@ function CategoryEditModal({
           <Modal.Dialog className="max-w-md">
             <Modal.CloseTrigger />
             <Modal.Header>
-              <Modal.Heading>{t("ویرایش دسته")}</Modal.Heading>
+              <Modal.Heading>{t("categories.editCategory")}</Modal.Heading>
             </Modal.Header>
             <Modal.Body className="space-y-3">
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                placeholder={t("عنوان")}
+                placeholder={t("common.title")}
               />
               <input
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
                 className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                placeholder={t("رنگ")}
+                placeholder={t("common.color")}
               />
               <input
                 type="number"
                 value={monthlyLimit}
                 onChange={(e) => setMonthlyLimit(Number(e.target.value))}
                 className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                placeholder={t("سقف ماهانه")}
+                placeholder={t("common.monthlyLimit")}
               />
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onPress={onClose}>
                 انصراف
               </Button>
-              <Button onPress={() => void save()}>{t("ذخیره")}</Button>
+              <Button onPress={() => void save()}>{t("common.save")}</Button>
             </Modal.Footer>
           </Modal.Dialog>
         </Modal.Container>
@@ -597,10 +597,10 @@ function ProjectEditModal({
         description,
         totalAmount,
       });
-      showToast(t("پروژه ذخیره شد"), "success");
+      showToast(t("projects.projectSaved"), "success");
       onSaved();
     } catch {
-      showToast(t("ذخیره ناموفق بود"), "danger");
+      showToast(t("common.saveFailed"), "danger");
     }
   };
 
@@ -611,14 +611,14 @@ function ProjectEditModal({
           <Modal.Dialog className="max-w-md">
             <Modal.CloseTrigger />
             <Modal.Header>
-              <Modal.Heading>{t("ویرایش پروژه")}</Modal.Heading>
+              <Modal.Heading>{t("projects.editProject")}</Modal.Heading>
             </Modal.Header>
             <Modal.Body className="space-y-3">
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                placeholder={t("توضیح")}
+                placeholder={t("common.description")}
                 rows={3}
               />
               <input
@@ -626,14 +626,14 @@ function ProjectEditModal({
                 value={totalAmount}
                 onChange={(e) => setTotalAmount(Number(e.target.value))}
                 className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                placeholder={t("مبلغ کل")}
+                placeholder={t("common.totalAmount")}
               />
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onPress={onClose}>
                 انصراف
               </Button>
-              <Button onPress={() => void save()}>{t("ذخیره")}</Button>
+              <Button onPress={() => void save()}>{t("common.save")}</Button>
             </Modal.Footer>
           </Modal.Dialog>
         </Modal.Container>

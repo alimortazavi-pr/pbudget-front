@@ -112,7 +112,7 @@ export function ReminderDateTimePicker({
         calendarPosition="top-center"
         containerClassName="w-full"
         inputClass="pb-form-date-input"
-        placeholder={t("تاریخ و ساعت")}
+        placeholder={t("auto.k803a9efb66")}
       />
       <div className="flex justify-end">
         <Button

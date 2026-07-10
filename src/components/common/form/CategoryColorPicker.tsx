@@ -19,7 +19,7 @@ export function CategoryColorPicker({ value, onChange }: CategoryColorPickerProp
 
   return (
     <div className="space-y-3">
-      <p className="text-sm font-medium">{t("رنگ دسته")}</p>
+      <p className="text-sm font-medium">{t("auto.ka158979643")}</p>
       <div className="flex flex-wrap gap-2">
         {DEFAULT_CATEGORY_COLORS.map((color) => (
           <button
@@ -35,7 +35,7 @@ export function CategoryColorPicker({ value, onChange }: CategoryColorPickerProp
         ))}
       </div>
       <FormInput
-        label={t("رنگ سفارشی (HEX)")}
+        label={t("auto.k79efe42e14")}
         placeholder="#3b82f6"
         value={customValue}
         onChange={(e) => {
@@ -49,7 +49,7 @@ export function CategoryColorPicker({ value, onChange }: CategoryColorPickerProp
         dir="ltr"
       />
       {value && !isValidHexColor(value) ? (
-        <p className="text-xs text-danger">{t("فرمت رنگ نامعتبر است — مثال: #3b82f6")}</p>
+        <p className="text-xs text-danger">{t("auto.kd2ac8487a3")}</p>
       ) : null}
     </div>
   );

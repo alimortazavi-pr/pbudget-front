@@ -173,7 +173,7 @@ export function TasksPage() {
           ? { ...current, total: current.total + 1, pending: current.pending + 1 }
           : current,
       );
-      showToast(t("تسک اضافه شد"), "success");
+      showToast(t("auto.k954f062479"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     } finally {
@@ -198,7 +198,7 @@ export function TasksPage() {
       await tasksApi.deleteTask(task._id);
       setTasks((current) => current.filter((row) => row._id !== task._id));
       void load();
-      showToast(t("حذف شد"), "success");
+      showToast(t("common.deleted"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     }
@@ -219,8 +219,8 @@ export function TasksPage() {
       <section className="rounded-3xl bg-gradient-to-br from-rose-500 to-rose-600 p-5 text-white shadow-lg">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-sm font-medium text-white/80">{t("برنامه‌ریزی و پیگیری")}</p>
-            <h1 className="mt-1 text-2xl font-bold">{t("برنامه روزانه")}</h1>
+            <p className="text-sm font-medium text-white/80">{t("auto.ked14c9da8b")}</p>
+            <h1 className="mt-1 text-2xl font-bold">{t("nav.dailyPlanner")}</h1>
             <p className="mt-2 text-sm leading-7 text-white/80">
               برنامه روزانه، ماهانه و سالانه — همه با تاریخ شمسی و لینک به پروژه‌ها
             </p>
@@ -290,19 +290,19 @@ export function TasksPage() {
       {summary && (
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
           <div className="glass rounded-2xl p-3 text-center">
-            <p className="text-xs text-muted">{t("کل")}</p>
+            <p className="text-xs text-muted">{t("auto.kc51219f565")}</p>
             <p className="mt-1 text-xl font-bold">{formatCount(summary.total)}</p>
           </div>
           <div className="glass rounded-2xl p-3 text-center">
-            <p className="text-xs text-muted">{t("انجام‌شده")}</p>
+            <p className="text-xs text-muted">{t("auto.kf82fc4a167")}</p>
             <p className="mt-1 text-xl font-bold text-emerald-600">{formatCount(summary.done)}</p>
           </div>
           <div className="glass rounded-2xl p-3 text-center">
-            <p className="text-xs text-muted">{t("باز")}</p>
+            <p className="text-xs text-muted">{t("auto.k2e91d38fda")}</p>
             <p className="mt-1 text-xl font-bold text-accent">{formatCount(summary.pending)}</p>
           </div>
           <div className="glass rounded-2xl p-3 text-center">
-            <p className="text-xs text-muted">{t("عقب‌افتاده")}</p>
+            <p className="text-xs text-muted">{t("auto.k2055424d06")}</p>
             <p className="mt-1 text-xl font-bold text-rose-600">{formatCount(summary.overdue)}</p>
           </div>
         </div>
@@ -311,7 +311,7 @@ export function TasksPage() {
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="flex-1">
           <FormSelect
-            label={t("فیلتر پروژه")}
+            label={t("auto.k67363281ba")}
             selectedKey={projectFilter || "all"}
             onSelectionChange={(key) =>
               updateQuery({ projectId: key === "all" ? "" : key })
@@ -350,12 +350,12 @@ export function TasksPage() {
           data-tour="tasks-quick-add"
         >
           <TextField className="gap-2">
-            <Label>{t("تسک سریع")}</Label>
+            <Label>{t("auto.kf2eac97c82")}</Label>
             <div className="flex items-center gap-2">
               <Input
                 variant="secondary"
                 className="min-w-0 flex-1"
-                placeholder={t("تسک امروز را بنویسید…")}
+                placeholder={t("auto.k5c492a8cfc")}
                 value={quickTitle}
                 onChange={(e) => setQuickTitle(e.target.value)}
               />
@@ -382,7 +382,7 @@ export function TasksPage() {
       ) : tasks.length === 0 ? (
         <div className="glass mt-4 rounded-2xl p-10 text-center">
           <Task size={40} className="mx-auto mb-3 text-muted" />
-          <p className="text-muted">{t("تسکی برای این بازه نیست")}</p>
+          <p className="text-muted">{t("auto.kf0477c4286")}</p>
           <Button className="mt-4" onPress={openCreate}>
             اولین تسک
           </Button>
@@ -404,7 +404,7 @@ export function TasksPage() {
                   isSelected={task.done}
                   onChange={() => void toggleTask(task)}
                   size="sm"
-                  aria-label={t("انجام شد")}
+                  aria-label={t("common.done")}
                 >
                   <Switch.Control>
                     <Switch.Thumb />

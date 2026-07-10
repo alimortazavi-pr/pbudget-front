@@ -36,9 +36,9 @@ type MobileAppShellProps = {
 const MOBILE_TAB_ITEMS = [
   PRIMARY_NAV_ITEMS[0],
   MOBILE_TAB_SIDE_ITEMS[0],
-  { ...CREATE_NAV_ITEM, label: "ثبت", fab: true as const },
+  { ...CREATE_NAV_ITEM, label: "nav.create", fab: true as const },
   MOBILE_TAB_SIDE_ITEMS[1],
-  { href: "#more", label: "بیشتر", icon: Menu, isMore: true as const },
+  { href: "#more", label: "nav.more", icon: Menu, isMore: true as const },
 ];
 
 export function MobileAppShell({
@@ -67,7 +67,7 @@ export function MobileAppShell({
                   isIconOnly
                   variant="ghost"
                   size="sm"
-                  aria-label={t("بازگشت")}
+                  aria-label={t("common.back")}
                   onPress={() => router.back()}
                 >
                   <ArrowRight2 size={20} />
@@ -80,7 +80,7 @@ export function MobileAppShell({
                   {displayTitle}
                 </h1>
                 <span className="hidden shrink-0 rounded-full bg-rose-500/12 px-2 py-0.5 text-[10px] font-medium text-rose-600 dark:text-rose-400 sm:inline">
-                  {t("میز شخصی")}
+                  {t("nav.personalDesk")}
                 </span>
               </div>
             </div>
@@ -89,7 +89,7 @@ export function MobileAppShell({
                 isIconOnly
                 variant="ghost"
                 size="sm"
-                aria-label={t("راهنما")}
+                aria-label={t("common.help")}
                 data-tour="tour-button"
                 onPress={() => {
                   if (pathname === PATHS.HOME) {
@@ -124,7 +124,7 @@ export function MobileAppShell({
         {!hideTabBar && (
           <nav
             className="pb-tab-bar lg:hidden"
-            aria-label={t("ناوبری اصلی")}
+            aria-label={t("common.mainNavigation")}
             data-tour="nav-tab-bar"
           >
             <div className="pb-tab-bar-inner">
@@ -177,7 +177,7 @@ export function MobileAppShell({
                       size={22}
                       variant={active ? "Bold" : "Linear"}
                     />
-                    <span>{item.label}</span>
+                    <span>{t(item.label)}</span>
                   </Link>
                 );
               })}

@@ -42,7 +42,7 @@ export function LinkedVentureSummary({ venture }: LinkedVentureSummaryProps) {
   const { t } = useTranslation();
   return (
     <div className="space-y-2 rounded-2xl border border-border/60 bg-surface-secondary/60 p-4">
-      <p className="text-sm font-medium">{t("مرتبط با کسب‌وکار مشترک")}</p>
+      <p className="text-sm font-medium">{t("auto.k691d16e3d6")}</p>
       <div className="rounded-xl bg-accent/10 px-3 py-3 text-sm text-accent">
         <p className="font-semibold">{resolveVentureTitle(venture)}</p>
       </div>
@@ -82,7 +82,7 @@ export function VentureLedgerSection({
   if (projectBlocked) {
     return (
       <div className="space-y-2 rounded-2xl border border-border/60 bg-surface-secondary/60 p-4">
-        <p className="text-sm font-medium">{t("مرتبط با کسب‌وکار مشترک")}</p>
+        <p className="text-sm font-medium">{t("auto.k691d16e3d6")}</p>
         <p className="text-xs leading-6 text-muted">
           تراکنش‌های وصل‌شده به پروژه را نمی‌توان هم‌زمان به کسب‌وکار مشترک وصل کرد.
         </p>
@@ -94,7 +94,7 @@ export function VentureLedgerSection({
     <div className="space-y-3 rounded-2xl border border-border/60 bg-surface-secondary/60 p-4">
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-sm font-medium">{t("مرتبط با کسب‌وکار مشترک")}</p>
+          <p className="text-sm font-medium">{t("auto.k691d16e3d6")}</p>
           <p className="mt-1 text-xs text-muted">
             نمایش تراکنش برای شما و شرکای کسب‌وکار
           </p>
@@ -103,7 +103,7 @@ export function VentureLedgerSection({
           isSelected={value.enabled}
           onChange={(selected) => onChange({ enabled: selected })}
           size="sm"
-          aria-label={t("مرتبط با کسب‌وکار مشترک")}
+          aria-label={t("auto.k691d16e3d6")}
         >
           <Switch.Control>
             <Switch.Thumb />
@@ -114,8 +114,8 @@ export function VentureLedgerSection({
       {value.enabled ? (
         <div className="space-y-3 border-t border-border/40 pt-3">
           <FormSelect
-            label={t("کدام کسب‌وکار؟")}
-            placeholder={t("یک کسب‌وکار انتخاب کنید")}
+            label={t("auto.k006acd5134")}
+            placeholder={t("auto.kc351623ec7")}
             selectedKey={value.ventureId || undefined}
             onSelectionChange={(key) => onChange({ ventureId: key })}
             options={ventureOptions}

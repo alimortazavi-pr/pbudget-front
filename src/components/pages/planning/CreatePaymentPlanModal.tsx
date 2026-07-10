@@ -16,7 +16,7 @@ import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
 import { userSelector } from "@/stores/profile";
-import { currencyLabel } from "@/common/constants/user-preferences";
+import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 
 type CreatePaymentPlanModalProps = {
   open: boolean;
@@ -32,6 +32,7 @@ export function CreatePaymentPlanModal({
   defaultProjectId,
 }: CreatePaymentPlanModalProps) {
   const { t } = useTranslation();
+  const { currencyLabel } = useCurrencyLabels();
   const user = useAppSelector(userSelector);
   const preferredCurrency = user?.preferences?.currency ?? "toman";
   const categories = useAppSelector(categoriesSelector);
@@ -74,7 +75,7 @@ export function CreatePaymentPlanModal({
 
   async function handleSubmit() {
     if (!title.trim() || !amount.trim()) {
-      showToast(t("عنوان و مبلغ الزامی است"));
+      showToast(t("auto.k03a26874b4"));
       return;
     }
 
@@ -94,7 +95,7 @@ export function CreatePaymentPlanModal({
         description,
         projectId: projectId || defaultProjectId || undefined,
       });
-      showToast(t("برنامه پرداخت ثبت شد"), "success");
+      showToast(t("auto.k258ae0e94e"), "success");
       onCreated(result.plan._id);
       onOpenChange(false);
       setTitle("");
@@ -115,7 +116,7 @@ export function CreatePaymentPlanModal({
     <AppModal open={open} onOpenChange={onOpenChange}>
       <AppModalDialog className="max-w-lg">
         <AppModalHeader onClose={() => onOpenChange(false)}>
-          <Modal.Heading>{t("برنامه پرداخت جدید")}</Modal.Heading>
+          <Modal.Heading>{t("auto.k0bf14f8ce2")}</Modal.Heading>
         </AppModalHeader>
         <Modal.Body className="max-h-[70vh] space-y-4 overflow-y-auto">
           <p className="text-sm text-muted">
@@ -123,9 +124,9 @@ export function CreatePaymentPlanModal({
             می‌شود.
           </p>
 
-          <FormInput label={t("عنوان")} value={title} onChange={(e) => setTitle(e.target.value)} />
+          <FormInput label={t("common.title")} value={title} onChange={(e) => setTitle(e.target.value)} />
           <FormPersonComboBox
-            label={t("طرف حساب (اختیاری)")}
+            label={t("auto.k21f805faf6")}
             value={person}
             onChange={setPerson}
             options={persons}
@@ -136,35 +137,35 @@ export function CreatePaymentPlanModal({
             onChange={setAmount}
           />
           <FormCategoryComboBox
-            label={t("دسته‌بندی پیش‌فرض")}
-            placeholder={t("جستجو یا انتخاب دسته‌بندی")}
+            label={t("auto.k85a9d7d20f")}
+            placeholder={t("common.searchCategoryPlaceholder")}
             selectedKey={category || undefined}
             onSelectionChange={(key) => setCategory(key)}
             options={categoryOptions}
             emptyMessage="دسته‌ای ثبت نشده"
           />
           <FormInput
-            label={t("روز سررسید هر ماه (۱ تا ۳۱)")}
+            label={t("auto.kc90b6ae6eb")}
             inputMode="numeric"
             value={dueDay}
             onChange={(e) => setDueDay(e.target.value)}
           />
           <FormInput
-            label={t("تعداد اقساط (خالی = تا لغو)")}
+            label={t("auto.k4d7f2e3b09")}
             inputMode="numeric"
             value={installments}
             onChange={(e) => setInstallments(e.target.value)}
           />
           <FormTextArea
-            label={t("توضیحات")}
+            label={t("common.description")}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
 
           {!defaultProjectId && projectOptions.length > 0 && (
             <FormSelect
-              label={t("پروژه (اختیاری)")}
-              placeholder={t("بدون پروژه")}
+              label={t("auto.kbdd83045b6")}
+              placeholder={t("auto.kdeafaa63f0")}
               selectedKey={projectId || undefined}
               onSelectionChange={(key) => setProjectId(String(key ?? ""))}
               options={[{ id: "", label: "بدون پروژه" }, ...projectOptions]}
@@ -173,8 +174,8 @@ export function CreatePaymentPlanModal({
 
           <div className="flex items-center justify-between rounded-xl border border-border/60 bg-surface-secondary/60 p-3">
             <div>
-              <p className="text-sm font-medium">{t("یادآوری اول ماه")}</p>
-              <p className="text-xs text-muted">{t("لیست اقساط این ماه در تلگرام")}</p>
+              <p className="text-sm font-medium">{t("auto.k12f4a67ea5")}</p>
+              <p className="text-xs text-muted">{t("auto.k1ad70c93a2")}</p>
             </div>
             <Switch isSelected={remindMonthStart} onChange={setRemindMonthStart} size="sm">
               <Switch.Control>

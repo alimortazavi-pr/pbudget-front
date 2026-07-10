@@ -77,7 +77,7 @@ export function RunningTabsPage() {
 
   async function saveTab() {
     if (!title.trim()) {
-      showToast(t("عنوان الزامی است"));
+      showToast(t("auto.kc684d17ce8"));
       return;
     }
 
@@ -89,14 +89,14 @@ export function RunningTabsPage() {
           amount: amount ? toEnglishDigits(amount) : "0",
         });
         setTabs((prev) => prev.map((item) => (item._id === editTab._id ? updated : item)));
-        showToast(t("ذخیره شد"), "success");
+        showToast(t("common.saved"), "success");
       } else {
         const tab = await runningTabsApi.createRunningTab({
           title: title.trim(),
           amount: amount ? toEnglishDigits(amount) : undefined,
         });
         setTabs((prev) => [tab, ...prev]);
-        showToast(t("اضافه شد"), "success");
+        showToast(t("auto.ke55428888d"), "success");
       }
       setCreateOpen(false);
       setEditTab(null);
@@ -127,7 +127,7 @@ export function RunningTabsPage() {
     try {
       const updated = await runningTabsApi.clearRunningTab(tab._id);
       setTabs((prev) => prev.map((item) => (item._id === tab._id ? updated : item)));
-      showToast(t("تسویه شد"), "success");
+      showToast(t("auto.k4978a41d38"), "success");
     } catch (err) {
       showErrorToast(err);
     } finally {
@@ -141,7 +141,7 @@ export function RunningTabsPage() {
     try {
       await runningTabsApi.deleteRunningTab(tab._id);
       setTabs((prev) => prev.filter((item) => item._id !== tab._id));
-      showToast(t("حذف شد"), "success");
+      showToast(t("common.deleted"), "success");
     } catch (err) {
       showErrorToast(err);
     } finally {
@@ -152,8 +152,8 @@ export function RunningTabsPage() {
   return (
     <div className="space-y-5 pb-6">
       <section className="rounded-3xl bg-gradient-to-br from-amber-500 to-orange-600 p-5 text-white shadow-lg">
-        <p className="text-sm font-medium text-white/80">{t("تعهدات ناپایدار")}</p>
-        <h1 className="mt-1 text-2xl font-bold">{t("تعهدات جاری")}</h1>
+        <p className="text-sm font-medium text-white/80">{t("auto.kc933bbe16d")}</p>
+        <h1 className="mt-1 text-2xl font-bold">{t("nav.commitments")}</h1>
         <p className="mt-2 text-sm leading-7 text-white/85">
           مبالغی که مدام کم و زیاد می‌شوند — صدقه، انعام، یا هر بدهی کوچک که هنوز
           ثبت نهایی نشده.
@@ -162,15 +162,15 @@ export function RunningTabsPage() {
 
       <div className="grid gap-3 sm:grid-cols-3">
         <div className="glass rounded-2xl p-4">
-          <p className="text-sm text-muted">{t("جمع مانده")}</p>
+          <p className="text-sm text-muted">{t("auto.k687b7c8520")}</p>
           <p className="mt-2 text-2xl font-bold text-expense">{formatPrice(stats.total)}</p>
         </div>
         <div className="glass rounded-2xl p-4">
-          <p className="text-sm text-muted">{t("دارای مانده")}</p>
+          <p className="text-sm text-muted">{t("auto.k1154b54f83")}</p>
           <p className="mt-2 text-2xl font-bold">{formatCount(stats.activeCount)}</p>
         </div>
         <div className="glass rounded-2xl p-4">
-          <p className="text-sm text-muted">{t("تسویه‌شده / صفر")}</p>
+          <p className="text-sm text-muted">{t("auto.k4ad9f4a7b5")}</p>
           <p className="mt-2 text-2xl font-bold text-muted">{formatCount(stats.zeroCount)}</p>
         </div>
       </div>
@@ -201,7 +201,7 @@ export function RunningTabsPage() {
       </div>
 
       {loading ? (
-        <p className="text-center text-sm text-muted">{t("در حال بارگذاری…")}</p>
+        <p className="text-center text-sm text-muted">{t("common.loading")}</p>
       ) : visibleTabs.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted">
           {filter === "active"
@@ -305,13 +305,13 @@ export function RunningTabsPage() {
           </AppModalHeader>
           <Modal.Body className="space-y-4">
             <FormInput
-              label={t("عنوان")}
-              placeholder={t("مثلاً: صدقه")}
+              label={t("common.title")}
+              placeholder={t("auto.k4b6b173916")}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
             <FormPriceInput
-              label={t("مبلغ فعلی")}
+              label={t("auto.keec44b6191")}
               value={amount}
               onChange={setAmount}
             />

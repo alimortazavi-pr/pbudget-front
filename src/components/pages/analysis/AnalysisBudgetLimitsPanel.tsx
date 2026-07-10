@@ -18,8 +18,8 @@ export function AnalysisBudgetLimitsPanel({ report }: AnalysisBudgetLimitsPanelP
   return (
     <section className="glass rounded-2xl p-4 lg:p-5">
       <div className="mb-4">
-        <h3 className="font-bold">{t("سقف بودجه دسته‌ها")}</h3>
-        <p className="text-sm text-muted">{t("مقایسه خرج دوره با سقف ماهانه — عبور مجاز است")}</p>
+        <h3 className="font-bold">{t("auto.kd7abb7015a")}</h3>
+        <p className="text-sm text-muted">{t("auto.keb781266c4")}</p>
       </div>
       <div className="space-y-3">
         {rows.map((row, index) => (
@@ -34,7 +34,7 @@ export function AnalysisBudgetLimitsPanel({ report }: AnalysisBudgetLimitsPanelP
                   <p className="font-medium">
                     {row.title}
                     {row.isRollup ? (
-                      <span className="ms-1 text-xs text-muted">{t("(جمع)")}</span>
+                      <span className="ms-1 text-xs text-muted">{t("auto.k3015d3f617")}</span>
                     ) : null}
                   </p>
                   <p className="text-xs text-muted">

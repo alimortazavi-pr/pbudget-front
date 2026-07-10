@@ -45,7 +45,7 @@ export function AdminDatabasePage() {
       const data = await adminApi.fetchAdminCollections();
       setCollections(data);
     } catch {
-      showToast(t("بارگذاری کالکشن‌ها ناموفق بود"), "danger");
+      showToast(t("auto.keb1c2bc865"), "danger");
     } finally {
       setLoading(false);
     }
@@ -61,7 +61,7 @@ export function AdminDatabasePage() {
       await adminApi.downloadCollectionExport(name, format);
       showToast(`خروجی ${name} دانلود شد`, "success");
     } catch {
-      showToast(t("دانلود ناموفق بود"), "danger");
+      showToast(t("auto.k72a0e2fd88"), "danger");
     } finally {
       setExporting(null);
     }
@@ -71,9 +71,9 @@ export function AdminDatabasePage() {
     setExporting("__all__");
     try {
       await adminApi.downloadFullDatabaseExport(format);
-      showToast(t("خروجی کامل دیتابیس دانلود شد"), "success");
+      showToast(t("auto.k9bb1888eff"), "success");
     } catch {
-      showToast(t("دانلود ناموفق بود"), "danger");
+      showToast(t("auto.k72a0e2fd88"), "danger");
     } finally {
       setExporting(null);
     }
@@ -99,7 +99,7 @@ export function AdminDatabasePage() {
       );
       void load();
     } catch {
-      showToast(t("بازیابی ناموفق بود"), "danger");
+      showToast(t("auto.k1732faa31d"), "danger");
     } finally {
       setExporting(null);
       setImportTarget(null);
@@ -113,7 +113,7 @@ export function AdminDatabasePage() {
       const data = await adminApi.fetchCollectionPreview(name, 15);
       setPreview(data);
     } catch {
-      showToast(t("پیش‌نمایش ناموفق بود"), "danger");
+      showToast(t("auto.k6ef0a02955"), "danger");
     } finally {
       setPreviewLoading(false);
     }
@@ -129,7 +129,7 @@ export function AdminDatabasePage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h3 className="text-lg font-bold">{t("مدیریت دیتابیس")}</h3>
+          <h3 className="text-lg font-bold">{t("auto.k9fe6d4a760")}</h3>
           <p className="text-sm text-muted">
             {toPersianDigits(collections.length)} کالکشن ·{" "}
             {toPersianDigits(totalDocs)} سند · {formatBytes(totalSize)}
@@ -207,11 +207,11 @@ export function AdminDatabasePage() {
           <table className="min-w-full text-sm">
             <thead className="bg-surface-secondary/70 text-muted">
               <tr>
-                <th className="px-4 py-3 text-start font-medium">{t("کالکشن")}</th>
-                <th className="px-4 py-3 text-start font-medium">{t("اسناد")}</th>
-                <th className="px-4 py-3 text-start font-medium">{t("حجم")}</th>
-                <th className="px-4 py-3 text-start font-medium">{t("ایندکس")}</th>
-                <th className="px-4 py-3 text-start font-medium">{t("عملیات")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.k856205a73e")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.k5b4218ff28")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.k31414a116f")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.kf3de99e34e")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.k0f0dff2dfc")}</th>
               </tr>
             </thead>
             <tbody>

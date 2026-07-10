@@ -1,6 +1,7 @@
 "use client";
 
 import { BOARD_COLUMN_COLORS } from "@/common/utils/board-colors";
+import { useTranslation } from "@/components/providers/LanguageProvider";
 
 type BoardColumnColorPickerProps = {
   value: string;
@@ -13,6 +14,8 @@ export function BoardColumnColorPicker({
   onChange,
   compact = false,
 }: BoardColumnColorPickerProps) {
+  const { t } = useTranslation();
+
   return (
     <div className={`flex flex-wrap gap-1.5 ${compact ? "" : "mt-2"}`}>
       {BOARD_COLUMN_COLORS.map((color) => (
@@ -24,7 +27,7 @@ export function BoardColumnColorPicker({
             compact ? "size-5" : "size-7"
           } ${value === color ? "border-foreground scale-110" : "border-transparent"}`}
           style={{ backgroundColor: color }}
-          aria-label={`رنگ ${color}`}
+          aria-label={t("common.colorAria", { color })}
         />
       ))}
     </div>

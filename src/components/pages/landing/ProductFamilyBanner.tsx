@@ -38,7 +38,7 @@ export function ProductFamilyBanner({ variant = "section" }: ProductFamilyBanner
   if (variant === "footer") {
     return (
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3 border-t border-border/40 pt-6 md:justify-start">
-        <span className="text-xs lp-muted">{t("محصولات مرتبط:")}</span>
+        <span className="text-xs lp-muted">{t("auto.k5766a2c32f")}</span>
         <Link
           href={BUSINESS_SITE_URL}
           className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium transition hover:opacity-90"

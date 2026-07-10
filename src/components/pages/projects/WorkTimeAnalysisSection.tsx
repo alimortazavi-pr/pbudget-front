@@ -114,7 +114,7 @@ export function WorkTimeAnalysisSection({
           </p>
         </div>
         <div className="glass rounded-2xl p-4">
-          <p className="text-sm text-muted">{t("پیشرفت")}</p>
+          <p className="text-sm text-muted">{t("auto.k9998d1625f")}</p>
           <p className="mt-2 text-xl font-bold">
             {progress !== null ? `${toPersianDigits(String(Math.round(progress)))}٪` : "—"}
           </p>
@@ -143,7 +143,7 @@ export function WorkTimeAnalysisSection({
 
       {report.comparison ? (
         <section className="glass rounded-2xl border border-border/50 p-4 text-sm">
-          <p className="font-semibold">{t("مقایسه با ماه قبل")}</p>
+          <p className="font-semibold">{t("auto.k363efa810f")}</p>
           <p className="mt-1 text-muted">{report.comparison.previousPeriodLabel}</p>
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
             <p>

@@ -138,7 +138,7 @@ function Product3D() {  const { t } = useTranslation();
           </div>
           <div className="flex-1 p-4">
             <div className="mb-3 flex items-center justify-between">
-              <span className="text-xs font-semibold">{t("داشبورد مالی")}</span>
+              <span className="text-xs font-semibold">{t("auto.kbc3d6cfc08")}</span>
               <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
                 امروز
               </span>
@@ -244,7 +244,7 @@ function ContactForm() {  const { t } = useTranslation();
   return (
     <form onSubmit={(e) => void handleSubmit(e)} className="grid gap-5 sm:grid-cols-2">
       <TextField className="gap-2" isInvalid={Boolean(errors.name)}>
-        <Label className="text-sm font-medium">{t("نام")}</Label>
+        <Label className="text-sm font-medium">{t("common.name")}</Label>
         <Input
           variant="secondary"
           className="w-full"
@@ -255,20 +255,20 @@ function ContactForm() {  const { t } = useTranslation();
         {errors.name ? <span className="text-sm text-danger">{errors.name}</span> : null}
       </TextField>
       <TextField className="gap-2" isInvalid={Boolean(errors.phone)}>
-        <Label className="text-sm font-medium">{t("موبایل (اختیاری)")}</Label>
+        <Label className="text-sm font-medium">{t("auto.kc771d04490")}</Label>
         <Input
           type="tel"
           inputMode="tel"
           variant="secondary"
           className="w-full"
-          placeholder={t("۰۹۱۲۳۴۵۶۷۸۹")}
+          placeholder={t("auto.k31b5be1e8a")}
           value={phone}
           onChange={(e) => { setPhone(e.target.value); setErrors((prev) => ({ ...prev, phone: "" })); }}
         />
         {errors.phone ? <span className="text-sm text-danger">{errors.phone}</span> : null}
       </TextField>
       <TextField className="gap-2 sm:col-span-2" isInvalid={Boolean(errors.email)}>
-        <Label className="text-sm font-medium">{t("ایمیل (اختیاری)")}</Label>
+        <Label className="text-sm font-medium">{t("auto.kc7df355066")}</Label>
         <Input
           type="email"
           variant="secondary"
@@ -280,7 +280,7 @@ function ContactForm() {  const { t } = useTranslation();
         {errors.email ? <span className="text-sm text-danger">{errors.email}</span> : null}
       </TextField>
       <TextField className="gap-2 sm:col-span-2" isInvalid={Boolean(errors.message)}>
-        <Label className="text-sm font-medium">{t("پیام")}</Label>
+        <Label className="text-sm font-medium">{t("auto.k69b7c72077")}</Label>
         <TextArea
           variant="secondary"
           className="w-full min-h-[9rem] resize-y"
@@ -375,7 +375,7 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
             <ProductFamilyBanner variant="header" />
             {content.settings.showAppDownloadInNav && !appSoon ? (
                 <Link href={PATHS.DOWNLOAD} className="hidden sm:block">
-                  <Button variant="ghost" size="sm"><DocumentDownload size={18} />{t("دانلود")}</Button>
+                  <Button variant="ghost" size="sm"><DocumentDownload size={18} />{t("auto.k24bab7c19d")}</Button>
                 </Link>
             ) : null}
             <Link href={primaryCta}>
@@ -448,7 +448,7 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
       <section id="features" className="scroll-mt-24 py-14 md:py-20">
         <div className="mx-auto max-w-6xl px-4 md:px-6">
           <Reveal className="mx-auto max-w-2xl text-center">
-            <h2 className="text-2xl font-bold md:text-4xl">{t("امکانات")}<span className="landing-text-shimmer">{t("یکپارچه")}</span></h2>
+            <h2 className="text-2xl font-bold md:text-4xl">{t("auto.kd4caaca0fc")}<span className="landing-text-shimmer">{t("auto.kce39b11865")}</span></h2>
             <p className="mt-3 text-sm lp-muted md:text-base">
               همه ابزارهای مالی شخصی در یک میز — از تراکنش روزانه تا پروژه و تحلیل.
             </p>
@@ -527,7 +527,7 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
 
       <section id="how" className="scroll-mt-20 border-y lp-border py-16 md:py-24">
         <div className="mx-auto max-w-6xl px-4 md:px-6">
-          <Reveal className="text-center"><h2 className="text-2xl font-bold md:text-4xl">{t("۴ قدم تا شروع")}</h2></Reveal>
+          <Reveal className="text-center"><h2 className="text-2xl font-bold md:text-4xl">{t("auto.k15ad32274d")}</h2></Reveal>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 md:grid-cols-4">
             {content.howSteps.map((step, i) => (
               <Reveal key={step.step} delay={i * 80} className="text-center md:text-start">
@@ -564,7 +564,7 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
 
       <section id="faq" className="scroll-mt-20 border-t lp-border py-16 md:py-24">
         <div className="mx-auto max-w-2xl px-4 md:px-6">
-          <Reveal className="text-center"><h2 className="text-2xl font-bold md:text-3xl">{t("سوالات متداول")}</h2></Reveal>
+          <Reveal className="text-center"><h2 className="text-2xl font-bold md:text-3xl">{t("auto.k8e50980cfb")}</h2></Reveal>
           <Reveal className="mt-8" delay={80}><FaqList items={content.faq} /></Reveal>
         </div>
       </section>
@@ -603,8 +603,8 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
                 </div>
               </div>
               <div className="landing-contact-form-panel border-t lp-border p-8 md:p-10 lg:border-s lg:border-t-0">
-                <h3 className="text-lg font-semibold">{t("ارسال پیام")}</h3>
-                <p className="mt-1 text-sm lp-muted">{t("معمولاً در کمتر از ۲۴ ساعت پاسخ می‌دهیم.")}</p>
+                <h3 className="text-lg font-semibold">{t("auto.kce3479088e")}</h3>
+                <p className="mt-1 text-sm lp-muted">{t("auto.kd27699e5d5")}</p>
                 <div className="mt-6">
                   <ContactForm />
                 </div>
@@ -626,8 +626,8 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
               {content.nav.map((item) => (
                 <button key={item.id} type="button" onClick={() => scrollToId(item.id)}>{item.label}</button>
               ))}
-              <Link href={PATHS.GET_STARTED}>{t("ورود")}</Link>
-              {!appSoon ? <Link href={PATHS.DOWNLOAD}>{t("دانلود")}</Link> : null}
+              <Link href={PATHS.GET_STARTED}>{t("auto.k32a81e5587")}</Link>
+              {!appSoon ? <Link href={PATHS.DOWNLOAD}>{t("auto.k24bab7c19d")}</Link> : null}
             </nav>
           </div>
           <SiteFooterCredits className="mt-6" />

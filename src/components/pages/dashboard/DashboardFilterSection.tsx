@@ -46,17 +46,17 @@ export function DashboardFilterSection({
       <div className="glass flex items-end gap-2 rounded-2xl p-3 lg:gap-4 lg:p-5">
         <div className="min-w-0 flex-1">
           <FormCategoryComboBox
-            label={t("فیلتر بر اساس دسته‌بندی")}
-            placeholder={t("همه دسته‌بندی‌ها")}
+            label={t("dashboard.filterByCategory")}
+            placeholder={t("dashboard.allCategories")}
             selectedKey={category || "all"}
             onSelectionChange={(key) =>
               onCategoryChange(key === "all" ? "" : key)
             }
             options={[
-              { id: "all", label: "همه دسته‌بندی‌ها" },
+              { id: "all", label: t("dashboard.allCategories") },
               ...categoryOptions,
             ]}
-            emptyMessage="هنوز دسته‌ای ایجاد نکرده‌اید"
+            emptyMessage={t("dashboard.noCategoryCreatedYet")}
           />
         </div>
         <button
@@ -64,7 +64,7 @@ export function DashboardFilterSection({
           className="mb-0.5 flex h-11 shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border border-border bg-surface-secondary px-3 text-sm font-medium text-foreground transition-colors hover:border-accent/40"
           onClick={() => setOpen(true)}
         >
-          <span>{t("فیلتر")}</span>
+          <span>{t("common.filter")}</span>
           <DocumentFilter size={18} />
         </button>
       </div>

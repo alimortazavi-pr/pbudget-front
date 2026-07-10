@@ -63,7 +63,7 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
 
   async function save() {
     if (!title.trim()) {
-      showToast(t("نام الزامی است"));
+      showToast(t("auto.kd403fd3ef7"));
       return;
     }
 
@@ -74,7 +74,7 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
         description: description.trim(),
       });
       setVenture(updated);
-      showToast(t("ذخیره شد"), "success");
+      showToast(t("common.saved"), "success");
     } catch (err) {
       showErrorToast(err);
     } finally {
@@ -87,7 +87,7 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
     setDeleting(true);
     try {
       await partnersApi.deleteVenture(ventureId);
-      showToast(t("حذف شد"), "success");
+      showToast(t("common.deleted"), "success");
       router.push(PATHS.VENTURES);
     } catch (err) {
       showErrorToast(err);
@@ -117,7 +117,7 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
   return (
     <div className="space-y-5 pb-6">
       <section className="glass rounded-3xl p-5">
-        <p className="text-sm text-muted">{t("کسب‌وکار")}</p>
+        <p className="text-sm text-muted">{t("auto.k9f48ae23bb")}</p>
         <h1 className="mt-1 text-2xl font-bold">{venture.title}</h1>
         {isPartner ? (
           <p className="mt-2 rounded-lg bg-accent/10 px-2 py-1 text-xs text-accent">
@@ -185,12 +185,12 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
         <div className="space-y-4">
           <div className="glass space-y-4 rounded-2xl p-4">
             <FormInput
-              label={t("نام کسب‌وکار")}
+              label={t("auto.kab314cebea")}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
             <FormTextArea
-              label={t("توضیحات")}
+              label={t("common.description")}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
@@ -200,7 +200,7 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
           </div>
 
           <section className="rounded-2xl border border-dashed border-danger/35 bg-danger/5 p-4">
-            <p className="text-sm font-medium text-danger">{t("منطقه خطر")}</p>
+            <p className="text-sm font-medium text-danger">{t("common.dangerZone")}</p>
             <Button
               variant="danger"
               className="mt-3"

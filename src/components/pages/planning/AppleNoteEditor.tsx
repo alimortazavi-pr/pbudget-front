@@ -95,7 +95,7 @@ function ReminderPanel({
   return (
     <div className="mt-2 rounded-xl border border-default-200 bg-default-50 p-3 space-y-3">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-xs font-medium text-default-600">{t("یادآوری تلگرام")}</span>
+        <span className="text-xs font-medium text-default-600">{t("planning.telegramReminder")}</span>
         <Button size="sm" variant="ghost" onPress={onRemove}>
           حذف یادآوری
         </Button>
@@ -187,7 +187,7 @@ export function AppleNoteEditor({ items, onChange }: AppleNoteEditorProps) {  co
                 isSelected={line.done}
                 onChange={(checked) => updateLine(line.id, { done: checked })}
                 className="mt-2 shrink-0"
-                aria-label={t("انجام شد")}
+                aria-label={t("common.done")}
               >
                 <Checkbox.Control>
                   <Checkbox.Indicator />
@@ -216,7 +216,7 @@ export function AppleNoteEditor({ items, onChange }: AppleNoteEditorProps) {  co
                   toggleReminder(line);
                 }
               }}
-              aria-label={t("یادآوری")}
+              aria-label={t("common.reminder")}
             >
               <Alarm size={16} />
             </Button>
@@ -226,7 +226,7 @@ export function AppleNoteEditor({ items, onChange }: AppleNoteEditorProps) {  co
               isIconOnly
               className="mt-1 shrink-0 opacity-0 group-hover:opacity-100"
               onPress={() => removeLine(line.id)}
-              aria-label={t("حذف خط")}
+              aria-label={t("planning.deleteLine")}
             >
               <Trash size={16} />
             </Button>

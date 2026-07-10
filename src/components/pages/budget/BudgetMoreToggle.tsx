@@ -2,6 +2,7 @@
 
 import { Button } from "@heroui/react";
 import { ArrowDown2 } from "iconsax-reactjs";
+import { useTranslation } from "@/components/providers/LanguageProvider";
 
 type BudgetMoreToggleProps = {
   open: boolean;
@@ -10,6 +11,8 @@ type BudgetMoreToggleProps = {
 };
 
 export function BudgetMoreToggle({ open, onToggle, hint }: BudgetMoreToggleProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-2 border-t border-border/50 pt-4">
       <Button
@@ -18,7 +21,7 @@ export function BudgetMoreToggle({ open, onToggle, hint }: BudgetMoreToggleProps
         className="w-full justify-between"
         onPress={onToggle}
       >
-        <span>{open ? "کمتر" : "بیشتر"}</span>
+        <span>{open ? t("common.less") : t("nav.more")}</span>
         <ArrowDown2
           size={18}
           className={`transition-transform ${open ? "rotate-180" : ""}`}

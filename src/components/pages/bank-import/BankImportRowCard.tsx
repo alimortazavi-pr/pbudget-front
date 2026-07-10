@@ -122,8 +122,8 @@ export function BankImportRowCard({
                 onClick={(e) => e.stopPropagation()}
               >
                 <FormCategoryComboBox
-                  label={t("دسته‌بندی *")}
-                  placeholder={t("انتخاب دسته‌بندی")}
+                  label={t("auto.k9f1d861765")}
+                  placeholder={t("auto.k34ca0cc3ac")}
                   selectedKey={row.categoryId || undefined}
                   isDisabled={!row.selected}
                   onSelectionChange={(key) => {

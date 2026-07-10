@@ -68,7 +68,7 @@ export function AddPartnerModal({
   async function checkMobile() {
     const normalized = toEnglishDigits(mobile.trim());
     if (normalized.length < 10) {
-      showToast(t("شماره موبایل معتبر نیست"));
+      showToast(t("auto.ke5ea291b1e"));
       return;
     }
 
@@ -91,13 +91,13 @@ export function AddPartnerModal({
   async function submitPartner() {
     const normalized = toEnglishDigits(mobile.trim());
     if (!exists && !displayName.trim()) {
-      showToast(t("نام شریک الزامی است"));
+      showToast(t("auto.kc07369b8f0"));
       return;
     }
 
     const share = sharePercent ? Number(toEnglishDigits(sharePercent)) : 0;
     if (sharePercent && (share < 0 || share > 100)) {
-      showToast(t("سهم باید بین ۰ تا ۱۰۰ باشد"));
+      showToast(t("auto.k685adbee84"));
       return;
     }
 
@@ -132,9 +132,9 @@ export function AddPartnerModal({
     if (!inviteLink) return;
     try {
       await navigator.clipboard.writeText(inviteLink);
-      showToast(t("لینک کپی شد"), "success");
+      showToast(t("auto.k16d6c6a3bd"), "success");
     } catch {
-      showToast(t("کپی لینک ممکن نشد"));
+      showToast(t("auto.kfc3060ba28"));
     }
   }
 
@@ -151,15 +151,15 @@ export function AddPartnerModal({
     <AppModal open={open} onOpenChange={onOpenChange}>
       <AppModalDialog className="max-w-lg">
         <AppModalHeader onClose={closeModal}>
-          <Modal.Heading>{t("افزودن شریک")}</Modal.Heading>
+          <Modal.Heading>{t("auto.k945cf52c7a")}</Modal.Heading>
           <p className="mt-1 text-sm text-muted">{stepDescription}</p>
         </AppModalHeader>
         <Modal.Body className="space-y-4">
         {step === "mobile" ? (
           <>
             <FormInput
-              label={t("شماره موبایل")}
-              placeholder={t("۰۹۱۲۳۴۵۶۷۸۹")}
+              label={t("auto.k1d0204302f")}
+              placeholder={t("auto.k31b5be1e8a")}
               value={mobile}
               onChange={(e) => setMobile(e.target.value)}
               inputMode="tel"
@@ -185,22 +185,22 @@ export function AddPartnerModal({
               </div>
             ) : (
               <FormInput
-                label={t("نام شریک")}
-                placeholder={t("مثلاً علی رضایی")}
+                label={t("auto.k16d2d57820")}
+                placeholder={t("auto.k27667fa962")}
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
               />
             )}
 
             <FormInput
-              label={t("سهم (درصد) — اختیاری")}
-              placeholder={t("مثلاً ۵۰")}
+              label={t("auto.kf6141416b5")}
+              placeholder={t("auto.k9bd9c89419")}
               value={sharePercent}
               onChange={(e) => setSharePercent(e.target.value)}
               inputMode="numeric"
             />
             <FormSelect
-              label={t("سطح دسترسی")}
+              label={t("auto.kf3b9549a2b")}
               selectedKey={permissionLevel}
               onSelectionChange={setPermissionLevel}
               options={[
@@ -209,7 +209,7 @@ export function AddPartnerModal({
               ]}
             />
             <FormTextArea
-              label={t("یادداشت — اختیاری")}
+              label={t("auto.k27a509562c")}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
             />
@@ -243,7 +243,7 @@ export function AddPartnerModal({
 
             {inviteLink ? (
               <div className="space-y-2 rounded-xl bg-surface-secondary p-3">
-                <p className="text-xs text-muted">{t("لینک تأیید برای شریک")}</p>
+                <p className="text-xs text-muted">{t("auto.kfcb604104f")}</p>
                 <p className="break-all text-sm font-medium">{inviteLink}</p>
                 <Button
                   variant="secondary"
@@ -264,7 +264,7 @@ export function AddPartnerModal({
 
             {exists && !telegramSent && hasTelegram === false ? (
               <div className="space-y-2 rounded-xl bg-warning/10 px-3 py-2 text-sm text-warning-foreground">
-                <p>{t("تلگرام این کاربر فعال نیست — لینک را دستی برایش بفرستید")}</p>
+                <p>{t("auto.kaa08b197c6")}</p>
                 {inviteLink ? (
                   <>
                     <p className="break-all text-xs font-medium text-foreground">{inviteLink}</p>

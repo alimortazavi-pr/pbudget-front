@@ -39,7 +39,7 @@ export function WorkMonthCalendar({
 
   return (
     <section className="glass space-y-3 rounded-2xl p-4">
-      <h2 className="font-semibold">{t("تقویم کارکرد ماه")}</h2>
+      <h2 className="font-semibold">{t("auto.k5b13368532")}</h2>
       <p className="text-xs text-muted">{hint}</p>
       <div className="grid grid-cols-7 gap-1.5 text-center text-xs text-muted">
         {JALALI_WEEKDAYS_SHORT.map((label) => (

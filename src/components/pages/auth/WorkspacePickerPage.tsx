@@ -133,7 +133,7 @@ export function WorkspacePickerPage() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-muted">{APP_NAME_FA}</p>
-            <h1 className="mt-1 text-2xl font-bold md:text-3xl">{t("ادامه از کجا؟")}</h1>
+            <h1 className="mt-1 text-2xl font-bold md:text-3xl">{t("auto.k0659078c70")}</h1>
           </div>
           <ThemeToggle />
         </div>

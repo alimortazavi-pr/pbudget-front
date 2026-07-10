@@ -87,7 +87,7 @@ export function CreateTaskModal({
   async function save(e?: FormEvent) {
     e?.preventDefault();
     if (!title.trim()) {
-      showToast(t("عنوان تسک الزامی است"));
+      showToast(t("auto.k327497d9aa"));
       return;
     }
 
@@ -126,24 +126,24 @@ export function CreateTaskModal({
           </AppModalHeader>
           <Modal.Body className="space-y-4">
             <FormInput
-              label={t("عنوان")}
+              label={t("common.title")}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               autoFocus
             />
             <FormTextArea
-              label={t("توضیحات")}
+              label={t("common.description")}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
             <FormSelect
-              label={t("اولویت")}
+              label={t("auto.k44e7afcf53")}
               selectedKey={priority}
               onSelectionChange={(key) => setPriority(key as TaskPriority)}
               options={PRIORITY_OPTIONS}
             />
             <div>
-              <p className="mb-2 text-sm text-muted">{t("تاریخ سررسید (شمسی)")}</p>
+              <p className="mb-2 text-sm text-muted">{t("auto.kead5f7b71e")}</p>
               <FilterDatePicker
                 year={year}
                 month={month}
@@ -157,8 +157,8 @@ export function CreateTaskModal({
               />
             </div>
             <FormSelect
-              label={t("پروژه مرتبط")}
-              placeholder={t("بدون پروژه")}
+              label={t("auto.ke1b21454fe")}
+              placeholder={t("auto.kdeafaa63f0")}
               selectedKey={projectId || "none"}
               onSelectionChange={(key) => setProjectId(key === "none" ? "" : key)}
               options={projectOptions}

@@ -8,11 +8,12 @@ import { Button } from "@heroui/react";
 import { Call, Logout, Moon, Profile, Sun1, Wallet2 } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
-import { formatPriceWithCurrency } from "@/common/utils/format-currency";
 import {
   CURRENCY_OPTIONS,
   DEFAULT_USER_PREFERENCES,
 } from "@/common/constants/user-preferences";
+import { formatPriceWithCurrency } from "@/common/utils/format-currency";
+import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 import { getWalletBalance } from "@/common/utils/wallet-balances";
 import { storage } from "@/common/utils/storage";
 import { useTheme } from "@/components/providers/ThemeProvider";
@@ -41,6 +42,7 @@ export function ShellAccountMenu({
   showPlanning = true,
 }: ShellAccountMenuProps) {
   const { t } = useTranslation();
+  const { currencyLabel } = useCurrencyLabels();
   const dispatch = useAppDispatch();
   const router = useRouter();
   const user = useAppSelector(userSelector);
@@ -57,7 +59,7 @@ export function ShellAccountMenu({
   const { openBalanceModal } = useBalanceModal();
 
   const accountNavItems = ACCOUNT_NAV_ITEMS.filter(
-    (item) => item.label !== "بات تلگرام" || !telegramLinked,
+    (item) => !("external" in item && item.external) || !telegramLinked,
   );
 
   async function handleLogout() {
@@ -120,7 +122,7 @@ export function ShellAccountMenu({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-sm text-muted">
             <Wallet2 size={18} />
-            موجودی کیف پول
+            {t("common.walletBalance")}
           </div>
           <Button
             size="sm"
@@ -131,7 +133,7 @@ export function ShellAccountMenu({
               onNavigate?.();
             }}
           >
-            تنظیم
+            {t("common.configure")}
           </Button>
         </div>
         <div className="mt-3 space-y-2">
@@ -142,7 +144,7 @@ export function ShellAccountMenu({
             }
             return (
               <div key={option.id} className="flex items-baseline justify-between gap-2">
-                <span className="text-xs text-muted">{option.label}</span>
+                <span className="text-xs text-muted">{currencyLabel(option.id)}</span>
                 <p className="text-base font-bold tracking-tight">
                   {formatPriceWithCurrency(amount, option.id)}
                 </p>
@@ -156,7 +158,7 @@ export function ShellAccountMenu({
         PLANNING_NAV_GROUPS.map((group) => (
           <ShellNavGroup
             key={group.title}
-            title={group.title}
+            title={t(group.title)}
             items={group.items}
             variant={variant}
             onNavigate={onNavigate}
@@ -165,7 +167,7 @@ export function ShellAccountMenu({
         ))}
 
       <ShellNavGroup
-        title={t("حساب کاربری")}
+        title={t("common.userAccount")}
         items={accountNavItems}
         variant={variant}
         onNavigate={onNavigate}
@@ -173,16 +175,16 @@ export function ShellAccountMenu({
 
       <div className={variant === "sidebar" ? "mt-4" : "mt-4"}>
         <p className="mb-2 px-3 text-xs font-semibold tracking-wide text-muted">
-          تنظیمات
+          {t("nav.settings")}
         </p>
         <div className="flex flex-col gap-0.5">
           <button type="button" className={utilityLinkClass} onClick={toggleTheme}>
             {theme === "dark" ? <Sun1 size={20} /> : <Moon size={20} />}
-            {theme === "dark" ? "حالت روشن" : "حالت تاریک"}
+            {theme === "dark" ? t("common.lightMode") : t("common.darkMode")}
           </button>
           <a href={SUPPORT_PHONE} className={utilityLinkClass} onClick={onNavigate}>
             <Call size={20} />
-            پشتیبانی
+            {t("common.support")}
           </a>
         </div>
       </div>
@@ -194,7 +196,7 @@ export function ShellAccountMenu({
           onClick={() => void handleLogout()}
         >
           <Logout size={20} />
-          خروج از حساب
+          {t("common.logout")}
         </button>
       </div>
     </>

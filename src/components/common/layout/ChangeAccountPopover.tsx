@@ -50,7 +50,7 @@ export function ChangeAccountPopover() {
         isIconOnly
         variant="ghost"
         size="sm"
-        aria-label={t("تغییر حساب")}
+        aria-label={t("common.changeAccount")}
         onPress={() => setOpen(true)}
       >
         <Profile2User size={20} />
@@ -63,7 +63,7 @@ export function ChangeAccountPopover() {
       >
         <AppModalDialog className={isDesktop ? "max-w-md" : "rounded-t-3xl"}>
           <AppModalHeader onClose={() => setOpen(false)}>
-            <Modal.Heading>{t("تغییر حساب")}</Modal.Heading>
+            <Modal.Heading>{t("common.changeAccount")}</Modal.Heading>
           </AppModalHeader>
           <Modal.Body className="flex flex-col gap-2">
             {users.map((user) => (
@@ -93,7 +93,7 @@ export function ChangeAccountPopover() {
               }}
             >
               <Add size={18} />
-              افزودن اکانت
+              {t("common.addAccount")}
             </button>
           </Modal.Body>
         </AppModalDialog>

@@ -76,21 +76,21 @@ export function PartnerActivityPanel({
   }, [load]);
 
   if (loading) {
-    return <p className="text-sm text-muted">{t("در حال بارگذاری تاریخچه…")}</p>;
+    return <p className="text-sm text-muted">{t("auto.k5a0412c314")}</p>;
   }
 
   if (activities.length === 0) {
     return (
       <section className="rounded-2xl border border-border/50 bg-surface-secondary/30 p-4">
-        <h3 className="font-bold">{t("تاریخچه همکاری")}</h3>
-        <p className="mt-2 text-sm text-muted">{t("هنوز رویدادی ثبت نشده")}</p>
+        <h3 className="font-bold">{t("auto.k789357d8e6")}</h3>
+        <p className="mt-2 text-sm text-muted">{t("auto.k9dda6210bd")}</p>
       </section>
     );
   }
 
   return (
     <section className="space-y-3 rounded-2xl border border-border/50 bg-surface-secondary/30 p-4">
-      <h3 className="font-bold">{t("تاریخچه همکاری")}</h3>
+      <h3 className="font-bold">{t("auto.k789357d8e6")}</h3>
       <div className="space-y-2">
         {activities.map((activity) => (
           <article

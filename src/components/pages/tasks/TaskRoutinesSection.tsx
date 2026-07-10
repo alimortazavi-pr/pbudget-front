@@ -52,7 +52,7 @@ export function TaskRoutinesSection() {
     try {
       await tasksApi.deleteTaskRoutine(routine._id);
       setRoutines((current) => current.filter((row) => row._id !== routine._id));
-      showToast(t("حذف شد"), "success");
+      showToast(t("common.deleted"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     }
@@ -66,7 +66,7 @@ export function TaskRoutinesSection() {
             <Refresh size={22} variant="Bold" />
           </div>
           <div>
-            <h2 className="font-bold">{t("تسک‌های ثابت")}</h2>
+            <h2 className="font-bold">{t("auto.k8aacb53680")}</h2>
             <p className="mt-1 text-sm leading-7 text-muted">
               مثل «رفتن سرکار ۱۰ تا ۱۶» — یک‌بار تعریف کن، هر روز خودکار به لیست
               روزانه اضافه می‌شود. یادآوری صبح هم از تلگرام می‌آید (اگر وصل باشی).
@@ -122,7 +122,7 @@ export function TaskRoutinesSection() {
                       {projectTitle && (
                         <span className="text-accent">· {projectTitle}</span>
                       )}
-                      {routine.remindTelegram && <span>{t("· یادآور تلگرام")}</span>}
+                      {routine.remindTelegram && <span>{t("auto.k4eda47ecc4")}</span>}
                     </div>
                   </div>
                   <div className="flex shrink-0 gap-1">

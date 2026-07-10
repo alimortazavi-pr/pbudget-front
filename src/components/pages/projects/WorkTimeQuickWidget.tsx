@@ -70,7 +70,12 @@ export function WorkTimeQuickWidget() {
     try {
       const result = await workTimeApi.clockIn(projectId);
       const msg = formatDailyRemainingMessage(result.dailyStatus);
-      showToast(msg ? `ورود ثبت شد · ${msg}` : "ورود ثبت شد", "success");
+      showToast(
+        msg
+          ? t("dashboard.clockInRecordedWithStatus", { status: msg })
+          : t("dashboard.clockInRecorded"),
+        "success",
+      );
       await load();
     } catch (err) {
       showErrorToast(err);
@@ -83,7 +88,7 @@ export function WorkTimeQuickWidget() {
     setActionProjectId(projectId);
     try {
       await workTimeApi.clockOut(projectId);
-      showToast(t("خروج ثبت شد"), "success");
+      showToast(t("projects.clockOutRecorded"), "success");
       await load();
     } catch (err) {
       showErrorToast(err);
@@ -100,25 +105,26 @@ export function WorkTimeQuickWidget() {
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Clock size={20} className="text-accent" />
-            <h2 className="font-semibold">{t("حضور و غیاب امروز")}</h2>
+            <h2 className="font-semibold">{t("dashboard.todayAttendance")}</h2>
           </div>
           <Link href={PATHS.WORK_ATTENDANCE} className="text-xs text-accent">
-            همه پروژه‌ها
+            {t("dashboard.allProjects")}
           </Link>
         </div>
 
         {todayStatus?.isWorkingDay === false ? (
-          <p className="text-sm text-muted">{t("امروز روز کاری نیست.")}</p>
+          <p className="text-sm text-muted">{t("dashboard.notWorkingDayFull")}</p>
         ) : todayStatus ? (
           <p className="text-sm">
-            امروز:{" "}
+            {t("dashboard.todayLabel")}:{" "}
             <span className="font-semibold">
               {formatDurationMinutes(todayStatus.workedTodayMinutes)}
             </span>
             {todayStatus.requiredDailyMinutes ? (
               <>
                 {" "}
-                از {formatDurationMinutes(todayStatus.requiredDailyMinutes)}
+                {t("dashboard.ofDuration")}{" "}
+                {formatDurationMinutes(todayStatus.requiredDailyMinutes)}
               </>
             ) : null}
           </p>
@@ -127,7 +133,8 @@ export function WorkTimeQuickWidget() {
         {activeRow ? (
           <div className="rounded-xl border border-accent/40 bg-accent/10 p-3">
             <p className="text-sm font-medium">
-              در حال کار: {activeRow.project.category?.title ?? "پروژه"}
+              {t("dashboard.currentlyWorking")}:{" "}
+              {activeRow.project.category?.title ?? t("common.project")}
             </p>
             {data.activeSessionDailyStatus ? (
               <p className="mt-1 text-xs text-muted">
@@ -141,7 +148,7 @@ export function WorkTimeQuickWidget() {
               isPending={actionProjectId === activeRow.project._id}
             >
               <Logout size={14} />
-              خروج
+              {t("common.clockOut")}
             </Button>
           </div>
         ) : (
@@ -156,7 +163,7 @@ export function WorkTimeQuickWidget() {
                 isDisabled={Boolean(activeProjectId)}
               >
                 <Login size={14} />
-                {row.project.category?.title ?? "ورود"}
+                {row.project.category?.title ?? t("common.clockIn")}
               </Button>
             ))}
           </div>
@@ -165,7 +172,7 @@ export function WorkTimeQuickWidget() {
         <div className="flex flex-wrap gap-2">
           <Button size="sm" variant="secondary" onPress={() => setManualOpen(true)}>
             <Add size={14} />
-            ثبت دستی
+            {t("dashboard.manualEntry")}
           </Button>
         </div>
       </section>

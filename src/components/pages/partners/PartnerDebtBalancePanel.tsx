@@ -98,7 +98,7 @@ export function PartnerDebtBalancePanel({
               <Wallet size={20} />
             </div>
             <div>
-              <h3 className="text-base font-bold">{t("حساب دفتری شرکا")}</h3>
+              <h3 className="text-base font-bold">{t("auto.kfd341aa317")}</h3>
               <p className="mt-0.5 text-xs leading-5 text-muted">
                 بر اساس تراکنش‌های واقعی — چه کسی پرداخت کرده و سهم هر شریک چقدر است
               </p>
@@ -106,7 +106,7 @@ export function PartnerDebtBalancePanel({
           </div>
           {totalReceivable > 0 ? (
             <div className="rounded-xl bg-income-soft/70 px-3 py-2 text-left">
-              <p className="text-[11px] text-muted">{t("مجموع طلب شما")}</p>
+              <p className="text-[11px] text-muted">{t("auto.kf6c0c78993")}</p>
               <p className="font-bold text-income">{formatPrice(totalReceivable)}</p>
             </div>
           ) : null}
@@ -115,7 +115,7 @@ export function PartnerDebtBalancePanel({
 
       <div className="space-y-3 p-4 sm:p-5">
         {loading ? (
-          <p className="text-sm text-muted">{t("در حال محاسبه حساب‌ها…")}</p>
+          <p className="text-sm text-muted">{t("auto.kc2b3442473")}</p>
         ) : !hasTransactions ? (
           <p className="rounded-xl border border-dashed border-border px-4 py-6 text-center text-sm text-muted">
             هنوز تراکنشی به این {contextType === "project" ? "پروژه" : "کسب‌وکار"} وصل نشده.

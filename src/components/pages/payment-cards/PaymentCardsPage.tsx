@@ -96,7 +96,7 @@ export function PaymentCardsPage() {
         setCards((prev) => [...prev, created]);
       }
 
-      showToast(t("ذخیره شد"), "success");
+      showToast(t("common.saved"), "success");
       setOpen(false);
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
@@ -113,7 +113,7 @@ export function PaymentCardsPage() {
         setDefaultPaymentCardId(null, user?._id);
         setDefaultCardId(null);
       }
-      showToast(t("حذف شد"), "success");
+      showToast(t("common.deleted"), "success");
     } catch (err) {
       showToast(err instanceof Error ? err.message : "خطا");
     }
@@ -123,7 +123,7 @@ export function PaymentCardsPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold">{t("کارت‌های من")}</h2>
+          <h2 className="text-lg font-bold">{t("nav.myCards")}</h2>
           <p className="text-sm text-muted">
             مبدا پرداخت یا مقصد دریافت تراکنش‌ها. با ستاره، کارت مبدا پیش‌فرض را
             انتخاب کنید.
@@ -136,11 +136,11 @@ export function PaymentCardsPage() {
       </div>
 
       {loading ? (
-        <div className="glass rounded-2xl p-10 text-center text-muted">{t("در حال بارگذاری…")}</div>
+        <div className="glass rounded-2xl p-10 text-center text-muted">{t("common.loading")}</div>
       ) : cards.length === 0 ? (
         <div className="glass rounded-2xl p-10 text-center">
           <Card size={36} className="mx-auto mb-3 text-muted" />
-          <p className="text-muted">{t("هنوز کارتی ثبت نشده")}</p>
+          <p className="text-muted">{t("auto.k1686153266")}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -202,21 +202,21 @@ export function PaymentCardsPage() {
               <Modal.Heading>{editItem ? "ویرایش کارت" : "کارت جدید"}</Modal.Heading>
             </AppModalHeader>
             <Modal.Body className="space-y-4">
-              <FormInput label={t("نام کارت")} value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("مثلاً کارت ملی")} />
-              <FormInput label={t("بانک — اختیاری")} value={bankName} onChange={(e) => setBankName(e.target.value)} />
+              <FormInput label={t("auto.k0f2c6c83bc")} value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("auto.k3aa276a7d3")} />
+              <FormInput label={t("auto.kc7d822aca0")} value={bankName} onChange={(e) => setBankName(e.target.value)} />
               <FormInput
-                label={t("شماره کارت — اختیاری")}
+                label={t("auto.k9aec5fb1f2")}
                 value={formatCardNumberDisplay(lastFour)}
                 onChange={(e) => setLastFour(normalizeCardNumber(e.target.value))}
                 inputMode="numeric"
-                placeholder={t("۱۶ رقم")}
+                placeholder={t("auto.kbe5f36097a")}
                 maxLength={19}
               />
               <CategoryColorPicker value={color} onChange={setColor} />
             </Modal.Body>
             <Modal.Footer>
-              <Button type="button" variant="ghost" onPress={() => setOpen(false)}>{t("انصراف")}</Button>
-              <Button type="submit" isPending={saving}>{t("ذخیره")}</Button>
+              <Button type="button" variant="ghost" onPress={() => setOpen(false)}>{t("common.cancel")}</Button>
+              <Button type="submit" isPending={saving}>{t("common.save")}</Button>
             </Modal.Footer>
           </form>
         </AppModalDialog>

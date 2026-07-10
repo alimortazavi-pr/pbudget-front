@@ -37,7 +37,7 @@ export function AdminBackupPage() {
       setInfo(infoData);
       setHistory(historyData.items);
     } catch {
-      showToast(t("بارگذاری اطلاعات بکاپ ناموفق بود"), "danger");
+      showToast(t("auto.k159c031946"), "danger");
     } finally {
       setLoading(false);
     }
@@ -51,10 +51,10 @@ export function AdminBackupPage() {
     setRunning(true);
     try {
       await adminApi.runBackup();
-      showToast(t("بکاپ به تلگرام ارسال شد"), "success");
+      showToast(t("auto.k023da5675d"), "success");
       void load();
     } catch {
-      showToast(t("اجرای بکاپ ناموفق بود"), "danger");
+      showToast(t("auto.k95dcae746a"), "danger");
     } finally {
       setRunning(false);
     }
@@ -64,9 +64,9 @@ export function AdminBackupPage() {
     setRunning(true);
     try {
       await adminApi.downloadFullDatabaseExport(format);
-      showToast(t("فایل ZIP دانلود شد"), "success");
+      showToast(t("auto.kd0ee785fff"), "success");
     } catch {
-      showToast(t("دانلود ناموفق بود"), "danger");
+      showToast(t("auto.k72a0e2fd88"), "danger");
     } finally {
       setRunning(false);
     }
@@ -83,7 +83,7 @@ export function AdminBackupPage() {
       );
       void load();
     } catch {
-      showToast(t("بازیابی ZIP ناموفق بود"), "danger");
+      showToast(t("auto.kb154525e37"), "danger");
     } finally {
       setRunning(false);
       if (zipInputRef.current) zipInputRef.current.value = "";
@@ -97,7 +97,7 @@ export function AdminBackupPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-bold">{t("بکاپ و خروجی")}</h3>
+        <h3 className="text-lg font-bold">{t("auto.k7c2a8d5824")}</h3>
         <p className="text-sm text-muted">
           بکاپ خودکار، اجرای دستی، دانلود و بازیابی ZIP
         </p>
@@ -107,23 +107,23 @@ export function AdminBackupPage() {
         <div className="glass rounded-2xl p-6">
           <div className="mb-4 flex items-center gap-2">
             <Timer1 size={22} className="text-accent" variant="Bold" />
-            <h4 className="font-bold">{t("بکاپ زمان‌بندی‌شده")}</h4>
+            <h4 className="font-bold">{t("auto.k699d3dc3ca")}</h4>
           </div>
           <dl className="space-y-3 text-sm">
             <div className="flex justify-between gap-4">
-              <dt className="text-muted">{t("زمان‌بندی")}</dt>
+              <dt className="text-muted">{t("auto.ke200e8d973")}</dt>
               <dd>{info?.schedule.description}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-muted">{t("منطقه زمانی")}</dt>
+              <dt className="text-muted">{t("auto.k5b0b21f9fb")}</dt>
               <dd>{info?.schedule.timezone}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-muted">{t("تلگرام")}</dt>
+              <dt className="text-muted">{t("auto.kca3d2562e4")}</dt>
               <dd>{info?.telegram.enabled ? "فعال" : "غیرفعال"}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-muted">{t("حداکثر حجم")}</dt>
+              <dt className="text-muted">{t("auto.kf778c250f4")}</dt>
               <dd>{formatBytes(info?.telegram.maxFileSizeBytes ?? 0)}</dd>
             </div>
           </dl>
@@ -132,35 +132,35 @@ export function AdminBackupPage() {
         <div className="glass rounded-2xl p-6">
           <div className="mb-4 flex items-center gap-2">
             <CloudAdd size={22} className="text-accent" variant="Bold" />
-            <h4 className="font-bold">{t("آخرین بکاپ موفق")}</h4>
+            <h4 className="font-bold">{t("auto.kd22866dae0")}</h4>
           </div>
           {info?.lastRun ? (
             <dl className="space-y-3 text-sm">
               <div className="flex justify-between gap-4">
-                <dt className="text-muted">{t("فایل")}</dt>
+                <dt className="text-muted">{t("auto.ka0bb13461f")}</dt>
                 <dd className="truncate font-mono text-xs">{info.lastRun.filename}</dd>
               </div>
               <div className="flex justify-between gap-4">
-                <dt className="text-muted">{t("کالکشن‌ها")}</dt>
+                <dt className="text-muted">{t("auto.k0ba84ad8e7")}</dt>
                 <dd>{toPersianDigits(info.lastRun.collections)}</dd>
               </div>
               <div className="flex justify-between gap-4">
-                <dt className="text-muted">{t("اسناد")}</dt>
+                <dt className="text-muted">{t("auto.k5b4218ff28")}</dt>
                 <dd>{toPersianDigits(info.lastRun.documents)}</dd>
               </div>
               <div className="flex justify-between gap-4">
-                <dt className="text-muted">{t("حجم")}</dt>
+                <dt className="text-muted">{t("auto.k31414a116f")}</dt>
                 <dd>{formatBytes(info.lastRun.byteSize)}</dd>
               </div>
             </dl>
           ) : (
-            <p className="text-sm text-muted">{t("هنوز بکاپ موفقی ثبت نشده است.")}</p>
+            <p className="text-sm text-muted">{t("auto.k3969612372")}</p>
           )}
         </div>
       </section>
 
       <section className="glass rounded-2xl p-6">
-        <h4 className="mb-4 font-bold">{t("عملیات")}</h4>
+        <h4 className="mb-4 font-bold">{t("auto.k0f0dff2dfc")}</h4>
         <div className="flex flex-wrap gap-3">
           <Button onPress={() => void runBackup()} isDisabled={running}>
             <CloudAdd size={18} />
@@ -193,7 +193,7 @@ export function AdminBackupPage() {
 
         <div className="mt-4 flex flex-wrap items-center gap-4">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm text-muted">{t("فرمت خروجی:")}</span>
+            <span className="text-sm text-muted">{t("auto.k89afe16d18")}</span>
             {(["ejson", "json", "csv"] as AdminExportFormat[]).map((item) => (
               <button
                 key={item}
@@ -211,7 +211,7 @@ export function AdminBackupPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm text-muted">{t("حالت بازیابی:")}</span>
+            <span className="text-sm text-muted">{t("auto.k94ec810b70")}</span>
             {(
               [
                 { value: "merge", label: "ادغام (upsert)" },
@@ -237,18 +237,18 @@ export function AdminBackupPage() {
 
       <section className="glass overflow-hidden rounded-2xl">
         <div className="border-b border-border/50 px-5 py-4">
-          <h4 className="font-bold">{t("تاریخچه بکاپ")}</h4>
+          <h4 className="font-bold">{t("auto.kdefd6c84cf")}</h4>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
             <thead className="bg-surface-secondary/70 text-muted">
               <tr>
-                <th className="px-4 py-3 text-start font-medium">{t("زمان")}</th>
-                <th className="px-4 py-3 text-start font-medium">{t("منبع")}</th>
-                <th className="px-4 py-3 text-start font-medium">{t("وضعیت")}</th>
-                <th className="px-4 py-3 text-start font-medium">{t("کالکشن")}</th>
-                <th className="px-4 py-3 text-start font-medium">{t("اسناد")}</th>
-                <th className="px-4 py-3 text-start font-medium">{t("حجم")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.k299c8c9aa7")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.k66f403b6e5")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.k2f3c6cf127")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.k856205a73e")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.k5b4218ff28")}</th>
+                <th className="px-4 py-3 text-start font-medium">{t("auto.k31414a116f")}</th>
               </tr>
             </thead>
             <tbody>
@@ -290,7 +290,7 @@ export function AdminBackupPage() {
       </section>
 
       <section className="rounded-2xl border border-border/60 bg-surface-secondary/40 p-5">
-        <h4 className="mb-2 font-bold text-sm">{t("راهنمای بازیابی")}</h4>
+        <h4 className="mb-2 font-bold text-sm">{t("auto.k556846e399")}</h4>
         <pre className="overflow-x-auto rounded-xl bg-background p-4 text-xs leading-relaxed text-muted">
           {info?.importHint}
           {"\n\n"}

@@ -63,7 +63,7 @@ function ChangelogModal({
     <AppModal open={open} onOpenChange={onOpenChange} mobileFull>
       <AppModalDialog className="flex max-h-[100dvh] flex-col sm:max-w-lg">
         <AppModalHeader onClose={() => onOpenChange(false)}>
-          <Modal.Heading>{t("چه چیزهایی جدید است؟")}</Modal.Heading>
+          <Modal.Heading>{t("common.whatsNew")}</Modal.Heading>
           <p className="mt-1 text-sm text-muted">نسخه {APP_VERSION}</p>
         </AppModalHeader>
 
