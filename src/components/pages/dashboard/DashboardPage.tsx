@@ -19,7 +19,7 @@ import { BudgetExportModal } from "@/components/pages/dashboard/BudgetExportModa
 import { BudgetStats } from "@/components/pages/dashboard/BudgetStats";
 import { DashboardFilterSection } from "@/components/pages/dashboard/DashboardFilterSection";
 import { DashboardHero } from "@/components/pages/dashboard/DashboardHero";
-import { BudgetExportModal } from "@/components/pages/dashboard/BudgetExportModal";
+import { WorkTimeQuickWidget } from "@/components/pages/projects/WorkTimeQuickWidget";
 import { TransactionCard } from "@/components/pages/dashboard/TransactionCard";
 import { TransactionListSkeleton } from "@/components/pages/dashboard/TransactionListSkeleton";
 import type { IBudget, IBudgetsSummary } from "@/common/interfaces/budget.interface";
