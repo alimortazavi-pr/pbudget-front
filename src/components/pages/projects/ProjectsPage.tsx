@@ -15,13 +15,14 @@ import type { IProject } from "@/common/interfaces/project.interface";
 import { formatPrice, formatCount } from "@/common/utils";
 import { formatDailyRemainingMessage } from "@/common/hooks/useWorkSessionDailyReminder";
 import { showErrorToast, showToast } from "@/common/utils/toast";
+import { PageHeroSection } from "@/components/common/layout/PageHeroSection";
 import { CreateProjectModal } from "@/components/pages/projects/CreateProjectModal";
 import { ProjectStatus } from "@/types/enums";
 
-function statusLabel(status: IProject["status"]) {
-  if (status === ProjectStatus.COMPLETED) return "تمام‌شده";
-  if (status === ProjectStatus.ON_HOLD) return "متوقف";
-  return "فعال";
+function statusLabel(status: IProject["status"], t: (key: string) => string) {
+  if (status === ProjectStatus.COMPLETED) return t("pages.projects.statusCompleted");
+  if (status === ProjectStatus.ON_HOLD) return t("pages.projects.statusOnHold");
+  return t("pages.projects.statusActive");
 }
 
 function statusClass(status: IProject["status"]) {
@@ -44,7 +45,7 @@ export function ProjectsPage() {
       const list = await projectsApi.fetchProjects();
       setProjects(list);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در بارگذاری");
+      showToast(err instanceof Error ? err.message : t("pages.projects.loadError"));
     } finally {
       setLoading(false);
     }
@@ -83,7 +84,7 @@ export function ProjectsPage() {
     try {
       const result = await workTimeApi.clockIn(projectId);
       const msg = formatDailyRemainingMessage(result.dailyStatus);
-      showToast(msg ? `ورود ثبت شد · ${msg}` : "ورود ثبت شد", "success");
+      showToast(msg ? `${t("pages.projects.clockInRecorded")} · ${msg}` : t("pages.projects.clockInRecorded"), "success");
     } catch (err) {
       showErrorToast(err);
     } finally {
@@ -93,13 +94,12 @@ export function ProjectsPage() {
 
   return (
     <div className="space-y-5 pb-6">
-      <section className="rounded-3xl bg-gradient-to-br from-violet-600 to-indigo-600 p-5 text-white shadow-lg">
-        <p className="text-sm font-medium text-white/80">{t("auto.k86ddef3a3c")}</p>
-        <h1 className="mt-1 text-2xl font-bold">{t("nav.projects")}</h1>
-        <p className="mt-2 text-sm leading-7 text-white/80">
-          مبلغ کل قرارداد، پرداخت‌های خرد و یادداشت‌های جلسه را در یک جا ببینید.
-        </p>
-      </section>
+      <PageHeroSection
+        variant="violet"
+        eyebrow={t("pageHero.projects.eyebrow")}
+        title={t("nav.projects")}
+        description={t("pageHero.projects.description")}
+      />
 
       {projects.length > 0 && (
         <div className="grid gap-3 sm:grid-cols-3">
@@ -174,12 +174,12 @@ export function ProjectsPage() {
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <h2 className="truncate text-lg font-bold">
-                        {project.category?.title ?? "بدون عنوان"}
+                        {project.category?.title ?? t("pages.projects.noTitle")}
                       </h2>
                       <span
                         className={`rounded-lg px-2 py-0.5 text-xs font-medium ${statusClass(project.status)}`}
                       >
-                        {statusLabel(project.status)}
+                        {statusLabel(project.status, t)}
                       </span>
                       {project.fixedIncome ? (
                         <span className="rounded-lg bg-income-soft px-2 py-0.5 text-xs font-medium text-income">
@@ -208,15 +208,15 @@ export function ProjectsPage() {
 
                 <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
                   <div className="rounded-xl bg-surface-secondary p-2">
-                    <p className="text-muted">{project.fixedIncome ? "حقوق" : "کل"}</p>
+                    <p className="text-muted">{project.fixedIncome ? t("pages.projects.labelSalary") : t("pages.projects.labelTotal")}</p>
                     <p className="mt-1 font-semibold">{formatPrice(project.totalAmount)}</p>
                   </div>
                   <div className="rounded-xl bg-income-soft/50 p-2">
-                    <p className="text-muted">{project.fixedIncome ? "این ماه" : "دریافت"}</p>
+                    <p className="text-muted">{project.fixedIncome ? t("pages.projects.labelThisMonth") : t("pages.projects.labelReceived")}</p>
                     <p className="mt-1 font-semibold text-income">{formatPrice(received)}</p>
                   </div>
                   <div className="rounded-xl bg-expense-soft/50 p-2">
-                    <p className="text-muted">{project.fixedIncome ? "مانده ماه" : "مانده"}</p>
+                    <p className="text-muted">{t("pages.projects.labelRemaining")}</p>
                     <p className="mt-1 font-semibold text-expense">{formatPrice(remaining)}</p>
                   </div>
                 </div>

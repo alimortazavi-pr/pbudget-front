@@ -16,6 +16,7 @@ import * as partnersApi from "@/common/api/partners";
 import { PATHS } from "@/common/constants";
 import type { IPendingPartnerInvite } from "@/common/interfaces/partner.interface";
 import { notifyPendingInvitesChanged } from "@/common/hooks/usePendingInvitesCount";
+import { PageHeroSection } from "@/components/common/layout/PageHeroSection";
 import { toPersianDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 
@@ -81,7 +82,7 @@ export function InvitesPage() {
       showToast(t("auto.kcea98e90e2"), "success");
       void load();
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("pages.invites.loadError"));
     } finally {
       setActingId(null);
     }
@@ -94,7 +95,7 @@ export function InvitesPage() {
       showToast(t("auto.kbaa8f3b1c7"), "success");
       void load();
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("pages.invites.loadError"));
     } finally {
       setActingId(null);
     }
@@ -102,21 +103,24 @@ export function InvitesPage() {
 
   return (
     <div className="space-y-5 pb-6" data-tour="invites-list">
-      <section className="rounded-3xl bg-gradient-to-br from-violet-600 to-indigo-700 p-5 text-white shadow-lg">
-        <h1 className="text-2xl font-bold">{t("auto.k26174f87b0")}</h1>
-        <p className="mt-2 text-sm text-white/85">
-          دعوت‌های همکاری پروژه — بپذیرید یا رد کنید
-        </p>
-        {!loading ? (
-          <p className="mt-3 text-xs text-white/70">
-            {toPersianDigits(String(partnerInvites.length))} دعوت در انتظار
-          </p>
-        ) : null}
-      </section>
+      <PageHeroSection
+        variant="violetDeep"
+        title={t("pageHero.invites.title")}
+        description={t("pageHero.invites.description")}
+        descriptionClassName="mt-2 text-sm text-white/85"
+        titleClassName="text-2xl font-bold"
+        footer={
+          !loading ? (
+            <p className="mt-3 text-xs text-white/70">
+              {t("pageHero.invites.pendingCount", { count: partnerInvites.length })}
+            </p>
+          ) : null
+        }
+      />
 
       {loading ? (
         <div className="glass rounded-2xl p-10 text-center text-muted">
-          در حال بارگذاری…
+          {t("common.loading")}
         </div>
       ) : partnerInvites.length === 0 ? (
         <div className="glass rounded-2xl p-10 text-center">
@@ -152,7 +156,9 @@ export function InvitesPage() {
                     <p className="mt-1 text-sm text-muted">
                       از طرف {item.ownerName}
                       {item.sharePercent > 0
-                        ? ` · سهم ${toPersianDigits(String(item.sharePercent))}٪`
+                        ? t("pages.invites.sharePercent", {
+                            percent: toPersianDigits(String(item.sharePercent)),
+                          })
                         : ""}
                     </p>
                     {item.expiresAt ? (

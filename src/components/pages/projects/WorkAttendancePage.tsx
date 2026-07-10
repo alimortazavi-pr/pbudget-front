@@ -31,6 +31,7 @@ import {
   toPersianDigits,
 } from "@/common/utils";
 import { WorkMonthCalendar } from "@/components/pages/projects/WorkMonthCalendar";
+import { PageHeroSection } from "@/components/common/layout/PageHeroSection";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { WorkTimeAnalysisSection } from "@/components/pages/projects/WorkTimeAnalysisSection";
 import { WorkTimeInsightsPanels } from "@/components/pages/projects/WorkTimeInsightsPanels";
@@ -71,11 +72,11 @@ export function WorkAttendancePage() {
       setReport(workReport);
       setAlerts(workAlerts);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در بارگذاری");
+      showToast(err instanceof Error ? err.message : t("pages.attendance.loadError"));
     } finally {
       setLoading(false);
     }
-  }, [year, month]);
+  }, [year, month, t]);
 
   useEffect(() => {
     void load();
@@ -94,8 +95,8 @@ export function WorkAttendancePage() {
   const activeProjectTitle = useMemo(() => {
     if (!activeProjectId || !data) return null;
     const row = data.projects.find((item) => item.project._id === activeProjectId);
-    return row?.project.category?.title ?? "پروژه";
-  }, [activeProjectId, data]);
+    return row?.project.category?.title ?? t("pages.attendance.defaultProject");
+  }, [activeProjectId, data, t]);
 
   useWorkSessionDailyReminder({
     dailyStatus: data?.activeSessionDailyStatus,
@@ -142,7 +143,12 @@ export function WorkAttendancePage() {
     try {
       const result = await workTimeApi.clockIn(projectId);
       const msg = formatDailyRemainingMessage(result.dailyStatus);
-      showToast(msg ? `ورود ثبت شد · ${msg}` : "ورود ثبت شد", "success");
+      showToast(
+        msg
+          ? t("dashboard.clockInRecordedWithStatus", { status: msg })
+          : t("dashboard.clockInRecorded"),
+        "success",
+      );
       await load();
     } catch (err) {
       showErrorToast(err);
@@ -184,19 +190,17 @@ export function WorkAttendancePage() {
 
   return (
     <div className="space-y-5 pb-6">
-      <section className="rounded-3xl bg-gradient-to-br from-emerald-600 to-teal-700 p-5 text-white shadow-lg">
-        <p className="text-sm font-medium text-white/80">{t("nav.projects")}</p>
-        <h1 className="mt-1 text-2xl font-bold">{t("auto.ka4b30b68b9")}</h1>
-        <p className="mt-2 text-sm leading-7 text-white/80">
-          ساعت روزانه را برای هر پروژه تعریف کنید — هدف ماه با احتساب جمعه و تعطیلات
-          رسمی محاسبه می‌شود.
-        </p>
-      </section>
+      <PageHeroSection
+        variant="emerald"
+        eyebrow={t("pageHero.workAttendance.eyebrow")}
+        title={t("pageHero.workAttendance.title")}
+        description={t("pageHero.workAttendance.description")}
+      />
 
       <div className="grid grid-cols-2 gap-2">
         {[
-          { id: "today" as const, label: "امروز" },
-          { id: "all" as const, label: "همه پروژه‌ها" },
+          { id: "today" as const, label: t("pageHero.workAttendance.tabToday") },
+          { id: "all" as const, label: t("pageHero.workAttendance.tabAllProjects") },
         ].map((item) => (
           <button
             key={item.id}
@@ -250,7 +254,7 @@ export function WorkAttendancePage() {
 
           {activeProjectId && activeProjectTitle ? (
             <section className="rounded-2xl border-2 border-accent/50 bg-accent/10 p-4">
-              <p className="text-sm font-medium text-accent">{t("auto.k0810e79393")}</p>
+              <p className="text-sm font-medium text-accent">{t("dashboard.currentlyWorking")}</p>
               <p className="mt-1 font-bold">{activeProjectTitle}</p>
               {data.activeSessionDailyStatus ? (
                 <p className="mt-1 text-xs text-muted">
@@ -263,7 +267,7 @@ export function WorkAttendancePage() {
                 isPending={actionProjectId === activeProjectId}
               >
                 <Logout size={16} />
-                خروج
+                {t("common.clockOut")}
               </Button>
             </section>
           ) : null}
@@ -279,10 +283,10 @@ export function WorkAttendancePage() {
             {dailyPerProject && monthTarget ? (
               <>
                 <p className="mt-2">
-                  جمع ساعت روزانه پروژه‌ها:{" "}
+                  {t("pageHero.workAttendance.dailyHoursSum")}{" "}
                   <span className="font-bold">{formatDurationMinutes(dailyPerProject)}</span>
                   {" · "}
-                  هدف این ماه:{" "}
+                  {t("auto.keea3713664")} {t("auto.k30d7dd4f17")}:{" "}
                   <span className="font-bold text-accent">
                     {formatDurationMinutes(monthTarget)}
                   </span>
@@ -294,19 +298,20 @@ export function WorkAttendancePage() {
               </>
             ) : (
               <p className="mt-2 text-muted">
-                برای هر پروژه «ساعت روزانه» را در جزئیات تنظیم کنید.
+                {t("pageHero.workAttendance.setDailyHoursHint")}
               </p>
             )}
             <p className="mt-2">
-              کارکرد این ماه:{" "}
+              {t("auto.kd60d9ee341")}:{" "}
               <span className="font-bold">
                 {formatDurationMinutes(data.globalTarget.workedMinutes)}
               </span>
               {data.globalTarget.todayWorkedMinutes !== null ? (
                 <>
                   {" · "}
-                  امروز:{" "}
-                  {formatDurationMinutes(data.globalTarget.todayWorkedMinutes)}
+                  {t("pageHero.workAttendance.todayWorked", {
+                    duration: formatDurationMinutes(data.globalTarget.todayWorkedMinutes),
+                  })}
                 </>
               ) : null}
             </p>
@@ -323,19 +328,21 @@ export function WorkAttendancePage() {
           <div className="flex flex-wrap gap-2">
             <Button variant="secondary" onPress={() => setManualOpen(true)}>
               <Add size={16} />
-              ثبت دستی
+              {t("dashboard.manualEntry")}
             </Button>
           </div>
 
           <section className="space-y-3">
             <h2 className="text-sm font-semibold text-muted">
-              {tab === "today" ? "پروژه‌های امروز" : "پروژه‌ها"}
+              {tab === "today"
+                ? t("pageHero.workAttendance.todayProjectsTitle")
+                : t("pageHero.workAttendance.allProjectsTitle")}
             </h2>
             {visibleProjects.length === 0 ? (
               <div className="glass rounded-2xl p-8 text-center text-muted">
                 {tab === "today"
-                  ? "امروز روز کاری نیست یا پروژه فعالی ندارید."
-                  : "هیچ پروژه‌ای برای ثبت ساعت فعال نیست."}
+                  ? t("pageHero.workAttendance.noActiveProjectsToday")
+                  : t("auto.k941717d761")}
               </div>
             ) : (
               visibleProjects.map((row) => {
@@ -359,7 +366,7 @@ export function WorkAttendancePage() {
                         <h3 className="truncate font-bold">{title}</h3>
                         {isActive ? (
                           <span className="rounded-lg bg-accent/15 px-2 py-0.5 text-xs font-medium text-accent">
-                            در حال کار
+                            {t("dashboard.currentlyWorking")}
                           </span>
                         ) : null}
                       </div>
@@ -372,13 +379,17 @@ export function WorkAttendancePage() {
                         </p>
                       ) : (
                         <p className="mt-1 text-xs text-warning">
-                          ساعت روزانه تعریف نشده — از جزئیات تنظیم کنید
+                          {t("pageHero.workAttendance.dailyHoursNotSet")}
                         </p>
                       )}
                       <p className="mt-1 text-sm">
-                        کارکرد ماه: {formatDurationMinutes(row.monthWorkedMinutes)}
+                        {t("auto.kd60d9ee341")}: {formatDurationMinutes(row.monthWorkedMinutes)}
                         {row.dailyStatus?.isWorkingDay && row.dailyStatus.workedTodayMinutes
-                          ? ` · امروز ${formatDurationMinutes(row.dailyStatus.workedTodayMinutes)}`
+                          ? t("pageHero.workAttendance.todayWorkedInline", {
+                              duration: formatDurationMinutes(
+                                row.dailyStatus.workedTodayMinutes,
+                              ),
+                            })
                           : ""}
                       </p>
                     </div>
@@ -400,7 +411,7 @@ export function WorkAttendancePage() {
                           isPending={actionProjectId === projectId}
                         >
                           <Logout size={16} />
-                          خروج
+                          {t("common.clockOut")}
                         </Button>
                       ) : (
                         <Button
@@ -410,12 +421,12 @@ export function WorkAttendancePage() {
                           isDisabled={blockedByOtherSession || row.dailyStatus?.isWorkingDay === false}
                         >
                           <Login size={16} />
-                          ورود
+                          {t("common.clockIn")}
                         </Button>
                       )}
                       <Link href={PATHS.PROJECT_ATTENDANCE(projectId)}>
                         <Button variant="secondary" size="sm">
-                          جزئیات
+                          {t("common.details")}
                         </Button>
                       </Link>
                     </div>
@@ -456,7 +467,7 @@ export function WorkAttendancePage() {
                   dailyMap={dailyMap}
                   selectedDay={selectedDay}
                   onSelectDay={setSelectedDay}
-                  hint="روزهای خاکستری: جمعه یا تعطیل رسمی"
+                  hint={t("auto.k8fd742c994")}
                 />
                 {report ? (
                   <WorkTimeAnalysisSection

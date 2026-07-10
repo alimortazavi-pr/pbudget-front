@@ -1,5 +1,6 @@
 import type { Language, TranslationParams } from "./types";
 import { allMessages } from "./messages";
+import { formatLocalizedDigits } from "./format-localized-digits";
 
 /** Maps legacy Persian labels / nav strings to dot-notation keys */
 export const labelToKeyMap: Record<string, string> = {
@@ -27,6 +28,7 @@ export const labelToKeyMap: Record<string, string> = {
   بیشتر: "nav.more",
   ثبت: "nav.create",
   "ثبت تراکنش": "nav.createTransaction",
+  "دانلود اپ": "nav.downloadApp",
   "برنامه‌ریزی": "nav.planning",
   "مالی پیشرفته": "nav.advancedFinance",
   مشارکت: "nav.partnership",
@@ -35,13 +37,21 @@ export const labelToKeyMap: Record<string, string> = {
   داشبورد: "nav.dashboard",
 };
 
-function interpolate(text: string, params?: TranslationParams): string {
+function interpolate(
+  text: string,
+  params: TranslationParams | undefined,
+  language: Language,
+): string {
   if (!params) return text;
-  return Object.entries(params).reduce(
-    (acc, [key, value]) =>
-      acc.replace(new RegExp(`\\{\\{${key}\\}\\}`, "g"), String(value)),
-    text,
-  );
+  return Object.entries(params).reduce((acc, [key, value]) => {
+    const formatted =
+      typeof value === "number"
+        ? formatLocalizedDigits(value, language)
+        : typeof value === "string" && /\d/.test(value)
+          ? formatLocalizedDigits(value, language)
+          : String(value);
+    return acc.replace(new RegExp(`\\{\\{${key}\\}\\}`, "g"), formatted);
+  }, text);
 }
 
 export function createTranslator(language: Language, mounted = true) {
@@ -55,7 +65,7 @@ export function createTranslator(language: Language, mounted = true) {
       (labelToKeyMap[key] ? undefined : catalog[key]) ??
       allMessages.fa[key] ??
       key;
-    return interpolate(text, params);
+    return interpolate(text, params, language);
   };
 }
 

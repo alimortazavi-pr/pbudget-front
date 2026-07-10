@@ -26,16 +26,17 @@ import {
   getJalaliNow,
 } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
+import { PageHeroSection } from "@/components/common/layout/PageHeroSection";
 import { FormSelect } from "@/components/common/form/FormFields";
 import { PeriodNavigator } from "@/components/pages/planning/PeriodNavigator";
 import { usePeriodQuery } from "@/components/pages/planning/usePeriodQuery";
 import { CreateTaskModal } from "@/components/pages/tasks/CreateTaskModal";
 import { TaskRoutinesSection } from "@/components/pages/tasks/TaskRoutinesSection";
 
-function priorityLabel(priority: ITask["priority"]) {
-  if (priority === "high") return "زیاد";
-  if (priority === "low") return "کم";
-  return "متوسط";
+function priorityLabel(priority: ITask["priority"], t: (key: string) => string) {
+  if (priority === "high") return t("pages.tasks.priorityHigh");
+  if (priority === "low") return t("pages.tasks.priorityLow");
+  return t("pages.tasks.priorityMedium");
 }
 
 function priorityClass(priority: ITask["priority"]) {
@@ -120,7 +121,7 @@ export function TasksPage() {
       setSummary(taskSummary);
       setProjects(projectList);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در بارگذاری");
+      showToast(err instanceof Error ? err.message : t("pages.tasks.loadError"));
     } finally {
       setLoading(false);
     }
@@ -132,13 +133,13 @@ export function TasksPage() {
 
   const projectOptions = useMemo(
     () => [
-      { id: "all", label: "همه پروژه‌ها" },
+      { id: "all", label: t("dashboard.allProjects") },
       ...projects.map((p) => ({
         id: p._id,
-        label: p.category?.title ?? "پروژه",
+        label: p.category?.title ?? t("pages.tasks.defaultProject"),
       })),
     ],
-    [projects],
+    [projects, t],
   );
 
   function handlePeriodPrev() {
@@ -216,24 +217,19 @@ export function TasksPage() {
 
   return (
     <div className="space-y-5 pb-6">
-      <section className="rounded-3xl bg-gradient-to-br from-rose-500 to-rose-600 p-5 text-white shadow-lg">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <p className="text-sm font-medium text-white/80">{t("auto.ked14c9da8b")}</p>
-            <h1 className="mt-1 text-2xl font-bold">{t("nav.dailyPlanner")}</h1>
-            <p className="mt-2 text-sm leading-7 text-white/80">
-              برنامه روزانه، ماهانه و سالانه — همه با تاریخ شمسی و لینک به پروژه‌ها
-            </p>
-          </div>
-          <Task size={36} variant="Bold" className="shrink-0 opacity-90" />
-        </div>
-      </section>
+      <PageHeroSection
+        variant="rose"
+        eyebrow={t("pageHero.tasks.eyebrow")}
+        title={t("nav.dailyPlanner")}
+        description={t("pageHero.tasks.description")}
+        aside={<Task size={36} variant="Bold" className="shrink-0 opacity-90" />}
+      />
 
       <div className="mb-4 flex gap-2" data-tour="tasks-section-tabs">
         {(
           [
-            { id: "schedule" as const, label: "لیست برنامه" },
-            { id: "routines" as const, label: "تسک‌های ثابت" },
+            { id: "schedule" as const, label: t("pages.tasks.tabSchedule") },
+            { id: "routines" as const, label: t("pages.tasks.tabRoutines") },
           ] as const
         ).map((item) => (
           <button
@@ -322,9 +318,9 @@ export function TasksPage() {
         <div className="flex gap-2">
           {(
             [
-              { id: "all" as const, label: "همه" },
-              { id: "open" as const, label: "باز" },
-              { id: "done" as const, label: "انجام‌شده" },
+              { id: "all" as const, label: t("pages.tasks.filterAll") },
+              { id: "open" as const, label: t("pages.tasks.filterOpen") },
+              { id: "done" as const, label: t("pages.tasks.filterDone") },
             ] as const
           ).map((item) => (
             <button
@@ -377,7 +373,7 @@ export function TasksPage() {
 
       {loading ? (
         <div className="glass mt-4 rounded-2xl p-10 text-center text-muted">
-          در حال بارگذاری…
+          {t("common.loading")}
         </div>
       ) : tasks.length === 0 ? (
         <div className="glass mt-4 rounded-2xl p-10 text-center">
@@ -423,7 +419,7 @@ export function TasksPage() {
                     <span
                       className={`rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${priorityClass(task.priority)}`}
                     >
-                      {priorityLabel(task.priority)}
+                      {priorityLabel(task.priority, t)}
                     </span>
                     {overdue && (
                       <span className="rounded-md bg-rose-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-rose-600">

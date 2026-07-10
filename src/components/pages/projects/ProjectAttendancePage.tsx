@@ -28,6 +28,7 @@ import type {
   IWorkTimeReport,
 } from "@/common/interfaces/work-time.interface";
 import { WorkMonthCalendar } from "@/components/pages/projects/WorkMonthCalendar";
+import { PageHeroSection } from "@/components/common/layout/PageHeroSection";
 import {
   formatDurationMinutes,
   formatJalaliMonthYear,
@@ -64,7 +65,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
   const now = getJalaliNow();
   const [year, setYear] = useState(now.jYear());
   const [month, setMonth] = useState(now.jMonth() + 1);
-  const [projectTitle, setProjectTitle] = useState("پروژه");
+  const [projectTitle, setProjectTitle] = useState(() => t("pages.attendance.defaultProject"));
   const [fixedIncome, setFixedIncome] = useState(false);
   const [trackWorkTime, setTrackWorkTime] = useState(false);
   const [businessSynced, setBusinessSynced] = useState(false);
@@ -87,7 +88,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
     setLoading(true);
     try {
       const projectDetail = await projectsApi.fetchProject(projectId);
-      setProjectTitle(projectDetail.project.category?.title ?? "پروژه");
+      setProjectTitle(projectDetail.project.category?.title ?? t("pages.attendance.defaultProject"));
       setFixedIncome(projectDetail.project.fixedIncome ?? false);
       setTrackWorkTime(projectDetail.project.trackWorkTime === true);
       setBusinessSynced(isBusinessSyncedProject(projectDetail.project));
@@ -116,11 +117,11 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
       setSavedMonthTarget(sessions.monthTargetMinutes);
       setWorkingDaysInMonth(sessions.workingDaysInMonth);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در بارگذاری");
+      showToast(err instanceof Error ? err.message : t("pages.attendance.loadError"));
     } finally {
       setLoading(false);
     }
-  }, [projectId, year, month]);
+  }, [projectId, year, month, t]);
 
   useEffect(() => {
     void load();
@@ -157,7 +158,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
     try {
       const result = await workTimeApi.clockIn(projectId);
       const msg = formatDailyRemainingMessage(result.dailyStatus);
-      showToast(msg ? `ورود ثبت شد · ${msg}` : "ورود ثبت شد", "success");
+      showToast(msg ? `${t("pages.attendance.clockInRecorded")} · ${msg}` : t("pages.attendance.clockInRecorded"), "success");
       await load();
     } catch (err) {
       showErrorToast(err);
@@ -205,7 +206,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
   }
 
   async function removeSession(session: IWorkSession) {
-    if (!confirm("این ردیف حذف شود؟")) return;
+    if (!confirm(t("pages.attendance.deleteRowConfirm"))) return;
     try {
       await workTimeApi.deleteWorkSession(projectId, session._id);
       showToast(t("common.deleted"), "success");
@@ -236,7 +237,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
 
   function budgetLabel(budget: IBudget | string | undefined) {
     if (!budget || typeof budget === "string") return null;
-    return budget.description || "تراکنش مرتبط";
+    return budget.description || t("pages.attendance.relatedTransaction");
   }
 
   const expectedEarnings = useMemo(() => {
@@ -254,20 +255,21 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
   if (!loading && !trackWorkTime) {
     return (
       <div className="space-y-5 pb-6">
-        <section className="rounded-3xl bg-gradient-to-br from-slate-600 to-slate-700 p-5 text-white shadow-lg">
-          <h1 className="text-2xl font-bold">{projectTitle}</h1>
-          <p className="mt-2 text-sm leading-7 text-white/80">
-            این پروژه نیاز به ثبت ساعت کاری ندارد.
-          </p>
-          <Link
-            href={PATHS.PROJECT(projectId)}
-            className="mt-3 inline-flex text-sm font-medium text-white/90 underline-offset-2 hover:underline"
-          >
-            بازگشت به پروژه
-          </Link>
-        </section>
+        <PageHeroSection
+          variant="slate"
+          title={projectTitle}
+          description={t("pageHero.projectAttendance.disabledDescription")}
+          footer={
+            <Link
+              href={PATHS.PROJECT(projectId)}
+              className="mt-3 inline-flex text-sm font-medium text-white/90 underline-offset-2 hover:underline"
+            >
+              {t("pageHero.shared.backToProject")}
+            </Link>
+          }
+        />
         <div className="glass rounded-2xl p-8 text-center text-sm text-muted">
-          از تنظیمات پروژه می‌توانید «ثبت ساعت کاری» را فعال کنید.
+          {t("pageHero.shared.enableTimeTrackingHint")}
         </div>
       </div>
     );
@@ -275,27 +277,28 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
 
   return (
     <div className="space-y-5 pb-6">
-      <section className="rounded-3xl bg-gradient-to-br from-emerald-600 to-teal-700 p-5 text-white shadow-lg">
-        <p className="text-sm font-medium text-white/80">{t("auto.ka38440a09c")}</p>
-        <h1 className="mt-1 text-2xl font-bold">{projectTitle}</h1>
-        <p className="mt-2 text-sm leading-7 text-white/80">
-          ورود و خروج، ثبت دستی ساعات و تحلیل کارکرد این پروژه
-        </p>
-        <div className="mt-3 flex flex-wrap gap-3 text-sm">
-          <Link
-            href={PATHS.PROJECT(projectId)}
-            className="font-medium text-white/90 underline-offset-2 hover:underline"
-          >
-            بازگشت به پروژه
-          </Link>
-          <Link
-            href={PATHS.WORK_ATTENDANCE}
-            className="font-medium text-white/90 underline-offset-2 hover:underline"
-          >
-            همه پروژه‌ها
-          </Link>
-        </div>
-      </section>
+      <PageHeroSection
+        variant="emerald"
+        eyebrow={t("pageHero.projectAttendance.eyebrow")}
+        title={projectTitle}
+        description={t("pageHero.projectAttendance.description")}
+        footer={
+          <div className="mt-3 flex flex-wrap gap-3 text-sm">
+            <Link
+              href={PATHS.PROJECT(projectId)}
+              className="font-medium text-white/90 underline-offset-2 hover:underline"
+            >
+              {t("pageHero.shared.backToProject")}
+            </Link>
+            <Link
+              href={PATHS.WORK_ATTENDANCE}
+              className="font-medium text-white/90 underline-offset-2 hover:underline"
+            >
+              {t("pageHero.shared.allProjectsLink")}
+            </Link>
+          </div>
+        }
+      />
 
       <div className="glass flex items-center justify-between rounded-2xl p-3">
         <Button isIconOnly variant="ghost" onPress={() => shiftMonth(-1)}>
@@ -324,10 +327,10 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
           <section className="glass space-y-3 rounded-2xl p-4">
             <p className="text-sm text-muted">
               {businessSynced
-                ? "حضور این پروژه از Business همگام می‌شود — ورود و خروج را در پنل Business ثبت کنید."
+                ? t("pages.attendance.syncFromBusiness")
                 : fixedIncome
-                  ? "پروژه با درآمد ثابت — ساعت موظف معمولاً ثابت ماهانه است."
-                  : "پروژه ساعتی/قراردادی — ساعت کار را برای فاکتور و تحلیل ثبت کنید."}
+                  ? t("pages.attendance.fixedIncomeHint")
+                  : t("pages.attendance.hourlyHint")}
             </p>
             <div className="flex flex-wrap gap-2">
               {businessSynced ? (
@@ -435,7 +438,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
               <div className="min-w-[140px] flex-1">
                 <FormInput
                   label={t("auto.k4179f5e242")}
-                  placeholder={fixedIncome ? "مثلاً ۸" : "مثلاً ۳"}
+                  placeholder={fixedIncome ? t("pages.attendance.hoursPlaceholderFixed") : t("pages.attendance.hoursPlaceholderHourly")}
                   value={targetHours}
                   onChange={(e) => setTargetHours(e.target.value)}
                 />

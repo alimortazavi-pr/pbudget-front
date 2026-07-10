@@ -15,63 +15,38 @@ import {
 } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
-import { fetchAndroidAppInfo } from "@/common/api/app";
-import {
-  APP_NAME_EN,
-  APP_NAME_FA,
-  APP_TAGLINE_FA,
-} from "@/common/constants/brand";
+import { useAndroidAppAvailability } from "@/common/hooks/useAndroidAppAvailability";
+import { useBrandLabels } from "@/common/hooks/useBrandLabels";
+import { APP_NAME_FA } from "@/common/constants/brand";
 import { showToast } from "@/common/utils/toast";
-import { toPersianDigits } from "@/common/utils";
+import { formatLocalizedDigits } from "@/i18n/format-localized-digits";
 import { AppLogo } from "@/components/common/brand/AppLogo";
+import { LanguageSelector } from "@/components/common/layout/LanguageSelector";
 import { SiteFooterCredits } from "@/components/common/brand/SiteFooterCredits";
+import { useAppSelector } from "@/stores/hooks";
+import { isAuthSelector } from "@/stores/auth";
 
 const FALLBACK_APK_URL = process.env.NEXT_PUBLIC_APK_URL ?? "/downloads/pdesk.apk";
 const FALLBACK_VERSION = process.env.NEXT_PUBLIC_APP_VERSION ?? "1.0.0";
 
-const FEATURES = [
-  {
-    icon: Wallet3,
-    title: "مدیریت مالی",
-    desc: "تراکنش، تحلیل، طلب و بدهی، اقساط و چک",
-  },
-  {
-    icon: Mobile,
-    title: "کاملاً نیتیو",
-    desc: "بدون WebView — سریع و روان روی اندروید",
-  },
-  {
-    icon: ShieldTick,
-    title: "امن و فارسی",
-    desc: "RTL کامل، تقویم شمسی، ورود با موبایل",
-  },
-] as const;
-
-const STEPS = [
-  "روی دکمه دانلود بزنید",
-  "نصب از منابع ناشناس را در تنظیمات فعال کنید",
-  "با شماره موبایل وارد شوید",
-] as const;
+const FEATURE_KEYS = ["finance", "native", "secure"] as const;
+const STEP_INDICES = [0, 1, 2] as const;
+const MOCK_ROW_INDICES = [0, 1, 2] as const;
 
 export function DownloadPage() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const { tagline } = useBrandLabels();
+  const isAuth = useAppSelector(isAuthSelector);
+  const appHomeHref = isAuth ? PATHS.HOME : PATHS.GET_STARTED;
+  const { downloadUrl, versionName, showDownloadPromo } =
+    useAndroidAppAvailability();
   const [pageUrl, setPageUrl] = useState("");
-  const [apkUrl, setApkUrl] = useState(FALLBACK_APK_URL);
-  const [appVersion, setAppVersion] = useState(FALLBACK_VERSION);
-  const [apkAvailable, setApkAvailable] = useState(false);
+
+  const apkUrl = downloadUrl || FALLBACK_APK_URL;
+  const appVersion = versionName || FALLBACK_VERSION;
 
   useEffect(() => {
     setPageUrl(window.location.href);
-
-    void fetchAndroidAppInfo()
-      .then((info) => {
-        if (info.downloadUrl) setApkUrl(info.downloadUrl);
-        if (info.versionName) setAppVersion(info.versionName);
-        setApkAvailable(info.available);
-      })
-      .catch(() => {
-        setApkAvailable(false);
-      });
   }, []);
 
   const copyLink = useCallback(async () => {
@@ -82,7 +57,11 @@ export function DownloadPage() {
     } catch {
       showToast(t("auto.kfc3060ba28"));
     }
-  }, [pageUrl]);
+  }, [pageUrl, t]);
+
+  const descriptionKey = showDownloadPromo
+    ? "download.descriptionReady"
+    : "download.description";
 
   return (
     <div className="relative min-h-dvh overflow-hidden bg-background">
@@ -99,18 +78,19 @@ export function DownloadPage() {
         className="pointer-events-none absolute -end-16 bottom-24 h-64 w-64 rounded-full bg-violet-400/15 blur-3xl"
       />
 
-      <header className="relative z-10 flex items-center justify-between px-5 pb-2 pt-[max(1rem,env(safe-area-inset-top))] lg:px-10">
-        <Link href={PATHS.GET_STARTED}>
+      <header className="relative z-50 flex items-center justify-between px-5 pb-2 pt-[max(1rem,env(safe-area-inset-top))] lg:px-10">
+        <Link href={appHomeHref}>
           <AppLogo size={44} />
         </Link>
         <div className="flex gap-2">
+          <LanguageSelector />
           <Button variant="ghost" size="sm" onPress={() => void copyLink()}>
             <Copy size={16} />
-            کپی لینک
+            {t("download.copyLink")}
           </Button>
-          <Link href={PATHS.GET_STARTED}>
+          <Link href={appHomeHref}>
             <Button size="sm" variant="secondary">
-              ورود وب
+              {isAuth ? t("nav.dashboard") : t("download.webLogin")}
             </Button>
           </Link>
         </div>
@@ -120,28 +100,27 @@ export function DownloadPage() {
         <section className="order-2 lg:order-1">
           <p className="inline-flex items-center gap-2 rounded-full border border-accent/25 bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
             <Mobile size={14} variant="Bold" />
-            اپ اندروید {APP_NAME_FA}
+            {t("download.badge", { appName: APP_NAME_FA })}
           </p>
           <h1 className="mt-5 text-3xl font-black leading-tight text-foreground lg:text-5xl">
-            میز کار مالی و برنامه‌ریزی
+            {t("download.headline")}
             <span className="mt-2 block bg-gradient-to-l from-accent to-violet-500 bg-clip-text text-transparent">
-              همیشه در جیب شما
+              {t("download.headlineAccent")}
             </span>
           </h1>
           <p className="mt-4 max-w-xl text-base leading-8 text-muted lg:text-lg">
-            {APP_TAGLINE_FA}. نسخه اندروید به‌زودی منتشر می‌شود — فعلاً از نسخه وب
-            یا PWA استفاده کنید.
+            {t(descriptionKey, { tagline })}
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-            {apkAvailable ? (
+            {showDownloadPromo ? (
               <a href={apkUrl} download="pdesk.apk" className="inline-flex">
                 <Button
                   size="lg"
                   className="min-h-14 bg-accent px-8 text-base font-bold text-accent-foreground shadow-lg shadow-accent/25"
                 >
                   <DocumentDownload size={22} />
-                  دانلود مستقیم APK
+                  {t("download.downloadApk")}
                 </Button>
               </a>
             ) : (
@@ -151,27 +130,35 @@ export function DownloadPage() {
                 className="min-h-14 bg-accent px-8 text-base font-bold text-accent-foreground shadow-lg shadow-accent/25"
               >
                 <DocumentDownload size={22} />
-                به‌زودی در دسترس
+                {t("download.comingSoon")}
               </Button>
             )}
             <p className="text-center text-xs text-muted sm:text-start">
-              نسخه {toPersianDigits(appVersion)} · اندروید ۷ به بالا
+              {t("download.versionInfo", {
+                version: formatLocalizedDigits(appVersion, language),
+              })}
             </p>
           </div>
 
           <div className="mt-10 grid gap-3 sm:grid-cols-3">
-            {FEATURES.map(({ icon: Icon, title, desc }) => (
-              <article
-                key={title}
-                className="glass rounded-2xl border border-border/40 p-4 transition hover:border-accent/30"
-              >
-                <span className="inline-flex rounded-xl bg-accent/15 p-2 text-accent">
-                  <Icon size={20} variant="Bold" />
-                </span>
-                <p className="mt-3 font-bold">{title}</p>
-                <p className="mt-1 text-xs leading-6 text-muted">{desc}</p>
-              </article>
-            ))}
+            {FEATURE_KEYS.map((key) => {
+              const Icon =
+                key === "finance" ? Wallet3 : key === "native" ? Mobile : ShieldTick;
+              return (
+                <article
+                  key={key}
+                  className="glass rounded-2xl border border-border/40 p-4 transition hover:border-accent/30"
+                >
+                  <span className="inline-flex rounded-xl bg-accent/15 p-2 text-accent">
+                    <Icon size={20} variant="Bold" />
+                  </span>
+                  <p className="mt-3 font-bold">{t(`download.features.${key}.title`)}</p>
+                  <p className="mt-1 text-xs leading-6 text-muted">
+                    {t(`download.features.${key}.desc`)}
+                  </p>
+                </article>
+              );
+            })}
           </div>
         </section>
 
@@ -207,17 +194,15 @@ export function DownloadPage() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    {["پرداخت · خرید", "دریافت · پروژه", "قسط ماهانه"].map(
-                      (row) => (
-                        <div
-                          key={row}
-                          className="flex items-center justify-between rounded-xl bg-background/80 px-3 py-2 text-xs"
-                        >
-                          <span>{row}</span>
-                          <span className="h-2 w-2 rounded-full bg-accent" />
-                        </div>
-                      ),
-                    )}
+                    {MOCK_ROW_INDICES.map((index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between rounded-xl bg-background/80 px-3 py-2 text-xs"
+                      >
+                        <span>{t(`download.mockRows.${index}`)}</span>
+                        <span className="h-2 w-2 rounded-full bg-accent" />
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -228,21 +213,21 @@ export function DownloadPage() {
 
       <section className="relative z-10 mx-auto max-w-3xl px-5 pb-[max(2rem,env(safe-area-inset-bottom))] lg:px-10">
         <div className="glass rounded-3xl border border-border/50 p-6 lg:p-8">
-          <h2 className="text-lg font-bold">{t("auto.k9a42f8d863")}</h2>
+          <h2 className="text-lg font-bold">{t("download.installTitle")}</h2>
           <ol className="mt-4 space-y-3">
-            {STEPS.map((step, index) => (
-              <li key={step} className="flex items-start gap-3 text-sm leading-7">
+            {STEP_INDICES.map((index) => (
+              <li key={index} className="flex items-start gap-3 text-sm leading-7">
                 <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent/15 text-xs font-bold text-accent">
-                  {index + 1}
+                  {formatLocalizedDigits(index + 1, language)}
                 </span>
-                <span className="text-muted">{step}</span>
+                <span className="text-muted">{t(`download.steps.${index}`)}</span>
               </li>
             ))}
           </ol>
           <div className="mt-6 flex flex-wrap items-center gap-2 text-xs text-muted">
             <TickCircle size={16} className="text-income" variant="Bold" />
             <span>
-              لینک این صفحه:{" "}
+              {t("download.pageLinkLabel")}{" "}
               <span className="font-mono text-foreground" dir="ltr">
                 pdesk.ir/download
               </span>

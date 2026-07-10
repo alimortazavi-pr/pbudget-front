@@ -39,4 +39,7 @@ export const navMessages: MessageTree = {
   controlCenter: "مركز التحكم",
   manageProject: "إدارة المشروع",
   paymentPlan: "خطة الدفع",
+  downloadApp: "تنزيل تطبيق أندرويد",
+  downloadAppReady: "الإصدار {{version}} — تنزيل APK مباشر",
+  downloadAppSoon: "تفاصيل التطبيق وموعد الإطلاق",
 };

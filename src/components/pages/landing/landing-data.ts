@@ -220,9 +220,9 @@ export const DEFAULT_LANDING_CONTENT: ILandingContent = {
     "تحلیل هزینه",
   ],
   settings: {
-    downloadComingSoon: true,
-    downloadLabel: "به‌زودی",
-    showAppDownloadInNav: false,
+    downloadComingSoon: false,
+    downloadLabel: "دانلود اپ",
+    showAppDownloadInNav: true,
   },
   pricing: {
     eyebrow: "قیمت‌گذاری شفاف",

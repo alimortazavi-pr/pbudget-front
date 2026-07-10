@@ -16,6 +16,7 @@ import type {
 } from "@/common/interfaces/payment-plan.interface";
 import { formatJalaliMonthYear, formatPrice, formatCount } from "@/common/utils";
 import { showErrorToast } from "@/common/utils/toast";
+import { PageHeroSection } from "@/components/common/layout/PageHeroSection";
 import { CreatePaymentPlanModal } from "@/components/pages/planning/CreatePaymentPlanModal";
 import { PeriodNavigator } from "@/components/pages/planning/PeriodNavigator";
 import { usePeriodQuery } from "@/components/pages/planning/usePeriodQuery";
@@ -45,7 +46,7 @@ export function InstallmentsPage() {
       setMonthlyData(data);
       setPlans(planList);
     } catch (err) {
-      showErrorToast(err, "خطا در بارگذاری");
+      showErrorToast(err, t("pages.planning.loadError"));
     } finally {
       setLoading(false);
     }
@@ -69,13 +70,12 @@ export function InstallmentsPage() {
 
   return (
     <div className="space-y-5 pb-6">
-      <section className="rounded-3xl bg-gradient-to-br from-violet-600 to-indigo-600 p-5 text-white shadow-lg">
-        <p className="text-sm font-medium text-white/80">{t("auto.k179595c567")}</p>
-        <h1 className="mt-1 text-2xl font-bold">{t("auto.kd0a0a2a30e")}</h1>
-        <p className="mt-2 text-sm leading-7 text-white/80">
-          برنامه پرداخت بسازید؛ اقساط، پرداخت‌ها و تراکنش‌ها را در صفحه هر برنامه ببینید.
-        </p>
-      </section>
+      <PageHeroSection
+        variant="violet"
+        eyebrow={t("pageHero.installments.eyebrow")}
+        title={t("nav.installments")}
+        description={t("pageHero.installments.description")}
+      />
 
       <PeriodNavigator
         label={periodLabel}
@@ -168,7 +168,7 @@ export function InstallmentsPage() {
                             : "bg-surface-secondary text-muted"
                         }`}
                       >
-                        {plan.active ? "فعال" : "غیرفعال"}
+                        {plan.active ? t("pages.planning.installmentActive") : t("pages.planning.installmentInactive")}
                       </span>
                     </div>
                     <p className="mt-1 text-xs leading-6 text-muted">
@@ -195,7 +195,7 @@ export function InstallmentsPage() {
                     <p className="mt-1 font-semibold">
                       {plan.totalInstallments
                         ? formatCount(plan.totalInstallments)
-                        : "نامحدود"}
+                        : t("pages.planning.installmentUnlimited")}
                     </p>
                   </div>
                 </div>
@@ -240,15 +240,15 @@ export function InstallmentsPage() {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-semibold">
-                      {typeof item.plan === "object" ? item.plan.title : "برنامه پرداخت"}
+                      {typeof item.plan === "object" ? item.plan.title : t("pages.planning.installmentDefaultTitle")}
                     </p>
                     <p className="mt-1 text-xs text-muted">
                       قسط {item.sequence} · روز {item.day} ·{" "}
                       {item.status === "paid"
-                        ? "پرداخت‌شده"
+                        ? t("pages.planning.installmentPaid")
                         : item.status === "skipped"
-                          ? "رد شده"
-                          : "در انتظار"}
+                          ? t("pages.planning.installmentRejected")
+                          : t("pages.planning.installmentPending")}
                     </p>
                   </div>
                   <p className="text-lg font-bold">{formatPrice(item.amount)}</p>

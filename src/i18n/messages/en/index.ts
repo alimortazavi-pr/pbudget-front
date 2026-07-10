@@ -10,6 +10,11 @@ import { voiceMessages } from "./voice";
 import { planningMessages } from "./planning";
 import { categoriesMessages } from "./categories";
 import { budgetMessages } from "./budget";
+import { pageHeroMessages } from "./pageHero";
+import { downloadMessages } from "./download";
+import { landingMessages } from "./landing";
+import { brandMessages } from "./brand";
+import { pagesMessages } from "./pages";
 import { autoMessages } from "./auto";
 
 function merge(...trees: MessageTree[]): Record<string, string> {
@@ -32,6 +37,11 @@ export const messages = {
     { planning: planningMessages },
     { categories: categoriesMessages },
     { budget: budgetMessages },
+    { pageHero: pageHeroMessages },
+    { download: downloadMessages },
+    { landing: landingMessages },
+    { brand: brandMessages },
+    { pages: pagesMessages },
   ),
   ...autoFlat,
 };

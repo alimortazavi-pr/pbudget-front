@@ -12,6 +12,7 @@ import {
   DocumentText,
   Home2,
   Messages2,
+  Mobile,
   MoneyRecive,
   Profile,
   Profile2User,
@@ -45,6 +46,12 @@ export const BANK_IMPORT_NAV_ITEM = {
   href: PATHS.BANK_IMPORT,
   label: "ورود از صورتحساب بانک",
   icon: DocumentUpload,
+} as const;
+
+export const DOWNLOAD_NAV_ITEM = {
+  href: PATHS.DOWNLOAD,
+  label: "دانلود اپ",
+  icon: Mobile,
 } as const;
 
 /** Classic mobile tab bar — beside the center FAB */

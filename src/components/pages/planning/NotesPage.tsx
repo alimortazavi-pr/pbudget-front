@@ -30,6 +30,7 @@ import {
   linesFromNote,
 } from "@/components/pages/planning/AppleNoteEditor";
 import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
+import { PageHeroSection } from "@/components/common/layout/PageHeroSection";
 import { useHydratedSearchParams } from "@/common/hooks/useHydratedSearchParams";
 import { chipClass } from "@/components/pages/planning/planning-shared";
 import { PeriodNavigator } from "@/components/pages/planning/PeriodNavigator";
@@ -303,20 +304,19 @@ export function NotesPage() {
 
   return (
     <div className="space-y-5 pb-6">
-      <section className="rounded-3xl bg-gradient-to-br from-teal-600 to-emerald-600 p-5 text-white shadow-lg">
-        <p className="text-sm font-medium text-white/80">{t("auto.k71b5e14613")}</p>
-        <h1 className="mt-1 text-2xl font-bold">{t("nav.notes")}</h1>
-        <p className="mt-2 text-sm leading-7 text-white/80">
-          متن آزاد و چک‌لیست در یک صفحه، با دسته‌بندی جدا از تراکنش.
-        </p>
-      </section>
+      <PageHeroSection
+        variant="teal"
+        eyebrow={t("pageHero.notes.eyebrow")}
+        title={t("nav.notes")}
+        description={t("pageHero.notes.description")}
+      />
 
       <div className="grid grid-cols-2 gap-2">
         {[
-          { id: "general" as const, label: "کلی" },
-          { id: "yearly" as const, label: "سالانه" },
-          { id: "monthly" as const, label: "ماهانه" },
-          { id: "daily" as const, label: "روزانه" },
+          { id: "general" as const, label: t("pageHero.notes.durationGeneral") },
+          { id: "yearly" as const, label: t("common.yearly") },
+          { id: "monthly" as const, label: t("common.monthly") },
+          { id: "daily" as const, label: t("common.daily") },
         ].map((item) => (
           <button
             key={item.id}

@@ -19,10 +19,8 @@ import {
 
 import * as authApi from "@/common/api/auth";
 import { PATHS } from "@/common/constants";
-import {
-  APP_NAME_FA,
-  APP_TAGLINE_FA,
-} from "@/common/constants/brand";
+import { APP_NAME_FA } from "@/common/constants/brand";
+import { useBrandLabels } from "@/common/hooks/useBrandLabels";
 import type { IProfile } from "@/common/interfaces/profile.interface";
 import { saveDataToLocal, toEnglishDigits } from "@/common/utils";
 import {
@@ -77,6 +75,7 @@ const BRAND_FEATURES = [
 
 export function GetStartedPage() {
   const { t } = useTranslation();
+  const { tagline } = useBrandLabels();
   const dispatch = useAppDispatch();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -410,7 +409,7 @@ export function GetStartedPage() {
                   ساده، دقیق و شمسی
                 </span>
               </h2>
-              <p className="mt-5 max-w-md text-base leading-8 text-muted">{APP_TAGLINE_FA}</p>
+              <p className="mt-5 max-w-md text-base leading-8 text-muted">{tagline}</p>
             </div>
 
             <ul className="space-y-3">

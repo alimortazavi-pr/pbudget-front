@@ -3,9 +3,10 @@
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useMemo } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
-import { Call, Logout, Moon, Profile, Sun1, Wallet2 } from "iconsax-reactjs";
+import { Call, Logout, Mobile, Moon, Profile, Sun1, Wallet2 } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 import {
@@ -21,6 +22,7 @@ import { useBalanceModal } from "@/components/providers/BalanceModalProvider";
 import { ShellNavGroup } from "@/components/common/layout/ShellNavGroup";
 import {
   ACCOUNT_NAV_ITEMS,
+  DOWNLOAD_NAV_ITEM,
   PLANNING_NAV_GROUPS,
   SUPPORT_PHONE,
 } from "@/components/common/layout/shell-nav";
@@ -182,6 +184,10 @@ export function ShellAccountMenu({
             {theme === "dark" ? <Sun1 size={20} /> : <Moon size={20} />}
             {theme === "dark" ? t("common.lightMode") : t("common.darkMode")}
           </button>
+          <Link href={DOWNLOAD_NAV_ITEM.href} className={utilityLinkClass} onClick={onNavigate}>
+            <Mobile size={20} />
+            {t(DOWNLOAD_NAV_ITEM.label)}
+          </Link>
           <a href={SUPPORT_PHONE} className={utilityLinkClass} onClick={onNavigate}>
             <Call size={20} />
             {t("common.support")}

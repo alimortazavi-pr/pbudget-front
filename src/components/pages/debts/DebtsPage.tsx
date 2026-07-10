@@ -15,18 +15,21 @@ import { formatJalaliDate, formatPrice, formatCount } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { CreateDebtModal } from "@/components/pages/debts/CreateDebtModal";
 import { SettlementProgressBar } from "@/components/common/ui/SettlementProgressBar";
+import { PageHeroSection } from "@/components/common/layout/PageHeroSection";
 import { DebtType } from "@/types/enums";
 
 type FilterTab = "open" | "all" | "settled";
 
-function debtTypeLabel(type: number) {
-  return type === DebtType.RECEIVABLE ? "طلب" : "بدهی";
+function debtTypeLabel(type: number, t: (key: string) => string) {
+  return type === DebtType.RECEIVABLE
+    ? t("pages.debts.typeReceivable")
+    : t("pages.debts.typePayable");
 }
 
-function statusLabel(status: IDebt["status"]) {
-  if (status === "settled") return "تسویه‌شده";
-  if (status === "partial") return "تسویه جزئی";
-  return "باز";
+function statusLabel(status: IDebt["status"], t: (key: string) => string) {
+  if (status === "settled") return t("pages.debts.statusSettled");
+  if (status === "partial") return t("pages.debts.statusPartial");
+  return t("pages.debts.statusOpen");
 }
 
 export function DebtsPage() {
@@ -56,11 +59,11 @@ export function DebtsPage() {
             : debtsRes.debts;
       setDebts(list);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در بارگذاری");
+      showToast(err instanceof Error ? err.message : t("pages.debts.loadError"));
     } finally {
       setLoading(false);
     }
-  }, [tab]);
+  }, [tab, t]);
 
   useEffect(() => {
     void load();
@@ -79,13 +82,12 @@ export function DebtsPage() {
 
   return (
     <div className="space-y-5 pb-6">
-      <section className="rounded-3xl bg-gradient-to-br from-rose-500 to-rose-600 p-5 text-white shadow-lg">
-        <p className="text-sm font-medium text-white/80">{t("auto.k1735904a60")}</p>
-        <h1 className="mt-1 text-2xl font-bold">{t("nav.debts")}</h1>
-        <p className="mt-2 text-sm leading-7 text-white/80">
-          هر طلب یا بدهی را باز کنید؛ تسویه‌ها، تراکنش‌ها و تحلیل را در یک صفحه ببینید.
-        </p>
-      </section>
+      <PageHeroSection
+        variant="rose"
+        eyebrow={t("pageHero.debts.eyebrow")}
+        title={t("nav.debts")}
+        description={t("pageHero.debts.description")}
+      />
 
       {summary && (
         <div className="grid gap-3 sm:grid-cols-2">
@@ -116,16 +118,16 @@ export function DebtsPage() {
         <p className="text-sm text-muted">{t("auto.k2bd34550a6")}</p>
         <Button size="sm" onPress={() => setCreateOpen(true)}>
           <Add size={18} />
-          طلب/بدهی جدید
+          {t("pages.debts.newDebt")}
         </Button>
       </div>
 
       <div className="flex gap-2">
         {(
           [
-            { id: "open" as const, label: "باز" },
-            { id: "all" as const, label: "همه" },
-            { id: "settled" as const, label: "تسویه‌شده" },
+            { id: "open" as const, label: t("pages.debts.filterOpen") },
+            { id: "all" as const, label: t("pages.debts.filterAll") },
+            { id: "settled" as const, label: t("pages.debts.filterSettled") },
           ] as const
         ).map((item) => (
           <button
@@ -148,13 +150,10 @@ export function DebtsPage() {
       ) : sortedDebts.length === 0 ? (
         <div className="glass rounded-2xl p-10 text-center text-muted">
           <p>{t("auto.k4db948a344")}</p>
-          <p className="mt-2 text-sm leading-7">
-            از دکمه «طلب/بدهی جدید» طرف حساب را اضافه کنید، یا هنگام ثبت تراکنش گزینه
-            «مرتبط با طلب یا بدهی» را فعال کنید.
-          </p>
+          <p className="mt-2 text-sm leading-7">{t("pages.debts.emptyHint")}</p>
           <Button className="mt-4" onPress={() => setCreateOpen(true)}>
             <Add size={18} />
-            ثبت طرف حساب
+            {t("pages.debts.registerParty")}
           </Button>
         </div>
       ) : (
@@ -185,10 +184,10 @@ export function DebtsPage() {
                             : "bg-expense-soft text-expense"
                         }`}
                       >
-                        {debtTypeLabel(debt.type)}
+                        {debtTypeLabel(debt.type, t)}
                       </span>
                       <span className="rounded-lg bg-surface-secondary px-2 py-0.5 text-xs text-muted">
-                        {statusLabel(debt.status)}
+                        {statusLabel(debt.status, t)}
                       </span>
                     </div>
                     <p className="mt-2 flex items-center gap-2 font-semibold">

@@ -10,6 +10,7 @@ import { ShellNavGroup } from "@/components/common/layout/ShellNavGroup";
 import {
   CREATE_NAV_ITEM,
   BANK_IMPORT_NAV_ITEM,
+  DOWNLOAD_NAV_ITEM,
   PLANNING_NAV_GROUPS,
   PRIMARY_NAV_ITEMS,
 } from "@/components/common/layout/shell-nav";
@@ -76,6 +77,11 @@ export function ShellSidebar() {
         <Link href={BANK_IMPORT_NAV_ITEM.href} className="pb-sidebar-secondary-cta mt-2">
           <BANK_IMPORT_NAV_ITEM.icon size={18} variant="Bold" />
           {t(BANK_IMPORT_NAV_ITEM.label)}
+        </Link>
+
+        <Link href={DOWNLOAD_NAV_ITEM.href} className="pb-sidebar-secondary-cta mt-2">
+          <DOWNLOAD_NAV_ITEM.icon size={18} variant="Bold" />
+          {t(DOWNLOAD_NAV_ITEM.label)}
         </Link>
 
         {PLANNING_NAV_GROUPS.map((group) => (

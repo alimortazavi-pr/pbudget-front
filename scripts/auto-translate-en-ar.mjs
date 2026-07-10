@@ -104,6 +104,18 @@ const wordFaEn = {
   دوره: "period", بازه: "range", زمانی: "time", تراکنش‌ها: "transactions",
   تراکنشی: "transaction", کیف: "wallet", پول: "money", مالی: "financial",
   غیاب: "absence", دستی: "manual", کاری: "working", نیست: "is not",
+  باز: "open", بسته: "closed", انجام: "done",
+  ثابت: "fixed", تعهد: "commitment",
+  جاری: "running", صفر: "zero",
+  وصول: "cleared", انتظار: "pending", رد: "rejected", نامحدود: "unlimited",
+  زیاد: "high", کم: "low", متوسط: "medium", طرف: "party",
+  حساب: "account",
+  سرور: "server", خطای: "error", کدام: "which", اسناد: "documents",
+  اشتراک: "subscription", ابری: "cloud",
+  تغییر: "change", رنگ: "color", ادامه: "continue", مقایسه: "compare",
+  بودجه: "budget", دسترسی: "access", بازیابی: "restore",
+  اکسل: "Excel", خودکار: "automatic", مثلاً: "e.g.", یک: "one",
+  چند: "several",
 };
 
 const wordEnAr = {
@@ -142,36 +154,61 @@ function capitalize(s) {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
+function translateWords(fa) {
+  const tokens = fa.split(/(\s+|[،.؛:!؟—·()«»])/);
+  let translated = 0;
+  const en = tokens.map((tok) => {
+    const w = tok.trim();
+    if (!w || /^[\s،.؛:!؟—·()«»]+$/.test(tok)) return tok;
+    if (faEn[w]) {
+      translated++;
+      return faEn[w];
+    }
+    if (wordFaEn[w]) {
+      translated++;
+      return wordFaEn[w];
+    }
+    return tok;
+  });
+  const wordCount = tokens.filter((t) => t.trim() && !/^[\s،.؛:!؟—·()«»]+$/.test(t)).length;
+  if (wordCount > 0 && translated >= Math.max(2, Math.ceil(wordCount * 0.35))) {
+    return en.join("").replace(/\s+/g, " ").trim();
+  }
+  return null;
+}
+
 function translateEn(fa) {
   if (faEn[fa]) return faEn[fa];
 
   let m = fa.match(/^(.+?) شد$/);
   if (m) {
     const w = wordFaEn[m[1]] || m[1];
-    return `${capitalize(w)} completed`;
+    return `${capitalize(w)} saved`;
   }
   m = fa.match(/^خطا در (.+)$/);
   if (m) return `Error loading ${translateEn(m[1]) || m[1]}`;
+  m = fa.match(/^خطای سرور — لطفاً دوباره تلاش کنید$/);
+  if (m) return "Server error — please try again";
   m = fa.match(/^(.+?) الزامی است$/);
   if (m) return `${translateEn(m[1]) || m[1]} is required`;
   m = fa.match(/^(.+?) ناموفق(?: بود)?$/);
   if (m) return `Failed to ${wordFaEn[m[1]] || m[1]}`;
   m = fa.match(/^(.+?) یافت نشد$/);
-  if (m) return `No ${m[1]} found`;
+  if (m) return `No ${translateEn(m[1]) || m[1]} found`;
   m = fa.match(/^در حال (.+?)…$/);
   if (m) return `${capitalize(m[1])}…`;
   m = fa.match(/^هنوز (.+?) (?:نکرده|نساخته)‌اید$/);
   if (m) return `You haven't created any ${m[1]} yet`;
   m = fa.match(/^(\d+) تراکنش در این (?:بازه|دوره)$/);
-  if (m) return `${m[1]} transactions in this range`;
+  if (m) return `${m[1]} transactions in this period`;
+  m = fa.match(/^ورود ثبت شد/);
+  if (m) return "Clock-in recorded";
+  m = fa.match(/^این (.+?) حذف شود؟/);
+  if (m) return `Delete this ${m[1]}?`;
 
-  if (fa.length < 50) {
-    const words = fa.split(/\s+/);
-    const en = words.map((w) => wordFaEn[w]).filter(Boolean);
-    if (en.length >= Math.ceil(words.length * 0.5)) {
-      return en.join(" ");
-    }
-  }
+  const wordResult = translateWords(fa);
+  if (wordResult && wordResult !== fa) return wordResult;
+
   return fa;
 }
 

@@ -1,13 +1,13 @@
 "use client";
 
 import { useLanguage, useTranslation, type Language } from "@/components/providers/LanguageProvider";
-import { Popover, Button } from "@heroui/react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function LanguageSelector() {
   const { language, setLanguage } = useLanguage();
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
 
   const options: { value: Language; labelKey: string; flag: string }[] = [
     { value: "fa", labelKey: "common.languagePersian", flag: "🇮🇷" },
@@ -17,42 +17,70 @@ export function LanguageSelector() {
 
   const currentOpt = options.find((o) => o.value === language) || options[0];
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsOpen(false);
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [isOpen]);
+
   return (
-    <Popover isOpen={isOpen} onOpenChange={setIsOpen}>
-      <Popover.Trigger>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="min-w-0 px-2 text-xs font-semibold hover:bg-surface-secondary gap-1"
+    <div ref={rootRef} className="relative">
+      <button
+        type="button"
+        data-testid="language-selector-trigger"
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen((open) => !open)}
+        className="inline-flex min-w-0 items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-semibold text-foreground transition hover:bg-surface-secondary"
+      >
+        <span>{currentOpt.flag}</span>
+        <span className="hidden sm:inline">{t(currentOpt.labelKey)}</span>
+      </button>
+
+      {isOpen ? (
+        <div
+          role="listbox"
+          className="absolute end-0 top-full z-[100] mt-1 min-w-[120px] rounded-xl border border-border/40 bg-background p-1 shadow-lg"
         >
-          <span>{currentOpt.flag}</span>
-          <span className="hidden sm:inline">{t(currentOpt.labelKey)}</span>
-        </Button>
-      </Popover.Trigger>
-      <Popover.Content placement="bottom end" className="p-1 min-w-[120px] bg-background border border-border/40 shadow-lg rounded-xl">
-        <Popover.Dialog>
-          <div className="flex flex-col gap-0.5">
-            {options.map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => {
-                  setLanguage(opt.value);
-                  setIsOpen(false);
-                }}
-                className={`flex items-center gap-2 w-full px-3 py-1.5 text-right text-sm rounded-lg transition-colors hover:bg-surface-secondary ${
-                  language === opt.value
-                    ? "bg-accent/10 text-accent font-medium"
-                    : "text-foreground"
-                }`}
-                style={{ direction: opt.value === "en" ? "ltr" : "rtl" }}
-              >
-                <span>{opt.flag}</span>
-                <span>{t(opt.labelKey)}</span>
-              </button>
-            ))}
-          </div>
-        </Popover.Dialog>
-      </Popover.Content>
-    </Popover>
+          {options.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              role="option"
+              data-testid={`language-option-${opt.value}`}
+              aria-selected={language === opt.value}
+              onClick={() => {
+                setLanguage(opt.value);
+                setIsOpen(false);
+              }}
+              className={`flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-sm transition-colors hover:bg-surface-secondary ${
+                language === opt.value
+                  ? "bg-accent/10 font-medium text-accent"
+                  : "text-foreground"
+              }`}
+              style={{ direction: opt.value === "en" ? "ltr" : "rtl" }}
+            >
+              <span>{opt.flag}</span>
+              <span>{t(opt.labelKey)}</span>
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </div>
   );
 }

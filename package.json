@@ -8,7 +8,14 @@
     "start": "next start -p 7711",
     "lint": "eslint",
     "brand": "node scripts/generate-brand-assets.mjs && node scripts/generate-icons.mjs",
-    "icons": "node scripts/generate-icons.mjs"
+    "icons": "node scripts/generate-icons.mjs",
+    "i18n:auto": "node scripts/auto-translate-en-ar.mjs && node scripts/build-auto-messages.mjs",
+    "i18n:landing": "node scripts/build-landing-i18n.mjs",
+    "i18n": "npm run i18n:auto && npm run i18n:landing",
+    "test:i18n": "npx tsx scripts/test-i18n.mjs",
+    "test:e2e": "playwright test",
+    "test:e2e:install": "PLAYWRIGHT_BROWSERS_PATH=0 playwright install chromium",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@heroui/react": "^3.1.0",
@@ -33,6 +40,7 @@
     "yup": "^1.7.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@tailwindcss/postcss": "^4.3.1",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",
@@ -43,6 +51,7 @@
     "serwist": "^9.5.11",
     "sharp": "^0.35.1",
     "tailwindcss": "^4.3.1",
+    "tsx": "^4.23.0",
     "typescript": "^5"
   },
   "packageManager": "pnpm@10.28.1",

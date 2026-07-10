@@ -12,6 +12,7 @@ import { PATHS } from "@/common/constants";
 import * as partnersApi from "@/common/api/partners";
 import type { IVenture } from "@/common/interfaces/partner.interface";
 import { showToast } from "@/common/utils/toast";
+import { PageHeroSection } from "@/components/common/layout/PageHeroSection";
 import { FormInput, FormTextArea } from "@/components/common/form/FormFields";
 import {
   AppModal,
@@ -36,7 +37,7 @@ export function VenturesPage() {
       const list = await partnersApi.fetchVentures();
       setVentures(list);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در بارگذاری");
+      showToast(err instanceof Error ? err.message : t("pages.ventures.loadError"));
     } finally {
       setLoading(false);
     }
@@ -64,7 +65,7 @@ export function VenturesPage() {
       setDescription("");
       router.push(PATHS.VENTURE(venture._id));
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در ایجاد");
+      showToast(err instanceof Error ? err.message : t("pages.ventures.createError"));
     } finally {
       setSaving(false);
     }
@@ -72,27 +73,28 @@ export function VenturesPage() {
 
   return (
     <div className="space-y-5 pb-6">
-      <section className="rounded-3xl bg-gradient-to-br from-violet-600 to-indigo-700 p-5 text-white shadow-lg">
-        <p className="text-sm font-medium text-white/80">{t("auto.k682a9bb9f7")}</p>
-        <h1 className="mt-1 text-2xl font-bold">{t("auto.k574410888f")}</h1>
-        <p className="mt-2 text-sm leading-7 text-white/85">
-          برای مشارکت‌هایی که فقط پروژه نیستند — رستوران، فروشگاه، سرمایه‌گذاری
-          مشترک و هر کسب‌وکار دیگر.
-        </p>
-        <Button
-          className="mt-4 bg-white text-violet-700"
-          onPress={() => setCreateOpen(true)}
-        >
-          <Add size={18} />
-          کسب‌وکار جدید
-        </Button>
-      </section>
+      <PageHeroSection
+        variant="violetDeep"
+        eyebrow={t("pageHero.ventures.eyebrow")}
+        title={t("pageHero.ventures.title")}
+        description={t("pageHero.ventures.description")}
+        descriptionClassName="mt-2 text-sm leading-7 text-white/85"
+        footer={
+          <Button
+            className="mt-4 bg-white text-violet-700"
+            onPress={() => setCreateOpen(true)}
+          >
+            <Add size={18} />
+            {t("pageHero.ventures.newButton")}
+          </Button>
+        }
+      />
 
       <PendingInvitesBanner />
 
       {loading ? (
         <div className="glass rounded-2xl p-10 text-center text-muted">
-          در حال بارگذاری…
+          {t("common.loading")}
         </div>
       ) : ventures.length === 0 ? (
         <div className="glass rounded-2xl p-10 text-center">

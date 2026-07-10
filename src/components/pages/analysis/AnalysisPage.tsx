@@ -25,6 +25,7 @@ import { getJalaliNow } from "@/common/utils/jalali-date";
 import { DEFAULT_USER_PREFERENCES } from "@/common/constants/user-preferences";
 import { getWalletBalance } from "@/common/utils/wallet-balances";
 import { showToast } from "@/common/utils/toast";
+import { PageHeroSection } from "@/components/common/layout/PageHeroSection";
 import { AnalysisFilters } from "@/components/pages/analysis/AnalysisFilters";
 import { AnalysisInsightsPanel } from "@/components/pages/analysis/AnalysisInsightsPanel";
 import { AnalysisBudgetLimitsPanel } from "@/components/pages/analysis/AnalysisBudgetLimitsPanel";
@@ -197,7 +198,7 @@ export function AnalysisPage() {
           if (!cancelled) {
             setReport(null);
             showToast(
-              err instanceof Error ? err.message : "خطا در بارگذاری تحلیل",
+              err instanceof Error ? err.message : t("pages.analysis.loadError"),
             );
           }
         }
@@ -229,16 +230,14 @@ export function AnalysisPage() {
 
   return (
     <div className="space-y-4 pb-6 lg:space-y-6">
-      <section className="pb-analysis-hero rounded-2xl p-5 lg:p-8">
-        <p className="text-sm font-medium text-white/80">{t("auto.k5dd0c9c0ce")}</p>
-        <h1 className="mt-1 text-2xl font-bold text-white lg:text-3xl">
-          تحلیل جامع وضعیت مالی
-        </h1>
-        <p className="mt-2 max-w-2xl text-sm leading-7 text-white/75 lg:text-base">
-          نمودارهای تعاملی درآمد و هزینه، توزیع دسته‌بندی‌ها، روند زمانی و
-          بینش‌های عملی برای تصمیم‌گیری بهتر.
-        </p>
-      </section>
+      <PageHeroSection
+        className="pb-analysis-hero rounded-2xl p-5 lg:p-8"
+        eyebrow={t("pageHero.analysis.eyebrow")}
+        title={t("pageHero.analysis.title")}
+        titleClassName="mt-1 text-2xl font-bold text-white lg:text-3xl"
+        description={t("pageHero.analysis.description")}
+        descriptionClassName="mt-2 max-w-2xl text-sm leading-7 text-white/75 lg:text-base"
+      />
 
       <div data-tour="analysis-filters">
         <AnalysisFilters
@@ -257,13 +256,13 @@ export function AnalysisPage() {
 
       {loading && (
         <div className="glass rounded-2xl p-10 text-center text-muted">
-          در حال آماده‌سازی تحلیل و نمودارها…
+          {t("pageHero.analysis.loading")}
         </div>
       )}
 
       {!loading && !report && (
         <div className="glass rounded-2xl p-10 text-center text-muted">
-          داده‌ای برای نمایش نمودار موجود نیست.
+          {t("pageHero.analysis.noData")}
         </div>
       )}
 

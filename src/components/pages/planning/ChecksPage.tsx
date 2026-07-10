@@ -14,6 +14,7 @@ import { showToast } from "@/common/utils/toast";
 import { ClearCheckModal } from "@/components/pages/planning/ClearCheckModal";
 import { CreateCheckModal } from "@/components/pages/planning/CreateCheckModal";
 import { PeriodNavigator } from "@/components/pages/planning/PeriodNavigator";
+import { PageHeroSection } from "@/components/common/layout/PageHeroSection";
 import { usePeriodQuery } from "@/components/pages/planning/usePeriodQuery";
 import { CheckType } from "@/types/enums";
 
@@ -45,7 +46,7 @@ export function ChecksPage() {
       setChecks(list.checks);
       setCheckPersons(persons);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در بارگذاری");
+      showToast(err instanceof Error ? err.message : t("pages.planning.loadError"));
     } finally {
       setLoading(false);
     }
@@ -57,13 +58,12 @@ export function ChecksPage() {
 
   return (
     <div className="space-y-5 pb-6">
-      <section className="rounded-3xl bg-gradient-to-br from-amber-500 to-orange-600 p-5 text-white shadow-lg">
-        <p className="text-sm font-medium text-white/80">{t("auto.kb63b7bcb2f")}</p>
-        <h1 className="mt-1 text-2xl font-bold">{t("nav.checks")}</h1>
-        <p className="mt-2 text-sm leading-7 text-white/80">
-          ثبت چک دریافتی و پرداختی با سررسید و وصول خودکار به تراکنش.
-        </p>
-      </section>
+      <PageHeroSection
+        variant="amber"
+        eyebrow={t("pageHero.checks.eyebrow")}
+        title={t("nav.checks")}
+        description={t("pageHero.checks.description")}
+      />
 
       <PeriodNavigator
         label={periodLabel}
@@ -91,7 +91,7 @@ export function ChecksPage() {
 
       <Button className="w-full" onPress={() => setCreateCheckOpen(true)}>
         <Add size={18} />
-        ثبت چک
+        {t("pageHero.checks.recordButton")}
       </Button>
 
       {loading ? (
@@ -108,7 +108,7 @@ export function ChecksPage() {
                 <div>
                   <p className="font-semibold">{check.person}</p>
                   <p className="mt-1 text-xs text-muted">
-                    {check.type === CheckType.RECEIVABLE ? "دریافتی" : "پرداختی"}
+                    {check.type === CheckType.RECEIVABLE ? t("pages.planning.checkIncoming") : t("pages.planning.checkOutgoing")}
                     {check.bankName ? ` · ${check.bankName}` : ""}
                     {check.checkNumber ? ` · #${check.checkNumber}` : ""}
                   </p>
@@ -127,7 +127,7 @@ export function ChecksPage() {
                   className="mt-3 w-full"
                   onPress={() => setClearTarget(check)}
                 >
-                  {check.type === CheckType.RECEIVABLE ? "وصول شد" : "پرداخت شد"}
+                  {check.type === CheckType.RECEIVABLE ? t("pages.planning.checkCleared") : t("pages.planning.checkPaid")}
                 </Button>
               ) : (
                 <p className="mt-3 text-sm text-muted">{check.status}</p>

@@ -26,12 +26,15 @@ import {
 } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
-import { APP_NAME_EN, APP_TAGLINE_FA } from "@/common/constants/brand";
+import { useAndroidAppAvailability } from "@/common/hooks/useAndroidAppAvailability";
+import { APP_NAME_EN } from "@/common/constants/brand";
+import { useBrandLabels } from "@/common/hooks/useBrandLabels";
 import type { ILandingContent, LandingAccent } from "@/common/interfaces/landing.interface";
 import { submitSiteContact } from "@/common/api/site";
 import { toEnglishDigits, toPersianDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
+import { LanguageSelector } from "@/components/common/layout/LanguageSelector";
 import { AppLogo } from "@/components/common/brand/AppLogo";
 import { SiteFooterCredits } from "@/components/common/brand/SiteFooterCredits";
 import { useAppSelector } from "@/stores/hooks";
@@ -41,6 +44,12 @@ import { LandingParticles } from "./LandingParticles";
 import { LandingPricingSection } from "./LandingPricingSection";
 import { useLandingContent } from "./useLandingContent";
 import { useMouseParallax, useScrollProgress, useScrollReveal } from "./landing-effects";
+import {
+  landingContactLabels,
+  landingDashboardCta,
+  landingWhyTitle,
+} from "@/i18n/localize-landing-content";
+import { formatLocalizedDigits } from "@/i18n/format-localized-digits";
 
 const ACCENT: Record<LandingAccent, string> = {
   rose: "from-rose-500/15 to-rose-500/5 border-rose-500/25",
@@ -319,7 +328,8 @@ function FaqList({ items }: { items: ILandingContent["faq"] }) {
 }
 
 export function LandingPage({ initialContent }: { initialContent?: ILandingContent }) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const { tagline } = useBrandLabels();
   const { content } = useLandingContent(initialContent);
   const isAuth = useAppSelector(isAuthSelector);
   const [scrolled, setScrolled] = useState(false);
@@ -327,10 +337,13 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
   const scrollProgress = useScrollProgress();
   const parallax = useMouseParallax(12);
   const heroRef = useRef<HTMLElement>(null);
+  const contactLabels = landingContactLabels(t);
 
   const primaryCta = isAuth ? PATHS.HOME : PATHS.GET_STARTED;
-  const primaryLabel = isAuth ? "ورود به داشبورد" : content.hero.primaryCta;
+  const primaryLabel = isAuth ? landingDashboardCta(t) : content.hero.primaryCta;
   const appSoon = content.settings.downloadComingSoon;
+  const { apkAvailable } = useAndroidAppAvailability();
+  const showAppDownload = !appSoon;
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 32);
@@ -371,11 +384,12 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
           </nav>
 
           <div className="flex items-center gap-1.5">
+            <LanguageSelector />
             <ThemeToggle />
             <ProductFamilyBanner variant="header" />
-            {content.settings.showAppDownloadInNav && !appSoon ? (
+            {showAppDownload ? (
                 <Link href={PATHS.DOWNLOAD} className="hidden sm:block">
-                  <Button variant="ghost" size="sm"><DocumentDownload size={18} />{t("auto.k24bab7c19d")}</Button>
+                  <Button variant="ghost" size="sm"><DocumentDownload size={18} />{t("nav.downloadApp")}</Button>
                 </Link>
             ) : null}
             <Link href={primaryCta}>
@@ -389,6 +403,15 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
             {content.nav.map((item) => (
               <button key={item.id} type="button" className="block w-full rounded-lg px-3 py-2.5 text-start text-sm" onClick={() => { setMenuOpen(false); scrollToId(item.id); }}>{item.label}</button>
             ))}
+            {showAppDownload ? (
+              <Link
+                href={PATHS.DOWNLOAD}
+                className="block rounded-lg px-3 py-2.5 text-sm font-medium text-accent"
+                onClick={() => setMenuOpen(false)}
+              >
+                {t("nav.downloadApp")}
+              </Link>
+            ) : null}
           </nav>
         ) : null}
       </header>
@@ -418,6 +441,14 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
             <p className="landing-hero-enter landing-hero-enter-d3 mt-4 max-w-xl text-base leading-relaxed lp-muted md:mt-5 md:text-lg">{content.hero.description}</p>
             <div className="landing-hero-enter landing-hero-enter-d4 mt-6 flex flex-wrap gap-3 md:mt-8">
               <Link href={primaryCta}><Button size="lg">{primaryLabel}<ArrowLeft2 size={18} /></Button></Link>
+              {showAppDownload ? (
+                <Link href={PATHS.DOWNLOAD}>
+                  <Button size="lg" variant="secondary">
+                    <DocumentDownload size={18} />
+                    {apkAvailable ? t("common.download") : t("nav.downloadApp")}
+                  </Button>
+                </Link>
+              ) : null}
               <Button size="lg" variant="secondary" onPress={() => scrollToId("features")}>{content.hero.secondaryCta}</Button>
             </div>
             <div className="landing-hero-enter landing-hero-enter-d5 landing-hero-stats landing-hero-stats--inline">
@@ -510,7 +541,7 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
 
       <section id="why-us" className="scroll-mt-20 py-16 md:py-24">
         <div className="mx-auto max-w-6xl px-4 md:px-6">
-          <Reveal className="text-center"><h2 className="text-2xl font-bold md:text-4xl">چرا {content.hero.title}؟</h2></Reveal>
+          <Reveal className="text-center"><h2 className="text-2xl font-bold md:text-4xl">{landingWhyTitle(t)}</h2></Reveal>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {content.whyUs.map((item, i) => (
               <Reveal key={item.title} delay={i * 50}>
@@ -580,9 +611,9 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
                 <p className="mt-3 text-sm leading-relaxed lp-muted md:text-base">{content.contact.description}</p>
                 <div className="mt-8 space-y-3">
                   {[
-                    { label: "ایمیل", value: content.contact.email, href: `mailto:${content.contact.email}`, icon: Sms },
-                    { label: "تلگرام", value: `@${content.contact.telegram}`, href: `https://t.me/${content.contact.telegram}`, icon: Messages2 },
-                    { label: "تلفن", value: toPersianDigits(content.contact.phone), href: `tel:${content.contact.phone}`, icon: Call },
+                    { label: contactLabels.email, value: content.contact.email, href: `mailto:${content.contact.email}`, icon: Sms },
+                    { label: contactLabels.telegram, value: `@${content.contact.telegram}`, href: `https://t.me/${content.contact.telegram}`, icon: Messages2 },
+                    { label: contactLabels.phone, value: toPersianDigits(content.contact.phone), href: `tel:${content.contact.phone}`, icon: Call },
                   ].map((c) => (
                     <a
                       key={c.label}
@@ -620,18 +651,18 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
           <div className="flex flex-col items-center gap-6 md:flex-row md:justify-between">
             <div className="text-center md:text-start">
               <p className="font-bold">{content.hero.title}</p>
-              <p className="text-sm lp-muted">{APP_TAGLINE_FA}</p>
+              <p className="text-sm lp-muted">{tagline}</p>
             </div>
             <nav className="landing-footer-nav">
               {content.nav.map((item) => (
                 <button key={item.id} type="button" onClick={() => scrollToId(item.id)}>{item.label}</button>
               ))}
               <Link href={PATHS.GET_STARTED}>{t("auto.k32a81e5587")}</Link>
-              {!appSoon ? <Link href={PATHS.DOWNLOAD}>{t("auto.k24bab7c19d")}</Link> : null}
+              {!appSoon ? <Link href={PATHS.DOWNLOAD}>{t("nav.downloadApp")}</Link> : null}
             </nav>
           </div>
           <SiteFooterCredits className="mt-6" />
-          <p className="mt-4 text-center text-xs lp-muted">© {toPersianDigits(String(new Date().getFullYear()))} {content.hero.title}</p>
+          <p className="mt-4 text-center text-xs lp-muted">© {formatLocalizedDigits(String(new Date().getFullYear()), language)} {content.hero.title}</p>
           <ProductFamilyBanner variant="footer" />
         </div>
       </footer>

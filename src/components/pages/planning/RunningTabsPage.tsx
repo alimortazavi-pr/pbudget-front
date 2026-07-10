@@ -11,6 +11,7 @@ import type { IRunningTab } from "@/common/interfaces/running-tab.interface";
 import { formatPrice, formatCount, toEnglishDigits } from "@/common/utils";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { FormInput, FormPriceInput } from "@/components/common/form/FormFields";
+import { PageHeroSection } from "@/components/common/layout/PageHeroSection";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { chipClass } from "@/components/pages/planning/planning-shared";
 
@@ -36,7 +37,7 @@ export function RunningTabsPage() {
       const list = await runningTabsApi.fetchRunningTabs();
       setTabs(list);
     } catch (err) {
-      showErrorToast(err, "خطا در بارگذاری تعهدات جاری");
+      showErrorToast(err, t("pages.planning.commitmentsLoadError"));
     } finally {
       setLoading(false);
     }
@@ -151,14 +152,13 @@ export function RunningTabsPage() {
 
   return (
     <div className="space-y-5 pb-6">
-      <section className="rounded-3xl bg-gradient-to-br from-amber-500 to-orange-600 p-5 text-white shadow-lg">
-        <p className="text-sm font-medium text-white/80">{t("auto.kc933bbe16d")}</p>
-        <h1 className="mt-1 text-2xl font-bold">{t("nav.commitments")}</h1>
-        <p className="mt-2 text-sm leading-7 text-white/85">
-          مبالغی که مدام کم و زیاد می‌شوند — صدقه، انعام، یا هر بدهی کوچک که هنوز
-          ثبت نهایی نشده.
-        </p>
-      </section>
+      <PageHeroSection
+        variant="amber"
+        eyebrow={t("pageHero.commitments.eyebrow")}
+        title={t("nav.commitments")}
+        description={t("pageHero.commitments.description")}
+        descriptionClassName="mt-2 text-sm leading-7 text-white/85"
+      />
 
       <div className="grid gap-3 sm:grid-cols-3">
         <div className="glass rounded-2xl p-4">
@@ -179,9 +179,9 @@ export function RunningTabsPage() {
         <div className="flex flex-wrap gap-2">
           {(
             [
-              { id: "active" as const, label: "دارای مانده" },
-              { id: "all" as const, label: "همه" },
-              { id: "zero" as const, label: "صفر" },
+              { id: "active" as const, label: t("pages.planning.runningFilterActive") },
+              { id: "all" as const, label: t("pages.planning.runningFilterAll") },
+              { id: "zero" as const, label: t("pages.planning.runningFilterZero") },
             ] as const
           ).map((item) => (
             <button
@@ -205,10 +205,10 @@ export function RunningTabsPage() {
       ) : visibleTabs.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted">
           {filter === "active"
-            ? "هیچ تعهد بازی ندارید."
+            ? t("pages.planning.runningEmptyActive")
             : filter === "zero"
-              ? "موردی با مانده صفر نیست."
-              : "هنوز تعهدی ثبت نشده — مثلاً «صدقه»."}
+              ? t("pages.planning.runningEmptyZero")
+              : t("pages.planning.runningEmptyNone")}
         </p>
       ) : (
         <div className="space-y-3">
@@ -300,7 +300,7 @@ export function RunningTabsPage() {
         <AppModalDialog className="max-w-sm">
           <AppModalHeader onClose={() => setCreateOpen(false)}>
             <Modal.Heading>
-              {editTab ? "ویرایش تعهد جاری" : "تعهد جاری جدید"}
+              {editTab ? t("pages.planning.runningEditTitle") : t("pages.planning.runningNewTitle")}
             </Modal.Heading>
           </AppModalHeader>
           <Modal.Body className="space-y-4">
@@ -321,7 +321,7 @@ export function RunningTabsPage() {
               انصراف
             </Button>
             <Button isPending={saving} onPress={() => void saveTab()}>
-              {editTab ? "ذخیره" : "ثبت"}
+              {editTab ? t("pages.planning.runningSave") : t("pages.planning.runningSubmit")}
             </Button>
           </Modal.Footer>
         </AppModalDialog>
