@@ -91,7 +91,7 @@ export function VentureOverviewSection({
       onUpdated?.(updated);
       showToast(t("auto.k34fc88b9d4"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در ذخیره");
+      showToast(err instanceof Error ? err.message : t("auto.k01981ce4e8"));
     } finally {
       setSaving(false);
     }
@@ -116,7 +116,9 @@ export function VentureOverviewSection({
             <span className="text-xs">{t("auto.kae6a285197")}</span>
           </div>
           <p className="mt-2 text-2xl font-bold">{formatCount(activePartners.length)}</p>
-          <p className="mt-1 text-xs text-muted">جمع سهم: {totalShare}٪</p>
+          <p className="mt-1 text-xs text-muted">
+            {t("pages.partners.totalShareLabel")} {t("pages.partners.totalSharePercent", { percent: totalShare })}
+          </p>
         </div>
 
         <div className="rounded-2xl border border-border/50 bg-background p-4">
@@ -143,7 +145,7 @@ export function VentureOverviewSection({
             {formatPrice(stats?.profitAmount ?? 0)}
           </p>
           <p className="mt-1 text-xs text-muted">
-            دریافت {formatPrice(stats?.receivedAmount ?? 0)} · هزینه{" "}
+            {t("auto.k63397316b7")}{formatPrice(stats?.receivedAmount ?? 0)} · {t("common.expense")}{" "}
             {formatPrice(stats?.spentAmount ?? 0)}
           </p>
         </div>
@@ -164,7 +166,7 @@ export function VentureOverviewSection({
         <section className="rounded-2xl border border-border/50 bg-background p-4">
           <h3 className="font-bold">{t("auto.k1779754adc")}</h3>
           <p className="mt-1 text-xs text-muted">
-            این متن در خلاصه و برای شرکا نمایش داده می‌شود
+            {t("auto.k02d0e2b846")}
           </p>
           <div className="mt-3 space-y-3">
             <FormTextArea
@@ -178,13 +180,13 @@ export function VentureOverviewSection({
               onPress={() => void saveDescription()}
               isPending={saving}
             >
-              ذخیره توضیحات
+              {t("auto.keb4091ca3b")}
             </Button>
           </div>
         </section>
       ) : venture.description ? null : (
         <p className="rounded-2xl border border-dashed border-border px-4 py-6 text-center text-sm text-muted">
-          توضیحی ثبت نشده
+          {t("auto.k00edb7a027")}
         </p>
       )}
 
@@ -199,10 +201,12 @@ export function VentureOverviewSection({
               >
                 <div>
                   <p className="font-medium">{partner.displayName}</p>
-                  <p className="text-xs text-muted">سهم {partner.sharePercent}٪</p>
+                  <p className="text-xs text-muted">
+                    {t("pages.partners.sharePercent", { percent: partner.sharePercent })}
+                  </p>
                 </div>
                 <span className="rounded-lg bg-accent/10 px-2 py-1 text-xs text-accent">
-                  {partner.status === "pending" ? "در انتظار" : "فعال"}
+                  {partner.status === "pending" ? t("auto.kdc55d0b549") : t("auto.k25c499f433")}
                 </span>
               </div>
             ))}
@@ -212,7 +216,7 @@ export function VentureOverviewSection({
         <section className="rounded-2xl border border-dashed border-border px-4 py-8 text-center">
           <p className="text-sm text-muted">{t("auto.k59b990ce1d")}</p>
           <p className="mt-1 text-xs text-muted">
-            از تب شرکا، اولین شریک را با شماره موبایل دعوت کنید
+            {t("auto.k179457b82c")}
           </p>
         </section>
       )}
@@ -224,7 +228,7 @@ export function VentureOverviewSection({
           onPress={() => onNavigateTab?.("partners")}
         >
           <People size={16} />
-          مدیریت شرکا
+          {t("auto.kd7638a798e")}
         </Button>
         <Button
           size="sm"
@@ -232,12 +236,12 @@ export function VentureOverviewSection({
           onPress={() => onNavigateTab?.("transactions")}
         >
           <Receipt size={16} />
-          تراکنش‌ها
+          {t("auto.k4ad10a7f11")}
         </Button>
         <Link href={PATHS.DEBTS}>
           <Button size="sm" variant="secondary">
             <ArrowLeft size={16} />
-            طلب و بدهی
+            {t("nav.debts")}
           </Button>
         </Link>
       </div>

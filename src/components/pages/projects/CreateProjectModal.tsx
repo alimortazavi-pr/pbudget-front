@@ -149,7 +149,7 @@ export function CreateProjectModal({
       closeModal();
       onCreated?.(project._id);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     } finally {
       setSaving(false);
     }
@@ -167,8 +167,8 @@ export function CreateProjectModal({
               <div className="flex gap-2">
                 {(
                   [
-                    { id: "new" as const, label: "پروژه جدید" },
-                    { id: "existing" as const, label: "دسته موجود" },
+                    { id: "new" as const, label: t("auto.ka82d423cdf") },
+                    { id: "existing" as const, label: t("auto.k83f5ac19e5") },
                   ] as const
                 ).map((item) => (
                   <button
@@ -208,8 +208,12 @@ export function CreateProjectModal({
             <FormPriceInput
               label={
                 fixedIncome
-                  ? `حقوق ماهانه (${currencyLabel(preferredCurrency)})`
-                  : `مبلغ کل قرارداد (${currencyLabel(preferredCurrency)})`
+                  ? t("projects.monthlySalaryLabel", {
+                      currency: currencyLabel(preferredCurrency),
+                    })
+                  : t("projects.contractTotalLabel", {
+                      currency: currencyLabel(preferredCurrency),
+                    })
               }
               value={totalAmount}
               onChange={setTotalAmount}
@@ -236,7 +240,7 @@ export function CreateProjectModal({
                   <div>
                     <p className="text-sm font-medium">{t("auto.kebf7642934")}</p>
                     <p className="mt-1 text-xs text-muted">
-                      میانبر ورود/خروج و حضور امروز در داشبورد
+                      {t("auto.k4e7af32886")}
                     </p>
                   </div>
                   <Switch
@@ -262,7 +266,9 @@ export function CreateProjectModal({
                 </div>
                 {!fixedIncome ? (
                   <FormPriceInput
-                    label={`نرخ ساعتی کار (${currencyLabel(preferredCurrency)})`}
+                    label={t("projects.hourlyRateLabel", {
+                      currency: currencyLabel(preferredCurrency),
+                    })}
                     value={hourlyRate}
                     onChange={setHourlyRate}
                   />
@@ -272,10 +278,10 @@ export function CreateProjectModal({
           </Modal.Body>
           <Modal.Footer>
             <Button type="button" variant="ghost" onPress={closeModal}>
-              بستن
+              {t("common.close")}
             </Button>
             <Button type="submit" isPending={saving}>
-              ایجاد
+              {t("common.create")}
             </Button>
           </Modal.Footer>
         </form>

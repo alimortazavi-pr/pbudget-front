@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -98,7 +101,7 @@ export function DebtsPage() {
             </div>
             <p className="mt-2 text-2xl font-bold">{formatPrice(summary.openReceivable)}</p>
             <p className="mt-1 text-xs text-muted">
-              {formatCount(summary.openReceivableCount)} مورد · باید به شما پرداخت شود
+              {formatCount(summary.openReceivableCount)} {t("auto.k209d590f8f")}
             </p>
           </div>
           <div className="glass rounded-2xl p-4">
@@ -108,7 +111,7 @@ export function DebtsPage() {
             </div>
             <p className="mt-2 text-2xl font-bold">{formatPrice(summary.openPayable)}</p>
             <p className="mt-1 text-xs text-muted">
-              {formatCount(summary.openPayableCount)} مورد · شما باید پرداخت کنید
+              {formatCount(summary.openPayableCount)} {t("auto.k0fd1994e7f")}
             </p>
           </div>
         </div>
@@ -197,13 +200,13 @@ export function DebtsPage() {
                     <p className="mt-1 text-xs text-muted">
                       {formatJalaliDate(String(debt.year), String(debt.month), String(debt.day))}
                       {debt.settlements?.length
-                        ? ` · ${formatCount(debt.settlements.length)} تسویه`
+                        ? ` · ${formatCount(debt.settlements.length)} ${t("auto.k43ef5d91de")}`
                         : ""}
                     </p>
                   </div>
                   <div className="text-left">
                     <p className="text-lg font-bold">{formatPrice(debt.remainingAmount)}</p>
-                    <p className="text-xs text-muted">از {formatPrice(debt.totalAmount)}</p>
+                    <p className="text-xs text-muted">{t("auto.k9aeccd708e")}{formatPrice(debt.totalAmount)}</p>
                   </div>
                 </div>
 

@@ -23,7 +23,7 @@ export function SettlementProgressBar({
     <div>
       <div className="mb-1 flex justify-between text-xs text-muted">
         <span>{displayLabel}</span>
-        <span>{Math.round(clamped)}٪</span>
+        <span>{Math.round(clamped)}{t("common.percentSign")}</span>
       </div>
       <div
         className="h-2.5 overflow-hidden rounded-full bg-surface-secondary"

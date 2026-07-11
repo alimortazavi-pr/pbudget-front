@@ -20,7 +20,7 @@ export function BankImportPromoBanner() {
       <div className="min-w-0 flex-1">
         <p className="text-sm font-bold">{t("nav.bankImportFull")}</p>
         <p className="mt-0.5 text-xs text-muted">
-          فایل Excel بلوبانک را آپلود کنید و تراکنش‌ها را یکجا ثبت کنید
+          {t("auto.kc1b9e5291a")}
         </p>
       </div>
       <span className="shrink-0 text-xs font-semibold text-accent">{t("auto.kb68898e562")}</span>

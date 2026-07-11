@@ -30,8 +30,8 @@ export function VoiceAssistantSection() {
             <h2 className="text-lg font-bold">{t("voice.title")}</h2>
           </div>
           <p className="mt-2 text-sm text-muted">
-            دکمه شناور میکروفون در تمام صفحات — تراکنش، تسک، یادداشت،
-            بدهی، چک، اقساط و بیشتر را با صدا یا متن ثبت کنید.
+            {t("auto.k8c7e03d433")}
+            {t("auto.k343bb8ee04")}
           </p>
         </div>
         <Switch

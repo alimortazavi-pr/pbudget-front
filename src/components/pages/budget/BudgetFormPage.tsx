@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useRouter } from "next/navigation";
@@ -219,12 +222,20 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
         const remaining = limit - spent;
         setCategorySpendHint(
           remaining >= 0
-            ? `سقف ${formatPriceWithCurrency(limit, formCurrency)} · خرج این ماه ${formatPriceWithCurrency(spent, formCurrency)} · مانده ${formatPriceWithCurrency(remaining, formCurrency)}`
-            : `سقف ${formatPriceWithCurrency(limit, formCurrency)} · خرج این ماه ${formatPriceWithCurrency(spent, formCurrency)} · ${formatPriceWithCurrency(Math.abs(remaining), formCurrency)} بیش از سقف`,
+            ? t("budget.limitSpendHint", {
+                limit: formatPriceWithCurrency(limit, formCurrency),
+                spent: formatPriceWithCurrency(spent, formCurrency),
+                remaining: formatPriceWithCurrency(remaining, formCurrency),
+              })
+            : t("budget.limitSpendOverHint", {
+                limit: formatPriceWithCurrency(limit, formCurrency),
+                spent: formatPriceWithCurrency(spent, formCurrency),
+                over: formatPriceWithCurrency(Math.abs(remaining), formCurrency),
+              }),
         );
       })
       .catch(() => setCategorySpendHint(null));
-  }, [category, selectedCategory?.monthlyLimit, type, formCurrency]);
+  }, [category, selectedCategory?.monthlyLimit, type, formCurrency, t]);
 
   const projectBlockedForVenture =
     Boolean(existingProjectId) ||
@@ -233,11 +244,11 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
 
   const moreHint = buildMoreHint(
     [
-      paymentCardId ? "کارت مبدا" : "",
-      debtLedger.enabled ? "طلب/بدهی" : "",
-      projectLedger.enabled || isProjectCategory ? "پروژه" : "",
-      ventureLedger.enabled || existingVentureId ? "کسب‌وکار" : "",
-      budget?.debt ? "طلب/بدهی" : "",
+      paymentCardId ? t("auto.k275357e0fe") : "",
+      debtLedger.enabled ? t("auto.k4ffe94cc2d") : "",
+      projectLedger.enabled || isProjectCategory ? t("auto.kcce7e8ff41") : "",
+      ventureLedger.enabled || existingVentureId ? t("auto.k9f48ae23bb") : "",
+      budget?.debt ? t("auto.k4ffe94cc2d") : "",
     ].filter(Boolean),
   );
 
@@ -542,7 +553,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
           {categorySpendHint ? (
             <p
               className={`rounded-xl px-3 py-2 text-xs leading-6 ${
-                categorySpendHint.includes("بیش از سقف")
+                categorySpendHint.includes(t("auto.k5305d78f31"))
                   ? "bg-expense-soft text-expense"
                   : "bg-surface-secondary text-muted"
               }`}

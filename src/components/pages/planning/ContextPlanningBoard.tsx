@@ -87,7 +87,7 @@ export function ContextPlanningBoard({
       const board = await boardApi.fetchContextBoard(contextType, contextId);
       setColumns(board.columns);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در بارگذاری بورد");
+      showToast(err instanceof Error ? err.message : t("auto.k62fb27b530"));
     } finally {
       setLoading(false);
     }
@@ -114,7 +114,7 @@ export function ContextPlanningBoard({
       setNewColumnTitle("");
       showToast(t("auto.k71dee9b0e3"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در افزودن ستون");
+      showToast(err instanceof Error ? err.message : t("auto.k0f0c451776"));
     } finally {
       setAddingColumn(false);
     }
@@ -131,7 +131,7 @@ export function ContextPlanningBoard({
       );
       setColorPickerColumnId(null);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در تغییر رنگ");
+      showToast(err instanceof Error ? err.message : t("auto.kfa02e8f59c"));
     } finally {
       setUpdatingColorId(null);
     }
@@ -158,12 +158,12 @@ export function ContextPlanningBoard({
       setAddingCardColumnId(null);
       showToast(t("auto.kcb3af6bc54"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در افزودن کارت");
+      showToast(err instanceof Error ? err.message : t("auto.k054a58a5d1"));
     }
   }
 
   async function removeCard(columnId: string, cardId: string) {
-    if (!confirm("این کارت حذف شود؟")) return;
+    if (!confirm(t("auto.kc8580f4320"))) return;
 
     try {
       await boardApi.deleteBoardCard(cardId);
@@ -179,19 +179,19 @@ export function ContextPlanningBoard({
       );
       showToast(t("auto.k4f3516862c"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در حذف کارت");
+      showToast(err instanceof Error ? err.message : t("auto.kbf37818067"));
     }
   }
 
   async function removeColumn(columnId: string) {
-    if (!confirm("این ستون حذف شود؟")) return;
+    if (!confirm(t("auto.kf32eb5b733"))) return;
 
     try {
       await boardApi.deleteBoardColumn(columnId);
       setColumns((prev) => prev.filter((column) => column._id !== columnId));
       showToast(t("auto.k25deee9f0b"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در حذف ستون");
+      showToast(err instanceof Error ? err.message : t("auto.kfe4b4a6a27"));
     }
   }
 
@@ -231,7 +231,7 @@ export function ContextPlanningBoard({
       );
       setColumns(board.columns);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در جابه‌جایی کارت");
+      showToast(err instanceof Error ? err.message : t("auto.k50416723ae"));
       void load();
     }
   }
@@ -311,7 +311,7 @@ export function ContextPlanningBoard({
                     )
                   }
                 >
-                  {colorPickerColumnId === column._id ? "بستن رنگ‌ها" : "تغییر رنگ"}
+                  {colorPickerColumnId === column._id ? t("auto.k6b7092b444") : t("auto.k062852b726")}
                 </button>
               ) : null}
             </div>
@@ -401,7 +401,7 @@ export function ContextPlanningBoard({
                 />
                 <div className="flex gap-2">
                   <Button size="sm" onPress={() => void addCard(column._id)}>
-                    افزودن
+                    {t("auto.k15f2d066f9")}
                   </Button>
                   <Button
                     size="sm"
@@ -411,7 +411,7 @@ export function ContextPlanningBoard({
                       setNewCardTitle("");
                     }}
                   >
-                    انصراف
+                    {t("common.cancel")}
                   </Button>
                 </div>
               </div>
@@ -423,7 +423,7 @@ export function ContextPlanningBoard({
                 onPress={() => setAddingCardColumnId(column._id)}
               >
                 <Add size={14} />
-                کارت جدید
+                {t("auto.k480ffe699b")}
               </Button>
             )
           ) : null}
@@ -435,7 +435,7 @@ export function ContextPlanningBoard({
               onClick={() => void removeColumn(column._id)}
             >
               <CloseCircle size={14} />
-              حذف ستون
+              {t("auto.k5ff7975e00")}
             </button>
           ) : null}
         </div>
@@ -464,7 +464,7 @@ export function ContextPlanningBoard({
                 isPending={addingColumn}
               >
                 <Add size={14} />
-                افزودن ستون
+                {t("auto.k0d31d87b59")}
               </Button>
             </section>
           ) : null}
@@ -491,7 +491,7 @@ export function ContextPlanningBoard({
               isPending={addingColumn}
             >
               <Add size={14} />
-              افزودن ستون
+              {t("auto.k0d31d87b59")}
             </Button>
           </section>
         ) : null}
@@ -507,7 +507,7 @@ export function ContextPlanningBoard({
         }`}
       >
         <h2 className={expanded ? "text-xl font-bold" : "text-lg font-bold"}>
-          بورد برنامه‌ریزی
+          {t("auto.k11dd432167")}
         </h2>
         <Button
           size="sm"
@@ -515,7 +515,7 @@ export function ContextPlanningBoard({
           onPress={() => setFullscreen((value) => !value)}
         >
           {expanded ? <CloseCircle size={16} /> : <Maximize size={16} />}
-          {expanded ? "خروج از تمام‌صفحه" : "تمام‌صفحه"}
+          {expanded ? t("auto.k1ca78d59b7") : t("auto.ka6a93e1b5d")}
         </Button>
       </div>
     );
@@ -524,7 +524,7 @@ export function ContextPlanningBoard({
   if (loading) {
     return (
       <div className="glass rounded-2xl p-8 text-center text-muted">
-        در حال بارگذاری بورد…
+        {t("auto.kb75ffcda6b")}
       </div>
     );
   }

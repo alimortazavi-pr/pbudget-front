@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useState } from "react";
@@ -12,19 +15,19 @@ import { toPersianDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 
 const ACTION_LABELS: Record<string, string> = {
-  "backup.run": "اجرای بکاپ",
-  "backup.import": "بازیابی ZIP",
-  "database.export.collection": "خروجی کالکشن",
-  "database.export.all": "خروجی کامل DB",
-  "database.import.collection": "بازیابی کالکشن",
-  "user.update": "ویرایش کاربر",
-  "user.set_admin": "تغییر نقش ادمین",
-  "user.delete": "حذف کاربر",
-  "user.restore": "بازیابی کاربر",
-  "content.budget.update": "ویرایش تراکنش",
-  "content.category.update": "ویرایش دسته",
-  "content.project.update": "ویرایش پروژه",
-  "app.android.upload": "آپلود APK اندروید",
+  "backup.run": t("auto.k41e56adf45"),
+  "backup.import": t("auto.k07d24206a0"),
+  "database.export.collection": t("auto.k644ee65e54"),
+  "database.export.all": t("auto.k3125415944"),
+  "database.import.collection": t("auto.kea458cc2d3"),
+  "user.update": t("auto.k1f97b4acf6"),
+  "user.set_admin": t("auto.kf20c777bea"),
+  "user.delete": t("auto.k6dec7fba0c"),
+  "user.restore": t("auto.k9f3f9800ce"),
+  "content.budget.update": t("nav.editTransaction"),
+  "content.category.update": t("categories.editCategory"),
+  "content.project.update": t("projects.editProject"),
+  "app.android.upload": t("auto.k893216cb73"),
 };
 
 export function AdminAuditPage() {
@@ -62,7 +65,7 @@ export function AdminAuditPage() {
         <div>
           <h3 className="text-lg font-bold">{t("auto.kd1d2fbf802")}</h3>
           <p className="text-sm text-muted">
-            ثبت تمام عملیات حساس پنل مدیریت
+            {t("auto.k77c4c90a80")}
           </p>
         </div>
 
@@ -87,7 +90,7 @@ export function AdminAuditPage() {
             />
           </div>
           <Button type="submit" variant="secondary">
-            فیلتر
+            {t("common.filter")}
           </Button>
         </form>
       </div>
@@ -108,13 +111,13 @@ export function AdminAuditPage() {
               {loading ? (
                 <tr>
                   <td colSpan={5} className="px-4 py-10 text-center text-muted">
-                    در حال بارگذاری…
+                    {t("common.loading")}
                   </td>
                 </tr>
               ) : logs.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-4 py-10 text-center text-muted">
-                    لاگی یافت نشد
+                    {t("auto.kca6941ce84")}
                   </td>
                 </tr>
               ) : (
@@ -156,17 +159,17 @@ export function AdminAuditPage() {
             isDisabled={page <= 1}
             onPress={() => setPage((p) => p - 1)}
           >
-            قبلی
+            {t("auto.k1a592f6b2d")}
           </Button>
           <span className="text-sm text-muted">
-            صفحه {toPersianDigits(page)} از {toPersianDigits(totalPages)}
+            {t("auto.k58210d64d8")}{toPersianDigits(page)} {t("common.of")} {toPersianDigits(totalPages)}
           </span>
           <Button
             variant="secondary"
             isDisabled={page >= totalPages}
             onPress={() => setPage((p) => p + 1)}
           >
-            بعدی
+            {t("auto.k54ee927e96")}
           </Button>
         </div>
       )}

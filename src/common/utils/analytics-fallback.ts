@@ -1,3 +1,5 @@
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
 import type { IBudget } from "@/common/interfaces/budget.interface";
 import type {
   AnalyticsDuration,
@@ -89,7 +91,7 @@ export function buildClientAnalyticsReport({
 
   filtered.forEach((budget) => {
     const categoryId = budget.category?._id ?? "unknown";
-    const title = budget.category?.title ?? "نامشخص";
+    const title = budget.category?.title ?? t("auto.k264f61d0e1");
     const current = categoryMap.get(categoryId) ?? {
       title,
       color: budget.category?.color ?? null,
@@ -250,8 +252,8 @@ export function buildClientAnalyticsReport({
     {
       id: "fallback",
       severity: "neutral",
-      title: "حالت آفلاین تحلیل",
-      body: "گزارش کامل از سرور دریافت نشد؛ نمودارها از تراکنش‌های همین دوره ساخته شده‌اند.",
+      title: t("auto.k41de91bb2e"),
+      body: t("auto.k8d308c26a7"),
     },
   ];
 
@@ -259,8 +261,10 @@ export function buildClientAnalyticsReport({
     insights.push({
       id: "over-budget-fallback",
       severity: "warning",
-      title: "عبور از سقف بودجه",
-      body: `${overBudget.length} دسته از سقف ماهانه عبور کرده‌اند.`,
+      title: t("auto.k30263a1c9f"),
+      body: t("pages.analysis.categoriesOverLimit", {
+        count: overBudget.length,
+      }),
     });
   }
 
@@ -320,6 +324,8 @@ export function formatPeriodLabel(
   const monthName = JALALI_MONTHS[Number(month) - 1] ?? month;
   if (duration === "daily") return `${day} ${monthName} ${year}`;
   if (duration === "monthly") return `${monthName} ${year}`;
-  if (duration === "yearly") return `سال ${year}`;
-  return "تمام دوره";
+  if (duration === "yearly") {
+    return getTranslator()("common.jalaliYear", { year });
+  }
+  return t("auto.ke039e3d6b1");
 }

@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -31,7 +34,7 @@ function balanceForPartner(
 function partnerInitials(name: string) {
 
   const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return "؟";
+  if (parts.length === 0) return t("auto.kd14862b0be");
   if (parts.length === 1) return parts[0].slice(0, 1);
   return `${parts[0].slice(0, 1)}${parts[parts.length - 1].slice(0, 1)}`;
 }
@@ -43,7 +46,7 @@ export function PartnerDebtBalancePanel({
   ownerName: ownerNameProp,
 }: PartnerDebtBalancePanelProps) {
   const { t } = useTranslation();
-  const [ownerName, setOwnerName] = useState(ownerNameProp ?? "مالک");
+  const [ownerName, setOwnerName] = useState(ownerNameProp ?? t("auto.kd1a740d28c"));
   const [balances, setBalances] = useState<IPartnerDebtBalance[]>([]);
   const [hasTransactions, setHasTransactions] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -70,7 +73,7 @@ export function PartnerDebtBalancePanel({
       setBalances(data.partners);
       setHasTransactions(data.hasTransactions === true);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در بارگذاری حساب شرکا");
+      showToast(err instanceof Error ? err.message : t("auto.k0443b207c8"));
     } finally {
       setLoading(false);
     }
@@ -100,7 +103,7 @@ export function PartnerDebtBalancePanel({
             <div>
               <h3 className="text-base font-bold">{t("auto.kfd341aa317")}</h3>
               <p className="mt-0.5 text-xs leading-5 text-muted">
-                بر اساس تراکنش‌های واقعی — چه کسی پرداخت کرده و سهم هر شریک چقدر است
+                {t("auto.k4dfac6435f")}
               </p>
             </div>
           </div>
@@ -118,8 +121,8 @@ export function PartnerDebtBalancePanel({
           <p className="text-sm text-muted">{t("auto.kc2b3442473")}</p>
         ) : !hasTransactions ? (
           <p className="rounded-xl border border-dashed border-border px-4 py-6 text-center text-sm text-muted">
-            هنوز تراکنشی به این {contextType === "project" ? "پروژه" : "کسب‌وکار"} وصل نشده.
-            پس از ثبت تراکنش، بدهی و طلب هر شریک اینجا نمایش داده می‌شود.
+            {t("auto.k05ad6be721")}{contextType === "project" ? t("auto.kcce7e8ff41") : t("auto.k9f48ae23bb")} {t("auto.k21c9b3c7c5")}.
+            {t("auto.k7e4d424c0c")}
           </p>
         ) : (
           activePartners.map((partner) => {
@@ -143,7 +146,7 @@ export function PartnerDebtBalancePanel({
                       <div>
                         <p className="font-bold">{partner.displayName}</p>
                         <p className="mt-0.5 text-xs text-muted">
-                          سهم {partner.sharePercent}٪
+                          {t("pages.partners.sharePercent", { percent: partner.sharePercent })}
                         </p>
                       </div>
                       {hasBalance ? (
@@ -157,14 +160,14 @@ export function PartnerDebtBalancePanel({
                           }`}
                         >
                           {net < 0
-                            ? `${formatPrice(Math.abs(net))} بدهکار`
+                            ? `${formatPrice(Math.abs(net))} ${t("auto.k7146b67cab")}`
                             : net > 0
-                              ? `${formatPrice(net)} طلبکار`
-                              : "تسویه"}
+                              ? `${formatPrice(net)} ${t("auto.k8c310e32b6")}`
+                              : t("auto.k43ef5d91de")}
                         </div>
                       ) : (
                         <span className="rounded-xl bg-surface-secondary px-3 py-1.5 text-xs text-muted">
-                          بدون مانده
+                          {t("auto.k0a647487b5")}
                         </span>
                       )}
                     </div>
@@ -187,29 +190,29 @@ export function PartnerDebtBalancePanel({
                                   <ArrowUp size={14} className="text-income" />
                                 ) : null}
                                 <span className="font-medium text-foreground">
-                                  نسبت به {relation.person}
+                                  {t("auto.k4a81d5ee37")}{relation.person}
                                 </span>
                               </div>
                               <div className="text-left leading-5">
                                 {relation.owesAmount > 0 ? (
                                   <p className="text-expense">
-                                    بدهکار {formatPrice(relation.owesAmount)}
+                                    {t("auto.k7146b67cab")}{formatPrice(relation.owesAmount)}
                                   </p>
                                 ) : null}
                                 {relation.owedAmount > 0 ? (
                                   <p className="text-income">
-                                    طلبکار {formatPrice(relation.owedAmount)}
+                                    {t("auto.k8c310e32b6")}{formatPrice(relation.owedAmount)}
                                   </p>
                                 ) : null}
                                 {relationNet < 0 ? (
                                   <p className="mt-0.5 font-semibold text-expense">
-                                    {partner.displayName} باید{" "}
-                                    {formatPrice(Math.abs(relationNet))} بپردازد
+                                    {partner.displayName} {t("auto.k4086a71c68")}{" "}
+                                    {formatPrice(Math.abs(relationNet))} {t("auto.ke51c5c37d1")}
                                   </p>
                                 ) : relationNet > 0 ? (
                                   <p className="mt-0.5 font-semibold text-income">
-                                    {relation.person} باید{" "}
-                                    {formatPrice(relationNet)} بپردازد
+                                    {relation.person} {t("auto.k4086a71c68")}{" "}
+                                    {formatPrice(relationNet)} {t("auto.ke51c5c37d1")}
                                   </p>
                                 ) : null}
                               </div>
@@ -219,8 +222,8 @@ export function PartnerDebtBalancePanel({
                       </div>
                     ) : (
                       <p className="mt-2 text-xs text-muted">
-                        با تراکنش‌های فعلی، مانده‌ای بین این شریک و {ownerName}{" "}
-                        ثبت نشده
+                        {t("auto.k143d20b74b")}{ownerName}{" "}
+                        {t("auto.kdc10173828")}
                       </p>
                     )}
                   </div>

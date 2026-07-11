@@ -17,14 +17,16 @@ import { formatBytes } from "@/common/utils/admin-format";
 import { toPersianDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 
-const FORMATS: { value: AdminExportFormat; label: string; hint: string }[] = [
-  {
-    value: "ejson",
-    label: "EJSON",
-    hint: "سازگار با mongoimport --jsonArray",
-  },
-  { value: "json", label: "JSON", hint: "خوانا برای ویرایشگر" },
-  { value: "csv", label: "CSV", hint: "اکسل / Google Sheets" },
+const FORMAT_HINT_KEYS: Record<AdminExportFormat, string> = {
+  ejson: "auto.k964d596715",
+  json: "auto.k6d735f992f",
+  csv: "admin.csvHint",
+};
+
+const FORMATS: { value: AdminExportFormat; label: string; hintKey: string }[] = [
+  { value: "ejson", label: "EJSON", hintKey: FORMAT_HINT_KEYS.ejson },
+  { value: "json", label: "JSON", hintKey: FORMAT_HINT_KEYS.json },
+  { value: "csv", label: "CSV", hintKey: FORMAT_HINT_KEYS.csv },
 ];
 
 export function AdminDatabasePage() {
@@ -59,7 +61,7 @@ export function AdminDatabasePage() {
     setExporting(name);
     try {
       await adminApi.downloadCollectionExport(name, format);
-      showToast(`خروجی ${name} دانلود شد`, "success");
+      showToast(t("admin.exportSuccess", { name }), "success");
     } catch {
       showToast(t("auto.k72a0e2fd88"), "danger");
     } finally {
@@ -94,7 +96,7 @@ export function AdminDatabasePage() {
         importMode,
       );
       showToast(
-        `${importTarget}: ${toPersianDigits(result.imported)} سند بازیابی شد`,
+        `${importTarget}: ${toPersianDigits(result.imported)} ${t("auto.k598f6819da")} ${t("auto.kf79235e4be")} ${t("auto.k831c6609f1")}`,
         "success",
       );
       void load();
@@ -131,8 +133,8 @@ export function AdminDatabasePage() {
         <div>
           <h3 className="text-lg font-bold">{t("auto.k9fe6d4a760")}</h3>
           <p className="text-sm text-muted">
-            {toPersianDigits(collections.length)} کالکشن ·{" "}
-            {toPersianDigits(totalDocs)} سند · {formatBytes(totalSize)}
+            {toPersianDigits(collections.length)} {t("auto.k856205a73e")} ·{" "}
+            {toPersianDigits(totalDocs)} {t("auto.k598f6819da")} · {formatBytes(totalSize)}
           </p>
         </div>
 
@@ -158,25 +160,24 @@ export function AdminDatabasePage() {
             isDisabled={exporting !== null || loading}
           >
             <DocumentDownload size={18} />
-            خروجی همه (ZIP)
+            {t("auto.kc2c6879d18")}
           </Button>
         </div>
       </div>
 
       <p className="rounded-xl bg-surface-secondary/70 px-4 py-3 text-xs text-muted">
-        فرمت فعال:{" "}
+        {t("auto.ked0435ae2b")}{" "}
         <strong>{FORMATS.find((f) => f.value === format)?.label}</strong> —{" "}
-        {FORMATS.find((f) => f.value === format)?.hint}
-        {" · "}
-        بازیابی:{" "}
-        <strong>{importMode === "merge" ? "ادغام" : "جایگزینی"}</strong>
+        {t(FORMATS.find((f) => f.value === format)?.hintKey ?? "admin.csvHint")}
+        {" · "} {t("auto.kf79235e4be")}:{" "}
+        <strong>{importMode === "merge" ? t("auto.kbb761da710") : t("auto.k5b1dcdcd1a")}</strong>
       </p>
 
       <div className="flex flex-wrap gap-2">
         {(
           [
-            { value: "merge", label: "ادغام (upsert)" },
-            { value: "replace", label: "جایگزینی کامل" },
+            { value: "merge", label: t("auto.k69f380c806") },
+            { value: "replace", label: t("auto.k50adda1129") },
           ] as const
         ).map((item) => (
           <button
@@ -218,7 +219,7 @@ export function AdminDatabasePage() {
               {loading ? (
                 <tr>
                   <td colSpan={5} className="px-4 py-10 text-center text-muted">
-                    در حال بارگذاری…
+                    {t("common.loading")}
                   </td>
                 </tr>
               ) : (
@@ -261,7 +262,7 @@ export function AdminDatabasePage() {
                           onPress={() => void exportOne(collection.name)}
                         >
                           <DocumentDownload size={16} />
-                          {exporting === collection.name ? "…" : "دانلود"}
+                          {exporting === collection.name ? "…" : t("auto.k24bab7c19d")}
                         </Button>
                       </div>
                     </td>
@@ -283,7 +284,7 @@ export function AdminDatabasePage() {
               <Modal.CloseTrigger />
               <Modal.Header>
                 <Modal.Heading>
-                  پیش‌نمایش {preview?.name ?? "…"}
+                  {t("auto.kf07d7cd0f1")}{preview?.name ?? "…"}
                 </Modal.Heading>
               </Modal.Header>
               <Modal.Body>
@@ -292,8 +293,8 @@ export function AdminDatabasePage() {
                 ) : preview ? (
                   <div className="space-y-3">
                     <p className="text-sm text-muted">
-                      نمایش {toPersianDigits(preview.preview.length)} از{" "}
-                      {toPersianDigits(preview.total)} سند
+                      {t("auto.kcf5a6721b9")}{toPersianDigits(preview.preview.length)} {t("common.of")}{" "}
+                      {toPersianDigits(preview.total)} {t("auto.k598f6819da")}
                     </p>
                     <pre className="max-h-[50vh] overflow-auto rounded-xl bg-surface-secondary p-4 text-xs leading-relaxed">
                       {JSON.stringify(preview.preview, null, 2)}

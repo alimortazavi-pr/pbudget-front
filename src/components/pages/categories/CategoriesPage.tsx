@@ -116,7 +116,7 @@ export function CategoriesPage() {
       setIsProjectKind(false);
       setEditItem(null);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     } finally {
       setSaving(false);
     }
@@ -131,7 +131,7 @@ export function CategoriesPage() {
       );
       showToast(t("common.deleted"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     }
   }
 

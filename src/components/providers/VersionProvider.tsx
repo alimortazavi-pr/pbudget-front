@@ -64,25 +64,25 @@ function ChangelogModal({
       <AppModalDialog className="flex max-h-[100dvh] flex-col sm:max-w-lg">
         <AppModalHeader onClose={() => onOpenChange(false)}>
           <Modal.Heading>{t("common.whatsNew")}</Modal.Heading>
-          <p className="mt-1 text-sm text-muted">نسخه {APP_VERSION}</p>
+          <p className="mt-1 text-sm text-muted">{t("auto.k24f4ed36d2")}{APP_VERSION}</p>
         </AppModalHeader>
 
         <div className={`${modalSheetBodyClass} space-y-5 overflow-y-auto`}>
           {entries.map((entry) => (
             <div key={entry.version} className="space-y-2">
               <div>
-                <h3 className="font-bold">{entry.title}</h3>
-                <p className="text-xs text-muted">{entry.date}</p>
+                <h3 className="font-bold">{t(entry.titleKey)}</h3>
+                <p className="text-xs text-muted">{t(entry.dateKey)}</p>
               </div>
               <ul className="space-y-1.5">
-                {entry.items.map((item) => (
-                  <li key={item} className="flex items-start gap-2 text-sm">
+                {entry.itemKeys.map((itemKey) => (
+                  <li key={itemKey} className="flex items-start gap-2 text-sm">
                     <TickCircle
                       size={16}
                       variant="Bold"
                       className="mt-0.5 shrink-0 text-success"
                     />
-                    <span>{item}</span>
+                    <span>{t(itemKey)}</span>
                   </li>
                 ))}
               </ul>
@@ -99,6 +99,7 @@ function ChangelogModal({
 }
 
 export const VersionProvider: FC<PropsWithChildren> = ({ children }) => {
+  const { t } = useTranslation();
   const [changelogOpen, setChangelogOpen] = useState(false);
   const [updateReady, setUpdateReady] = useState(false);
   const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null);
@@ -182,7 +183,7 @@ export const VersionProvider: FC<PropsWithChildren> = ({ children }) => {
             {updateReady && (
               <Button variant="primary" className="flex-1" onPress={applyUpdate}>
                 <Refresh size={18} />
-                بروزرسانی اپ
+                {t("auto.k15e14e4c82")}
               </Button>
             )}
             <Button
@@ -190,7 +191,7 @@ export const VersionProvider: FC<PropsWithChildren> = ({ children }) => {
               className="flex-1"
               onPress={dismissChangelog}
             >
-              {updateReady ? "بعداً" : "متوجه شدم"}
+              {updateReady ? t("auto.kacf5238e74") : t("auto.ked52d39dd9")}
             </Button>
           </div>
         }

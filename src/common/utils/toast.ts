@@ -1,3 +1,5 @@
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
 import { toast } from "@heroui/react";
 
 import { getApiErrorMessage } from "./api-error";
@@ -12,6 +14,6 @@ export function showToast(
   else toast.danger(normalized);
 }
 
-export function showErrorToast(error: unknown, fallback = "خطا") {
+export function showErrorToast(error: unknown, fallback = t("common.error")) {
   showToast(getApiErrorMessage(error, fallback));
 }

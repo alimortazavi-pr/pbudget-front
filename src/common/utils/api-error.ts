@@ -1,47 +1,57 @@
+import { getTranslator } from "@/i18n";
 import axios from "axios";
 
-const API_ERROR_TRANSLATIONS: Record<string, string> = {
-  "Internal server error": "خطای سرور — لطفاً دوباره تلاش کنید",
-  "Please enter the 'Type (0 or 1)' correctly": "نوع تراکنش (دریافتی/پرداختی) نامعتبر است",
-  "Please enter the 'type (0 or 1)' correctly": "نوع تراکنش (دریافتی/پرداختی) نامعتبر است",
-  "remindDaysBefore must not be greater than 30": "تعداد روز یادآوری باید بین ۰ تا ۳۰ باشد",
-  "remindDaysBefore must not be less than 0": "تعداد روز یادآوری باید بین ۰ تا ۳۰ باشد",
-  "روز سررسید باید بین ۱ تا ۳۱ باشد": "روز سررسید باید بین ۱ تا ۳۱ باشد",
-  "تعداد روز یادآوری باید بین ۰ تا ۳۰ باشد": "تعداد روز یادآوری باید بین ۰ تا ۳۰ باشد",
+const API_ERROR_KEYS: Record<string, string> = {
+  "Internal server error": "errors.internalServer",
+  "Please enter the 'Type (0 or 1)' correctly": "errors.invalidTransactionType",
+  "Please enter the 'type (0 or 1)' correctly": "errors.invalidTransactionType",
+  "remindDaysBefore must not be greater than 30": "errors.remindDaysRange",
+  "remindDaysBefore must not be less than 0": "errors.remindDaysRange",
+  "روز سررسید باید بین ۱ تا ۳۱ باشد": "errors.dueDayRange",
+  "تعداد روز یادآوری باید بین ۰ تا ۳۰ باشد": "errors.remindDaysRange",
 };
 
-const VALIDATION_KEY_TRANSLATIONS: Record<string, string> = {
-  remindDaysBefore: "تعداد روز یادآوری",
-  dueDayOfMonth: "روز سررسید",
-  title: "عنوان",
-  amount: "مبلغ",
-  monthlyLimit: "سقف ماهانه",
-  price: "مبلغ",
-  categoryId: "دسته‌بندی",
-  parentId: "دسته والد",
-  color: "رنگ",
-  email: "ایمیل",
-  password: "رمز عبور",
+const VALIDATION_FIELD_KEYS: Record<string, string> = {
+  remindDaysBefore: "errors.fields.remindDaysBefore",
+  dueDayOfMonth: "errors.fields.dueDayOfMonth",
+  title: "errors.fields.title",
+  amount: "errors.fields.amount",
+  monthlyLimit: "errors.fields.monthlyLimit",
+  price: "errors.fields.price",
+  categoryId: "errors.fields.categoryId",
+  parentId: "errors.fields.parentId",
+  color: "errors.fields.color",
+  email: "errors.fields.email",
+  password: "errors.fields.password",
 };
 
 function fieldLabel(field: string): string {
-  return VALIDATION_KEY_TRANSLATIONS[field] ?? field;
+  const t = getTranslator();
+  const key = VALIDATION_FIELD_KEYS[field];
+  return key ? t(key) : field;
 }
 
 function translateValidationKeyMessage(message: string): string | null {
+  const t = getTranslator();
   const mustBeString = message.match(/^(\w+)\s+must be a string$/i);
   if (mustBeString) {
-    return `${fieldLabel(mustBeString[1])} فرمت نامعتبر است`;
+    return t("errors.fieldInvalidFormat", {
+      field: fieldLabel(mustBeString[1]),
+    });
   }
 
   const mustBeNumber = message.match(/^(\w+)\s+must be (?:a )?number/i);
   if (mustBeNumber) {
-    return `${fieldLabel(mustBeNumber[1])} باید عدد باشد`;
+    return t("errors.fieldMustBeNumber", {
+      field: fieldLabel(mustBeNumber[1]),
+    });
   }
 
   const mustNotBeEmpty = message.match(/^(\w+)\s+should not be empty$/i);
   if (mustNotBeEmpty) {
-    return `${fieldLabel(mustNotBeEmpty[1])} الزامی است`;
+    return t("errors.fieldRequired", {
+      field: fieldLabel(mustNotBeEmpty[1]),
+    });
   }
 
   const match = message.match(/^(\w+)\s+must not be (greater than|less than)\s+(.+)$/i);
@@ -50,16 +60,16 @@ function translateValidationKeyMessage(message: string): string | null {
   const [, field, direction, bound] = match;
   const label = fieldLabel(field);
   if (direction === "greater than") {
-    return `${label} نباید بیشتر از ${bound} باشد`;
+    return t("errors.fieldMustNotBeGreater", { field: label, bound });
   }
-  return `${label} نباید کمتر از ${bound} باشد`;
+  return t("errors.fieldMustNotBeLess", { field: label, bound });
 }
 
 function translateApiMessage(message: string): string {
+  const t = getTranslator();
   const trimmed = message.trim();
-  if (API_ERROR_TRANSLATIONS[trimmed]) {
-    return API_ERROR_TRANSLATIONS[trimmed];
-  }
+  const mapped = API_ERROR_KEYS[trimmed];
+  if (mapped) return t(mapped);
   return translateValidationKeyMessage(trimmed) ?? trimmed;
 }
 
@@ -79,7 +89,10 @@ function normalizeMessagePayload(message: unknown): string | null {
   return null;
 }
 
-export function getApiErrorMessage(error: unknown, fallback = "خطا"): string {
+export function getApiErrorMessage(error: unknown, fallback?: string): string {
+  const t = getTranslator();
+  const resolvedFallback = fallback ?? t("errors.default");
+
   if (axios.isAxiosError(error)) {
     const payload = error.response?.data as { message?: unknown } | undefined;
     const fromPayload = normalizeMessagePayload(payload?.message);
@@ -90,5 +103,5 @@ export function getApiErrorMessage(error: unknown, fallback = "خطا"): string 
     return error.message;
   }
 
-  return fallback;
+  return resolvedFallback;
 }

@@ -51,7 +51,7 @@ export function PeriodScopeBar({ compact = false }: PeriodScopeBarProps) {
             data-active={duration === item.id ? "true" : "false"}
             onClick={() => updatePeriod({ duration: item.id })}
           >
-            {item.label}
+            {t(item.labelKey)}
           </button>
         ))}
       </div>

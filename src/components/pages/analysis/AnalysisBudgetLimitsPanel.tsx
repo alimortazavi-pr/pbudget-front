@@ -38,7 +38,7 @@ export function AnalysisBudgetLimitsPanel({ report }: AnalysisBudgetLimitsPanelP
                     ) : null}
                   </p>
                   <p className="text-xs text-muted">
-                    سقف {formatPrice(row.monthlyLimit)} · خرج {formatPrice(row.spent)}
+                    {t("auto.kab3e1ccf9b")}{formatPrice(row.monthlyLimit)} · {t("auto.kb0c4ca0499")}{formatPrice(row.spent)}
                   </p>
                 </div>
               </div>
@@ -48,8 +48,8 @@ export function AnalysisBudgetLimitsPanel({ report }: AnalysisBudgetLimitsPanelP
                 }`}
               >
                 {row.isOverLimit
-                  ? `${formatPrice(row.overLimitAmount)} بیشتر`
-                  : `${formatPrice(row.remaining)} مانده`}
+                  ? `${formatPrice(row.overLimitAmount)} ${t("nav.more")}`
+                  : `${formatPrice(row.remaining)} ${t("auto.k23d4b4c189")}`}
               </p>
             </div>
             <div className="mt-2 h-2 overflow-hidden rounded-full bg-background">
@@ -61,7 +61,9 @@ export function AnalysisBudgetLimitsPanel({ report }: AnalysisBudgetLimitsPanelP
               />
             </div>
             <p className="mt-1 text-xs text-muted">
-              {toPersianDigits(Math.round(row.percentOfLimit))}٪ از سقف
+              {t("common.percentOfLimit", {
+                percent: toPersianDigits(Math.round(row.percentOfLimit)),
+              })}
             </p>
           </article>
         ))}

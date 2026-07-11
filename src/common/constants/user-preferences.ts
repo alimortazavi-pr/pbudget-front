@@ -1,3 +1,5 @@
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
 export type UserCurrency = "toman" | "usd" | "dinar";
 export type UserDateCalendar = "jalali" | "gregorian";
 export type WalletBalances = Record<UserCurrency, number>;
@@ -19,9 +21,9 @@ export const CURRENCY_OPTIONS: Array<{
   label: string;
   shortLabel: string;
 }> = [
-  { id: "toman", label: "تومان", shortLabel: "ت" },
-  { id: "usd", label: "دلار", shortLabel: "$" },
-  { id: "dinar", label: "دینار", shortLabel: "د." },
+  { id: "toman", label: t("auto.k9e29f60874"), shortLabel: t("auto.kee60710e11") },
+  { id: "usd", label: t("auto.k570ced5b71"), shortLabel: "$" },
+  { id: "dinar", label: t("auto.k9b7638de16"), shortLabel: t("auto.kcc8503a041") },
 ];
 
 export const CALENDAR_OPTIONS: Array<{
@@ -31,13 +33,13 @@ export const CALENDAR_OPTIONS: Array<{
 }> = [
   {
     id: "jalali",
-    label: "شمسی (جلالی)",
-    description: "تقویم ایرانی — فروردین تا اسفند",
+    label: t("auto.ke7aa3ce433"),
+    description: t("auto.ka409df328f"),
   },
   {
     id: "gregorian",
-    label: "میلادی",
-    description: "تقویم میلادی — January تا December",
+    label: t("auto.k4494f5a6be"),
+    description: t("auto.kd921dc4506"),
   },
 ];
 
@@ -56,9 +58,9 @@ export function resolveBudgetDateCalendar(
 }
 
 export function currencyLabel(currency: UserCurrency) {
-  return CURRENCY_OPTIONS.find((c) => c.id === currency)?.label ?? "تومان";
+  return CURRENCY_OPTIONS.find((c) => c.id === currency)?.label ?? t("auto.k9e29f60874");
 }
 
 export function currencyShortLabel(currency: UserCurrency) {
-  return CURRENCY_OPTIONS.find((c) => c.id === currency)?.shortLabel ?? "ت";
+  return CURRENCY_OPTIONS.find((c) => c.id === currency)?.shortLabel ?? t("auto.kee60710e11");
 }

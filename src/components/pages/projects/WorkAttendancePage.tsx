@@ -275,9 +275,9 @@ export function WorkAttendancePage() {
           <section className="glass rounded-2xl p-4 text-sm">
             {workingDays ? (
               <p className="text-muted">
-                {toPersianDigits(String(workingDays.inMonth))} روز کاری این ماه (
-                {toPersianDigits(String(workingDays.fridayCount))} جمعه +{" "}
-                {toPersianDigits(String(workingDays.holidayCount))} تعطیل رسمی)
+                {toPersianDigits(String(workingDays.inMonth))} {t("auto.k311865a016")} (
+                {toPersianDigits(String(workingDays.fridayCount))} {t("auto.k86624056fa")} +{" "}
+                {toPersianDigits(String(workingDays.holidayCount))} {t("auto.ka38179bf96")})
               </p>
             ) : null}
             {dailyPerProject && monthTarget ? (
@@ -293,7 +293,7 @@ export function WorkAttendancePage() {
                 </p>
                 <p className="mt-1 text-xs text-muted">
                   {formatDurationMinutes(dailyPerProject)} ×{" "}
-                  {toPersianDigits(String(workingDays?.inMonth ?? "—"))} روز کاری
+                  {toPersianDigits(String(workingDays?.inMonth ?? "—"))} {t("auto.kc0224c9a4b")}
                 </p>
               </>
             ) : (
@@ -347,7 +347,7 @@ export function WorkAttendancePage() {
             ) : (
               visibleProjects.map((row) => {
                 const projectId = row.project._id;
-                const title = row.project.category?.title ?? "بدون عنوان";
+                const title = row.project.category?.title ?? t("auto.k6499798673");
                 const isActive = Boolean(row.activeSession);
                 const blockedByOtherSession =
                   Boolean(activeProjectId) && activeProjectId !== projectId;
@@ -372,9 +372,11 @@ export function WorkAttendancePage() {
                       </div>
                       {row.requiredDailyMinutes ? (
                         <p className="mt-1 text-sm text-muted">
-                          روزانه {formatDurationMinutes(row.requiredDailyMinutes)}
+                          {t("common.daily")}{formatDurationMinutes(row.requiredDailyMinutes)}
                           {row.monthTargetMinutes
-                            ? ` · این ماه ${formatDurationMinutes(row.monthTargetMinutes)}`
+                            ? t("projects.monthTargetSuffix", {
+                                duration: formatDurationMinutes(row.monthTargetMinutes),
+                              })
                             : ""}
                         </p>
                       ) : (
@@ -432,7 +434,7 @@ export function WorkAttendancePage() {
                     </div>
                     {blockedByOtherSession ? (
                       <p className="mt-2 text-xs text-muted">
-                        ابتدا از پروژه فعال خارج شوید.
+                        {t("auto.k9172bce7ac")}
                       </p>
                     ) : null}
                     {row.dailyStatus?.isWorkingDay === false ? (

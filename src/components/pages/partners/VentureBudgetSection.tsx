@@ -47,7 +47,7 @@ export function VentureBudgetSection({
       const list = await partnersApi.fetchVentureBudgets(ventureId);
       setBudgets(list);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در بارگذاری تراکنش‌ها");
+      showToast(err instanceof Error ? err.message : t("auto.k0b952d2d1b"));
     } finally {
       setLoading(false);
     }
@@ -64,7 +64,7 @@ export function VentureBudgetSection({
       const list = await partnersApi.fetchVentureBudgetCandidates(ventureId);
       setCandidates(list);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در بارگذاری لیست");
+      showToast(err instanceof Error ? err.message : t("auto.k5c84d568d1"));
     } finally {
       setCandidatesLoading(false);
     }
@@ -78,7 +78,7 @@ export function VentureBudgetSection({
       setAttachOpen(false);
       await load();
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در وصل کردن");
+      showToast(err instanceof Error ? err.message : t("auto.k7c458b912d"));
     } finally {
       setAttachingId(null);
     }
@@ -90,19 +90,19 @@ export function VentureBudgetSection({
         <div>
           <h2 className="text-lg font-bold">{t("auto.k25af44580b")}</h2>
           <p className="mt-1 text-sm text-muted">
-            تراکنش‌های وصل‌شده برای محاسبه تسویه مالی
+            {t("auto.k964a4a551d")}
           </p>
         </div>
         {!readOnly ? (
           <div className="flex flex-wrap gap-2">
             <Button size="sm" variant="secondary" onPress={() => void openAttachModal()}>
               <Add size={16} />
-              افزودن از تراکنش‌ها
+              {t("auto.k90a573a5af")}
             </Button>
             <Link href={PATHS.CREATE_BUDGET}>
               <Button size="sm" variant="secondary">
                 <Add size={16} />
-                تراکنش جدید
+                {t("auto.kc26f42387e")}
               </Button>
             </Link>
           </div>
@@ -111,11 +111,11 @@ export function VentureBudgetSection({
 
       {loading ? (
         <div className="glass rounded-2xl p-8 text-center text-muted">
-          در حال بارگذاری…
+          {t("common.loading")}
         </div>
       ) : budgets.length === 0 ? (
         <div className="glass rounded-2xl p-8 text-center text-muted">
-          هنوز تراکنشی به این کسب‌وکار وصل نشده
+          {t("auto.kc2656d1268")}
         </div>
       ) : (
         <div className="space-y-2">
@@ -134,7 +134,7 @@ export function VentureBudgetSection({
           <AppModalHeader onClose={() => setAttachOpen(false)}>
             <Modal.Heading>{t("auto.kd4b3befc1f")}</Modal.Heading>
             <p className="mt-1 text-sm text-muted">
-              تراکنش‌های آزاد را به این کسب‌وکار وصل کنید
+              {t("auto.kf4aa629cd6")}
             </p>
           </AppModalHeader>
           <Modal.Body className={`${modalSheetBodyClass} space-y-2`}>
@@ -142,7 +142,7 @@ export function VentureBudgetSection({
               <p className="py-8 text-center text-sm text-muted">{t("common.loading")}</p>
             ) : candidates.length === 0 ? (
               <p className="py-8 text-center text-sm text-muted">
-                تراکنش آزادی برای وصل کردن نیست
+                {t("auto.kcff0ca4d87")}
               </p>
             ) : (
               candidates.map((budget) => {
@@ -154,7 +154,7 @@ export function VentureBudgetSection({
                   >
                     <div className="min-w-0 flex-1 text-start">
                       <p className="truncate text-sm font-medium">
-                        {isIncome ? "دریافت" : "پرداخت"}
+                        {isIncome ? t("auto.k63397316b7") : t("auto.k1025955b55")}
                         {budget.description ? ` · ${budget.description}` : ""}
                       </p>
                       <p className="mt-0.5 text-xs text-muted">
@@ -173,7 +173,7 @@ export function VentureBudgetSection({
                         onPress={() => void attach(budget._id)}
                         isPending={attachingId === budget._id}
                       >
-                        وصل کردن
+                        {t("auto.kb8b0ca1ea2")}
                       </Button>
                     </div>
                   </div>

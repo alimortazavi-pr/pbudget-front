@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import Link from "next/link";
@@ -40,10 +43,10 @@ import { setProfile, userSelector } from "@/stores/profile";
 type WizardStep = 1 | 2 | 3 | 4;
 
 const STEPS = [
-  { id: 1, label: "انتخاب بانک" },
-  { id: 2, label: "آپلود فایل" },
-  { id: 3, label: "بررسی و تنظیم" },
-  { id: 4, label: "پایان" },
+  { id: 1, label: t("auto.k5a1352bc9e") },
+  { id: 2, label: t("auto.k401c3c8f4c") },
+  { id: 3, label: t("auto.k0b8ec3665d") },
+  { id: 4, label: t("auto.k44856fc170") },
 ] as const;
 
 export function BankImportWizardPage() {
@@ -148,7 +151,7 @@ export function BankImportWizardPage() {
       setFile(selectedFile);
       setStep(3);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خواندن فایل ناموفق بود", "danger");
+      showToast(err instanceof Error ? err.message : t("auto.k9417b15f0c"), "danger");
     } finally {
       setParsing(false);
     }
@@ -192,9 +195,9 @@ export function BankImportWizardPage() {
         skippedDuplicates: result.skippedDuplicates,
       });
       setStep(4);
-      showToast(`${toPersianDigits(result.importedCount)} تراکنش ثبت شد`, "success");
+      showToast(`${toPersianDigits(result.importedCount)} ${t("auto.keb7bb3e55b")} ${t("nav.create")} ${t("auto.k831c6609f1")}`, "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "ثبت تراکنش‌ها ناموفق بود", "danger");
+      showToast(err instanceof Error ? err.message : t("auto.k9ec8323799"), "danger");
     } finally {
       setConfirming(false);
     }
@@ -243,8 +246,8 @@ export function BankImportWizardPage() {
       <div>
         <h1 className="text-2xl font-bold">{t("auto.k3785afd116")}</h1>
         <p className="mt-1 text-sm text-muted">
-          تراکنش‌ها را انتخاب کنید، با دکمه ویرایش تنظیمات کامل ثبت تراکنش را
-          اعمال کنید، سپس اتمام را بزنید
+          {t("auto.k1b3560798e")}
+          {t("auto.kd484b5c2c5")}
         </p>
       </div>
 
@@ -296,7 +299,7 @@ export function BankImportWizardPage() {
             <p className="text-sm text-muted">{t("auto.kb8d57243f9")}</p>
           )}
           <Button className="w-full" isDisabled={!selectedBankId} onPress={() => setStep(2)}>
-            ادامه
+            {t("auto.k3801960d42")}
             <ArrowLeft2 size={18} />
           </Button>
         </section>
@@ -318,7 +321,7 @@ export function BankImportWizardPage() {
             <div className="text-center">
               <p className="font-medium">{t("auto.k1a605f5534")}</p>
               <p className="mt-1 text-xs text-muted">
-                همان خروجی Excel که از اپ بلوبانک می‌گیرید
+                {t("auto.k11e8214c0c")}
               </p>
             </div>
             <input
@@ -339,7 +342,7 @@ export function BankImportWizardPage() {
 
           <Button variant="secondary" onPress={() => setStep(1)}>
             <ArrowRight2 size={18} />
-            بازگشت
+            {t("common.back")}
           </Button>
         </section>
       )}
@@ -348,15 +351,17 @@ export function BankImportWizardPage() {
         <section className="space-y-4">
           {(meta.accountHolder || meta.periodFrom) && (
             <div className="glass rounded-2xl p-4 text-sm text-muted">
-              {meta.accountHolder ? <p>صاحب حساب: {meta.accountHolder}</p> : null}
+              {meta.accountHolder ? <p>{t("auto.keabc0b0df2")}{meta.accountHolder}</p> : null}
               {meta.periodFrom && meta.periodTo ? (
                 <p>
-                  بازه: {meta.periodFrom} تا {meta.periodTo}
+                  {t("auto.k925df0a51f")}{meta.periodFrom} {t("auto.k19330ade57")} {meta.periodTo}
                 </p>
               ) : null}
               {duplicateCount > 0 ? (
                 <p className="mt-1 text-warning-foreground">
-                  {toPersianDigits(duplicateCount)} تراکنش تکراری — از لیست حذف شده‌اند
+                  {t("budget.duplicateRowsRemoved", {
+                    count: toPersianDigits(duplicateCount),
+                  })}
                 </p>
               ) : null}
             </div>
@@ -365,12 +370,12 @@ export function BankImportWizardPage() {
           <div className="glass flex flex-wrap items-center justify-between gap-3 rounded-2xl p-4">
             <div className="text-sm">
               <p className="font-medium">
-                {toPersianDigits(selectedRows.length)} از{" "}
-                {toPersianDigits(selectableRows.length)} تراکنش انتخاب‌شده
+                {toPersianDigits(selectedRows.length)} {t("common.of")}{" "}
+                {toPersianDigits(selectableRows.length)} {t("auto.k26a50cc8dc")}
               </p>
               {incompleteSelectedCount > 0 ? (
                 <p className="mt-1 text-xs text-warning-foreground">
-                  {toPersianDigits(incompleteSelectedCount)} مورد هنوز دسته‌بندی نشده
+                  {toPersianDigits(incompleteSelectedCount)} {t("auto.k7cb796f3e0")}
                 </p>
               ) : selectedRows.length > 0 ? (
                 <p className="mt-1 text-xs text-success-foreground">{t("auto.k6559c79735")}</p>
@@ -378,13 +383,13 @@ export function BankImportWizardPage() {
             </div>
             <div className="flex flex-wrap gap-2">
               <Button size="sm" variant="secondary" onPress={() => setAllSelected(true)}>
-                انتخاب همه
+                {t("auto.kb14ad27418")}
               </Button>
               <Button size="sm" variant="secondary" onPress={() => setAllSelected(false)}>
-                لغو انتخاب همه
+                {t("auto.kad19414ad9")}
               </Button>
               <Button size="sm" variant="secondary" onPress={() => setStep(2)}>
-                تغییر فایل
+                {t("auto.kbdfa7129cd")}
               </Button>
             </div>
           </div>
@@ -409,8 +414,8 @@ export function BankImportWizardPage() {
 
           <div className="glass rounded-2xl p-4">
             <p className="mb-3 text-xs text-muted">
-              دسته‌بندی را در همین لیست انتخاب کنید. دکمه «بیشتر» برای کارت،
-              پروژه، کسب‌وکار و طلب/بدهی است.
+              {t("auto.kdb9368f054")}
+              {t("auto.kd12395d3bd")}
             </p>
             <Button
               className="w-full"
@@ -418,7 +423,7 @@ export function BankImportWizardPage() {
               isDisabled={!canFinish}
               onPress={() => void handleConfirm()}
             >
-              اتمام و ثبت {toPersianDigits(selectedRows.length)} تراکنش
+              {t("auto.kb57cb1a33b")}{toPersianDigits(selectedRows.length)} {t("auto.keb7bb3e55b")}
             </Button>
           </div>
         </section>
@@ -430,9 +435,9 @@ export function BankImportWizardPage() {
           <div>
             <h2 className="text-xl font-bold">{t("auto.k99c78fd8ee")}</h2>
             <p className="mt-2 text-sm text-muted">
-              {toPersianDigits(importResult.importedCount)} تراکنش ثبت شد
+              {toPersianDigits(importResult.importedCount)} {t("auto.k99542d84e0")}
               {importResult.skippedDuplicates
-                ? ` · ${toPersianDigits(importResult.skippedDuplicates)} تکراری رد شد`
+                ? ` · ${toPersianDigits(importResult.skippedDuplicates)} ${t("auto.kf00932390e")} ${t("auto.kfa384f7e8b")} ${t("auto.k831c6609f1")}`
                 : ""}
             </p>
           </div>
@@ -440,11 +445,11 @@ export function BankImportWizardPage() {
           <div className="flex flex-col gap-2 sm:flex-row">
             <Link href={PATHS.HOME} className="flex-1">
               <Button variant="secondary" className="w-full">
-                مشاهده در خانه
+                {t("auto.k0394842b1b")}
               </Button>
             </Link>
             <Button className="flex-1" onPress={resetWizard}>
-              ایمپورت جدید
+              {t("auto.k8925aad6a3")}
             </Button>
           </div>
         </section>

@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useState } from "react";
@@ -127,7 +130,7 @@ export function InvitesPage() {
           <Profile2User size={40} className="mx-auto text-muted" />
           <p className="mt-4 text-muted">{t("auto.k172aaa97a3")}</p>
           <Link href={PATHS.HOME} className="mt-4 inline-block text-sm text-accent">
-            بازگشت به داشبورد
+            {t("auto.k63d6c2c2ab")}
           </Link>
         </div>
       ) : (
@@ -150,11 +153,11 @@ export function InvitesPage() {
                     <div className="flex flex-wrap items-center gap-2">
                       <h2 className="font-bold">{item.contextTitle}</h2>
                       <span className="rounded-full bg-accent/15 px-2 py-0.5 text-xs text-accent">
-                        همکاری
+                        {t("auto.kdd0a6a4b66")}
                       </span>
                     </div>
                     <p className="mt-1 text-sm text-muted">
-                      از طرف {item.ownerName}
+                      {t("auto.k24ea740db4")}{item.ownerName}
                       {item.sharePercent > 0
                         ? t("pages.invites.sharePercent", {
                             percent: toPersianDigits(String(item.sharePercent)),
@@ -164,7 +167,7 @@ export function InvitesPage() {
                     {item.expiresAt ? (
                       <p className="mt-2 flex items-center gap-1 text-xs text-muted">
                         <Calendar size={14} />
-                        انقضا: {formatExpiry(item.expiresAt)}
+                        {t("auto.k91c4fa24ce")}{formatExpiry(item.expiresAt)}
                       </p>
                     ) : null}
                   </div>
@@ -179,7 +182,7 @@ export function InvitesPage() {
                         isPending={actingId === id}
                       >
                         <TickCircle size={16} />
-                        پذیرش
+                        {t("auto.kff24a8f243")}
                       </Button>
                       <Button
                         size="sm"
@@ -188,14 +191,14 @@ export function InvitesPage() {
                         isPending={actingId === id}
                       >
                         <CloseCircle size={16} />
-                        رد
+                        {t("auto.kfa384f7e8b")}
                       </Button>
                     </>
                   ) : null}
                   {detailPath ? (
                     <Link href={detailPath}>
                       <Button size="sm" variant="ghost">
-                        جزئیات و لینک مستقیم
+                        {t("auto.k965db97fef")}
                       </Button>
                     </Link>
                   ) : null}

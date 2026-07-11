@@ -18,7 +18,6 @@ import * as voiceApi from "@/common/api/voice";
 import type {
   VoiceInterpretResponse,
 } from "@/common/interfaces/voice.interface";
-import { toPersianDigits } from "@/common/utils";
 import { useMediaQuery } from "@/common/hooks/useMediaQuery";
 import { mergeProfileWallet } from "@/common/utils/wallet-balances";
 import { showErrorToast, showToast } from "@/common/utils/toast";
@@ -69,18 +68,30 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) { 
   const [pending, setPending] = useState<VoiceInterpretResponse | null>(null);
   const [executing, setExecuting] = useState(false);
 
+  const dismiss = useCallback(() => {
+    voice.stop();
+    setModalOpen(false);
+    setPending(null);
+    setManualText("");
+  }, [voice]);
+
   const open = useCallback(() => {
     setPending(null);
     setManualText("");
     setModalOpen(true);
   }, []);
 
-  const close = useCallback(() => {
-    voice.stop();
-    setModalOpen(false);
-    setPending(null);
-    setManualText("");
-  }, [voice]);
+  const handleCancel = useCallback(async () => {
+    const logId = pending?.log._id;
+    dismiss();
+    if (logId) {
+      try {
+        await voiceApi.cancelVoice(logId);
+      } catch {
+        // ignore cancel errors
+      }
+    }
+  }, [pending, dismiss]);
 
   const interpret = useCallback(
     async (transcript: string) => {
@@ -93,12 +104,14 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) { 
         setPending(result);
         setManualText(text);
       } catch (err) {
-        showErrorToast(err instanceof Error ? err.message : "تفسیر دستور ناموفق بود");
+        showErrorToast(
+          err instanceof Error ? err.message : t("voice.interpretError"),
+        );
       } finally {
         voice.setProcessing(false);
       }
     },
-    [voice],
+    [voice, t],
   );
 
   const handleListen = useCallback(() => {
@@ -143,25 +156,16 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) { 
       }
 
       showToast(result.message, "success");
-      close();
+      dismiss();
       router.refresh();
     } catch (err) {
-      showErrorToast(err instanceof Error ? err.message : "اجرای دستور ناموفق بود");
+      showErrorToast(
+        err instanceof Error ? err.message : t("voice.executeError"),
+      );
     } finally {
       setExecuting(false);
     }
-  }, [pending, router, dispatch, user, close]);
-
-  const handleCancel = useCallback(async () => {
-    if (pending?.log._id) {
-      try {
-        await voiceApi.cancelVoice(pending.log._id);
-      } catch {
-        // ignore cancel errors
-      }
-    }
-    close();
-  }, [pending, close]);
+  }, [pending, router, dispatch, user, dismiss, t]);
 
   const ctx = useMemo(
     () => ({ open, isSupported: voice.isSupported }),
@@ -199,22 +203,17 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) { 
       )}
 
       {voiceAssistantEnabled && (
-        <AppModal open={modalOpen} onOpenChange={(v) => !v && void handleCancel()} mobileFull>
+        <AppModal open={modalOpen} onOpenChange={(v) => { if (!v) void handleCancel(); }} mobileFull>
           <AppModalDialog className="flex max-h-[100dvh] flex-col sm:max-w-lg">
           <AppModalHeader>
             <h2 className="text-lg font-bold">{t("voice.title")}</h2>
-            <p className="mt-1 text-sm text-muted">
-              محیط آزمایشی — پس از تشخیص، یک‌بار جزئیات را بررسی کنید
-            </p>
+            <p className="mt-1 text-sm text-muted">{t("voice.subtitle")}</p>
           </AppModalHeader>
 
           <div className={modalSheetBodyClass}>
             {!pending ? (
               <div className="space-y-4">
-                <div className="pb-notice-banner">
-                  این قابلیت در حالت تست است. قبل از تأیید، مبلغ، دسته و تاریخ را
-                  حتماً چک کنید.
-                </div>
+                <div className="pb-notice-banner">{t("voice.testBanner")}</div>
 
                 {voice.error && (
                   <p className="text-sm text-danger">{voice.error}</p>
@@ -223,14 +222,12 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) { 
                 <div className="min-h-[72px] rounded-2xl border border-border bg-surface-secondary/60 px-4 py-3 text-sm">
                   {voice.state === "listening" ? (
                     <span className="animate-pulse text-accent">
-                      {voice.interimTranscript || "در حال گوش دادن…"}
+                      {voice.interimTranscript || t("voice.listening")}
                     </span>
                   ) : voice.state === "processing" ? (
                     <span className="text-muted">{t("voice.processing")}</span>
                   ) : (
-                    <span className="text-muted">
-                      مثال: «مبلغ ۱۰ ت برای کافه امروز پرداخت شد»
-                    </span>
+                    <span className="text-muted">{t("voice.example")}</span>
                   )}
                 </div>
 
@@ -257,7 +254,9 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) { 
                   <p className="text-xs text-muted">{t("voice.actionSummary")}</p>
                   <p className="mt-1 text-base font-bold">{pending.interpretation.summary}</p>
                   <p className="mt-1 text-xs text-muted">
-                    اطمینان: {toPersianDigits(String(Math.round(pending.interpretation.confidence * 100)))}٪
+                    {t("voice.confidence", {
+                      percent: Math.round(pending.interpretation.confidence * 100),
+                    })}
                   </p>
                 </div>
 
@@ -284,9 +283,7 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) { 
                 )}
 
                 {pending.interpretation.intent === "unknown" && (
-                  <p className="text-sm text-danger">
-                    دستور قابل اجرا نیست — لطفاً واضح‌تر بگویید یا متن را اصلاح کنید.
-                  </p>
+                  <p className="text-sm text-danger">{t("voice.cannotExecute")}</p>
                 )}
               </div>
             )}
@@ -304,12 +301,12 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) { 
                   {voice.state === "listening" ? (
                     <>
                       <Stop size={18} />
-                      در حال ضبط…
+                      {t("voice.recording")}
                     </>
                   ) : (
                     <>
                       <Microphone2 size={18} />
-                      شروع ضبط
+                      {t("voice.startRecording")}
                     </>
                   )}
                 </Button>
@@ -319,7 +316,7 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) { 
                   isDisabled={!manualText.trim() || voice.state === "processing"}
                   onPress={() => void interpret(manualText)}
                 >
-                  تحلیل متن
+                  {t("voice.analyzeText")}
                 </Button>
               </>
             ) : (
@@ -330,7 +327,7 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) { 
                   isDisabled={executing || !canExecute}
                   onPress={() => void handleConfirm()}
                 >
-                  {executing ? "در حال اجرا…" : "تأیید و اجرا"}
+                  {executing ? t("voice.executing") : t("voice.confirmExecute")}
                 </Button>
                 <Button
                   variant="secondary"
@@ -338,7 +335,7 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) { 
                   isDisabled={executing}
                   onPress={() => void handleCancel()}
                 >
-                  لغو
+                  {t("voice.cancelAction")}
                 </Button>
                 <Button
                   variant="ghost"
@@ -346,7 +343,7 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) { 
                   isDisabled={executing}
                   onPress={() => setPending(null)}
                 >
-                  دستور جدید
+                  {t("voice.newCommand")}
                 </Button>
               </>
             )}

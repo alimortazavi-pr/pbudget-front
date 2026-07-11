@@ -34,78 +34,78 @@ export function getTelegramHref() {
 }
 
 export const PRIMARY_NAV_ITEMS = [
-  { href: PATHS.HOME, label: "خانه", icon: Home2 },
-  { href: PATHS.BANK_IMPORT, label: "ورود از بانک", icon: DocumentUpload },
-  { href: PATHS.ANALYSIS, label: "تحلیل مالی", icon: Chart },
-  { href: PATHS.BOXES, label: "صندوق‌ها", icon: Box1 },
-  { href: PATHS.PAYMENT_CARDS, label: "کارت‌های من", icon: Card },
-  { href: PATHS.CATEGORIES, label: "دسته‌بندی‌ها", icon: Category },
+  { href: PATHS.HOME, label: "nav.home", icon: Home2 },
+  { href: PATHS.BANK_IMPORT, label: "nav.bankImport", icon: DocumentUpload },
+  { href: PATHS.ANALYSIS, label: "nav.financialAnalysis", icon: Chart },
+  { href: PATHS.BOXES, label: "nav.boxes", icon: Box1 },
+  { href: PATHS.PAYMENT_CARDS, label: "nav.myCards", icon: Card },
+  { href: PATHS.CATEGORIES, label: "nav.categories", icon: Category },
 ] as const;
 
 export const BANK_IMPORT_NAV_ITEM = {
   href: PATHS.BANK_IMPORT,
-  label: "ورود از صورتحساب بانک",
+  label: "nav.bankImportFull",
   icon: DocumentUpload,
 } as const;
 
 export const DOWNLOAD_NAV_ITEM = {
   href: PATHS.DOWNLOAD,
-  label: "دانلود اپ",
+  label: "nav.downloadApp",
   icon: Mobile,
 } as const;
 
 /** Classic mobile tab bar — beside the center FAB */
 export const MOBILE_TAB_SIDE_ITEMS = [
-  { href: PATHS.TASKS, label: "برنامه روزانه", icon: Task },
-  { href: PATHS.NOTES, label: "یادداشت‌ها", icon: DocumentText },
+  { href: PATHS.TASKS, label: "nav.dailyPlanner", icon: Task },
+  { href: PATHS.NOTES, label: "nav.notes", icon: DocumentText },
 ] as const;
 
 /** @deprecated flat list — use PLANNING_NAV_GROUPS */
 export const PLANNING_NAV_ITEMS = [
-  { href: PATHS.TASKS, label: "برنامه روزانه", icon: Task },
-  { href: PATHS.PROJECTS, label: "پروژه‌ها", icon: Briefcase },
-  { href: PATHS.VENTURES, label: "کسب‌وکار و شرکا", icon: Profile2User },
-  { href: PATHS.WORK_ATTENDANCE, label: "حضور و غیاب", icon: Clock },
-  { href: PATHS.DEBTS, label: "طلب و بدهی", icon: Card },
-  { href: PATHS.INSTALLMENTS, label: "اقساط", icon: Calendar },
-  { href: PATHS.CHECKS, label: "چک‌ها", icon: MoneyRecive },
-  { href: PATHS.COMMITMENTS, label: "تعهدات جاری", icon: Wallet },
-  { href: PATHS.NOTES, label: "یادداشت‌ها", icon: DocumentText },
+  { href: PATHS.TASKS, label: "nav.dailyPlanner", icon: Task },
+  { href: PATHS.PROJECTS, label: "nav.projects", icon: Briefcase },
+  { href: PATHS.VENTURES, label: "nav.businessPartners", icon: Profile2User },
+  { href: PATHS.WORK_ATTENDANCE, label: "nav.workAttendance", icon: Clock },
+  { href: PATHS.DEBTS, label: "nav.debts", icon: Card },
+  { href: PATHS.INSTALLMENTS, label: "nav.installments", icon: Calendar },
+  { href: PATHS.CHECKS, label: "nav.checks", icon: MoneyRecive },
+  { href: PATHS.COMMITMENTS, label: "nav.commitments", icon: Wallet },
+  { href: PATHS.NOTES, label: "nav.notes", icon: DocumentText },
 ] as const;
 
 export const PLANNING_NAV_GROUPS = [
   {
-    title: "برنامه‌ریزی",
+    title: "nav.planning",
     items: [
-      { href: PATHS.TASKS, label: "برنامه روزانه", icon: Task },
-      { href: PATHS.PROJECTS, label: "پروژه‌ها", icon: Briefcase },
-      { href: PATHS.NOTES, label: "یادداشت‌ها", icon: DocumentText },
+      { href: PATHS.TASKS, label: "nav.dailyPlanner", icon: Task },
+      { href: PATHS.PROJECTS, label: "nav.projects", icon: Briefcase },
+      { href: PATHS.NOTES, label: "nav.notes", icon: DocumentText },
     ],
   },
   {
-    title: "مالی پیشرفته",
+    title: "nav.advancedFinance",
     items: [
-      { href: PATHS.DEBTS, label: "طلب و بدهی", icon: Card },
-      { href: PATHS.INSTALLMENTS, label: "اقساط", icon: Calendar },
-      { href: PATHS.CHECKS, label: "چک‌ها", icon: MoneyRecive },
-      { href: PATHS.COMMITMENTS, label: "تعهدات جاری", icon: Wallet },
+      { href: PATHS.DEBTS, label: "nav.debts", icon: Card },
+      { href: PATHS.INSTALLMENTS, label: "nav.installments", icon: Calendar },
+      { href: PATHS.CHECKS, label: "nav.checks", icon: MoneyRecive },
+      { href: PATHS.COMMITMENTS, label: "nav.commitments", icon: Wallet },
     ],
   },
   {
-    title: "مشارکت",
+    title: "nav.partnership",
     items: [
-      { href: PATHS.VENTURES, label: "شرکا و تسویه", icon: Profile2User },
-      { href: PATHS.WORK_ATTENDANCE, label: "حضور فریلنسری", icon: Clock },
+      { href: PATHS.VENTURES, label: "nav.businessPartners", icon: Profile2User },
+      { href: PATHS.WORK_ATTENDANCE, label: "nav.workAttendance", icon: Clock },
     ],
   },
 ] as const;
 
 export const ACCOUNT_NAV_ITEMS = [
-  { href: PATHS.PROFILE, label: "پروفایل", icon: Profile },
-  { href: PATHS.SETTINGS, label: "تنظیمات", icon: Setting2 },
+  { href: PATHS.PROFILE, label: "nav.profile", icon: Profile },
+  { href: PATHS.SETTINGS, label: "nav.settings", icon: Setting2 },
   {
     href: getTelegramHref(),
-    label: "بات تلگرام",
+    label: "nav.telegramBot",
     icon: Messages2,
     external: Boolean(TELEGRAM_BOT_USERNAME),
   },
@@ -113,7 +113,7 @@ export const ACCOUNT_NAV_ITEMS = [
 
 export const CREATE_NAV_ITEM = {
   href: PATHS.CREATE_BUDGET,
-  label: "ثبت تراکنش",
+  label: "nav.createTransaction",
   icon: Add,
 } as const;
 
@@ -124,7 +124,7 @@ export type ShellNavItem = {
   external?: boolean;
 };
 
-/** مسیرهایی که نباید والد را active کنند (مثلاً /projects نسبت به /projects/attendance) */
+/** Paths that must not mark a parent nav item active (e.g. /projects vs /projects/attendance) */
 const NAV_ACTIVE_EXCLUSIONS: Record<string, readonly string[]> = {
   [PATHS.PROJECTS]: [PATHS.WORK_ATTENDANCE],
 };

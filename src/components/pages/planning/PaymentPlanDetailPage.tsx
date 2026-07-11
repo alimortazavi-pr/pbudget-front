@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -44,9 +47,9 @@ type PaymentPlanDetailPageProps = {
 type TabId = "overview" | "installments" | "transactions";
 
 function occurrenceStatusLabel(status: IPaymentPlanOccurrence["status"]) {
-  if (status === "paid") return "پرداخت‌شده";
-  if (status === "skipped") return "رد شده";
-  return "در انتظار";
+  if (status === "paid") return t("auto.k4db2de0c95");
+  if (status === "skipped") return t("auto.kb653000a56");
+  return t("auto.kdc55d0b549");
 }
 
 export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
@@ -85,7 +88,7 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
       setDescription(plan.description ?? "");
       setActive(plan.active);
     } catch (err) {
-      showErrorToast(err, "خطا در بارگذاری");
+      showErrorToast(err, t("auto.k0080763ff0"));
     } finally {
       setLoading(false);
     }
@@ -138,7 +141,7 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
   async function removePlan() {
     if (
       !confirm(
-        "برنامه پرداخت حذف شود؟\nاقساط در انتظار حذف می‌شوند؛ تراکنش‌های ثبت‌شده باقی می‌مانند.",
+        t("auto.k7fc8e042ae"),
       )
     ) {
       return;
@@ -150,7 +153,7 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
       showToast(t("auto.k499a5b8b80"), "success");
       router.push(PATHS.INSTALLMENTS);
     } catch (err) {
-      showErrorToast(err, "خطا در حذف");
+      showErrorToast(err, t("auto.kcb7622491d"));
     } finally {
       setDeleting(false);
     }
@@ -189,7 +192,7 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
                 href={`${PATHS.PROJECTS}/${plan.project._id}`}
                 className="mt-1 inline-block text-sm text-primary"
               >
-                پروژه: {plan.project.category.title}
+                {t("auto.k1cf3b49693")}{plan.project.category.title}
               </Link>
             ) : null}
           </div>
@@ -198,7 +201,7 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
               plan.active ? "bg-income-soft text-income" : "bg-surface-secondary text-muted"
             }`}
           >
-            {plan.active ? "فعال" : "غیرفعال"}
+            {plan.active ? t("auto.k25c499f433") : t("auto.k7fdadc73ac")}
           </span>
         </div>
 
@@ -229,7 +232,10 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
           <div className="mb-1 flex justify-between text-xs text-muted">
             <span>{t("auto.k28e53343c5")}</span>
             <span>
-              {Math.round(progress)}٪ · روز {plan.dueDayOfMonth} هر ماه
+              {t("pages.planning.progressDueDay", {
+                percent: Math.round(progress),
+                day: plan.dueDayOfMonth,
+              })}
             </span>
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-surface-secondary">
@@ -244,9 +250,9 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
       <div className="flex gap-2 overflow-x-auto">
         {(
           [
-            { id: "installments" as const, label: "اقساط" },
-            { id: "transactions" as const, label: "تراکنش‌ها" },
-            { id: "overview" as const, label: "تنظیمات" },
+            { id: "installments" as const, label: t("nav.installments") },
+            { id: "transactions" as const, label: t("auto.k4ad10a7f11") },
+            { id: "overview" as const, label: t("nav.settings") },
           ] as const
         ).map((item) => (
           <button
@@ -304,14 +310,14 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
           </div>
 
           <Button className="w-full" size="lg" onPress={() => void saveOverview()} isPending={saving}>
-            ذخیره تغییرات
+            {t("auto.k55d482e181")}
           </Button>
 
           <section className="rounded-2xl border border-dashed border-danger/35 bg-danger/5 p-4">
             <p className="text-sm font-medium text-danger">{t("common.dangerZone")}</p>
             <p className="mt-1 text-xs leading-6 text-muted">
-              با حذف برنامه، اقساط در انتظار حذف می‌شوند؛ تراکنش‌های ثبت‌شده از پرداخت اقساط باقی
-              می‌مانند.
+              {t("auto.k5835b11ec8")}
+              {t("auto.k349aa3999c")}
             </p>
             <Button
               className="mt-3"
@@ -320,7 +326,7 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
               isPending={deleting}
             >
               <Trash size={18} />
-              حذف برنامه
+              {t("auto.kc19bcfae81")}
             </Button>
           </section>
         </div>
@@ -330,12 +336,12 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
         <div className="space-y-3">
           {pendingOccurrences.length > 0 && (
             <p className="text-sm text-muted">
-              {formatCount(pendingOccurrences.length)} قسط در انتظار پرداخت
+              {formatCount(pendingOccurrences.length)} {t("auto.kba227aca79")}
             </p>
           )}
           {data.occurrences.length === 0 ? (
             <div className="glass rounded-2xl p-8 text-center text-muted">
-              هنوز قسطی برای این برنامه ثبت نشده
+              {t("auto.kdae17b014a")}
             </div>
           ) : (
             data.occurrences.map((item) => (
@@ -343,12 +349,15 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-semibold">
-                      قسط {item.sequence}
-                      {plan.totalInstallments ? ` از ${plan.totalInstallments}` : ""}
+                      {t("auto.kd673bbfe0f")}
+                      {item.sequence}
+                      {plan.totalInstallments
+                        ? ` ${t("common.of")} ${plan.totalInstallments}`
+                        : ""}
                     </p>
                     <p className="mt-1 flex items-center gap-1 text-xs text-muted">
                       <Calendar size={14} />
-                      {formatJalaliMonthYear(String(item.year), String(item.month))} · روز {item.day}
+                      {formatJalaliMonthYear(String(item.year), String(item.month))} · {t("auto.k6702edb75e")}{item.day}
                     </p>
                   </div>
                   <div className="text-left">
@@ -360,17 +369,17 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
                 {item.status === "paid" ? (
                   <div className="mt-3 flex items-center gap-2 text-sm text-income">
                     <TickCircle size={18} variant="Bold" />
-                    پرداخت شد
+                    {t("auto.k4756060f8c")}
                     {item.payNote ? ` · ${item.payNote}` : ""}
                   </div>
                 ) : item.status === "skipped" ? (
                   <p className="mt-3 text-sm text-muted">
-                    رد شده{item.payNote ? ` · ${item.payNote}` : ""}
+                    {t("auto.kb653000a56")}{item.payNote ? ` · ${item.payNote}` : ""}
                   </p>
                 ) : (
                   <div className="mt-3 flex flex-wrap gap-2">
                     <Button size="sm" className="flex-1 min-w-[7rem]" onPress={() => setPayTarget(item)}>
-                      پرداخت شد
+                      {t("auto.k4756060f8c")}
                     </Button>
                     <AttachBudgetButton
                       title={t("auto.k601e74383b")}
@@ -381,7 +390,7 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
                         await paymentPlansApi.linkOccurrenceBudget(item._id, { budgetId });
                         await load();
                       }}
-                      attachLabel="وصل"
+                      attachLabel={t("auto.k5e92857ed7")}
                     />
                     <Button
                       size="sm"
@@ -389,7 +398,7 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
                       className="flex-1 min-w-[7rem]"
                       onPress={() => void skipOccurrence(item)}
                     >
-                      رد کردن
+                      {t("auto.k47a00ee100")}
                     </Button>
                   </div>
                 )}
@@ -403,21 +412,21 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
         <div className="space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-sm text-muted">
-              {formatCount(data.budgets.length)} تراکنش از پرداخت اقساط
+              {formatCount(data.budgets.length)} {t("auto.ka754673f58")}
             </p>
             <Link href={PATHS.CREATE_BUDGET}>
               <Button size="sm" variant="secondary">
                 <Add size={16} />
-                تراکنش جدید
+                {t("auto.kc26f42387e")}
               </Button>
             </Link>
           </div>
           <p className="text-xs leading-6 text-muted">
-            برای وصل کردن تراکنش‌های قبلی، در تب «اقساط» روی «وصل تراکنش» همان قسط بزنید.
+            {t("auto.k25f86ecfce")}
           </p>
           {data.budgets.length === 0 ? (
             <div className="glass rounded-2xl p-8 text-center text-muted">
-              هنوز تراکنشی از پرداخت این برنامه ثبت نشده
+              {t("auto.kc3d8b19ce2")}
             </div>
           ) : (
             data.budgets.map((budget: IBudget) => (
@@ -452,7 +461,7 @@ function BudgetRow({ budget }: { budget: IBudget }) {
     >
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate font-semibold">{categoryTitle || "بدون دسته"}</p>
+          <p className="truncate font-semibold">{categoryTitle || t("auto.kb5b0dc4c64")}</p>
           {budget.description ? (
             <p className="mt-1 line-clamp-1 text-xs text-muted">{budget.description}</p>
           ) : null}

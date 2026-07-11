@@ -46,7 +46,7 @@ export function PendingInvitesBanner({ compact = false }: PendingInvitesBannerPr
       showToast(t("auto.k833c338585"), "success");
       void load();
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در تأیید");
+      showToast(err instanceof Error ? err.message : t("auto.ke18ed389dc"));
     } finally {
       setActingId(null);
     }
@@ -78,8 +78,10 @@ export function PendingInvitesBanner({ compact = false }: PendingInvitesBannerPr
           >
             <p className="font-medium">{invite.contextTitle}</p>
             <p className="mt-1 text-sm text-muted">
-              از طرف {invite.ownerName}
-              {invite.sharePercent > 0 ? ` · سهم ${invite.sharePercent}٪` : ""}
+              {t("auto.k24ea740db4")}{invite.ownerName}
+              {invite.sharePercent > 0
+                ? t("pages.invites.sharePercent", { percent: invite.sharePercent })
+                : ""}
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
               {token ? (
@@ -88,13 +90,13 @@ export function PendingInvitesBanner({ compact = false }: PendingInvitesBannerPr
                   onPress={() => void acceptFromToken(token, invite._id)}
                   isPending={actingId === invite._id}
                 >
-                  تأیید
+                  {t("common.confirm")}
                 </Button>
               ) : null}
               {invite.inviteLink ? (
                 <Link href={invite.inviteLink}>
                   <Button size="sm" variant="secondary">
-                    جزئیات
+                    {t("auto.kd65b37fd31")}
                   </Button>
                 </Link>
               ) : null}

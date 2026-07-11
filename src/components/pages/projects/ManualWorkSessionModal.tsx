@@ -18,9 +18,12 @@ import {
   minuteToTimeString,
   timeStringToMinute,
 } from "@/common/utils/work-time";
+import { getTranslator } from "@/i18n";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { FormInput, FormTextArea } from "@/components/common/form/FormFields";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
+
+const t = getTranslator();
 
 type ManualWorkSessionModalProps = {
   open: boolean;
@@ -115,7 +118,7 @@ export function ManualWorkSessionModal({
     }
   }
 
-  const title = session ? "ویرایش ساعت کاری" : "ثبت دستی ساعت کاری";
+  const title = session ? t("auto.kefdad65c77") : t("auto.k44346556ab");
 
   return (
     <AppModal open={open} onOpenChange={onOpenChange}>
@@ -164,10 +167,10 @@ export function ManualWorkSessionModal({
           </Modal.Body>
           <Modal.Footer>
             <Button type="button" variant="ghost" onPress={() => onOpenChange(false)}>
-              بستن
+              {t("common.close")}
             </Button>
             <Button type="submit" isPending={saving}>
-              {session ? "ذخیره" : "ثبت"}
+              {session ? t("common.save") : t("nav.create")}
             </Button>
           </Modal.Footer>
         </form>
@@ -191,6 +194,6 @@ export function formatSessionRange(session: IWorkSession) {
   const duration =
     session.durationMinutes !== undefined
       ? formatDurationMinutes(session.durationMinutes)
-      : "در حال کار";
+      : t("auto.k0810e79393");
   return { date, start, end, duration };
 }

@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useState } from "react";
@@ -12,10 +15,10 @@ import { toPersianDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 
 const ACTION_LABELS: Record<string, string> = {
-  "auth.register": "ثبت‌نام",
-  "auth.login_password": "ورود با رمز",
-  "auth.login_otp": "ورود با OTP",
-  "auth.workspace_selected": "انتخاب فضای کار",
+  "auth.register": t("auto.kfc4a4f4fb0"),
+  "auth.login_password": t("auto.k1441d8b7c1"),
+  "auth.login_otp": t("auto.k7fb1dd26ea"),
+  "auth.workspace_selected": t("auto.kd1385a659e"),
 };
 
 export function AdminAuthAuditPage() {
@@ -53,7 +56,7 @@ export function AdminAuthAuditPage() {
         <div>
           <h3 className="text-lg font-bold">{t("auto.k3c9ab3d59b")}</h3>
           <p className="text-sm text-muted">
-            ثبت‌نام، ورود و انتخاب فضای کاری کاربران
+            {t("auto.ke37d626a36")}
           </p>
         </div>
 
@@ -79,7 +82,7 @@ export function AdminAuthAuditPage() {
               />
             </div>
             <Button type="submit" variant="secondary">
-              فیلتر
+              {t("common.filter")}
             </Button>
           </form>
           <Button
@@ -93,7 +96,7 @@ export function AdminAuthAuditPage() {
             }}
           >
             <DocumentDownload size={18} />
-            خروجی CSV
+            {t("auto.k8189d2d717")}
           </Button>
         </div>
       </div>
@@ -114,13 +117,13 @@ export function AdminAuthAuditPage() {
               {loading ? (
                 <tr>
                   <td colSpan={5} className="px-4 py-10 text-center text-muted">
-                    در حال بارگذاری…
+                    {t("common.loading")}
                   </td>
                 </tr>
               ) : logs.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-4 py-10 text-center text-muted">
-                    لاگی یافت نشد
+                    {t("auto.kca6941ce84")}
                   </td>
                 </tr>
               ) : (
@@ -169,7 +172,7 @@ export function AdminAuthAuditPage() {
             isDisabled={page <= 1}
             onPress={() => setPage((p) => Math.max(1, p - 1))}
           >
-            قبلی
+            {t("auto.k1a592f6b2d")}
           </Button>
           <span className="text-sm text-muted">
             {toPersianDigits(String(page))} / {toPersianDigits(String(totalPages))}
@@ -180,7 +183,7 @@ export function AdminAuthAuditPage() {
             isDisabled={page >= totalPages}
             onPress={() => setPage((p) => p + 1)}
           >
-            بعدی
+            {t("auto.k54ee927e96")}
           </Button>
         </div>
       ) : null}

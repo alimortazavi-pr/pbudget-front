@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useState } from "react";
@@ -80,7 +83,7 @@ function HealthBadge({ health }: { health: AdminHealth | null }) {
   return (
     <span className={`pb-status-badge ${ok ? "pb-status-badge-success" : "pb-status-badge-warning"}`}>
       <SecuritySafe size={14} variant="Bold" />
-      {ok ? "سیستم سالم" : "نیاز به بررسی"}
+      {ok ? t("auto.k3204ba7a05") : t("auto.k9de9ddc810")}
     </span>
   );
 }
@@ -121,11 +124,11 @@ export function AdminDashboardPage() {
       );
 
       if (failures.length === 3) {
-        const message = "بارگذاری داشبورد ادمین ناموفق بود";
+        const message = t("auto.kd654c7d39e");
         setLoadError(message);
         showToast(message, "danger");
       } else if (overviewResult.status === "rejected") {
-        const message = "بارگذاری آمار کلی ناموفق بود";
+        const message = t("auto.k3c6d526b1b");
         setLoadError(message);
         showToast(message, "danger");
       }
@@ -154,14 +157,14 @@ export function AdminDashboardPage() {
     return (
       <div className="glass space-y-4 rounded-2xl p-8 text-center">
         <p className="text-muted">
-          {loadError ?? "داده‌ای برای نمایش وجود ندارد"}
+          {loadError ?? t("auto.k5703facb58")}
         </p>
         <button
           type="button"
           className="text-sm font-medium text-accent hover:underline"
           onClick={() => void load()}
         >
-          تلاش مجدد
+          {t("common.tryAgain")}
         </button>
       </div>
     );
@@ -173,7 +176,7 @@ export function AdminDashboardPage() {
         <div>
           <h3 className="text-lg font-bold">{t("auto.k3a7b1b4d58")}</h3>
           <p className="text-sm text-muted">
-            آمار لحظه‌ای کاربران، تراکنش‌ها و دیتابیس
+            {t("auto.k2aaada114f")}
           </p>
         </div>
         <HealthBadge health={health} />
@@ -183,27 +186,27 @@ export function AdminDashboardPage() {
         <KpiCard
           title={t("auto.k81289a2cf6")}
           value={toPersianDigits(overview.users.total)}
-          subtitle={`${toPersianDigits(overview.users.newThisMonth)} کاربر جدید این ماه`}
+          subtitle={`${toPersianDigits(overview.users.newThisMonth)} ${t("auto.k883da9f030")} ${t("auto.k64dfbb8da9")} ${t("auto.k3b9e49d3a6")} ${t("auto.k1c9e87a670")}`}
           icon={<People size={22} variant="Bold" />}
         />
         <KpiCard
           title={t("auto.k6baa9cfb85")}
           value={toPersianDigits(overview.users.active)}
-          subtitle={`${toPersianDigits(overview.users.admins)} ادمین`}
+          subtitle={`${toPersianDigits(overview.users.admins)} ${t("auto.k65497ce419")}`}
           icon={<Activity size={22} variant="Bold" />}
           tone="success"
         />
         <KpiCard
           title={t("auto.k4868be73ce")}
           value={toPersianDigits(overview.transactions.total)}
-          subtitle={`${toPersianDigits(overview.transactions.thisWeek)} تراکنش این هفته`}
+          subtitle={`${toPersianDigits(overview.transactions.thisWeek)} ${t("auto.keb7bb3e55b")} ${t("auto.k3b9e49d3a6")} ${t("auto.k400cd4c1c1")}`}
           icon={<Wallet2 size={22} variant="Bold" />}
           tone="accent"
         />
         <KpiCard
           title={t("auto.k1410347753")}
           value={formatBytes(overview.database.totalSizeBytes)}
-          subtitle={`${toPersianDigits(overview.database.collections)} کالکشن`}
+          subtitle={`${toPersianDigits(overview.database.collections)} ${t("auto.k856205a73e")}`}
           icon={<Data size={22} variant="Bold" />}
         />
       </section>
@@ -229,7 +232,7 @@ export function AdminDashboardPage() {
                   </p>
                 </div>
                 <p className="text-sm font-bold">
-                  {toPersianDigits(collection.documentCount)} سند
+                  {toPersianDigits(collection.documentCount)} {t("auto.k598f6819da")}
                 </p>
               </div>
             ))}
@@ -253,8 +256,10 @@ export function AdminDashboardPage() {
                 <dt className="text-muted">MongoDB</dt>
                 <dd className="font-medium">
                   {health.mongodb.status === "connected"
-                    ? `متصل (${toPersianDigits(health.mongodb.latencyMs ?? 0)}ms)`
-                    : "قطع"}
+                    ? t("admin.connectedLatency", {
+                        ms: toPersianDigits(health.mongodb.latencyMs ?? 0),
+                      })
+                    : t("auto.k3b3debf3ff")}
                 </dd>
               </div>
               <div className="flex justify-between gap-4">
@@ -270,7 +275,7 @@ export function AdminDashboardPage() {
               <div className="flex justify-between gap-4">
                 <dt className="text-muted">{t("auto.kfb3c0b0e11")}</dt>
                 <dd className="font-medium">
-                  {health.backup.telegramEnabled ? "فعال" : "غیرفعال"}
+                  {health.backup.telegramEnabled ? t("auto.k25c499f433") : t("auto.k7fdadc73ac")}
                 </dd>
               </div>
               <div className="flex justify-between gap-4">
@@ -285,7 +290,7 @@ export function AdminDashboardPage() {
                   {formatPrice(
                     activity?.income.reduce((sum, n) => sum + n, 0) ?? 0,
                   )}{" "}
-                  تومان
+                  {t("auto.k9e29f60874")}
                 </dd>
               </div>
             </dl>

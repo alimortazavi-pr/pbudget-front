@@ -73,9 +73,9 @@ export function AdminContentPage() {
   }, [load]);
 
   const tabs: { id: ContentTab; label: string }[] = [
-    { id: "budgets", label: "تراکنش‌ها" },
-    { id: "categories", label: "دسته‌بندی‌ها" },
-    { id: "projects", label: "پروژه‌ها" },
+    { id: "budgets", label: t("auto.k4ad10a7f11") },
+    { id: "categories", label: t("nav.categories") },
+    { id: "projects", label: t("nav.projects") },
   ];
 
   return (
@@ -84,7 +84,7 @@ export function AdminContentPage() {
         <div>
           <h3 className="text-lg font-bold">{t("admin.contentManagement")}</h3>
           <p className="text-sm text-muted">
-            مشاهده و ویرایش تراکنش‌ها، دسته‌ها و پروژه‌های کاربران
+            {t("auto.k209ddef389")}
           </p>
         </div>
 
@@ -109,7 +109,7 @@ export function AdminContentPage() {
             />
           </div>
           <Button type="submit" variant="secondary">
-            جستجو
+            {t("common.search")}
           </Button>
         </form>
       </div>
@@ -147,15 +147,15 @@ export function AdminContentPage() {
             <Switch.Thumb />
           </Switch.Control>
         </Switch>
-        نمایش حذف‌شده‌ها
+        {t("auto.k5df4a8193a")}
       </label>
 
       {tab === "budgets" && (
         <ContentTable
           loading={loading}
           isEmpty={budgets.length === 0}
-          emptyMessage="تراکنشی یافت نشد"
-          headers={["کاربر", "مبلغ", "نوع", "تاریخ", "عملیات"]}
+          emptyMessage={t("auto.k22a5c47aec")}
+          headers={[t("auto.k883da9f030"), t("common.amount"), t("auto.kab0eb5e9a1"), t("common.date"), t("auto.k0f0dff2dfc")]}
         >
           {budgets.map((item) => (
             <tr key={item._id} className="border-t border-border/50">
@@ -164,9 +164,9 @@ export function AdminContentPage() {
                   ? `${item.user.firstName} ${item.user.lastName}`
                   : "—"}
               </td>
-              <td className="px-4 py-3">{formatPrice(item.price)} تومان</td>
+              <td className="px-4 py-3">{formatPrice(item.price)} {t("common.toman")}</td>
               <td className="px-4 py-3">
-                {item.type === 0 ? "درآمد" : "هزینه"}
+                {item.type === 0 ? t("common.income") : t("common.expense")}
               </td>
               <td className="px-4 py-3 text-xs text-muted">
                 {toPersianDigits(`${item.year}/${item.month}/${item.day}`)}
@@ -192,8 +192,8 @@ export function AdminContentPage() {
         <ContentTable
           loading={loading}
           isEmpty={categories.length === 0}
-          emptyMessage="دسته‌ای یافت نشد"
-          headers={["کاربر", "عنوان", "سقف ماهانه", "عملیات"]}
+          emptyMessage={t("common.noCategoryFound")}
+          headers={[t("auto.k883da9f030"), t("common.title"), t("common.monthlyLimit"), t("auto.k0f0dff2dfc")]}
         >
           {categories.map((item) => (
             <tr key={item._id} className="border-t border-border/50">
@@ -216,7 +216,7 @@ export function AdminContentPage() {
               </td>
               <td className="px-4 py-3">
                 {item.monthlyLimit
-                  ? `${formatPrice(item.monthlyLimit)} تومان`
+                  ? `${formatPrice(item.monthlyLimit)} ${t("common.toman")}`
                   : "—"}
               </td>
               <td className="px-4 py-3">
@@ -240,8 +240,8 @@ export function AdminContentPage() {
         <ContentTable
           loading={loading}
           isEmpty={projects.length === 0}
-          emptyMessage="پروژه‌ای یافت نشد"
-          headers={["کاربر", "توضیح", "مبلغ", "عملیات"]}
+          emptyMessage={t("auto.k736afc81c1")}
+          headers={[t("auto.k883da9f030"), t("common.description"), t("common.amount"), t("auto.k0f0dff2dfc")]}
         >
           {projects.map((item) => (
             <tr key={item._id} className="border-t border-border/50">
@@ -254,7 +254,7 @@ export function AdminContentPage() {
                 {item.description || "—"}
               </td>
               <td className="px-4 py-3">
-                {formatPrice(item.totalAmount)} تومان
+                {formatPrice(item.totalAmount)} {t("common.toman")}
               </td>
               <td className="px-4 py-3">
                 <RowActions
@@ -318,6 +318,7 @@ function ContentTable({
   headers: string[];
   children: React.ReactNode;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="glass overflow-hidden rounded-2xl">
       <div className="overflow-x-auto">
@@ -338,7 +339,7 @@ function ContentTable({
                   colSpan={headers.length}
                   className="px-4 py-10 text-center text-muted"
                 >
-                  در حال بارگذاری…
+                  {t("common.loading")}
                 </td>
               </tr>
             ) : isEmpty ? (
@@ -388,6 +389,7 @@ function Pagination({
   totalPages: number;
   onPage: (page: number) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center justify-center gap-2">
       <Button
@@ -395,17 +397,17 @@ function Pagination({
         isDisabled={page <= 1}
         onPress={() => onPage(page - 1)}
       >
-        قبلی
+        {t("auto.k1a592f6b2d")}
       </Button>
       <span className="text-sm text-muted">
-        صفحه {toPersianDigits(page)} از {toPersianDigits(totalPages)}
+        {t("common.pageOf", { page, totalPages })}
       </span>
       <Button
         variant="secondary"
         isDisabled={page >= totalPages}
         onPress={() => onPage(page + 1)}
       >
-        بعدی
+        {t("auto.k54ee927e96")}
       </Button>
     </div>
   );
@@ -479,7 +481,7 @@ function BudgetEditModal({
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onPress={onClose}>
-                انصراف
+                {t("common.cancel")}
               </Button>
               <Button onPress={() => void save()}>{t("common.save")}</Button>
             </Modal.Footer>
@@ -559,7 +561,7 @@ function CategoryEditModal({
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onPress={onClose}>
-                انصراف
+                {t("common.cancel")}
               </Button>
               <Button onPress={() => void save()}>{t("common.save")}</Button>
             </Modal.Footer>
@@ -631,7 +633,7 @@ function ProjectEditModal({
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onPress={onClose}>
-                انصراف
+                {t("common.cancel")}
               </Button>
               <Button onPress={() => void save()}>{t("common.save")}</Button>
             </Modal.Footer>

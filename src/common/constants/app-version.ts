@@ -1,41 +1,41 @@
-/** نسخه فعلی اپ — با package.json هماهنگ نگه دارید */
+/** Current app version — keep in sync with package.json */
 export const APP_VERSION = "2.0.0";
 
-export type ChangelogEntry = {
+export type ChangelogEntryMeta = {
   version: string;
-  date: string;
-  title: string;
-  items: string[];
+  dateKey: string;
+  titleKey: string;
+  itemKeys: string[];
 };
 
 /**
- * هر بار که فیچر جدید اضافه می‌کنید:
- * 1. APP_VERSION را بالا ببرید
- * 2. package.json → version را هم به‌روز کنید
- * 3. یک entry جدید به CHANGELOG اضافه کنید
+ * When shipping a new feature:
+ * 1. Bump APP_VERSION
+ * 2. Update package.json → version
+ * 3. Add a new entry to CHANGELOG_META and i18n changelog messages
  */
-export const CHANGELOG: ChangelogEntry[] = [
+export const CHANGELOG_META: ChangelogEntryMeta[] = [
   {
     version: "2.0.0",
-    date: "۱۴۰۴/۰۴/۰۷",
-    title: "نسخه ۲ — بازطراحی کامل",
-    items: [
-      "حذف حالت دوگانه HMI و یکپارچه‌سازی رابط کاربری",
-      "صفحه تنظیمات جداگانه با دسترسی از سایدبار",
-      "سیستم راهنمای تعاملی (تور) برای کاربران جدید",
-      "دستیار صوتی در تمام بخش‌های اپ",
-      "بهبود تم تاریک/روشن و رفع تداخل رنگ‌ها",
-      "سازماندهی بهتر ابزارها در منوی کناری",
+    dateKey: "changelog.v200.date",
+    titleKey: "changelog.v200.title",
+    itemKeys: [
+      "changelog.v200.items.i1",
+      "changelog.v200.items.i2",
+      "changelog.v200.items.i3",
+      "changelog.v200.items.i4",
+      "changelog.v200.items.i5",
+      "changelog.v200.items.i6",
     ],
   },
 ];
 
-export function getChangelogSince(version: string | null): ChangelogEntry[] {
-  if (!version) return CHANGELOG;
+export function getChangelogSince(version: string | null): ChangelogEntryMeta[] {
+  if (!version) return CHANGELOG_META;
 
-  const idx = CHANGELOG.findIndex((e) => e.version === version);
-  if (idx === -1) return CHANGELOG;
-  return CHANGELOG.slice(0, idx);
+  const idx = CHANGELOG_META.findIndex((e) => e.version === version);
+  if (idx === -1) return CHANGELOG_META;
+  return CHANGELOG_META.slice(0, idx);
 }
 
 export function compareVersions(a: string, b: string): number {

@@ -1,3 +1,5 @@
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
 import { defaultCache, PAGES_CACHE_NAME } from "@serwist/next/worker";
 import type { PrecacheEntry, SerwistGlobalConfig } from "serwist";
 import { NetworkOnly, Serwist } from "serwist";
@@ -84,7 +86,7 @@ self.addEventListener("push", (event) => {
     payload = { body: event.data?.text() };
   }
 
-  const title = payload.title ?? "میز پردیس";
+  const title = payload.title ?? t("auto.kd501173931");
   const body = payload.body ?? "";
   const url = payload.url ?? "/";
 

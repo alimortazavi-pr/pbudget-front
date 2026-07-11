@@ -30,7 +30,7 @@ export function CategoryColorPicker({ value, onChange }: CategoryColorPickerProp
               value === color ? "border-foreground scale-110" : "border-transparent"
             }`}
             style={{ backgroundColor: color }}
-            aria-label={`رنگ ${color}`}
+            aria-label={t("common.colorAria", { color })}
           />
         ))}
       </div>

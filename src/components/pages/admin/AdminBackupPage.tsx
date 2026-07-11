@@ -78,7 +78,9 @@ export function AdminBackupPage() {
     try {
       const result = await adminApi.importBackupZip(file, importMode);
       showToast(
-        `بازیابی انجام شد — ${toPersianDigits(result.totalDocuments)} سند`,
+        t("admin.restoreSuccess", {
+          count: toPersianDigits(result.totalDocuments),
+        }),
         "success",
       );
       void load();
@@ -99,7 +101,7 @@ export function AdminBackupPage() {
       <div>
         <h3 className="text-lg font-bold">{t("auto.k7c2a8d5824")}</h3>
         <p className="text-sm text-muted">
-          بکاپ خودکار، اجرای دستی، دانلود و بازیابی ZIP
+          {t("auto.kb5aa5584b3")}
         </p>
       </div>
 
@@ -120,7 +122,7 @@ export function AdminBackupPage() {
             </div>
             <div className="flex justify-between gap-4">
               <dt className="text-muted">{t("auto.kca3d2562e4")}</dt>
-              <dd>{info?.telegram.enabled ? "فعال" : "غیرفعال"}</dd>
+              <dd>{info?.telegram.enabled ? t("auto.k25c499f433") : t("auto.k7fdadc73ac")}</dd>
             </div>
             <div className="flex justify-between gap-4">
               <dt className="text-muted">{t("auto.kf778c250f4")}</dt>
@@ -164,7 +166,7 @@ export function AdminBackupPage() {
         <div className="flex flex-wrap gap-3">
           <Button onPress={() => void runBackup()} isDisabled={running}>
             <CloudAdd size={18} />
-            ارسال بکاپ به تلگرام
+            {t("auto.kc70d83a490")}
           </Button>
           <Button
             variant="secondary"
@@ -172,7 +174,7 @@ export function AdminBackupPage() {
             isDisabled={running}
           >
             <DocumentDownload size={18} />
-            دانلود ZIP محلی
+            {t("auto.k636e1dc127")}
           </Button>
           <Button
             variant="secondary"
@@ -180,7 +182,7 @@ export function AdminBackupPage() {
             isDisabled={running}
           >
             <DocumentUpload size={18} />
-            بازیابی از ZIP
+            {t("auto.kf8e8b7434f")}
           </Button>
           <input
             ref={zipInputRef}
@@ -214,8 +216,8 @@ export function AdminBackupPage() {
             <span className="text-sm text-muted">{t("auto.k94ec810b70")}</span>
             {(
               [
-                { value: "merge", label: "ادغام (upsert)" },
-                { value: "replace", label: "جایگزینی کامل" },
+                { value: "merge", label: t("auto.k69f380c806") },
+                { value: "replace", label: t("auto.k50adda1129") },
               ] as const
             ).map((item) => (
               <button
@@ -255,7 +257,7 @@ export function AdminBackupPage() {
               {history.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-4 py-8 text-center text-muted">
-                    تاریخچه‌ای ثبت نشده
+                    {t("auto.ke6fdfdf2d9")}
                   </td>
                 </tr>
               ) : (
@@ -265,7 +267,7 @@ export function AdminBackupPage() {
                       {new Date(item.createdAt).toLocaleString("fa-IR")}
                     </td>
                     <td className="px-4 py-3">
-                      {item.source === "scheduled" ? "خودکار" : "دستی"}
+                      {item.source === "scheduled" ? t("auto.k084da407a8") : t("auto.k95caf2c1e2")}
                     </td>
                     <td className="px-4 py-3">
                       <span
@@ -275,7 +277,7 @@ export function AdminBackupPage() {
                             : "bg-success/10 text-success-foreground"
                         }`}
                       >
-                        {item.status === "failed" ? "ناموفق" : "موفق"}
+                        {item.status === "failed" ? t("auto.kd904fc219b") : t("auto.k74a1504de3")}
                       </span>
                     </td>
                     <td className="px-4 py-3">{toPersianDigits(item.collections)}</td>
@@ -294,9 +296,9 @@ export function AdminBackupPage() {
         <pre className="overflow-x-auto rounded-xl bg-background p-4 text-xs leading-relaxed text-muted">
           {info?.importHint}
           {"\n\n"}
-          # حالت merge: اسناد با همان _id به‌روز می‌شوند{"\n"}
-          # حالت replace: کل کالکشن پاک و دوباره پر می‌شود{"\n"}
-          # کالکشن‌های backuphistories و adminauditlogs محافظت شده‌اند
+          # {t("auto.kb0954c1891")}{"\n"}
+          # {t("auto.k5fc3ba8805")}{"\n"}
+          # {t("admin.protectedCollectionsHint")}
         </pre>
       </section>
     </div>

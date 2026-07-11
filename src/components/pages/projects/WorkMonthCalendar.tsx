@@ -30,9 +30,10 @@ export function WorkMonthCalendar({
   dailyMap,
   selectedDay,
   onSelectDay,
-  hint = "روی هر روز بزنید تا جزئیات را ببینید",
+  hint,
 }: WorkMonthCalendarProps) {
   const { t } = useTranslation();
+  const resolvedHint = hint ?? t("auto.k8c4fbecbb4");
   const now = getJalaliNow();
   const daysInMonth = getJalaliDaysInMonth(year, month);
   const leadingBlanks = getJalaliFirstWeekdayIndex(year, month);
@@ -40,7 +41,7 @@ export function WorkMonthCalendar({
   return (
     <section className="glass space-y-3 rounded-2xl p-4">
       <h2 className="font-semibold">{t("auto.k5b13368532")}</h2>
-      <p className="text-xs text-muted">{hint}</p>
+      <p className="text-xs text-muted">{resolvedHint}</p>
       <div className="grid grid-cols-7 gap-1.5 text-center text-xs text-muted">
         {JALALI_WEEKDAYS_SHORT.map((label) => (
           <span key={label}>{label}</span>
@@ -78,10 +79,10 @@ export function WorkMonthCalendar({
               title={
                 offDay
                   ? isFriday(year, month, day)
-                    ? "جمعه"
+                    ? t("auto.k86624056fa")
                     : isOfficialHoliday(year, month, day)
-                      ? "تعطیل رسمی"
-                      : "غیرکاری"
+                      ? t("auto.ka38179bf96")
+                      : t("auto.k5138ec40db")
                   : undefined
               }
             >
@@ -95,7 +96,7 @@ export function WorkMonthCalendar({
       </div>
       {selectedDay ? (
         <p className="rounded-xl bg-surface-secondary p-3 text-sm">
-          روز {toPersianDigits(String(selectedDay))}:{" "}
+          {t("auto.k6702edb75e")}{toPersianDigits(String(selectedDay))}:{" "}
           <span className="font-semibold">
             {formatDurationMinutes(dailyMap.get(selectedDay) ?? 0)}
           </span>

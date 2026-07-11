@@ -1,6 +1,9 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
 import { useCallback, useState } from "react";
+
+const t = getTranslator();
 
 type GeoPosition = {
   lat: number;
@@ -21,7 +24,7 @@ export function useGeolocation(): UseGeolocationResult {
 
   const requestPosition = useCallback(async () => {
     if (typeof navigator === "undefined" || !navigator.geolocation) {
-      setError("مرورگر از GPS پشتیبانی نمی‌کند");
+      setError(t("auto.kaabcde97e9"));
       return null;
     }
 
@@ -42,8 +45,8 @@ export function useGeolocation(): UseGeolocationResult {
         (err) => {
           const message =
             err.code === err.PERMISSION_DENIED
-              ? "دسترسی به موقعیت مکانی رد شد"
-              : "دریافت موقعیت مکانی ناموفق بود";
+              ? t("auto.kbbddbb1907")
+              : t("auto.k01b5e43a54");
           setError(message);
           setLoading(false);
           resolve(null);

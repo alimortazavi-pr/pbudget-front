@@ -80,4 +80,5 @@ export const dashboardMessages: MessageTree = {
   debtLabel: "بدهی",
   deleteTransactionError: "خطا در حذف",
   transactionFilters: "فیلتر تراکنش‌ها",
+  incomeExpenseSubtitle: "درآمد {{income}} · هزینه {{expense}}",
 };

@@ -9,6 +9,7 @@
     "lint": "eslint",
     "brand": "node scripts/generate-brand-assets.mjs && node scripts/generate-icons.mjs",
     "icons": "node scripts/generate-icons.mjs",
+    "i18n:codemod": "node scripts/codemod-all-persian.mjs && node scripts/scan-and-migrate-remaining.mjs && npm run i18n:auto",
     "i18n:auto": "node scripts/auto-translate-en-ar.mjs && node scripts/build-auto-messages.mjs",
     "i18n:landing": "node scripts/build-landing-i18n.mjs",
     "i18n": "npm run i18n:auto && npm run i18n:landing",

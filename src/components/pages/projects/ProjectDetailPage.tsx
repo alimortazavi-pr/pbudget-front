@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import Link from "next/link";
@@ -33,13 +36,13 @@ type ProjectDetailPageProps = {
 type TabId = "overview" | "transactions" | "installments" | "notebook" | "work" | "partners" | "board";
 
 const STATUS_OPTIONS = [
-  { id: ProjectStatus.ACTIVE, label: "فعال" },
-  { id: ProjectStatus.ON_HOLD, label: "متوقف" },
-  { id: ProjectStatus.COMPLETED, label: "تمام‌شده" },
+  { id: ProjectStatus.ACTIVE, label: t("auto.k25c499f433") },
+  { id: ProjectStatus.ON_HOLD, label: t("auto.k2e7aff1bdd") },
+  { id: ProjectStatus.COMPLETED, label: t("auto.k6f126e2474") },
 ];
 
 function itemTypeLabel(type: IProjectItem["type"]) {
-  return type === ProjectItemType.TASK ? "تسک" : "یادداشت";
+  return type === ProjectItemType.TASK ? t("auto.k631b0dcd4d") : t("auto.k3ec8c91053");
 }
 
 export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
@@ -85,7 +88,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
         detail.project.hourlyRate ? String(detail.project.hourlyRate) : "",
       );
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در بارگذاری");
+      showToast(err instanceof Error ? err.message : t("auto.k0080763ff0"));
     } finally {
       setLoading(false);
     }
@@ -170,7 +173,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
       setItemContent("");
       showToast(t("auto.ke55428888d"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     } finally {
       setItemSaving(false);
     }
@@ -192,7 +195,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
           : current,
       );
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     }
   }
 
@@ -206,12 +209,12 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
       );
       showToast(t("common.deleted"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     }
   }
 
   async function removeProject() {
-    if (!confirm("پروژه حذف شود؟ تراکنش‌ها باقی می‌مانند.")) return;
+    if (!confirm(t("auto.ke76eefff80"))) return;
     setDeleting(true);
     try {
       await projectsApi.deleteProject(projectId);
@@ -226,13 +229,13 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
 
   const showWorkTime = trackWorkTime === true;
   const detailTabs = [
-    { id: "overview" as const, label: "تنظیمات" },
-    { id: "transactions" as const, label: "تراکنش‌ها" },
-    { id: "installments" as const, label: "وام و اقساط" },
-    ...(showWorkTime ? [{ id: "work" as const, label: "ساعات کاری" }] : []),
-    { id: "partners" as const, label: "شرکا" },
-    { id: "board" as const, label: "بورد برنامه‌ریزی" },
-    { id: "notebook" as const, label: "دفترچه و تسک‌ها" },
+    { id: "overview" as const, label: t("nav.settings") },
+    { id: "transactions" as const, label: t("auto.k4ad10a7f11") },
+    { id: "installments" as const, label: t("auto.kc510fac6fc") },
+    ...(showWorkTime ? [{ id: "work" as const, label: t("auto.k3ac227aa47") }] : []),
+    { id: "partners" as const, label: t("auto.kae6a285197") },
+    { id: "board" as const, label: t("auto.k11dd432167") },
+    { id: "notebook" as const, label: t("auto.k8527309198") },
   ] as const;
 
   if (loading || !data) {
@@ -264,8 +267,8 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
             {isPartner ? (
               <p className="mt-2 rounded-lg bg-accent/10 px-2 py-1 text-xs text-accent">
                 {isEditorPartner
-                  ? "دسترسی مشترک — ویرایشگر"
-                  : "دسترسی مشترک — فقط مشاهده"}
+                  ? t("auto.k7827888609")
+                  : t("auto.k0d7e2324b4")}
               </p>
             ) : null}
           </div>
@@ -274,14 +277,14 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
               <Link href={PATHS.PROJECT_ATTENDANCE(projectId)}>
                 <Button size="sm" className="bg-income text-white">
                   <Clock size={16} />
-                  حضور و غیاب
+                  {t("auto.ka4b30b68b9")}
                 </Button>
               </Link>
             ) : null}
             <Link href={`${PATHS.TASKS}?projectId=${projectId}&duration=daily`}>
               <Button size="sm" variant="secondary">
                 <TaskSquare size={16} />
-                برنامه روزانه پروژه
+                {t("auto.k640fa32e68")}
               </Button>
             </Link>
           </div>
@@ -289,19 +292,19 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
           <div className="rounded-xl bg-surface-secondary p-3">
             <p className="text-xs text-muted">
-              {project.fixedIncome ? "حقوق ماهانه" : "کل قرارداد"}
+              {project.fixedIncome ? t("auto.kc7cd90e6c9") : t("auto.k9515d72bb2")}
             </p>
             <p className="mt-1 font-bold">{formatPrice(project.totalAmount)}</p>
           </div>
           <div className="rounded-xl bg-income-soft/50 p-3">
             <p className="text-xs text-muted">
-              {project.fixedIncome ? "دریافت این ماه" : "دریافت‌شده"}
+              {project.fixedIncome ? t("auto.kc1859dd238") : t("auto.kc95929267d")}
             </p>
             <p className="mt-1 font-bold text-income">{formatPrice(received)}</p>
           </div>
           <div className="rounded-xl bg-expense-soft/50 p-3">
             <p className="text-xs text-muted">
-              {project.fixedIncome ? "باقی این ماه" : "باقی‌مانده"}
+              {project.fixedIncome ? t("auto.k53fb64cecc") : t("debts.remaining")}
             </p>
             <p className="mt-1 font-bold text-expense">{formatPrice(remaining)}</p>
           </div>
@@ -314,8 +317,13 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
         </div>
         <div className="mt-4">
           <div className="mb-1 flex justify-between text-xs text-muted">
-            <span>{project.fixedIncome ? "پیشرفت دریافت این ماه" : "پیشرفت دریافت"}</span>
-            <span>{Math.round(progress)}٪ · هزینه {formatPrice(spent)}</span>
+            <span>{project.fixedIncome ? t("auto.kc8cc1ce9fc") : t("auto.k033ab31f95")}</span>
+            <span>
+              {t("projects.progressExpenseLine", {
+                percent: Math.round(progress),
+                amount: formatPrice(spent),
+              })}
+            </span>
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-surface-secondary">
             <div
@@ -348,10 +356,10 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
           {isPartner ? (
             <div className="space-y-3">
               <p className="text-sm text-muted">
-                {description || "بدون توضیحات"}
+                {description || t("auto.k841143dad5")}
               </p>
               <p className="text-sm">
-                وضعیت:{" "}
+                {t("auto.k372c3f9526")}{" "}
                 {STATUS_OPTIONS.find((item) => item.id === status)?.label ?? status}
               </p>
             </div>
@@ -366,8 +374,12 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
           <FormPriceInput
             label={
               fixedIncome
-                ? `حقوق ماهانه (${currencyLabel(currentUser?.preferences?.currency ?? "toman")})`
-                : `مبلغ کل قرارداد (${currencyLabel(currentUser?.preferences?.currency ?? "toman")})`
+                ? t("projects.monthlySalaryLabel", {
+                    currency: currencyLabel(currentUser?.preferences?.currency ?? "toman"),
+                  })
+                : t("projects.contractTotalLabel", {
+                    currency: currencyLabel(currentUser?.preferences?.currency ?? "toman"),
+                  })
             }
             value={totalAmount}
             onChange={setTotalAmount}
@@ -388,7 +400,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
             <div>
               <p className="text-sm font-medium">{t("auto.k5595ad5020")}</p>
               <p className="mt-1 text-xs text-muted">
-                اگر این پروژه نیاز به حضور و غیاب ندارد، خاموش کنید.
+                {t("auto.k2e15d7567d")}
               </p>
             </div>
             <Switch isSelected={trackWorkTime} onChange={setTrackWorkTime} size="sm">
@@ -404,7 +416,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
                 <div>
                   <p className="text-sm font-medium">{t("auto.kebf7642934")}</p>
                   <p className="mt-1 text-xs text-muted">
-                    میانبر حضور و غیاب در داشبورد خانه
+                    {t("auto.kc457c6edbf")}
                   </p>
                 </div>
                 <Switch
@@ -422,7 +434,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
                 <div>
                   <p className="text-sm font-medium">{t("auto.kf5b9b58262")}</p>
                   <p className="mt-1 text-xs text-muted">
-                    برای پروژه‌هایی با حقوق ثابت — ساعت موظف ماهانه معمولاً ثابت است.
+                    {t("auto.kfdb3125d3d")}
                   </p>
                 </div>
                 <Switch isSelected={fixedIncome} onChange={setFixedIncome} size="sm">
@@ -434,14 +446,16 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
 
               {!fixedIncome ? (
                 <FormPriceInput
-                  label={`نرخ ساعتی کار (${currencyLabel(currentUser?.preferences?.currency ?? "toman")})`}
+                  label={t("projects.hourlyRateLabel", {
+                    currency: currencyLabel(currentUser?.preferences?.currency ?? "toman"),
+                  })}
                   value={hourlyRate}
                   onChange={setHourlyRate}
                 />
               ) : null}
               {!fixedIncome && hourlyRate ? (
                 <p className="text-xs leading-6 text-muted">
-                  با ثبت ساعات ماه، مبلغ قابل دریافت بر اساس این نرخ محاسبه می‌شود.
+                  {t("auto.k59409b83fe")}
                 </p>
               ) : null}
             </>
@@ -454,15 +468,15 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
               onPress={() => void saveOverview()}
               isPending={saving}
             >
-              ذخیره تغییرات
+              {t("auto.k55d482e181")}
             </Button>
           </div>
 
           <section className="rounded-2xl border border-dashed border-danger/35 bg-danger/5 p-4">
             <p className="text-sm font-medium text-danger">{t("common.dangerZone")}</p>
             <p className="mt-1 text-xs leading-6 text-muted">
-              با حذف پروژه، تراکنش‌های مرتبط با دسته این پروژه باقی می‌مانند؛ فقط
-              دفترچه و آمار پروژه حذف می‌شود.
+              {t("auto.k1bac28885f")}
+              {t("auto.k1eb74a3fed")}
             </p>
             <Button
               className="mt-3"
@@ -471,7 +485,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
               isPending={deleting}
             >
               <Trash size={18} />
-              حذف پروژه
+              {t("auto.k0a79125a53")}
             </Button>
           </section>
             </>
@@ -483,7 +497,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
         <div className="space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-sm text-muted">
-              {formatCount(data.budgets.length)} تراکنش مرتبط · در لیست اصلی هم نمایش داده می‌شوند
+              {formatCount(data.budgets.length)} {t("auto.k737a2f99b3")}
             </p>
             <div className="flex flex-wrap gap-2">
               {canEditContent ? (
@@ -505,7 +519,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
               <Link href={PATHS.CREATE_BUDGET}>
                 <Button size="sm" variant="secondary">
                   <Add size={16} />
-                  تراکنش جدید
+                  {t("auto.kc26f42387e")}
                 </Button>
               </Link>
               </>
@@ -514,7 +528,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
           </div>
           {data.budgets.length === 0 ? (
             <div className="glass rounded-2xl p-8 text-center text-muted">
-              هنوز تراکنشی با دسته این پروژه ثبت نشده
+              {t("auto.k44a2b9b6a9")}
             </div>
           ) : (
             data.budgets.map((budget) => (
@@ -532,19 +546,19 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
         <div className="space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-sm text-muted">
-              {formatCount(data.paymentPlans?.length ?? 0)} برنامه پرداخت مرتبط با این پروژه
+              {formatCount(data.paymentPlans?.length ?? 0)} {t("auto.k0cc67dd6a3")}
             </p>
             {!isPartner ? (
             <Button size="sm" onPress={() => setCreatePlanOpen(true)}>
               <Add size={16} />
-              وام / قسط جدید
+              {t("auto.k834506762c")}
             </Button>
             ) : null}
           </div>
 
           {(data.paymentPlans ?? []).length === 0 ? (
             <p className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted">
-              هنوز برنامه پرداختی به این پروژه وصل نشده.
+              {t("auto.kc0b352afcc")}
             </p>
           ) : (
             (data.paymentPlans ?? []).map((plan) => (
@@ -556,7 +570,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
                 <div className="min-w-0">
                   <p className="font-semibold">{plan.title}</p>
                   <p className="mt-1 text-xs text-muted">
-                    {formatPrice(plan.amount)} · روز {plan.dueDayOfMonth}
+                    {formatPrice(plan.amount)} · {t("auto.k6702edb75e")}{plan.dueDayOfMonth}
                     {plan.person ? ` · ${plan.person}` : ""}
                   </p>
                 </div>
@@ -567,7 +581,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
                       plan.active ? "bg-income-soft text-income" : "bg-surface-secondary text-muted"
                     }`}
                   >
-                    {plan.active ? "فعال" : "غیرفعال"}
+                    {plan.active ? t("auto.k25c499f433") : t("auto.k7fdadc73ac")}
                   </span>
                 </div>
               </Link>
@@ -597,7 +611,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
       {tab === "work" && showWorkTime && (
         <ProjectWorkTimeTab
           projectId={projectId}
-          projectTitle={title || project.category?.title || "پروژه"}
+          projectTitle={title || project.category?.title || t("auto.kcce7e8ff41")}
           fixedIncome={project.fixedIncome ?? false}
         />
       )}
@@ -609,8 +623,8 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
             <div className="flex gap-2">
               {(
                 [
-                  { id: ProjectItemType.NOTE, label: "یادداشت" },
-                  { id: ProjectItemType.TASK, label: "تسک" },
+                  { id: ProjectItemType.NOTE, label: t("auto.k3ec8c91053") },
+                  { id: ProjectItemType.TASK, label: t("auto.k631b0dcd4d") },
                 ] as const
               ).map((item) => (
                 <button
@@ -628,18 +642,18 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
               ))}
             </div>
             <FormTextArea
-              label={itemType === ProjectItemType.TASK ? "تسک جدید" : "یادداشت جدید"}
+              label={itemType === ProjectItemType.TASK ? t("auto.k4e2c618bad") : t("auto.kcd836c190b")}
               placeholder={
                 itemType === ProjectItemType.TASK
-                  ? "مثلاً ارسال پیش‌فاکتور تا پنج‌شنبه"
-                  : "یادداشت جلسه یا نکات ارائه…"
+                  ? t("auto.kc46c1ade06")
+                  : t("auto.kfb91ced46a")
               }
               value={itemContent}
               onChange={(e) => setItemContent(e.target.value)}
             />
             <Button onPress={() => void addItem()} isPending={itemSaving}>
               <Add size={18} />
-              افزودن
+              {t("auto.k15f2d066f9")}
             </Button>
           </div>
           ) : null}
@@ -713,7 +727,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
 
           {notes.length === 0 && tasks.length === 0 && (
             <div className="glass rounded-2xl p-8 text-center text-muted">
-              دفترچه خالی است — یادداشت جلسه یا تسک بعدی را اینجا بنویسید
+              {t("auto.kc83994b716")}
             </div>
           )}
         </div>

@@ -64,7 +64,7 @@ export function ForgotPasswordStep({
       setCodeSent(true);
       showToast(result.message, "success");
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "خطا در ارسال کد";
+      const msg = err instanceof Error ? err.message : t("auto.k1c91265837");
       setError(msg);
       showToast(msg);
     } finally {
@@ -92,7 +92,7 @@ export function ForgotPasswordStep({
       showToast(t("auto.k2a9824ab89"), "success");
       onSuccess();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "خطا در تغییر رمز";
+      const msg = err instanceof Error ? err.message : t("auto.k22ee09b06d");
       setError(msg);
       showToast(msg);
     } finally {
@@ -115,7 +115,7 @@ export function ForgotPasswordStep({
         onClick={onBack}
       >
         <ArrowRight2 size={16} />
-        بازگشت به ورود
+        {t("auto.kb8468eeb74")}
       </button>
 
       <FormInput label={t("common.mobile")} value={mobile} readOnly />
@@ -136,7 +136,7 @@ export function ForgotPasswordStep({
                 window.open(recoverUrl, "_blank", "noopener,noreferrer")
               }
             >
-              باز کردن بات تلگرام
+              {t("auto.k4e66a47025")}
             </Button>
           ) : null}
           <Button
@@ -146,7 +146,7 @@ export function ForgotPasswordStep({
             onPress={() => void handleRequestCode()}
             isPending={loading}
           >
-            بعد از اتصال، دوباره تلاش کنید
+            {t("auto.k3fadec30a7")}
           </Button>
         </div>
       ) : !codeSent ? (
@@ -158,7 +158,7 @@ export function ForgotPasswordStep({
           onPress={() => void handleRequestCode()}
         >
           <Sms size={18} />
-          ارسال کد بازیابی به تلگرام
+          {t("auto.k1166c6bb60")}
         </Button>
       ) : (
         <>
@@ -179,7 +179,7 @@ export function ForgotPasswordStep({
             onPress={() => void handleRequestCode()}
             isPending={loading}
           >
-            ارسال مجدد کد
+            {t("auto.k8ff8b2cc0f")}
           </Button>
           <Button
             type="button"
@@ -188,7 +188,7 @@ export function ForgotPasswordStep({
             isPending={loading}
             onPress={() => void handleReset()}
           >
-            ذخیره رمز جدید
+            {t("auto.k424960f0ab")}
           </Button>
         </>
       )}

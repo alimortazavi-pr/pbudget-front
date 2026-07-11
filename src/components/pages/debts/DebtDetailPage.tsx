@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -29,13 +32,13 @@ type DebtDetailPageProps = {
 type TabId = "overview" | "transactions";
 
 function debtTypeLabel(type: number) {
-  return type === DebtType.RECEIVABLE ? "طلب" : "بدهی";
+  return type === DebtType.RECEIVABLE ? t("auto.kf48e3aa79d") : t("auto.kebf7b80fd6");
 }
 
 function statusLabel(status: IDebt["status"]) {
-  if (status === "settled") return "تسویه‌شده";
-  if (status === "partial") return "تسویه جزئی";
-  return "باز";
+  if (status === "settled") return t("debts.settled");
+  if (status === "partial") return t("auto.ka9b46e77b6");
+  return t("auto.k2e91d38fda");
 }
 
 function extractBudgets(debt: IDebt): IBudget[] {
@@ -64,7 +67,7 @@ function resolveBudgetTitle(budget: IBudget, categories: ICategory[]) {
     if (match?.title) return match.title;
   }
   if (budget.description?.trim()) return budget.description.trim();
-  return "بدون دسته";
+  return t("auto.kb5b0dc4c64");
 }
 
 export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
@@ -83,7 +86,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
       const detail = await debtsApi.fetchDebt(debtId);
       setDebt(detail);
     } catch (err) {
-      showErrorToast(err, "خطا در بارگذاری");
+      showErrorToast(err, t("auto.k0080763ff0"));
     } finally {
       setLoading(false);
     }
@@ -107,7 +110,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
   }, [debt]);
 
   async function removeDebt() {
-    if (!confirm("این طلب/بدهی حذف شود؟ تراکنش‌های مرتبط باقی می‌مانند.")) return;
+    if (!confirm(t("auto.k558f268793"))) return;
 
     setDeleting(true);
     try {
@@ -115,14 +118,14 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
       showToast(t("common.deleted"), "success");
       router.push(PATHS.DEBTS);
     } catch (err) {
-      showErrorToast(err, "خطا در حذف");
+      showErrorToast(err, t("auto.kcb7622491d"));
     } finally {
       setDeleting(false);
     }
   }
 
   async function detachSource() {
-    if (!confirm("اتصال تراکنش مبدأ قطع شود؟")) return;
+    if (!confirm(t("auto.k7f10976cd3"))) return;
 
     setDetachingId("source");
     try {
@@ -130,14 +133,14 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
       showToast(t("debts.sourceDetached"), "success");
       await load();
     } catch (err) {
-      showErrorToast(err, "خطا در قطع اتصال");
+      showErrorToast(err, t("auto.kb6e4d70efa"));
     } finally {
       setDetachingId(null);
     }
   }
 
   async function detachSettlement(budgetId: string) {
-    if (!confirm("این تسویه از طلب/بدهی جدا شود؟")) return;
+    if (!confirm(t("auto.kfd85e3f910"))) return;
 
     setDetachingId(budgetId);
     try {
@@ -145,7 +148,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
       showToast(t("debts.settlementDetached"), "success");
       await load();
     } catch (err) {
-      showErrorToast(err, "خطا در قطع اتصال");
+      showErrorToast(err, t("auto.kb6e4d70efa"));
     } finally {
       setDetachingId(null);
     }
@@ -223,7 +226,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
 
         {debt.status !== "settled" && (
           <Button className="mt-4 w-full" onPress={() => setSettleOpen(true)}>
-            ثبت تسویه
+            {t("auto.k7931323bef")}
           </Button>
         )}
       </section>
@@ -231,8 +234,8 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
       <div className="flex gap-2 overflow-x-auto">
         {(
           [
-            { id: "overview" as const, label: "تسویه‌ها" },
-            { id: "transactions" as const, label: "تراکنش‌ها" },
+            { id: "overview" as const, label: t("auto.kc41f1c27a6") },
+            { id: "transactions" as const, label: t("auto.k4ad10a7f11") },
           ] as const
         ).map((item) => (
           <button
@@ -254,7 +257,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
         <div className="space-y-3">
           {debt.settlements.length === 0 ? (
             <div className="glass rounded-2xl p-8 text-center text-muted">
-              هنوز تسویه‌ای ثبت نشده
+              {t("auto.k19a5163d67")}
             </div>
           ) : (
             debt.settlements.map((settlement) => {
@@ -264,7 +267,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
                 <article key={settlement._id ?? `${settlement.amount}-${settlement.settledAt}`} className="glass rounded-2xl p-4">
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="font-semibold">تسویه {formatPrice(settlement.amount)}</p>
+                      <p className="font-semibold">{t("auto.k43ef5d91de")}{formatPrice(settlement.amount)}</p>
                       {budget?.category && typeof budget.category === "object" ? (
                         <p className="mt-1 text-xs text-muted">{budget.category.title}</p>
                       ) : null}
@@ -275,7 +278,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
                           href={PATHS.BUDGET(budget._id)}
                           className="text-sm font-medium text-accent"
                         >
-                          مشاهده تراکنش
+                          {t("auto.k26de34aef1")}
                         </Link>
                       ) : null}
                       {budget?._id ? (
@@ -299,8 +302,8 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
           <section className="rounded-2xl border border-dashed border-danger/35 bg-danger/5 p-4">
             <p className="text-sm font-medium text-danger">{t("common.dangerZone")}</p>
             <p className="mt-1 text-xs leading-6 text-muted">
-              با حذف، رکورد طلب/بدهی پاک می‌شود؛ تراکنش‌های مبدأ و تسویه در لیست تراکنش‌ها باقی
-              می‌مانند.
+              {t("auto.kf3da40a3df")}
+              {t("auto.k349aa3999c")}
             </p>
             <Button
               className="mt-3"
@@ -309,7 +312,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
               isPending={deleting}
             >
               <Trash size={18} />
-              حذف طلب/بدهی
+              {t("auto.ked6c60e057")}
             </Button>
           </section>
         </div>
@@ -319,7 +322,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
         <div className="space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-sm text-muted">
-              {formatCount(budgets.length)} تراکنش مرتبط · تراکنش مبدأ و تسویه‌ها
+              {formatCount(budgets.length)} {t("auto.kdb1b92d4fa")}
             </p>
             <div className="flex flex-wrap gap-2">
               {!hasSourceBudget && (
@@ -327,8 +330,8 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
                   title={t("debts.attachSource")}
                   description={
                     isReceivable
-                      ? "تراکنش پرداختی (برداشت از حساب شما) که با ایجاد این طلب مرتبط است را انتخاب کنید."
-                      : "تراکنش دریافتی (واریز به حساب شما) که با ایجاد این بدهی مرتبط است را انتخاب کنید."
+                      ? t("auto.k0bf30dbd5b")
+                      : t("auto.k6ee2483e9c")
                   }
                   context={{ type: "debt-source", contextId: debtId }}
                   selectionMode="single"
@@ -336,7 +339,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
                     await debtsApi.attachDebtSource(debtId, budgetId);
                     await load();
                   }}
-                  attachLabel="وصل کردن"
+                  attachLabel={t("auto.kb8b0ca1ea2")}
                 />
               )}
               {debt.status !== "settled" && (
@@ -345,8 +348,8 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
                     title={t("debts.attachSettlement")}
                     description={
                       isReceivable
-                        ? "یک یا چند تراکنش دریافتی (واریز) که طلب را تسویه کرده‌اند انتخاب کنید."
-                        : "یک یا چند تراکنش پرداختی (برداشت) که بدهی را پرداخت کرده‌اند انتخاب کنید."
+                        ? t("auto.k09057887d9")
+                        : t("auto.kc88683808d")
                     }
                     context={{ type: "debt-settlement", contextId: debtId }}
                     selectionMode="multiple"
@@ -361,10 +364,10 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
                       );
                       await load();
                     }}
-                    attachLabel="وصل کردن"
+                    attachLabel={t("auto.kb8b0ca1ea2")}
                   />
                   <Button size="sm" onPress={() => setSettleOpen(true)}>
-                    ثبت تسویه
+                    {t("auto.k7931323bef")}
                   </Button>
                 </>
               )}
@@ -372,7 +375,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
           </div>
           {budgets.length === 0 ? (
             <div className="glass rounded-2xl p-8 text-center text-muted">
-              تراکنشی یافت نشد
+              {t("auto.k22a5c47aec")}
             </div>
           ) : (
             budgets.map((budget) => (
@@ -447,11 +450,11 @@ function BudgetRow({
             <p className="truncate font-semibold">{title}</p>
             {isSource ? (
               <span className="rounded-md bg-accent/15 px-1.5 py-0.5 text-[10px] text-accent">
-                مبدأ
+                {t("auto.k1afe0e0f5a")}
               </span>
             ) : (
               <span className="rounded-md bg-income-soft px-1.5 py-0.5 text-[10px] text-income">
-                تسویه
+                {t("auto.k43ef5d91de")}
               </span>
             )}
           </div>

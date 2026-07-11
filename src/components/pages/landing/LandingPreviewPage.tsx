@@ -44,7 +44,7 @@ export function LandingPreviewPage() {  const { t } = useTranslation();
   if (!content) {
     return (
       <div className="flex min-h-dvh items-center justify-center text-muted">
-        در حال بارگذاری پیش‌نمایش…
+        {t("auto.k73808a4054")}
       </div>
     );
   }
@@ -52,8 +52,8 @@ export function LandingPreviewPage() {  const { t } = useTranslation();
   return (
     <>
       <div className="fixed inset-x-0 top-0 z-[200] border-b border-amber-500/40 bg-amber-500/15 px-4 py-2 text-center text-sm font-medium text-amber-900 dark:text-amber-100">
-        پیش‌نمایش پیش‌نویس — هنوز منتشر نشده
-        {error ? " (خطا در بارگذاری — نمایش پیش‌فرض)" : null}
+        {t("auto.k5c65cae79b")}
+        {error ? t("auto.ka92cd68892") : null}
       </div>
       <div className="pt-10">
         <LandingPage initialContent={content} />

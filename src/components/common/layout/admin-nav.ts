@@ -19,62 +19,62 @@ import { PATHS } from "@/common/constants";
 export const ADMIN_NAV = [
   {
     href: PATHS.ADMIN,
-    label: "داشبورد",
+    label: "nav.adminDashboard",
     icon: Home2,
   },
   {
     href: PATHS.ADMIN_USERS,
-    label: "کاربران",
+    label: "nav.adminUsers",
     icon: People,
   },
   {
     href: PATHS.ADMIN_LANDING,
-    label: "صفحه لندینگ",
+    label: "nav.adminLanding",
     icon: Monitor,
   },
   {
     href: PATHS.ADMIN_CONTENT,
-    label: "مدیریت محتوا",
+    label: "nav.adminContent",
     icon: DocumentText,
   },
   {
     href: PATHS.ADMIN_APP,
-    label: "اپ اندروید",
+    label: "nav.adminApp",
     icon: Mobile,
   },
   {
     href: PATHS.ADMIN_BANKS,
-    label: "بانک‌ها",
+    label: "nav.adminBanks",
     icon: Bank,
   },
   {
     href: PATHS.ADMIN_DATABASE,
-    label: "مدیریت دیتابیس",
+    label: "nav.adminDatabase",
     icon: Data,
   },
   {
     href: PATHS.ADMIN_BACKUP,
-    label: "بکاپ و خروجی",
+    label: "nav.adminBackup",
     icon: CloudAdd,
   },
   {
     href: PATHS.ADMIN_AUDIT,
-    label: "لاگ عملیات",
+    label: "nav.adminAudit",
     icon: ShieldSearch,
   },
   {
     href: PATHS.ADMIN_AUTH_AUDIT,
-    label: "لاگ ورود",
+    label: "nav.adminAuthAudit",
     icon: LoginCurve,
   },
   {
     href: PATHS.ADMIN_LOGS,
-    label: "لاگ سیستم",
+    label: "nav.adminSystemLogs",
     icon: Activity,
   },
   {
     href: PATHS.ADMIN_VOICE,
-    label: "لاگ صوتی",
+    label: "nav.adminVoiceLogs",
     icon: Microphone2,
   },
 ] as const;
@@ -82,7 +82,7 @@ export const ADMIN_NAV = [
 export const ADMIN_MONITORING_NAV = [
   {
     href: PATHS.ADMIN,
-    label: "مانیتورینگ",
+    label: "nav.adminMonitoring",
     icon: Chart,
   },
 ] as const;

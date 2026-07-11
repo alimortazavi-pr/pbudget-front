@@ -1,9 +1,13 @@
+import { createTranslator } from "@/i18n";
 import { DownloadPage } from "@/components/pages/download/DownloadPage";
 
+const t = createTranslator("fa", true);
+
 export const metadata = {
-  title: "دانلود اپ اندروید | میز پردیس",
-  description:
-    "دانلود اپ اندروید میز پردیس — مدیریت مالی، پروژه و برنامه روزانه. بدون نیاز به ورود.",
+  title: t("download.badge", { appName: "Paradise Budget" }),
+  description: t("download.descriptionReady", {
+    tagline: "Paradise Budget",
+  }),
 };
 
 export default function Page() {

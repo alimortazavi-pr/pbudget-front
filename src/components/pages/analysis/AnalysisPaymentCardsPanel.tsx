@@ -36,7 +36,7 @@ export function AnalysisPaymentCardsPanel({ report }: AnalysisPaymentCardsPanelP
                 <p className="font-medium">{row.title}</p>
                 <p className="text-xs text-muted">
                   {paymentCardSubtitle(row.bankName, row.lastFour) ||
-                    `${row.count} تراکنش`}
+                    `${row.count} ${t("auto.keb7bb3e55b")}`}
                 </p>
               </div>
             </div>

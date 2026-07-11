@@ -1,17 +1,20 @@
+import { allMessages } from "@/i18n/messages";
+
 /** English product name — exports, metadata, bot API labels */
 export const APP_NAME_EN = "Paradise Desk";
 
-/** Persian product name — UI, PWA, notifications */
-export const APP_NAME_FA = "میز پردیس";
+export const APP_NAME_KEY = "brand.appName";
+export const APP_SHORT_NAME_KEY = "brand.appShortName";
+export const APP_TAGLINE_KEY = "brand.tagline";
+export const APP_DESCRIPTION_KEY = "brand.description";
+
+/** Persian defaults for SSR/metadata (fa catalog) */
+export const APP_NAME_FA = allMessages.fa[APP_NAME_KEY];
+export const APP_SHORT_NAME_FA = allMessages.fa[APP_SHORT_NAME_KEY];
+export const APP_TAGLINE_FA = allMessages.fa[APP_TAGLINE_KEY];
+export const APP_DESCRIPTION_FA = allMessages.fa[APP_DESCRIPTION_KEY];
 
 export const APP_SHORT_NAME_EN = "P Desk";
-export const APP_SHORT_NAME_FA = "پردیس";
-
-export const APP_TAGLINE_FA =
-  "مدیریت مالی شخصی، پروژه و برنامه روزانه";
-
-export const APP_DESCRIPTION_FA =
-  "میز کار شخصی برای مدیریت مالی، بودجه‌بندی، تحلیل هزینه و برنامه روزانه";
 
 export const DEVELOPER_SITE_URL = "https://alimor.ir";
 export const DEVELOPER_SITE_LABEL = "alimor.ir";

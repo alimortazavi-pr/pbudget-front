@@ -20,6 +20,7 @@ type AnalysisKpiCardsProps = {
 };
 
 function ChangeBadge({ value }: { value: number }) {
+  const { t } = useTranslation();
   const positive = value >= 0;
   return (
     <span
@@ -30,7 +31,8 @@ function ChangeBadge({ value }: { value: number }) {
       }`}
     >
       {positive ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
-      {toPersianDigits(Math.abs(value).toFixed(1))}٪
+      {toPersianDigits(Math.abs(value).toFixed(1))}
+      {t("common.percentSign")}
     </span>
   );
 }
@@ -87,13 +89,13 @@ export function AnalysisKpiCards({ report }: AnalysisKpiCardsProps) {
       <KpiCard
         title={t("auto.k1a6ef51534")}
         value={formatPrice(summary.userBalance)}
-        suffix="تومان"
+        suffix={t("auto.k9e29f60874")}
         icon={<Wallet2 size={20} variant="Bold" />}
       />
       <KpiCard
         title={t("auto.k8dc3b9a771")}
         value={formatPrice(summary.income)}
-        suffix="تومان"
+        suffix={t("auto.k9e29f60874")}
         icon={<ArrowUp size={20} variant="Bold" />}
         change={comparison?.incomeChangePercent}
         tone="income"
@@ -101,7 +103,7 @@ export function AnalysisKpiCards({ report }: AnalysisKpiCardsProps) {
       <KpiCard
         title={t("auto.kbd6109e27e")}
         value={formatPrice(summary.cost)}
-        suffix="تومان"
+        suffix={t("auto.k9e29f60874")}
         icon={<ArrowDown size={20} variant="Bold" />}
         change={comparison?.costChangePercent}
         tone="cost"
@@ -109,7 +111,7 @@ export function AnalysisKpiCards({ report }: AnalysisKpiCardsProps) {
       <KpiCard
         title={t("auto.k35b908d245")}
         value={formatPrice(summary.net)}
-        suffix="تومان"
+        suffix={t("auto.k9e29f60874")}
         icon={<ArrowSwapHorizontal size={20} variant="Bold" />}
         change={comparison?.netChangePercent}
         tone="net"
@@ -117,7 +119,7 @@ export function AnalysisKpiCards({ report }: AnalysisKpiCardsProps) {
       <KpiCard
         title={t("auto.kb784dfefb5")}
         value={toPersianDigits(summary.savingsRate.toFixed(1))}
-        suffix="٪"
+        suffix={t("auto.ka367d4888a")}
         icon={<PercentageCircle size={20} variant="Bold" />}
       />
       <KpiCard
@@ -128,13 +130,13 @@ export function AnalysisKpiCards({ report }: AnalysisKpiCardsProps) {
       <KpiCard
         title={t("auto.k05b0a3e75c")}
         value={formatPrice(Math.round(summary.avgDailyCost))}
-        suffix="تومان"
+        suffix={t("auto.k9e29f60874")}
         icon={<Coin1 size={20} variant="Bold" />}
       />
       <KpiCard
         title={t("auto.k76d12f4b06")}
         value={formatPrice(summary.netWorth)}
-        suffix="تومان"
+        suffix={t("auto.k9e29f60874")}
         icon={<Wallet2 size={20} variant="Bold" />}
       />
     </section>

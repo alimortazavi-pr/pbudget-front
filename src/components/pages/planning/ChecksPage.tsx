@@ -98,7 +98,7 @@ export function ChecksPage() {
         <p className="text-center text-sm text-muted">{t("common.loading")}</p>
       ) : !checks.length ? (
         <p className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted">
-          چکی برای این ماه ثبت نشده.
+          {t("auto.kb0cc29a8fd")}
         </p>
       ) : (
         <div className="space-y-3">
@@ -113,7 +113,7 @@ export function ChecksPage() {
                     {check.checkNumber ? ` · #${check.checkNumber}` : ""}
                   </p>
                   <p className="mt-1 text-xs text-muted">
-                    سررسید {check.dueYear}/{check.dueMonth}/{check.dueDay}
+                    {t("auto.k8b0f305f8a")}{check.dueYear}/{check.dueMonth}/{check.dueDay}
                   </p>
                 </div>
                 <p className="text-lg font-bold">{formatPrice(check.amount)}</p>

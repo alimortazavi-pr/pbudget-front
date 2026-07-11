@@ -55,7 +55,7 @@ export function SignInModal({
       await authApi.requestCode(mobile);
       showToast(t("auto.k7d82e2b7f5"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     }
   }
 
@@ -74,7 +74,7 @@ export function SignInModal({
       onSuccess(data.token, data.user);
       onOpenChange(false);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در ورود");
+      showToast(err instanceof Error ? err.message : t("auto.kcf2db22adf"));
     } finally {
       setLoading(false);
     }
@@ -92,8 +92,7 @@ export function SignInModal({
 
             {!canLogin ? (
               <p className="rounded-xl bg-surface-secondary px-3 py-2 text-sm leading-7 text-muted">
-                برای این شماره رمز عبور تنظیم نشده است. مودال را ببندید و دوباره
-                «ادامه» را بزنید تا حساب بسازید.
+                {t("auth.noPasswordContinueHint")}
               </p>
             ) : usePassword ? (
               <FormInput
@@ -106,7 +105,7 @@ export function SignInModal({
               <>
                 <OtpCodeField label={t("auto.k4713c59240")} value={code} onChange={setCode} />
                 <p className="text-xs text-muted">
-                  کد به تلگرام متصل‌شده شما ارسال می‌شود، نه پیامک.
+                  {t("auto.k7e61f0dcaa")}
                 </p>
               </>
             )}
@@ -120,7 +119,7 @@ export function SignInModal({
                   className="shrink-0"
                   onPress={() => void requestCode()}
                 >
-                  ارسال کد به تلگرام
+                  {t("auto.k6e4249e2a7")}
                 </Button>
               ) : (
                 <span />
@@ -132,7 +131,7 @@ export function SignInModal({
                   className="cursor-pointer text-sm text-rose-500 hover:text-rose-600"
                   onClick={() => setUsePassword((v) => !v)}
                 >
-                  {usePassword ? "ورود با کد تلگرام" : "ورود با رمز عبور"}
+                  {usePassword ? t("auto.k462faccaf6") : t("auto.ke91226a31c")}
                 </button>
               ) : null}
             </div>
@@ -143,10 +142,10 @@ export function SignInModal({
               variant="ghost"
               onPress={() => onOpenChange(false)}
             >
-              انصراف
+              {t("common.cancel")}
             </Button>
             <Button type="submit" isPending={loading} isDisabled={!canLogin}>
-              ورود
+              {t("auto.k32a81e5587")}
             </Button>
           </Modal.Footer>
         </form>

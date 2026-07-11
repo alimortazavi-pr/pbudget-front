@@ -8,4 +8,11 @@ export const debtsMessages: MessageTree = {
   detachSettlement: "جدا کردن تسویه",
   attachSource: "وصل تراکنش مبدأ",
   attachSettlement: "وصل تراکنش تسویه",
+  settle: "تسویه",
+  registerSettlement: "ثبت تسویه",
+  registerSettlements: "ثبت {{count}} تسویه",
+  noMatchingTransaction: "تراکنش مناسبی پیدا نشد. ابتدا تراکنش",
+  incomeDeposit: "دریافتی (واریز)",
+  costWithdraw: "پرداختی (برداشت)",
+  registerFirst: "ثبت کنید.",
 };

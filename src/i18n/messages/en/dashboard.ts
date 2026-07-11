@@ -79,4 +79,5 @@ export const dashboardMessages: MessageTree = {
   debtLabel: "Debt",
   deleteTransactionError: "Failed to delete transaction",
   transactionFilters: "Transaction filters",
+  incomeExpenseSubtitle: "Income {{income}} · expense {{expense}}",
 };

@@ -60,7 +60,7 @@ export function CreatePaymentPlanModal({
         setProjectOptions(
           projects.map((project) => ({
             id: project._id,
-            label: project.category?.title ?? "پروژه",
+            label: project.category?.title ?? t("auto.kcce7e8ff41"),
           })),
         ),
       )
@@ -120,8 +120,8 @@ export function CreatePaymentPlanModal({
         </AppModalHeader>
         <Modal.Body className="max-h-[70vh] space-y-4 overflow-y-auto">
           <p className="text-sm text-muted">
-            برای اقساط ماهانه مثل اجاره، وام یا نسیه — هر ماه در روز مشخص یادآوری
-            می‌شود.
+            {t("auto.k413b9605ab")}
+            {t("auto.kb2d8ac8e4d")}
           </p>
 
           <FormInput label={t("common.title")} value={title} onChange={(e) => setTitle(e.target.value)} />
@@ -132,7 +132,7 @@ export function CreatePaymentPlanModal({
             options={persons}
           />
           <FormPriceInput
-            label={`مبلغ هر قسط (${currencyLabel(preferredCurrency)})`}
+            label={t("budget.amountWithCurrency", { currency: currencyLabel(preferredCurrency) })}
             value={amount}
             onChange={setAmount}
           />
@@ -142,7 +142,7 @@ export function CreatePaymentPlanModal({
             selectedKey={category || undefined}
             onSelectionChange={(key) => setCategory(key)}
             options={categoryOptions}
-            emptyMessage="دسته‌ای ثبت نشده"
+            emptyMessage={t("auto.kf4be303fa3")}
           />
           <FormInput
             label={t("auto.kc90b6ae6eb")}
@@ -168,7 +168,7 @@ export function CreatePaymentPlanModal({
               placeholder={t("auto.kdeafaa63f0")}
               selectedKey={projectId || undefined}
               onSelectionChange={(key) => setProjectId(String(key ?? ""))}
-              options={[{ id: "", label: "بدون پروژه" }, ...projectOptions]}
+              options={[{ id: "", label: t("auto.kdeafaa63f0") }, ...projectOptions]}
             />
           )}
 
@@ -186,10 +186,10 @@ export function CreatePaymentPlanModal({
         </Modal.Body>
         <Modal.Footer>
           <Button variant="ghost" onPress={() => onOpenChange(false)}>
-            انصراف
+            {t("common.cancel")}
           </Button>
           <Button isPending={submitting} onPress={() => void handleSubmit()}>
-            ثبت
+            {t("nav.create")}
           </Button>
         </Modal.Footer>
       </AppModalDialog>

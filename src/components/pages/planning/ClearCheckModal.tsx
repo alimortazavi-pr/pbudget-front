@@ -70,7 +70,7 @@ export function ClearCheckModal({
       showToast(t("auto.kadc2f3e58b"), "success");
       onCleared();
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     } finally {
       setSubmitting(false);
     }
@@ -79,7 +79,7 @@ export function ClearCheckModal({
   if (!check) return null;
 
   const actionLabel =
-    check.type === CheckType.RECEIVABLE ? "وصول چک (دریافتی)" : "پرداخت چک";
+    check.type === CheckType.RECEIVABLE ? t("auto.kc9f300c068") : t("auto.k5453b9c646");
 
   return (
     <AppModal open={open} onOpenChange={onOpenChange}>
@@ -89,10 +89,10 @@ export function ClearCheckModal({
         </AppModalHeader>
         <Modal.Body className="space-y-4">
           <p className="text-sm text-muted">
-            {check.person} · سررسید {check.dueYear}/{check.dueMonth}/{check.dueDay}
+            {check.person} · {t("auto.k8b0f305f8a")}{check.dueYear}/{check.dueMonth}/{check.dueDay}
           </p>
 
-          <FormPriceInput label={`مبلغ (${currencyLabel(preferredCurrency)})`} value={amount} onChange={setAmount} />
+          <FormPriceInput label={t("budget.amountWithCurrency", { currency: currencyLabel(preferredCurrency) })} value={amount} onChange={setAmount} />
 
           <FormCategoryComboBox
             label={t("auto.kb561a47a9b")}
@@ -100,7 +100,7 @@ export function ClearCheckModal({
             selectedKey={category || undefined}
             onSelectionChange={(key) => setCategory(key)}
             options={categoryOptions}
-            emptyMessage="دسته‌ای ثبت نشده"
+            emptyMessage={t("auto.kf4be303fa3")}
           />
 
           <FormTextArea
@@ -111,10 +111,10 @@ export function ClearCheckModal({
         </Modal.Body>
         <Modal.Footer>
           <Button variant="ghost" onPress={() => onOpenChange(false)}>
-            انصراف
+            {t("common.cancel")}
           </Button>
           <Button isPending={submitting} onPress={() => void handleSubmit()}>
-            ثبت و ساخت تراکنش
+            {t("auto.kef03d524c3")}
           </Button>
         </Modal.Footer>
       </AppModalDialog>

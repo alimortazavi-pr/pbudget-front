@@ -1,3 +1,5 @@
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
 import moment from "moment-jalali";
 
 import { toPersianDigits } from "./persian-digits";
@@ -20,25 +22,25 @@ export function normalizeJalaliPart(
   return String(value);
 }
 
-/** نمایش ماه و سال: خرداد ۱۴۰۵ */
+/** Display month and year: e.g. Khordad 1405 */
 export function formatJalaliMonthYear(year: string, month: string) {
   const monthIndex = parseInt(month, 10) - 1;
   const monthName = JALALI_MONTHS[monthIndex] ?? month;
   return `${monthName} ${toPersianDigits(year)}`;
 }
 
-/** نمایش سال: سال ۱۴۰۵ */
+/** Display year label */
 export function formatJalaliYear(year: string) {
-  return `سال ${toPersianDigits(year)}`;
+  return getTranslator()("common.jalaliYear", { year: toPersianDigits(year) });
 }
-/** نمایش کوتاه: ۱۸ خرداد ۱۴۰۵ */
+/** Short display: e.g. 18 Khordad 1405 */
 export function formatJalaliDate(year: string, month: string, day: string) {
   const monthIndex = parseInt(month, 10) - 1;
   const monthName = JALALI_MONTHS[monthIndex] ?? month;
   return `${toPersianDigits(day)} ${monthName} ${toPersianDigits(year)}`;
 }
 
-/** نمایش اسلش‌دار: ۱۴۰۵/۰۳/۱۸ */
+/** Slash format: 1405/03/18 */
 export function formatJalaliDateSlashed(
   year: string,
   month: string,
@@ -49,7 +51,7 @@ export function formatJalaliDateSlashed(
   );
 }
 
-/** شنبه=۰ … جمعه=۶ (مطابق JALALI_WEEKDAYS_SHORT) */
+/** Saturday=0 … Friday=6 (matches JALALI_WEEKDAYS_SHORT) */
 export function getJalaliWeekdayIndex(year: number, month: number, day: number) {
   const m = moment(`${year}/${month}/${day}`, "jYYYY/jM/jD");
   return (m.day() + 1) % 7;
@@ -59,12 +61,12 @@ export function getJalaliFirstWeekdayIndex(year: number, month: number) {
   return getJalaliWeekdayIndex(year, month, 1);
 }
 
-/** نمایش تاریخ-زمان ISO به جلالی */
+/** Format ISO datetime to Jalali */
 export function formatIsoDateTimeJalali(iso: string) {
   return toPersianDigits(moment(iso).format("jYYYY/jMM/jDD HH:mm"));
 }
 
-/** زمان ثبت + تاریخ تراکنش: ۱۰:۴۰ - ۱۴۰۵/۰۳/۱۸ */
+/** Record time + transaction date: 10:40 - 1405/03/18 */
 export function formatBudgetDateTime(
   year: string,
   month: string,
@@ -77,30 +79,30 @@ export function formatBudgetDateTime(
 }
 
 export const JALALI_MONTHS = [
-  "فروردین",
-  "اردیبهشت",
-  "خرداد",
-  "تیر",
-  "مرداد",
-  "شهریور",
-  "مهر",
-  "آبان",
-  "آذر",
-  "دی",
-  "بهمن",
-  "اسفند",
+  t("auto.kf214419676"),
+  t("auto.kdb22839210"),
+  t("auto.k1b739f54d3"),
+  t("auto.kc913f56088"),
+  t("auto.kcaaedae224"),
+  t("auto.kb7ab4dbb75"),
+  t("auto.k70e3ef0e41"),
+  t("auto.k6cc414841b"),
+  t("auto.k818ae17ddb"),
+  t("auto.k1f82cde611"),
+  t("auto.k10ac1e5f38"),
+  t("auto.kf1f5da017a"),
 ];
 
-/** شنبه = 0 … جمعه = 6 */
-export const JALALI_WEEKDAYS_SHORT = ["ش", "ی", "د", "س", "چ", "پ", "ج"] as const;
+/** Saturday = 0 … Friday = 6 */
+export const JALALI_WEEKDAYS_SHORT = [t("auto.kd42b280f42"), t("auto.ka5714dc80b"), t("auto.k5cff1093c4"), t("auto.k499cc95fd8"), t("auto.k80e867783f"), t("auto.k3f7feaa8d0"), t("auto.ke2f45e1615")] as const;
 
-/** سال کبیسه جلالی (چرخه ۳۳ ساله) */
+/** Jalali leap year (33-year cycle) */
 export function isJalaliLeapYear(year: number): boolean {
   const rem = ((year % 33) + 33) % 33;
   return [1, 5, 9, 13, 17, 22, 26, 30].includes(rem);
 }
 
-/** تعداد روز ماه جلالی — بدون وابستگی به jDaysInMonth (سازگار با SSR) */
+/** Days in Jalali month — SSR-safe without jDaysInMonth */
 export function getJalaliDaysInMonth(year: number, month: number): number {
   if (month >= 1 && month <= 6) return 31;
   if (month >= 7 && month <= 11) return 30;
@@ -114,10 +116,14 @@ export function formatHourLabel(hour: number) {
 
 export function formatHourRange(startHour?: number, endHour?: number) {
   if (startHour === undefined || endHour === undefined) return null;
-  return `${formatHourLabel(startHour)} تا ${formatHourLabel(endHour)}`;
+  const t = getTranslator();
+  return t("common.hourRange", {
+    start: formatHourLabel(startHour),
+    end: formatHourLabel(endHour),
+  });
 }
 
-/** نمایش کوتاه با ساعت: ۱۸ خرداد ۱۴۰۵ · ۱۴:۰۷ */
+/** Short display with time: 18 Khordad 1405 · 14:07 */
 export function formatJalaliDateWithTime(
   year: string | number,
   month: string | number,

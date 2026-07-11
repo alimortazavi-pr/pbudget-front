@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useState } from "react";
@@ -27,23 +30,26 @@ type Tab =
   | "json";
 
 const TABS: { id: Tab; label: string }[] = [
-  { id: "preview", label: "پیش‌نمایش" },
-  { id: "hero", label: "هیرو" },
-  { id: "features", label: "امکانات" },
-  { id: "pricing", label: "قیمت‌ها" },
-  { id: "why", label: "چرا ما" },
-  { id: "how", label: "نحوه کار" },
-  { id: "about", label: "درباره" },
-  { id: "marquee", label: "مارکی" },
-  { id: "faq", label: "سوالات" },
-  { id: "contact", label: "تماس" },
+  { id: "preview", label: t("auto.kf07d7cd0f1") },
+  { id: "hero", label: t("auto.k12dbf04ec5") },
+  { id: "features", label: t("auto.kd4caaca0fc") },
+  { id: "pricing", label: t("auto.kda41ea65ff") },
+  { id: "why", label: t("auto.kecb737becf") },
+  { id: "how", label: t("auto.k482bd94856") },
+  { id: "about", label: t("auto.kba5089cab5") },
+  { id: "marquee", label: t("auto.k23b90c86dc") },
+  { id: "faq", label: t("auto.k168566fcba") },
+  { id: "contact", label: t("auto.k1098073806") },
   { id: "seo", label: "SEO" },
-  { id: "settings", label: "تنظیمات" },
+  { id: "settings", label: t("nav.settings") },
   { id: "json", label: "JSON" },
 ];
 
 export function AdminLandingPage() {
   const { t } = useTranslation();
+  const listDelimiterPattern = new RegExp(
+    `[,${t("common.listSeparator").replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}]`,
+  );
   const [tab, setTab] = useState<Tab>("preview");
   const [content, setContent] = useState<ILandingContent>(DEFAULT_LANDING_CONTENT);
   const [jsonText, setJsonText] = useState("");
@@ -109,7 +115,7 @@ export function AdminLandingPage() {
   }
 
   function resetDefaults() {
-    if (!confirm("بازگشت به پیش‌فرض؟")) return;
+    if (!confirm(t("auto.kaa4bfbdc0d"))) return;
     setContent(DEFAULT_LANDING_CONTENT);
     setJsonText(JSON.stringify(DEFAULT_LANDING_CONTENT, null, 2));
   }
@@ -124,31 +130,31 @@ export function AdminLandingPage() {
         <div>
           <h3 className="text-lg font-bold">{t("auto.kb802a89d24")}</h3>
           <p className="text-sm text-muted">
-            ویرایش پیش‌نویس — پس از «انتشار» برای بازدیدکنندگان اعمال می‌شود
+            {t("auto.k719bec13ba")}
           </p>
           {hasDraftChanges ? (
             <p className="mt-1 text-xs font-medium text-amber-600">
-              پیش‌نویس ذخیره‌شده — هنوز منتشر نشده
+              {t("auto.ka20cf9bab4")}
             </p>
           ) : null}
           {updatedAt ? (
             <p className="mt-1 text-xs text-muted">
-              آخرین بروزرسانی: {new Date(updatedAt).toLocaleString("fa-IR")}
+              {t("auto.k6bf450e005")}{new Date(updatedAt).toLocaleString("fa-IR")}
             </p>
           ) : null}
         </div>
         <div className="flex flex-wrap gap-2">
           <Button variant="secondary" onPress={resetDefaults}>
-            پیش‌فرض
+            {t("auto.k523e2d7ccf")}
           </Button>
           <Button variant="secondary" onPress={() => void save()} isDisabled={saving}>
-            {saving ? "در حال ذخیره…" : "ذخیره پیش‌نویس"}
+            {saving ? t("auto.k4d58255c24") : t("auto.k680bae05b4")}
           </Button>
           <Button
             onPress={() => void publish()}
             isDisabled={publishing || !hasDraftChanges}
           >
-            {publishing ? "در حال انتشار…" : "انتشار"}
+            {publishing ? t("auto.kf99c58e806") : t("auto.k68e323cdb5")}
           </Button>
         </div>
       </div>
@@ -170,7 +176,7 @@ export function AdminLandingPage() {
         {tab === "preview" ? (
           <div className="space-y-4">
             <p className="text-sm text-muted">
-              پیش‌نمایش پیش‌نویس — ابتدا «ذخیره پیش‌نویس» را بزنید.
+              {t("auto.kbb3388903a")}
             </p>
             <div className="overflow-hidden rounded-2xl border border-border bg-background">
               <iframe
@@ -205,7 +211,7 @@ export function AdminLandingPage() {
                   <Label className="text-sm">{t("common.description")}</Label>
                   <TextArea className="mt-1 w-full" value={f.description} onChange={(e) => { const features = [...content.features]; features[i] = { ...f, description: e.target.value }; setContent({ ...content, features }); }} rows={2} />
                 </div>
-                <Field label={t("auto.k41ffb9a4a9")} value={f.tags.join("، ")} onChange={(v) => { const features = [...content.features]; features[i] = { ...f, tags: v.split(/[,،]/).map((t) => t.trim()).filter(Boolean) }; setContent({ ...content, features }); }} />
+                <Field label={t("auto.k41ffb9a4a9")} value={f.tags.join(t("auto.k8715d7bc59"))} onChange={(v) => { const features = [...content.features]; features[i] = { ...f, tags: v.split(listDelimiterPattern).map((tag) => tag.trim()).filter(Boolean) }; setContent({ ...content, features }); }} />
               </div>
             ))}
           </div>
@@ -224,11 +230,11 @@ export function AdminLandingPage() {
                   <Field label={t("auto.ke2b4ef1f7f")} value={plan.period} onChange={(v) => { const plans = [...content.pricing.plans]; plans[i] = { ...plan, period: v }; setContent({ ...content, pricing: { ...content.pricing, plans } }); }} />
                 </div>
                 <TextArea value={plan.description} onChange={(e) => { const plans = [...content.pricing.plans]; plans[i] = { ...plan, description: e.target.value }; setContent({ ...content, pricing: { ...content.pricing, plans } }); }} rows={2} />
-                <Field label={t("auto.k41e1acdd96")} value={plan.features.join("، ")} onChange={(v) => { const plans = [...content.pricing.plans]; plans[i] = { ...plan, features: v.split(/[,،]/).map((s) => s.trim()).filter(Boolean) }; setContent({ ...content, pricing: { ...content.pricing, plans } }); }} />
+                <Field label={t("auto.k41e1acdd96")} value={plan.features.join(t("auto.k8715d7bc59"))} onChange={(v) => { const plans = [...content.pricing.plans]; plans[i] = { ...plan, features: v.split(listDelimiterPattern).map((s) => s.trim()).filter(Boolean) }; setContent({ ...content, pricing: { ...content.pricing, plans } }); }} />
                 <Field label={t("auto.ka870869a72")} value={plan.cta} onChange={(v) => { const plans = [...content.pricing.plans]; plans[i] = { ...plan, cta: v }; setContent({ ...content, pricing: { ...content.pricing, plans } }); }} />
                 <label className="flex items-center gap-2 text-sm">
                   <input type="checkbox" checked={plan.highlighted} onChange={(e) => { const plans = [...content.pricing.plans]; plans[i] = { ...plan, highlighted: e.target.checked }; setContent({ ...content, pricing: { ...content.pricing, plans } }); }} />
-                  پلن برجسته
+                  {t("auto.k9679b66fbf")}
                 </label>
               </div>
             ))}
@@ -268,7 +274,7 @@ export function AdminLandingPage() {
         ) : null}
 
         {tab === "marquee" ? (
-          <Field label={t("auto.k7ac8c172a9")} value={content.marquee.join("، ")} onChange={(v) => setContent({ ...content, marquee: v.split(/[,،]/).map((s) => s.trim()).filter(Boolean) })} />
+          <Field label={t("auto.k7ac8c172a9")} value={content.marquee.join(t("auto.k8715d7bc59"))} onChange={(v) => setContent({ ...content, marquee: v.split(listDelimiterPattern).map((s) => s.trim()).filter(Boolean) })} />
         ) : null}
 
         {tab === "seo" ? (
@@ -309,12 +315,12 @@ export function AdminLandingPage() {
           <div className="grid gap-4 max-w-md">
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" checked={content.settings.downloadComingSoon} onChange={(e) => setContent({ ...content, settings: { ...content.settings, downloadComingSoon: e.target.checked } })} />
-              اپ موبایل — به‌زودی (بدون لینک دانلود)
+              {t("auto.k2e383e6b7d")}
             </label>
             <Field label={t("auto.kf33100f2c7")} value={content.settings.downloadLabel} onChange={(v) => setContent({ ...content, settings: { ...content.settings, downloadLabel: v } })} />
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" checked={content.settings.showAppDownloadInNav} onChange={(e) => setContent({ ...content, settings: { ...content.settings, showAppDownloadInNav: e.target.checked } })} />
-              نمایش دکمه اپ در نوار بالا
+              {t("auto.kcef36aad20")}
             </label>
           </div>
         ) : null}

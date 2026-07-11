@@ -40,7 +40,7 @@ export function SsoCallbackPage() {
         dispatch(setProfile(user));
         router.replace(returnPath);
       } catch {
-        setError("ورود خودکار ناموفق بود. لطفاً دوباره وارد شوید.");
+        setError(t("auto.k0c6458cc4d"));
       }
     })();
   }, [dispatch, params, router]);

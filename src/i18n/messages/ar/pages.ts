@@ -27,6 +27,11 @@ export const pagesMessages: MessageTree = {
     filterDone: "منجز",
     loadError: "فشل التحميل",
     defaultProject: "مشروع",
+    addQuick: "إضافة",
+    addDetailed: "مهمة بتفاصيل",
+    firstTask: "أول مهمة",
+    overdue: "متأخرة",
+    routine: "ثابتة",
   },
   projects: {
     statusActive: "نشط",
@@ -40,6 +45,15 @@ export const pagesMessages: MessageTree = {
     labelRemaining: "المتبقي",
     loadError: "فشل التحميل",
     clockInRecorded: "تم تسجيل الدخول",
+    projectCount: "{{count}} مشروع",
+    attendance: "الحضور",
+    newProject: "مشروع جديد",
+    firstProject: "أول مشروع",
+    fixedIncome: "دخل ثابت",
+    noWorkTime: "بدون تتبع وقت",
+    shared: "مشترك",
+    clockIn: "دخول",
+    attendanceShort: "حضور",
   },
   planning: {
     loadError: "فشل التحميل",
@@ -65,9 +79,14 @@ export const pagesMessages: MessageTree = {
     runningNewTitle: "التزام جاري جديد",
     runningSave: "حفظ",
     runningSubmit: "تسجيل",
+    progressDueDay: "{{percent}}٪ · يوم {{day}} من كل شهر",
+    deleteTabConfirm: "حذف «{{name}}»؟",
   },
   analysis: {
     loadError: "فشل تحميل التحليل",
+    apiFallbackNotice:
+      "واجهة التحليل غير متاحة؛ تُبنى المخططات من معاملات هذا النطاق.",
+    categoriesOverLimit: "{{count}} فئات تجاوزت الحد الشهري.",
   },
   attendance: {
     defaultProject: "مشروع",
@@ -87,6 +106,14 @@ export const pagesMessages: MessageTree = {
   invites: {
     sharePercent: " · حصة {{percent}}٪",
     loadError: "خطأ",
+    inviteBody:
+      "دعاك {{owner}} كشريك في {{context}} «{{title}}».",
+  },
+  partners: {
+    deleteConfirm: "حذف الشريك «{{name}}»؟",
+    sharePercent: "حصة {{percent}}٪",
+    totalSharePercent: "{{percent}}٪",
+    totalShareLabel: "مجموع الحصص:",
   },
   ventures: {
     loadError: "فشل التحميل",

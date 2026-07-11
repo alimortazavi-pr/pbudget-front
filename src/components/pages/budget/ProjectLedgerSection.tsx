@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useEffect, useMemo, useState } from "react";
@@ -50,7 +53,7 @@ export function LinkedProjectSummary({ project }: LinkedProjectSummaryProps) {
       </div>
       <p className="text-xs leading-6 text-muted">
         {t(
-          "این تراکنش در صفحه پروژه‌ها نمایش داده می‌شود. برای تغییر اتصال، دسته‌بندی یا پروژه را از بخش بیشتر ویرایش کنید.",
+          t("auto.k989bb4f83a"),
         )}
       </p>
     </div>
@@ -89,7 +92,7 @@ export function ProjectLedgerSection({
         <div className="min-w-0">
           <p className="text-sm font-medium">{t("auto.k3cabc7ed28")}</p>
           <p className="mt-1 text-xs text-muted">
-            {t("ثبت تراکنش در حساب یک پروژه مشخص")}
+            {t("budget.projectLedgerTitle")}
           </p>
         </div>
         <Switch
@@ -106,7 +109,7 @@ export function ProjectLedgerSection({
 
       {isProjectCategory && !value.enabled ? (
         <p className="rounded-xl bg-accent/10 px-3 py-2 text-xs leading-6 text-accent">
-          {t("با دسته «{{category}}» این تراکنش خودکار به پروژه مرتبط وصل می‌شود.", {
+          {t("budget.projectLedgerCategoryHint", {
             category: categoryTitle ?? "",
           })}
         </p>
@@ -123,7 +126,7 @@ export function ProjectLedgerSection({
             emptyMessage={t("common.noItemsFound")}
           />
           <p className="text-xs leading-6 text-muted">
-            {t("تراکنش در صفحه پروژه و گزارش‌های مالی آن نمایش داده می‌شود.")}
+            {t("budget.projectLedgerVisibility")}
           </p>
         </div>
       ) : null}

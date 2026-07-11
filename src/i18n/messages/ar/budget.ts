@@ -17,4 +17,21 @@ export const budgetMessages: MessageTree = {
   noCardsYetPrefix: "لم تُسجّل أي بطاقة بعد. من",
   myCardsLink: "بطاقاتي",
   noCardsYetSuffix: "أضف بطاقة.",
+  projectLedgerTitle: "تسجيل معاملة ضمن مشروع محدد",
+  projectLedgerCategoryHint:
+    "مع الفئة «{{category}}» تُربط هذه المعاملة تلقائياً بالمشروع.",
+  projectLedgerVisibility:
+    "تظهر المعاملة في صفحة المشروع وتقاريره المالية.",
+  noTransactionsInRange: "لا توجد معاملات في هذه الفترة",
+  attachTransactions: "ربط {{count}} معاملات",
+  selectTransaction: "اختر معاملة",
+  selectOneTransaction: "اختر معاملة واحدة",
+  limitSpendHint:
+    "السقف {{limit}} · مصروف هذا الشهر {{spent}} · المتبقي {{remaining}}",
+  limitSpendOverHint:
+    "السقف {{limit}} · مصروف هذا الشهر {{spent}} · {{over}} فوق السقف",
+  debtLedgerSourceHint:
+    "هذه المعاملة هي سجل مصدر هذا {{type}}. انتقل إلى الديون للتسوية أو التعديل.",
+  settleDebtOptionLabel: "{{person}} · {{type}} · المتبقي {{amount}}",
+  duplicateRowsRemoved: "تمت إزالة {{count}} معاملات مكررة من القائمة",
 };

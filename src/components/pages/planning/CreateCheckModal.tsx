@@ -91,7 +91,7 @@ export function CreateCheckModal({
       onCreated();
       onOpenChange(false);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     } finally {
       setSubmitting(false);
     }
@@ -106,8 +106,8 @@ export function CreateCheckModal({
         <Modal.Body className="max-h-[70vh] space-y-4 overflow-y-auto">
           <div className="flex gap-2">
             {[
-              { id: String(CheckType.RECEIVABLE), label: "چک دریافتی" },
-              { id: String(CheckType.PAYABLE), label: "چک پرداختی" },
+              { id: String(CheckType.RECEIVABLE), label: t("auto.k1b057b46b9") },
+              { id: String(CheckType.PAYABLE), label: t("auto.k0d58ff61f7") },
             ].map((item) => (
               <button
                 key={item.id}
@@ -124,7 +124,7 @@ export function CreateCheckModal({
             ))}
           </div>
 
-          <FormPriceInput label={`مبلغ (${currencyLabel(preferredCurrency)})`} value={amount} onChange={setAmount} />
+          <FormPriceInput label={t("budget.amountWithCurrency", { currency: currencyLabel(preferredCurrency) })} value={amount} onChange={setAmount} />
           <FormPersonComboBox
             label={t("auto.k4617f9a4f6")}
             value={person}
@@ -157,10 +157,10 @@ export function CreateCheckModal({
         </Modal.Body>
         <Modal.Footer>
           <Button variant="ghost" onPress={() => onOpenChange(false)}>
-            انصراف
+            {t("common.cancel")}
           </Button>
           <Button isPending={submitting} onPress={() => void handleSubmit()}>
-            ثبت چک
+            {t("auto.k1c362cffea")}
           </Button>
         </Modal.Footer>
       </AppModalDialog>

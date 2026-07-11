@@ -1,5 +1,6 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
 import { useEffect, useRef } from "react";
 
 import type { IWorkDailyStatus } from "@/common/interfaces/work-time.interface";
@@ -30,10 +31,11 @@ export function useWorkSessionDailyReminder({
     if (delay <= 0) {
       if (firedRef.current !== key) {
         firedRef.current = key;
+        const t = getTranslator();
         showToast(
           projectTitle
-            ? `ساعت روزانه «${projectTitle}» گذشت — خروج را ثبت کنید`
-            : "ساعت روزانه گذشت — خروج را ثبت کنید",
+            ? t("projects.dailyHoursPassed", { project: projectTitle })
+            : t("auto.k5a194a165d"),
           "warning",
         );
         onRemind?.();
@@ -43,10 +45,11 @@ export function useWorkSessionDailyReminder({
 
     const timer = window.setTimeout(() => {
       firedRef.current = key;
+      const t = getTranslator();
       showToast(
         projectTitle
-          ? `۳۰ دقیقه از پایان ساعت روزانه «${projectTitle}» گذشت — خروج را ثبت کنید`
-          : "۳۰ دقیقه از پایان ساعت روزانه گذشت — خروج را ثبت کنید",
+          ? t("projects.dailyHoursPassedReminder", { project: projectTitle })
+          : t("auto.kac0fe999ff"),
         "warning",
       );
       onRemind?.();
@@ -57,11 +60,15 @@ export function useWorkSessionDailyReminder({
 }
 
 export function formatDailyRemainingMessage(dailyStatus: IWorkDailyStatus) {
+  const t = getTranslator();
   if (!dailyStatus.requiredDailyMinutes) return null;
-  if (!dailyStatus.isWorkingDay) return "امروز روز کاری نیست (جمعه یا تعطیل رسمی).";
+  if (!dailyStatus.isWorkingDay) return t("auto.k25477be49d");
   if (dailyStatus.remainingTodayMinutes === null) return null;
   if (dailyStatus.remainingTodayMinutes <= 0) {
-    return "ساعت روزانه تکمیل شده — در صورت ادامه، خروج را فراموش نکنید.";
+    return t("auto.k78044a1b04");
   }
-  return `تا تکمیل ${formatDurationMinutes(dailyStatus.requiredDailyMinutes)} امروز، ${formatDurationMinutes(dailyStatus.remainingTodayMinutes)} مانده.`;
+  return t("common.dailyRemainingProgress", {
+    required: formatDurationMinutes(dailyStatus.requiredDailyMinutes),
+    remaining: formatDurationMinutes(dailyStatus.remainingTodayMinutes),
+  });
 }

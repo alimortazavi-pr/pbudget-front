@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useEffect, useMemo, useState } from "react";
@@ -29,7 +32,7 @@ type DebtLedgerSectionProps = {
 };
 
 function debtTypeLabel(type: number) {
-  return type === DebtType.RECEIVABLE ? "طلب" : "بدهی";
+  return type === DebtType.RECEIVABLE ? t("auto.kf48e3aa79d") : t("auto.kebf7b80fd6");
 }
 
 function isSettleMode(mode: DebtLedgerMode) {
@@ -45,10 +48,10 @@ export function LinkedDebtSummary({ debt }: LinkedDebtSummaryProps) {
   const isReceivable = debt.type === DebtType.RECEIVABLE;
   const statusLabel =
     debt.status === "settled"
-      ? "تسویه‌شده"
+      ? t("debts.settled")
       : debt.status === "partial"
-        ? "تسویه جزئی"
-        : "باز";
+        ? t("auto.ka9b46e77b6")
+        : t("auto.k2e91d38fda");
 
   return (
     <div className="space-y-2 rounded-2xl border border-border/60 bg-surface-secondary/60 p-4">
@@ -59,16 +62,17 @@ export function LinkedDebtSummary({ debt }: LinkedDebtSummaryProps) {
         }`}
       >
         <p className="font-semibold">
-          {isReceivable ? "طلب" : "بدهی"} · {debt.person}
+          {isReceivable ? t("auto.kf48e3aa79d") : t("auto.kebf7b80fd6")} · {debt.person}
         </p>
         <p className="mt-1 text-xs opacity-90">
-          مانده {formatPrice(debt.remainingAmount)} از {formatPrice(debt.totalAmount)} ·{" "}
+          {t("auto.k23d4b4c189")}{formatPrice(debt.remainingAmount)} {t("common.of")} {formatPrice(debt.totalAmount)} ·{" "}
           {statusLabel}
         </p>
       </div>
       <p className="text-xs leading-6 text-muted">
-        این تراکنش منبع ثبت این {isReceivable ? "طلب" : "بدهی"} است. برای تسویه یا ویرایش
-        جزئیات به صفحه طلب و بدهی بروید.
+        {t("budget.debtLedgerSourceHint", {
+          type: isReceivable ? t("auto.kf48e3aa79d") : t("auto.kebf7b80fd6"),
+        })}
       </p>
     </div>
   );
@@ -98,17 +102,21 @@ export function DebtLedgerSection({
     () =>
       openDebts.map((debt) => ({
         id: debt._id,
-        label: `${debt.person} · ${debtTypeLabel(debt.type)} · مانده ${formatPrice(debt.remainingAmount)}`,
+        label: t("budget.settleDebtOptionLabel", {
+          person: debt.person,
+          type: debtTypeLabel(debt.type),
+          amount: formatPrice(debt.remainingAmount),
+        }),
       })),
-    [openDebts],
+    [openDebts, t],
   );
 
   const selectedSettleDebt = openDebts.find((debt) => debt._id === value.settleDebtId);
 
   const modeButtons: { id: DebtLedgerMode; label: string }[] = [
-    { id: "create", label: "ثبت طلب/بدهی جدید" },
-    { id: "settle-receivable", label: "دریافت طلب" },
-    { id: "settle-payable", label: "پرداخت بدهی" },
+    { id: "create", label: t("auto.k363be5308a") },
+    { id: "settle-receivable", label: t("auto.k89319f4b6e") },
+    { id: "settle-payable", label: t("auto.kfcaf17b97b") },
   ];
 
   return (
@@ -117,7 +125,7 @@ export function DebtLedgerSection({
         <div className="min-w-0">
           <p className="text-sm font-medium">{t("auto.k801512f58a")}</p>
           <p className="mt-1 text-xs text-muted">
-            ثبت تعهد جدید یا تسویه موردی که قبلاً ثبت شده
+            {t("auto.k1320fa2c46")}
           </p>
         </div>
         <Switch
@@ -157,8 +165,8 @@ export function DebtLedgerSection({
             <div className="space-y-3">
               <div className="flex gap-2">
                 {[
-                  { id: String(DebtType.RECEIVABLE), label: "طلب" },
-                  { id: String(DebtType.PAYABLE), label: "بدهی" },
+                  { id: String(DebtType.RECEIVABLE), label: t("auto.kf48e3aa79d") },
+                  { id: String(DebtType.PAYABLE), label: t("auto.kebf7b80fd6") },
                 ].map((item) => (
                   <button
                     key={item.id}
@@ -185,8 +193,8 @@ export function DebtLedgerSection({
 
               <p className="text-xs leading-6 text-muted">
                 {value.debtType === String(DebtType.RECEIVABLE)
-                  ? "طلب: تراکنش باید پرداختی (برداشت از حساب شما) باشد — وقتی به کسی وام داده‌اید."
-                  : "بدهی: تراکنش باید دریافتی (واریز به حساب شما) باشد — وقتی قرض گرفته‌اید یا نسیه خریده‌اید."}
+                  ? t("auto.k450eea9a96")
+                  : t("auto.kaaf9c8c114")}
               </p>
             </div>
           )}
@@ -196,8 +204,8 @@ export function DebtLedgerSection({
               <FormSelect
                 label={
                   value.mode === "settle-receivable"
-                    ? "کدام طلب تسویه می‌شود؟"
-                    : "کدام بدهی پرداخت می‌شود؟"
+                    ? t("auto.k6c8dc90748")
+                    : t("auto.k3ada17889e")
                 }
                 placeholder={t("auto.keb1dc98120")}
                 selectedKey={value.settleDebtId || undefined}
@@ -205,14 +213,14 @@ export function DebtLedgerSection({
                 options={settleOptions}
                 emptyMessage={
                   value.mode === "settle-receivable"
-                    ? "طلب بازی برای دریافت نیست"
-                    : "بدهی بازی برای پرداخت نیست"
+                    ? t("auto.kdaa386199a")
+                    : t("auto.k1b305318d6")
                 }
               />
 
               {selectedSettleDebt && amount && (
                 <p className="rounded-xl bg-surface px-3 py-2 text-xs text-muted">
-                  با ثبت این تراکنش، حداکثر{" "}
+                  {t("auto.k014758aca4")}{" "}
                   <strong className="text-foreground">
                     {formatPrice(
                       Math.min(
@@ -220,9 +228,8 @@ export function DebtLedgerSection({
                         Number(amount.replace(/,/g, "")) || 0,
                       ),
                     )}
-                  </strong>{" "}
-                  از مانده {formatPrice(selectedSettleDebt.remainingAmount)} تسویه
-                  می‌شود.
+                  </strong>{" "} {t("auto.kb0e65eba17")} {formatPrice(selectedSettleDebt.remainingAmount)} {t("auto.k43ef5d91de")}
+                  {t("auto.kb2d8ac8e4d")}
                 </p>
               )}
             </div>

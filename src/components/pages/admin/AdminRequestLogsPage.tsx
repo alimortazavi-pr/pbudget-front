@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { Fragment, useCallback, useEffect, useState } from "react";
@@ -13,7 +16,7 @@ import { showToast } from "@/common/utils/toast";
 import { AdminPagination } from "@/components/pages/admin/AdminPagination";
 
 const METHOD_OPTIONS = [
-  { value: "", label: "همه متدها" },
+  { value: "", label: t("auto.k067ea83147") },
   { value: "GET", label: "GET" },
   { value: "POST", label: "POST" },
   { value: "PATCH", label: "PATCH" },
@@ -22,14 +25,14 @@ const METHOD_OPTIONS = [
 ];
 
 const STATUS_OPTIONS = [
-  { value: "", label: "همه وضعیت‌ها" },
-  { value: "200", label: "۲۰۰ موفق" },
-  { value: "201", label: "۲۰۱ ایجاد" },
-  { value: "400", label: "۴۰۰ خطای کاربر" },
-  { value: "401", label: "۴۰۱ احراز هویت" },
-  { value: "403", label: "۴۰۳ ممنوع" },
-  { value: "404", label: "۴۰۴ یافت نشد" },
-  { value: "500", label: "۵۰۰ خطای سرور" },
+  { value: "", label: t("auto.k267b48bdae") },
+  { value: "200", label: t("auto.kd5d040ef36") },
+  { value: "201", label: t("auto.k1d95ff66d9") },
+  { value: "400", label: t("auto.kdb87e8c6b8") },
+  { value: "401", label: t("auto.k7989d9f7de") },
+  { value: "403", label: t("auto.k28f83d44f0") },
+  { value: "404", label: t("auto.kfaf876cea9") },
+  { value: "500", label: t("auto.keae193d6f9") },
 ];
 
 function methodBadgeClass(method: string) {
@@ -116,8 +119,8 @@ export function AdminRequestLogsPage() {
         <div>
           <h3 className="text-lg font-bold">{t("auto.k75a1ca17c7")}</h3>
           <p className="mt-1 text-sm text-muted">
-            ثبت تمام درخواست‌های API — چه کسی چه مسیری را صدا زده و با چه
-            نتیجه‌ای
+            {t("auto.k4a28b85e49")}
+            {t("auto.kc546839909")}
           </p>
         </div>
 
@@ -142,7 +145,7 @@ export function AdminRequestLogsPage() {
             />
           </div>
           <Button type="submit" variant="secondary">
-            جستجو
+            {t("common.search")}
           </Button>
         </form>
       </div>
@@ -198,13 +201,13 @@ export function AdminRequestLogsPage() {
               {loading ? (
                 <tr>
                   <td colSpan={8} className="px-4 py-10 text-center text-muted">
-                    در حال بارگذاری…
+                    {t("common.loading")}
                   </td>
                 </tr>
               ) : logs.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="px-4 py-10 text-center text-muted">
-                    لاگی یافت نشد
+                    {t("auto.kca6941ce84")}
                   </td>
                 </tr>
               ) : (
@@ -217,7 +220,7 @@ export function AdminRequestLogsPage() {
                           : "—"}
                       </td>
                       <td className="px-4 py-3">
-                        <p className="font-medium">{log.userName ?? "مهمان"}</p>
+                        <p className="font-medium">{log.userName ?? t("auto.kb315663978")}</p>
                         {log.user ? (
                           <p className="font-mono text-xs text-muted">{log.user}</p>
                         ) : null}
@@ -260,7 +263,7 @@ export function AdminRequestLogsPage() {
                             setExpandedId((prev) => (prev === log._id ? null : log._id))
                           }
                         >
-                          {expandedId === log._id ? "بستن" : "جزئیات"}
+                          {expandedId === log._id ? t("common.close") : t("auto.kd65b37fd31")}
                         </Button>
                       </td>
                     </tr>

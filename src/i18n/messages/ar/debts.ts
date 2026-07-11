@@ -8,4 +8,11 @@ export const debtsMessages: MessageTree = {
   detachSettlement: "فصل التسوية",
   attachSource: "ربط المعاملة المصدر",
   attachSettlement: "ربط معاملة التسوية",
+  settle: "تسوية",
+  registerSettlement: "تسجيل التسوية",
+  registerSettlements: "تسجيل {{count}} تسويات",
+  noMatchingTransaction: "لم يُعثر على معاملة مناسبة. سجّل أولاً معاملة",
+  incomeDeposit: "وارد (إيداع)",
+  costWithdraw: "صادر (سحب)",
+  registerFirst: ".",
 };

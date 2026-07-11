@@ -67,7 +67,7 @@ export function QuickManualWorkSessionModal({
                 className="w-full justify-start"
                 onPress={() => setProjectId(project._id)}
               >
-                {project.category?.title ?? "پروژه"}
+                {project.category?.title ?? t("auto.kcce7e8ff41")}
               </Button>
             ))
           )}

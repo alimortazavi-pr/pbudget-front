@@ -51,11 +51,15 @@ function IncomeTooltip({
   payload?: Array<{ value: number }>;
   label?: string;
 }) {
+  const { t } = useTranslation();
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-xl border border-border bg-surface px-3 py-2 text-sm shadow-lg">
       <p className="font-medium">{label}</p>
-      <p className="text-income">{formatPrice(payload[0]?.value ?? 0)} / ساعت</p>
+      <p className="text-income">
+        {formatPrice(payload[0]?.value ?? 0)}
+        {t("common.perHour")}
+      </p>
     </div>
   );
 }
@@ -95,7 +99,7 @@ export function WorkTimeAnalysisCharts({
     <div className="grid gap-4 lg:grid-cols-2">
       <section className="glass rounded-2xl p-4 lg:p-5">
         <h3 className="font-bold">
-          {isProjectScope ? "کارکرد روزانه" : "کارکرد هفتگی"}
+          {isProjectScope ? t("auto.ka8d8b017a4") : t("auto.kd28cc328e2")}
         </h3>
         <p className="mb-4 text-sm text-muted">{report.periodLabel}</p>
         {weeklyData.length === 0 ? (
@@ -111,7 +115,7 @@ export function WorkTimeAnalysisCharts({
                   tick={{ fontSize: 12 }}
                 />
                 <Tooltip content={<DurationTooltip />} />
-                <Bar dataKey="minutes" fill="#059669" radius={[8, 8, 0, 0]} name="دقیقه" />
+                <Bar dataKey="minutes" fill="#059669" radius={[8, 8, 0, 0]} name={t("auto.k4fec517158")} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -132,8 +136,8 @@ export function WorkTimeAnalysisCharts({
                   <XAxis type="number" tick={{ fontSize: 12 }} />
                   <YAxis type="category" dataKey="name" width={90} tick={{ fontSize: 11 }} />
                   <Tooltip />
-                  <Bar dataKey="workedHours" fill="#0ea5e9" radius={[0, 6, 6, 0]} name="کارکرد" />
-                  <Bar dataKey="targetHours" fill="#94a3b8" radius={[0, 6, 6, 0]} name="هدف" />
+                  <Bar dataKey="workedHours" fill="#0ea5e9" radius={[0, 6, 6, 0]} name={t("auto.ka37136a1c1")} />
+                  <Bar dataKey="targetHours" fill="#94a3b8" radius={[0, 6, 6, 0]} name={t("auto.keea3713664")} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -146,10 +150,10 @@ export function WorkTimeAnalysisCharts({
           className={`glass rounded-2xl p-4 lg:p-5 ${isProjectScope ? "" : "lg:col-span-2"}`}
         >
           <h3 className="font-bold">
-            {isProjectScope ? "درآمد ساعتی این پروژه" : "درآمد ساعتی پروژه‌ها"}
+            {isProjectScope ? t("auto.kc0f1eb7ed0") : t("auto.ke3143bc694")}
           </h3>
           <p className="mb-4 text-sm text-muted">
-            برای پروژه‌های ساعتی از دریافتی ماه تقسیم بر ساعت کار محاسبه شده
+            {t("auto.kead0d98c98")}
           </p>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">

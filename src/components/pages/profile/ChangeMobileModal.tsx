@@ -68,7 +68,7 @@ export function ChangeMobileModal({
       setCodeSent(true);
       showToast(t("auto.k7d82e2b7f5"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     } finally {
       setLoading(false);
     }

@@ -1,3 +1,5 @@
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
 import type { MetadataRoute } from "next";
 
 import {
@@ -24,20 +26,20 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ["finance", "productivity"],
     shortcuts: [
       {
-        name: "داشبورد",
-        short_name: "داشبورد",
+        name: t("nav.dashboard"),
+        short_name: t("nav.dashboard"),
         url: "/app",
         icons: [{ src: "/assets/icons/icon-96x96.png", sizes: "96x96" }],
       },
       {
-        name: "ثبت تراکنش",
-        short_name: "تراکنش",
+        name: t("nav.createTransaction"),
+        short_name: t("auto.keb7bb3e55b"),
         url: "/create-budget",
         icons: [{ src: "/assets/icons/icon-96x96.png", sizes: "96x96" }],
       },
       {
-        name: "برنامه روزانه",
-        short_name: "تسک‌ها",
+        name: t("nav.dailyPlanner"),
+        short_name: t("auto.k274d6d99eb"),
         url: "/tasks",
         icons: [{ src: "/assets/icons/icon-96x96.png", sizes: "96x96" }],
       },

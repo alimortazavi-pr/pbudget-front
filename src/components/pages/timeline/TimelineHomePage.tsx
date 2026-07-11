@@ -60,7 +60,7 @@ function TimelineHomePageContent() {  const { t } = useTranslation();
       await tasksApi.toggleTask(id);
       await data.reload();
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     }
   }
 
@@ -78,7 +78,7 @@ function TimelineHomePageContent() {  const { t } = useTranslation();
   return (
     <div className="pb-timeline-home">
       <section className="pb-timeline-hero">
-        <p className="text-sm text-white/80">سلام {user?.firstName ?? ""}</p>
+        <p className="text-sm text-white/80">{t("auto.kfa65ac7860")}{user?.firstName ?? ""}</p>
         <div className="mt-1 space-y-1">
           {CURRENCY_OPTIONS.map((option) => {
             const amount = getWalletBalance(user, option.id);
@@ -119,7 +119,10 @@ function TimelineHomePageContent() {  const { t } = useTranslation();
           <TimelineWidgetTile
             title={t("auto.kbead1798a0")}
             value={formatPrice(data.net)}
-            subtitle={`درآمد ${formatPrice(data.income)} · هزینه ${formatPrice(data.expense)}`}
+            subtitle={t("dashboard.incomeExpenseSubtitle", {
+              income: formatPrice(data.income),
+              expense: formatPrice(data.expense),
+            })}
             status={financeStatus}
             icon={<Chart size={22} variant="Bold" />}
             onPress={() => setDrawer("finance")}
@@ -127,7 +130,7 @@ function TimelineHomePageContent() {  const { t } = useTranslation();
           <TimelineWidgetTile
             title={t("auto.k93becfb5eb")}
             value={toPersianDigits(String(data.taskSummary.pending))}
-            subtitle={`${toPersianDigits(String(data.taskSummary.done))} انجام‌شده · ${toPersianDigits(String(data.taskSummary.overdue))} عقب‌افتاده`}
+            subtitle={`${toPersianDigits(String(data.taskSummary.done))} ${t("auto.kf82fc4a167")} · ${toPersianDigits(String(data.taskSummary.overdue))} ${t("auto.k2055424d06")}`}
             status={taskStatus}
             icon={<Task size={22} variant="Bold" />}
             onPress={() => setDrawer("tasks")}
@@ -135,7 +138,7 @@ function TimelineHomePageContent() {  const { t } = useTranslation();
           <TimelineWidgetTile
             title={t("auto.kd1226f849e")}
             value={toPersianDigits(String(data.dueCount))}
-            subtitle={`${toPersianDigits(String(data.checkPendingCount))} چک · ${toPersianDigits(String(data.installmentPendingCount))} قسط`}
+            subtitle={`${toPersianDigits(String(data.checkPendingCount))} ${t("auto.kf0445be6b3")} · ${toPersianDigits(String(data.installmentPendingCount))} ${t("auto.kd673bbfe0f")}`}
             status={dueStatus}
             icon={<MoneyRecive size={22} variant="Bold" />}
             onPress={() => setDrawer("due")}
@@ -143,7 +146,7 @@ function TimelineHomePageContent() {  const { t } = useTranslation();
           <TimelineWidgetTile
             title={t("auto.k4ad10a7f11")}
             value={toPersianDigits(String(data.budgets.length))}
-            subtitle="مورد در این بازه"
+            subtitle={t("auto.kd1561981ec")}
             status="neutral"
             icon={<Card size={22} variant="Bold" />}
             onPress={() => setDrawer("finance")}
@@ -198,14 +201,14 @@ function TimelineHomePageContent() {  const { t } = useTranslation();
                 variant={task.done ? "secondary" : "primary"}
                 onPress={() => void toggleTask(task._id)}
               >
-                {task.done ? "بازگشت" : "انجام"}
+                {task.done ? t("common.back") : t("auto.k8e89bd5274")}
               </Button>
             </div>
           ))
         )}
         <Link href={PATHS.TASKS} className="block pt-2">
           <Button variant="secondary" className="w-full">
-            مدیریت کامل کارها
+            {t("auto.kc59245a12b")}
           </Button>
         </Link>
       </TimelineWidgetDrawer>
@@ -224,7 +227,7 @@ function TimelineHomePageContent() {  const { t } = useTranslation();
                 key={check._id}
                 className="rounded-xl border border-border/50 bg-surface p-3"
               >
-                <p className="text-sm font-medium">چک · {check.person}</p>
+                <p className="text-sm font-medium">{t("auto.kfe66a193dd")}{check.person}</p>
                 <p className="mt-1 text-xs text-muted">
                   {formatPrice(check.amount)}
                 </p>
@@ -246,12 +249,12 @@ function TimelineHomePageContent() {  const { t } = useTranslation();
         <div className="flex gap-2 pt-2">
           <Link href={PATHS.CHECKS} className="flex-1">
             <Button variant="secondary" className="w-full">
-              چک‌ها
+              {t("nav.checks")}
             </Button>
           </Link>
           <Link href={PATHS.INSTALLMENTS} className="flex-1">
             <Button variant="secondary" className="w-full">
-              اقساط
+              {t("nav.installments")}
             </Button>
           </Link>
         </div>

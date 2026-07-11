@@ -58,7 +58,7 @@ export function BoxesPage() {
       setEditBox(null);
       setTitle("");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     } finally {
       setSaving(false);
     }
@@ -79,7 +79,7 @@ export function BoxesPage() {
       setBudgetAmount("");
       showToast(t("auto.k6ecef5f0ce"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     }
   }
 
@@ -94,7 +94,7 @@ export function BoxesPage() {
       dispatch(setBoxes((boxes ?? []).filter((b) => b._id !== box._id)));
       showToast(t("auto.ka99c0447ce"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     }
   }
 
@@ -177,7 +177,7 @@ export function BoxesPage() {
                   className="flex-1 text-left"
                 />
                 <Button size="sm" onPress={() => void addBudget(box)}>
-                  اعمال
+                  {t("common.apply")}
                 </Button>
               </div>
             </article>
@@ -189,17 +189,17 @@ export function BoxesPage() {
         <AppModalDialog>
           <form onSubmit={(e) => void saveBox(e)}>
             <AppModalHeader onClose={() => setCreateOpen(false)}>
-              <Modal.Heading>{editBox ? "ویرایش صندوق" : "صندوق جدید"}</Modal.Heading>
+              <Modal.Heading>{editBox ? t("auto.k88476a18ed") : t("auto.k284231b957")}</Modal.Heading>
             </AppModalHeader>
             <Modal.Body>
               <FormInput label={t("auto.k401698bc19")} value={title} onChange={(e) => setTitle(e.target.value)} />
             </Modal.Body>
             <Modal.Footer>
               <Button type="button" variant="ghost" onPress={() => setCreateOpen(false)}>
-                انصراف
+                {t("common.cancel")}
               </Button>
               <Button type="submit" isPending={saving}>
-                ذخیره
+                {t("common.save")}
               </Button>
             </Modal.Footer>
           </form>

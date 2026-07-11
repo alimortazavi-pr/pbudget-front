@@ -79,4 +79,5 @@ export const dashboardMessages: MessageTree = {
   debtLabel: "دين",
   deleteTransactionError: "فشل حذف المعاملة",
   transactionFilters: "تصفية المعاملات",
+  incomeExpenseSubtitle: "دخل {{income}} · مصروف {{expense}}",
 };

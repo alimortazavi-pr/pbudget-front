@@ -87,7 +87,7 @@ export function AdminUsersPage() {
   const toggleDeleted = async (user: AdminUser) => {
     try {
       await adminApi.setUserDeleted(user._id, !user.deleted);
-      showToast(user.deleted ? "کاربر بازیابی شد" : "کاربر حذف شد", "success");
+      showToast(user.deleted ? t("auto.k40d6d6c97a") : t("auto.kec199d2ba8"), "success");
       void load();
     } catch {
       showToast(t("auto.k118692df91"), "danger");
@@ -122,7 +122,7 @@ export function AdminUsersPage() {
         <div>
           <h3 className="text-lg font-bold">{t("auto.k7725d2e991")}</h3>
           <p className="text-sm text-muted">
-            جستجو، ویرایش، تعیین ادمین و حذف نرم
+            {t("auto.k334096443a")}
           </p>
         </div>
 
@@ -147,7 +147,7 @@ export function AdminUsersPage() {
             />
           </div>
           <Button type="submit" variant="secondary">
-            جستجو
+            {t("common.search")}
           </Button>
         </form>
       </div>
@@ -165,7 +165,7 @@ export function AdminUsersPage() {
             <Switch.Thumb />
           </Switch.Control>
         </Switch>
-        نمایش حذف‌شده‌ها
+        {t("auto.k5df4a8193a")}
       </label>
 
       <div className="glass overflow-hidden rounded-2xl">
@@ -184,13 +184,13 @@ export function AdminUsersPage() {
               {loading ? (
                 <tr>
                   <td colSpan={5} className="px-4 py-10 text-center text-muted">
-                    در حال بارگذاری…
+                    {t("common.loading")}
                   </td>
                 </tr>
               ) : users.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-4 py-10 text-center text-muted">
-                    کاربری یافت نشد
+                    {t("auto.k241064b7a4")}
                   </td>
                 </tr>
               ) : (
@@ -204,29 +204,29 @@ export function AdminUsersPage() {
                         {user.firstName} {user.lastName}
                       </p>
                       <p className="text-xs text-muted">
-                        {user.telegramLinked ? "تلگرام متصل" : "بدون تلگرام"}
-                        {user.hasPassword ? " · رمز دارد" : " · بدون رمز"}
+                        {user.telegramLinked ? t("auto.kc3fcf89f9c") : t("auto.ke8ab1e23e0")}
+                        {user.hasPassword ? t("auto.k1c2c468b4c") : t("auto.k6797ed39e2")}
                       </p>
                     </td>
                     <td className="px-4 py-3">{toPersianDigits(user.mobile)}</td>
                     <td className="px-4 py-3">
-                      {formatPrice(user.budget)} تومان
+                      {formatPrice(user.budget)} {t("common.toman")}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1.5">
                         {user.isAdmin && (
                           <span className="rounded-full bg-violet-500/10 px-2 py-0.5 text-xs text-violet-600">
-                            ادمین
+                            {t("auto.k65497ce419")}
                           </span>
                         )}
                         {user.isVerifiedMobile && (
                           <span className="rounded-full bg-success/10 px-2 py-0.5 text-xs text-success-foreground">
-                            تأییدشده
+                            {t("auto.k2838d25139")}
                           </span>
                         )}
                         {user.deleted && (
                           <span className="rounded-full bg-danger/10 px-2 py-0.5 text-xs text-danger">
-                            حذف‌شده
+                            {t("auto.k2df1553d76")}
                           </span>
                         )}
                       </div>
@@ -279,17 +279,17 @@ export function AdminUsersPage() {
             isDisabled={page <= 1}
             onPress={() => setPage((p) => p - 1)}
           >
-            قبلی
+            {t("auto.k1a592f6b2d")}
           </Button>
           <span className="text-sm text-muted">
-            صفحه {toPersianDigits(page)} از {toPersianDigits(totalPages)}
+            {t("auto.k58210d64d8")}{toPersianDigits(page)} {t("common.of")} {toPersianDigits(totalPages)}
           </span>
           <Button
             variant="secondary"
             isDisabled={page >= totalPages}
             onPress={() => setPage((p) => p + 1)}
           >
-            بعدی
+            {t("auto.k54ee927e96")}
           </Button>
         </div>
       )}
@@ -343,12 +343,12 @@ export function AdminUsersPage() {
                       <Switch.Thumb />
                     </Switch.Control>
                   </Switch>
-                  موبایل تأییدشده
+                  {t("auto.kf49c8cfb66")}
                 </label>
               </Modal.Body>
               <Modal.Footer>
                 <Button variant="secondary" onPress={() => setEditing(null)}>
-                  انصراف
+                  {t("common.cancel")}
                 </Button>
                 <Button onPress={() => void saveEdit()}>{t("common.save")}</Button>
               </Modal.Footer>
@@ -368,7 +368,7 @@ export function AdminUsersPage() {
               <Modal.Body className="space-y-3">
                 {passwordUser ? (
                   <p className="text-sm text-muted">
-                    کاربر:{" "}
+                    {t("auto.k8f5e55540b")}{" "}
                     <span className="font-medium text-foreground">
                       {passwordUser.firstName} {passwordUser.lastName}
                     </span>{" "}
@@ -386,7 +386,7 @@ export function AdminUsersPage() {
               </Modal.Body>
               <Modal.Footer>
                 <Button variant="secondary" onPress={() => setPasswordUser(null)}>
-                  انصراف
+                  {t("common.cancel")}
                 </Button>
                 <Button onPress={() => void savePassword()}>{t("auto.k0b75de2011")}</Button>
               </Modal.Footer>

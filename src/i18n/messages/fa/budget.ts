@@ -17,4 +17,22 @@ export const budgetMessages: MessageTree = {
   noCardsYetPrefix: "هنوز کارتی ثبت نکرده‌اید. از",
   myCardsLink: "کارت‌های من",
   noCardsYetSuffix: "اضافه کنید.",
+  projectLedgerTitle: "ثبت تراکنش در حساب یک پروژه مشخص",
+  projectLedgerCategoryHint:
+    "با دسته «{{category}}» این تراکنش خودکار به پروژه مرتبط وصل می‌شود.",
+  projectLedgerVisibility:
+    "تراکنش در صفحه پروژه و گزارش‌های مالی آن نمایش داده می‌شود.",
+  noTransactionsInRange: "تراکنشی برای این بازه پیدا نشد",
+  attachTransactions: "وصل کردن {{count}} تراکنش",
+  selectTransaction: "تراکنش انتخاب کنید",
+  selectOneTransaction: "یک تراکنش انتخاب کنید",
+  limitSpendHint:
+    "سقف {{limit}} · خرج این ماه {{spent}} · مانده {{remaining}}",
+  limitSpendOverHint:
+    "سقف {{limit}} · خرج این ماه {{spent}} · {{over}} بیش از سقف",
+  debtLedgerSourceHint:
+    "این تراکنش منبع ثبت این {{type}} است. برای تسویه یا ویرایش جزئیات به صفحه طلب و بدهی بروید.",
+  settleDebtOptionLabel: "{{person}} · {{type}} · مانده {{amount}}",
+  duplicateRowsRemoved:
+    "{{count}} تراکنش تکراری — از لیست حذف شده‌اند",
 };

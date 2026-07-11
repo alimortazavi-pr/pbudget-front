@@ -97,7 +97,7 @@ function ReminderPanel({
       <div className="flex items-center justify-between gap-2">
         <span className="text-xs font-medium text-default-600">{t("planning.telegramReminder")}</span>
         <Button size="sm" variant="ghost" onPress={onRemove}>
-          حذف یادآوری
+          {t("auto.kc97eab03cd")}
         </Button>
       </div>
       <ReminderDateTimePicker
@@ -119,7 +119,7 @@ function ReminderPanel({
           draft.minute,
         )}
         {" — "}
-        ۳۰ دقیقه قبل و سر وقت در تلگرام پیام می‌گیرید.
+        {t("auto.k1037c1db2b")}
       </p>
       <div className="flex justify-end gap-2">
         <Button
@@ -127,7 +127,7 @@ function ReminderPanel({
           variant="primary"
           onPress={() => onChange({ ...draft, beforeMinutes: draft.beforeMinutes ?? 30 })}
         >
-          تأیید یادآوری
+          {t("auto.k3cffa32730")}
         </Button>
       </div>
     </div>
@@ -199,7 +199,7 @@ export function AppleNoteEditor({ items, onChange }: AppleNoteEditorProps) {  co
             <TextArea
               value={line.text}
               onChange={(e) => updateLine(line.id, { text: e.target.value })}
-              placeholder={line.type === "checkbox" ? "کار یا یادآوری…" : "متن…"}
+              placeholder={line.type === "checkbox" ? t("auto.k9ffa20ef84") : t("auto.k1cb98adc33")}
               rows={1}
               className="min-h-0 flex-1"
               variant="secondary"
@@ -262,11 +262,11 @@ export function AppleNoteEditor({ items, onChange }: AppleNoteEditorProps) {  co
       <div className="mt-3 flex flex-wrap gap-2">
         <Button size="sm" variant="secondary" onPress={addTextLine}>
           <Add size={16} />
-          متن
+          {t("auto.k38e921a220")}
         </Button>
         <Button size="sm" variant="secondary" onPress={addCheckboxLine}>
           <Add size={16} />
-          چک‌باکس
+          {t("auto.k2f9afdb8e4")}
         </Button>
       </div>
     </div>

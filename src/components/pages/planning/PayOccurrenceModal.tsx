@@ -69,7 +69,7 @@ export function PayOccurrenceModal({
       showToast(t("auto.kb92d05c117"), "success");
       onPaid();
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     } finally {
       setSubmitting(false);
     }
@@ -81,15 +81,15 @@ export function PayOccurrenceModal({
     <AppModal open={open} onOpenChange={onOpenChange}>
       <AppModalDialog className="max-w-lg">
         <AppModalHeader onClose={() => onOpenChange(false)}>
-          <Modal.Heading>پرداخت {occurrence.plan.title}</Modal.Heading>
+          <Modal.Heading>{t("auto.k1025955b55")}{occurrence.plan.title}</Modal.Heading>
         </AppModalHeader>
         <Modal.Body className="space-y-4">
           <p className="text-sm text-muted">
-            قسط {occurrence.sequence} · سررسید {occurrence.year}/{occurrence.month}/
+            {t("auto.kd673bbfe0f")}{occurrence.sequence} · {t("auto.k8b0f305f8a")}{occurrence.year}/{occurrence.month}/
             {occurrence.day}
           </p>
 
-          <FormPriceInput label={`مبلغ (${currencyLabel(preferredCurrency)})`} value={amount} onChange={setAmount} />
+          <FormPriceInput label={t("budget.amountWithCurrency", { currency: currencyLabel(preferredCurrency) })} value={amount} onChange={setAmount} />
 
           <FormCategoryComboBox
             label={t("auto.kb561a47a9b")}
@@ -97,7 +97,7 @@ export function PayOccurrenceModal({
             selectedKey={category || undefined}
             onSelectionChange={(key) => setCategory(key)}
             options={categoryOptions}
-            emptyMessage="دسته‌ای ثبت نشده"
+            emptyMessage={t("auto.kf4be303fa3")}
           />
 
           <FormTextArea
@@ -109,10 +109,10 @@ export function PayOccurrenceModal({
         </Modal.Body>
         <Modal.Footer>
           <Button variant="ghost" onPress={() => onOpenChange(false)}>
-            انصراف
+            {t("common.cancel")}
           </Button>
           <Button isPending={submitting} onPress={() => void handleSubmit()}>
-            ثبت پرداخت
+            {t("auto.k53c1fe65ff")}
           </Button>
         </Modal.Footer>
       </AppModalDialog>

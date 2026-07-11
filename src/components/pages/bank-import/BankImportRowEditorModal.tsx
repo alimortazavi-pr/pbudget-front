@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import Link from "next/link";
@@ -144,12 +147,20 @@ export function BankImportRowEditorModal({
         const remaining = limit - spent;
         setCategorySpendHint(
           remaining >= 0
-            ? `سقف ${formatPrice(limit)} · خرج این ماه ${formatPrice(spent)} · مانده ${formatPrice(remaining)}`
-            : `سقف ${formatPrice(limit)} · خرج این ماه ${formatPrice(spent)} · ${formatPrice(Math.abs(remaining))} بیش از سقف`,
+            ? t("budget.limitSpendHint", {
+                limit: formatPrice(limit),
+                spent: formatPrice(spent),
+                remaining: formatPrice(remaining),
+              })
+            : t("budget.limitSpendOverHint", {
+                limit: formatPrice(limit),
+                spent: formatPrice(spent),
+                over: formatPrice(Math.abs(remaining)),
+              }),
         );
       })
       .catch(() => setCategorySpendHint(null));
-  }, [form?.categoryId, form?.type, selectedCategory?.monthlyLimit]);
+  }, [form?.categoryId, form?.type, selectedCategory?.monthlyLimit, t]);
 
   if (!form) return null;
 
@@ -159,10 +170,10 @@ export function BankImportRowEditorModal({
 
   const moreHint = buildMoreHint(
     [
-      form.paymentCardId ? "کارت" : "",
-      form.debtLedger.enabled ? "طلب/بدهی" : "",
-      form.projectLedger.enabled || isProjectCategory ? "پروژه" : "",
-      form.ventureLedger.enabled ? "کسب‌وکار" : "",
+      form.paymentCardId ? t("auto.k16902e87e2") : "",
+      form.debtLedger.enabled ? t("auto.k4ffe94cc2d") : "",
+      form.projectLedger.enabled || isProjectCategory ? t("auto.kcce7e8ff41") : "",
+      form.ventureLedger.enabled ? t("auto.k9f48ae23bb") : "",
     ].filter(Boolean),
   );
 
@@ -231,7 +242,7 @@ export function BankImportRowEditorModal({
     const error = validateImportRowDraft(form);
     if (error) {
       showToast(error, "danger");
-      if (error.includes("طرف") || error.includes("طلب") || error.includes("کسب")) {
+      if (error.includes(t("auto.kac5759fe2a")) || error.includes(t("auto.kf48e3aa79d")) || error.includes(t("auto.k7d84c3b4f7"))) {
         setMoreOpen(true);
       }
       return;
@@ -265,8 +276,8 @@ export function BankImportRowEditorModal({
           <Modal.Body className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-4">
             <div className="flex gap-2">
               {[
-                { id: String(BudgetType.INCOME), label: "دریافتی" },
-                { id: String(BudgetType.COST), label: "پرداختی" },
+                { id: String(BudgetType.INCOME), label: t("auto.kf5267c04e8") },
+                { id: String(BudgetType.COST), label: t("auto.kf6956d4a4c") },
               ].map((item) => (
                 <button
                   key={item.id}
@@ -294,7 +305,7 @@ export function BankImportRowEditorModal({
               ))}
             </div>
 
-            <FormPriceInput label={`مبلغ (${currencyLabel(preferredCurrency)})`} value={form.price} onChange={(v) => patchForm({ price: v })} />
+            <FormPriceInput label={t("budget.amountWithCurrency", { currency: currencyLabel(preferredCurrency) })} value={form.price} onChange={(v) => patchForm({ price: v })} />
 
             <FormDatePicker
               label={t("auto.k349c7bedff")}
@@ -318,7 +329,7 @@ export function BankImportRowEditorModal({
             {categorySpendHint ? (
               <p
                 className={`rounded-xl px-3 py-2 text-xs leading-6 ${
-                  categorySpendHint.includes("بیش از سقف")
+                  categorySpendHint.includes(t("auto.k5305d78f31"))
                     ? "bg-expense-soft text-expense"
                     : "bg-surface-secondary text-muted"
                 }`}
@@ -344,23 +355,23 @@ export function BankImportRowEditorModal({
                 <FormSelect
                   label={
                     form.type === String(BudgetType.COST)
-                      ? "کارت پرداخت (مبدا)"
-                      : "کارت دریافت (مقصد)"
+                      ? t("auto.keee01ed4e1")
+                      : t("auto.k45e983f053")
                   }
                   placeholder={t("auto.k33fcba0b6e")}
                   selectedKey={form.paymentCardId || "none"}
                   onSelectionChange={(key) =>
                     patchForm({ paymentCardId: key === "none" ? "" : key })
                   }
-                  options={[{ id: "none", label: "بدون کارت" }, ...paymentCardOptions]}
+                  options={[{ id: "none", label: t("auto.k33fcba0b6e") }, ...paymentCardOptions]}
                 />
                 {paymentCards.length === 0 ? (
                   <p className="text-xs text-muted">
-                    از{" "}
+                    {t("auto.k9aeccd708e")}{" "}
                     <Link href={PATHS.PAYMENT_CARDS} className="text-accent underline">
-                      کارت‌های من
+                      {t("nav.myCards")}
                     </Link>{" "}
-                    اضافه کنید.
+                    {t("auto.k3054a91d90")}
                   </p>
                 ) : null}
 

@@ -74,7 +74,7 @@ export function CreateCategoryModal({
       setMonthlyLimit("");
       onOpenChange(false);
     } catch (err) {
-      showErrorToast(err, "ایجاد دسته‌بندی ناموفق بود");
+      showErrorToast(err, t("auto.kc41c2b611b"));
     } finally {
       setSaving(false);
     }

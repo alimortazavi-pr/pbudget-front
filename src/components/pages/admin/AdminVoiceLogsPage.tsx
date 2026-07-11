@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { Fragment, useCallback, useEffect, useState } from "react";
@@ -16,7 +19,7 @@ import { toPersianDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 
 const STATUS_OPTIONS = [
-  { value: "", label: "همه وضعیت‌ها" },
+  { value: "", label: t("auto.k267b48bdae") },
   { value: "pending", label: VOICE_STATUS_LABELS.pending },
   { value: "executed", label: VOICE_STATUS_LABELS.executed },
   { value: "failed", label: VOICE_STATUS_LABELS.failed },
@@ -55,7 +58,7 @@ export function AdminVoiceLogsPage() {
       <div>
         <h3 className="text-lg font-bold">{t("auto.kbe301b4fc3")}</h3>
         <p className="text-sm text-muted">
-          تمام درخواست‌های تشخیص و اجرای دستورات صوتی (محیط تست)
+          {t("auto.ke5f2446351")}
         </p>
       </div>
 
@@ -109,13 +112,13 @@ export function AdminVoiceLogsPage() {
               {loading ? (
                 <tr>
                   <td colSpan={6} className="px-4 py-10 text-center text-muted">
-                    در حال بارگذاری…
+                    {t("common.loading")}
                   </td>
                 </tr>
               ) : logs.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-4 py-10 text-center text-muted">
-                    لاگی یافت نشد
+                    {t("auto.kca6941ce84")}
                   </td>
                 </tr>
               ) : (
@@ -145,7 +148,7 @@ export function AdminVoiceLogsPage() {
                             setExpandedId((prev) => (prev === log._id ? null : log._id))
                           }
                         >
-                          {expandedId === log._id ? "بستن" : "جزئیات"}
+                          {expandedId === log._id ? t("common.close") : t("auto.kd65b37fd31")}
                         </Button>
                       </td>
                     </tr>
@@ -193,17 +196,17 @@ export function AdminVoiceLogsPage() {
             isDisabled={page <= 1}
             onPress={() => setPage((p) => Math.max(1, p - 1))}
           >
-            قبلی
+            {t("auto.k1a592f6b2d")}
           </Button>
           <span className="text-sm text-muted">
-            صفحه {toPersianDigits(String(page))} از {toPersianDigits(String(totalPages))}
+            {t("auto.k58210d64d8")}{toPersianDigits(String(page))} {t("common.of")} {toPersianDigits(String(totalPages))}
           </span>
           <Button
             variant="secondary"
             isDisabled={page >= totalPages}
             onPress={() => setPage((p) => p + 1)}
           >
-            بعدی
+            {t("auto.k54ee927e96")}
           </Button>
         </div>
       )}

@@ -137,7 +137,7 @@ export function RunningTabsPage() {
   }
 
   async function removeTab(tab: IRunningTab) {
-    if (!confirm(`«${tab.title}» حذف شود؟`)) return;
+    if (!confirm(t("pages.planning.deleteTabConfirm", { name: tab.title }))) return;
     setBusyId(tab._id);
     try {
       await runningTabsApi.deleteRunningTab(tab._id);
@@ -196,7 +196,7 @@ export function RunningTabsPage() {
         </div>
         <Button size="sm" onPress={openCreate}>
           <Add size={16} />
-          تعهد جدید
+          {t("auto.ke0d1e76a1f")}
         </Button>
       </div>
 
@@ -263,7 +263,7 @@ export function RunningTabsPage() {
                     onPress={() => void adjust(tab, -step)}
                   >
                     <Minus size={14} />
-                    {formatPrice(step).replace(" تومان", "")}
+                    {formatPrice(step).replace(t("auto.k114bf5731a"), "")}
                   </Button>
                 ))}
               </div>
@@ -278,7 +278,7 @@ export function RunningTabsPage() {
                     onPress={() => void adjust(tab, step)}
                   >
                     <Add size={14} />
-                    {formatPrice(step).replace(" تومان", "")}
+                    {formatPrice(step).replace(t("auto.k114bf5731a"), "")}
                   </Button>
                 ))}
               </div>
@@ -289,7 +289,7 @@ export function RunningTabsPage() {
                 isDisabled={busyId === tab._id || tab.amount <= 0}
                 onPress={() => void clearTab(tab)}
               >
-                پرداخت شد — صفر کردن
+                {t("auto.k68e559c6da")}
               </Button>
             </article>
           ))}
@@ -318,7 +318,7 @@ export function RunningTabsPage() {
           </Modal.Body>
           <Modal.Footer>
             <Button variant="ghost" onPress={() => setCreateOpen(false)}>
-              انصراف
+              {t("common.cancel")}
             </Button>
             <Button isPending={saving} onPress={() => void saveTab()}>
               {editTab ? t("pages.planning.runningSave") : t("pages.planning.runningSubmit")}

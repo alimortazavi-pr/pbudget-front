@@ -6,10 +6,10 @@ const DEV_API_URL =
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
-/** Client + shared default — در `next dev` همیشه لوکال */
+/** Client + shared default — always local in `next dev` */
 export const BASE_API_URL = isDevelopment ? DEV_API_URL : PROD_API_URL;
 
-/** Server-side fetch در Next — در dev همان لوکال */
+/** Server-side fetch in Next — local in dev */
 export const SERVER_BASE_API_URL = isDevelopment
   ? (process.env.INTERNAL_DEV_API_URL ?? DEV_API_URL)
   : (process.env.INTERNAL_API_URL ?? PROD_API_URL);

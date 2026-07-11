@@ -1,3 +1,5 @@
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
 import type { ICategory } from "@/common/interfaces/category.interface";
 import type { FormSelectOption } from "@/components/common/form/FormFields";
 
@@ -96,7 +98,7 @@ export function getParentSelectOptions(
     : categories;
 
   return [
-    { id: "none", label: "بدون والد (دسته اصلی)" },
+    { id: "none", label: t("auto.k40c6063b26") },
     ...getCategorySelectOptions(filtered),
   ];
 }

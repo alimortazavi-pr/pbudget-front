@@ -58,7 +58,7 @@ export function SignUpModal({
       onSuccess(data.token, data.user);
       onOpenChange(false);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در ثبت‌نام");
+      showToast(err instanceof Error ? err.message : t("auto.k1b54b64494"));
     } finally {
       setLoading(false);
     }
@@ -70,7 +70,7 @@ export function SignUpModal({
         <form onSubmit={(e) => void submit(e)} className={modalSheetFormClass}>
           <AppModalHeader onClose={() => onOpenChange(false)}>
             <Modal.Heading>
-              {needsPasswordSetup ? "تکمیل ثبت‌نام" : "ثبت‌نام"}
+              {needsPasswordSetup ? t("auto.k3d061de6be") : t("auto.kfc4a4f4fb0")}
             </Modal.Heading>
           </AppModalHeader>
           <Modal.Body className={`${modalSheetBodyClass} space-y-4`}>
@@ -85,17 +85,17 @@ export function SignUpModal({
               placeholder={t("auto.k8fdfe05e9a")}
             />
             <p className="text-xs leading-6 text-muted">
-              با تعیین رمز عبور حساب شما ساخته می‌شود. اتصال تلگرام اختیاری است
-              و بعداً از بخش پروفایل می‌توانید انجامش دهید؛ آن وقت کدهای تأیید
-              هم به تلگرام می‌آید.
+              {t("auto.kc48f943eeb")}
+              {t("auto.kfb2439dfd9")}
+              {t("auto.k7f93d014de")}
             </p>
           </Modal.Body>
           <Modal.Footer className={modalSheetFooterClass}>
             <Button type="button" variant="ghost" onPress={() => onOpenChange(false)}>
-              انصراف
+              {t("common.cancel")}
             </Button>
             <Button type="submit" isPending={loading}>
-              ثبت‌نام
+              {t("auto.kfc4a4f4fb0")}
             </Button>
           </Modal.Footer>
         </form>

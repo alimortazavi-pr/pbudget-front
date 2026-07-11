@@ -1,3 +1,5 @@
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
 import type { PostLoginChoice } from "@/common/utils/post-auth";
 
 export type WorkspaceGroupId = "personal" | "business" | "system";
@@ -12,20 +14,20 @@ export type WorkspaceGroup = {
 export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
   {
     id: "personal",
-    title: "میز شخصی",
-    description: "مالی، پروژه و برنامه روزانه",
+    title: t("nav.personalDesk"),
+    description: t("auto.k96ae152a17"),
     kinds: ["personal"],
   },
   {
     id: "business",
-    title: "میز پردیس کسب‌وکار",
-    description: "حضور، پرسنل و مالی تیمی",
+    title: t("auto.k1872cb485c"),
+    description: t("auto.k0c35146ef2"),
     kinds: ["business", "attendance"],
   },
   {
     id: "system",
-    title: "مدیریت و دعوت‌ها",
-    description: "پنل ادمین و دعوت‌های در انتظار",
+    title: t("auto.k6ce2329337"),
+    description: t("auto.k01ecfed111"),
     kinds: ["admin", "invites"],
   },
 ];

@@ -27,6 +27,11 @@ export const pagesMessages: MessageTree = {
     filterDone: "Done",
     loadError: "Failed to load",
     defaultProject: "Project",
+    addQuick: "Add",
+    addDetailed: "Task with details",
+    firstTask: "First task",
+    overdue: "Overdue",
+    routine: "Routine",
   },
   projects: {
     statusActive: "Active",
@@ -40,6 +45,15 @@ export const pagesMessages: MessageTree = {
     labelRemaining: "Remaining",
     loadError: "Failed to load",
     clockInRecorded: "Clock-in recorded",
+    projectCount: "{{count}} projects",
+    attendance: "Attendance",
+    newProject: "New project",
+    firstProject: "First project",
+    fixedIncome: "Fixed income",
+    noWorkTime: "No time tracking",
+    shared: "Shared",
+    clockIn: "Clock in",
+    attendanceShort: "Attendance",
   },
   planning: {
     loadError: "Failed to load",
@@ -65,9 +79,14 @@ export const pagesMessages: MessageTree = {
     runningNewTitle: "New running commitment",
     runningSave: "Save",
     runningSubmit: "Add",
+    progressDueDay: "{{percent}}% · day {{day}} of each month",
+    deleteTabConfirm: "Delete «{{name}}»?",
   },
   analysis: {
     loadError: "Failed to load analysis",
+    apiFallbackNotice:
+      "Analytics API is unavailable; charts are built from transactions in this range.",
+    categoriesOverLimit: "{{count}} categories exceeded the monthly limit.",
   },
   attendance: {
     defaultProject: "Project",
@@ -87,6 +106,14 @@ export const pagesMessages: MessageTree = {
   invites: {
     sharePercent: " · {{percent}}% share",
     loadError: "Error",
+    inviteBody:
+      "{{owner}} invited you as a partner in {{context}} «{{title}}».",
+  },
+  partners: {
+    deleteConfirm: "Remove partner «{{name}}»?",
+    sharePercent: "{{percent}}% share",
+    totalSharePercent: "{{percent}}%",
+    totalShareLabel: "Total share:",
   },
   ventures: {
     loadError: "Failed to load",

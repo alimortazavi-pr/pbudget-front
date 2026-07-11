@@ -55,7 +55,7 @@ export function BankImportRowCard({
           variant="secondary"
           isSelected={row.selected}
           isDisabled={row.isDuplicate}
-          aria-label={row.selected ? "حذف از انتخاب" : "افزودن به انتخاب"}
+          aria-label={row.selected ? t("auto.k1dfcfadd65") : t("auto.k1b63a4912d")}
           className="mt-1 shrink-0"
           onChange={onToggle}
         >
@@ -81,12 +81,12 @@ export function BankImportRowCard({
                 <p className="mt-1 text-[10px] text-muted/80">
                   {row.documentNumber ? (
                     <>
-                      شماره سند: {toPersianDigits(row.documentNumber)}
+                      {t("auto.k1ac3c3a359")}{toPersianDigits(row.documentNumber)}
                       {row.rowNumber > 0 ? " · " : ""}
                     </>
                   ) : null}
                   {row.rowNumber > 0 ? (
-                    <>ردیف: {toPersianDigits(row.rowNumber)}</>
+                    <>{t("auto.kf0c26bb7c0")}{toPersianDigits(row.rowNumber)}</>
                   ) : null}
                 </p>
               )}
@@ -105,7 +105,7 @@ export function BankImportRowCard({
               {!row.isDuplicate ? (
                 <Button size="sm" variant="ghost" onPress={onEdit}>
                   <Edit2 size={16} />
-                  بیشتر
+                  {t("nav.more")}
                 </Button>
               ) : null}
             </div>
@@ -113,7 +113,7 @@ export function BankImportRowCard({
 
           {row.isDuplicate ? (
             <span className="inline-flex rounded-md bg-muted/20 px-2 py-0.5 text-[10px] font-semibold text-muted">
-              قبلاً ثبت شده
+              {t("auto.k33248b8685")}
             </span>
           ) : (
             <>
@@ -130,7 +130,7 @@ export function BankImportRowCard({
                     onCategoryChange(key === "all" ? "" : key);
                   }}
                   options={categoryOptions}
-                  emptyMessage="دسته‌ای ثبت نشده"
+                  emptyMessage={t("auto.kf4be303fa3")}
                 />
               </div>
 

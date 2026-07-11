@@ -101,7 +101,7 @@ export function VenturesPage() {
           <Profile2User size={40} className="mx-auto text-muted" />
           <p className="mt-3 text-muted">{t("auto.k09f9dfbe13")}</p>
           <p className="mt-1 text-sm text-muted">
-            یا از تب شرکا در هر پروژه استفاده کنید
+            {t("auto.k860ef4d1a0")}
           </p>
         </div>
       ) : (
@@ -122,11 +122,11 @@ export function VenturesPage() {
                   ) : null}
                 </div>
                 <span className="shrink-0 rounded-lg bg-surface-secondary px-2 py-1 text-xs text-muted">
-                  {venture.partnerCount ?? 0} شریک
+                  {venture.partnerCount ?? 0} {t("auto.k1a48ffa3cf")}
                 </span>
                 {venture.accessRole === "partner" ? (
                   <span className="shrink-0 rounded-lg bg-accent/15 px-2 py-1 text-xs text-accent">
-                    مشترک
+                    {t("auto.kc406af7131")}
                   </span>
                 ) : null}
               </div>
@@ -140,7 +140,7 @@ export function VenturesPage() {
           <AppModalHeader onClose={() => setCreateOpen(false)}>
             <Modal.Heading>{t("auto.k6048d21e0c")}</Modal.Heading>
             <p className="mt-1 text-sm text-muted">
-              برای مشارکت‌هایی جدا از پروژه‌های ثبت‌شده
+              {t("auto.k53e13a8378")}
             </p>
           </AppModalHeader>
           <Modal.Body className="space-y-4">
@@ -161,7 +161,7 @@ export function VenturesPage() {
               onPress={() => void createVenture()}
               isPending={saving}
             >
-              ایجاد
+              {t("common.create")}
             </Button>
           </Modal.Body>
         </AppModalDialog>

@@ -176,7 +176,7 @@ export function TasksPage() {
       );
       showToast(t("auto.k954f062479"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     } finally {
       setQuickSaving(false);
     }
@@ -190,7 +190,7 @@ export function TasksPage() {
       );
       void load();
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     }
   }
 
@@ -201,7 +201,7 @@ export function TasksPage() {
       void load();
       showToast(t("common.deleted"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     }
   }
 
@@ -255,9 +255,9 @@ export function TasksPage() {
       <div className="mb-4 flex flex-wrap gap-2">
         {(
           [
-            { id: "daily" as const, label: "روزانه" },
-            { id: "monthly" as const, label: "ماهانه" },
-            { id: "yearly" as const, label: "سالانه" },
+            { id: "daily" as const, label: t("common.daily") },
+            { id: "monthly" as const, label: t("common.monthly") },
+            { id: "yearly" as const, label: t("common.yearly") },
           ] as const
         ).map((item) => (
           <button
@@ -357,7 +357,7 @@ export function TasksPage() {
               />
               <Button type="submit" isPending={quickSaving} className="shrink-0">
                 <Add size={18} />
-                افزودن
+                {t("pages.tasks.addQuick")}
               </Button>
             </div>
           </TextField>
@@ -367,7 +367,7 @@ export function TasksPage() {
       <div className="mt-4 flex justify-end">
         <Button variant="secondary" onPress={openCreate}>
           <Add size={18} />
-          تسک با جزئیات
+          {t("pages.tasks.addDetailed")}
         </Button>
       </div>
 
@@ -380,7 +380,7 @@ export function TasksPage() {
           <Task size={40} className="mx-auto mb-3 text-muted" />
           <p className="text-muted">{t("auto.kf0477c4286")}</p>
           <Button className="mt-4" onPress={openCreate}>
-            اولین تسک
+            {t("pages.tasks.firstTask")}
           </Button>
         </div>
       ) : (
@@ -423,7 +423,7 @@ export function TasksPage() {
                     </span>
                     {overdue && (
                       <span className="rounded-md bg-rose-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-rose-600">
-                        عقب‌افتاده
+                        {t("pages.tasks.overdue")}
                       </span>
                     )}
                   </div>
@@ -449,7 +449,7 @@ export function TasksPage() {
                     )}
                     {task.routine && (
                       <span className="rounded-md bg-surface-secondary px-2 py-0.5">
-                        ثابت
+                        {t("pages.tasks.routine")}
                       </span>
                     )}
                     {projectTitle && (

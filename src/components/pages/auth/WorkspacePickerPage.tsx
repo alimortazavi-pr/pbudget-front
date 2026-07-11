@@ -139,8 +139,8 @@ export function WorkspacePickerPage() {
         </div>
 
         <p className="mt-4 max-w-xl leading-8 text-muted">
-          {user?.firstName ? `${user.firstName} عزیز، ` : ""}
-          علاوه بر میز شخصی، به بخش دیگری هم دسترسی دارید. یکی را برای ادامه انتخاب کنید.
+          {user?.firstName ? `${user.firstName} ${t("auto.k40628f804a")} ` : ""}
+          {t("auto.k02817d6362")}
         </p>
 
         <div className="mt-8 flex-1 space-y-8">
@@ -185,7 +185,7 @@ export function WorkspacePickerPage() {
                                 <span className="block font-semibold">{choice.label}</span>
                                 {isSuggested ? (
                                   <span className="rounded-full bg-accent/12 px-2 py-0.5 text-[10px] font-medium text-accent">
-                                    پیشنهادی
+                                    {t("auto.k0213a62ac7")}
                                   </span>
                                 ) : null}
                               </span>
@@ -205,14 +205,14 @@ export function WorkspacePickerPage() {
 
         <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-border pt-6 sm:flex-row">
           <Link href={PATHS.GET_STARTED} className="text-sm text-muted transition-colors hover:text-foreground">
-            خروج و تغییر حساب
+            {t("auto.k2c7a47c50f")}
           </Link>
           <Button
             variant="secondary"
             onPress={() => router.replace(PATHS.HOME)}
             isDisabled={loading || Boolean(selectingId)}
           >
-            رفتن به داشبورد
+            {t("auto.k2e2487843b")}
           </Button>
         </div>
       </div>

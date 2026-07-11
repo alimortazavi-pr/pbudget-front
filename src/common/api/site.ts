@@ -1,6 +1,9 @@
+import { getTranslator } from "@/i18n";
 import { axiosInstance } from "@/common/axiosInstance";
 import type { ILandingContent } from "@/common/interfaces/landing.interface";
 import axios from "axios";
+
+const t = getTranslator();
 
 const API_BASE =
   process.env.INTERNAL_API_URL ??
@@ -42,7 +45,7 @@ export async function submitSiteContact(payload: {
     if (axios.isAxiosError(err) && err.response?.status === 429) {
       const message =
         (err.response.data as { message?: string })?.message ??
-        "تعداد درخواست‌های تماس بیش از حد مجاز است. لطفاً یک دقیقه بعد دوباره تلاش کنید.";
+        t("auto.ke6accd0253");
       throw new Error(message);
     }
     throw err;

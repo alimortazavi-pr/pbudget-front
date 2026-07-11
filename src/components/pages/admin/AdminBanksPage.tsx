@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useState } from "react";
@@ -12,7 +15,7 @@ import { showToast } from "@/common/utils/toast";
 import { FormInput, FormSelect } from "@/components/common/form/FormFields";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 
-const PARSER_OPTIONS = [{ id: "blubank", label: "بلوبانک (Excel)" }];
+const PARSER_OPTIONS = [{ id: "blubank", label: t("auto.k3237e32a0a") }];
 
 export function AdminBanksPage() {
   const { t } = useTranslation();
@@ -90,14 +93,14 @@ export function AdminBanksPage() {
       showToast(t("common.saved"), "success");
       setOpen(false);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در ذخیره", "danger");
+      showToast(err instanceof Error ? err.message : t("auto.k01981ce4e8"), "danger");
     } finally {
       setSaving(false);
     }
   }
 
   async function removeBank(bank: IBank) {
-    if (!window.confirm(`بانک «${bank.title}» حذف شود؟`)) return;
+    if (!window.confirm(t("admin.deleteBankConfirm", { name: bank.title }))) return;
     try {
       await banksApi.deleteAdminBank(bank._id);
       setBanks((prev) => prev.filter((item) => item._id !== bank._id));
@@ -117,12 +120,12 @@ export function AdminBanksPage() {
         <div>
           <h3 className="text-lg font-bold">{t("auto.ke69411b3f7")}</h3>
           <p className="text-sm text-muted">
-            بانک‌های پشتیبانی‌شده برای ایمپورت صورتحساب — پارسر بلوبانک از قبل فعال است
+            {t("auto.k0d266d6739")}
           </p>
         </div>
         <Button onPress={openCreate}>
           <Add size={18} />
-          بانک جدید
+          {t("auto.k1f4ad95efd")}
         </Button>
       </div>
 
@@ -147,10 +150,10 @@ export function AdminBanksPage() {
                           : "bg-muted/20 text-muted"
                       }`}
                     >
-                      {bank.active ? "فعال" : "غیرفعال"}
+                      {bank.active ? t("auto.k25c499f433") : t("auto.k7fdadc73ac")}
                     </span>
                     <span className="rounded-full bg-surface-secondary px-2 py-0.5 text-xs text-muted">
-                      ترتیب: {bank.sortOrder}
+                      {t("auto.k243395a2af")}{bank.sortOrder}
                     </span>
                   </div>
                 </div>
@@ -158,11 +161,11 @@ export function AdminBanksPage() {
               <div className="flex gap-2">
                 <Button size="sm" variant="secondary" onPress={() => openEdit(bank)}>
                   <Edit2 size={16} />
-                  ویرایش
+                  {t("common.edit")}
                 </Button>
                 <Button size="sm" variant="danger" onPress={() => void removeBank(bank)}>
                   <Trash size={16} />
-                  حذف
+                  {t("common.delete")}
                 </Button>
               </div>
             </div>
@@ -173,7 +176,7 @@ export function AdminBanksPage() {
       <AppModal open={open} onOpenChange={setOpen}>
         <AppModalDialog className="sm:max-w-md">
           <AppModalHeader>
-            <Modal.Heading>{editItem ? "ویرایش بانک" : "بانک جدید"}</Modal.Heading>
+            <Modal.Heading>{editItem ? t("auto.k2b3ad62018") : t("auto.k1f4ad95efd")}</Modal.Heading>
           </AppModalHeader>
           <div className="space-y-4 p-4">
             <FormInput label={t("auto.kd58cb05310")} value={title} onChange={(e) => setTitle(e.target.value)} />
@@ -202,10 +205,10 @@ export function AdminBanksPage() {
                 checked={active}
                 onChange={(e) => setActive(e.target.checked)}
               />
-              فعال برای کاربران
+              {t("auto.k2b945b1870")}
             </label>
             <Button className="w-full" isPending={saving} onPress={() => void save()}>
-              ذخیره
+              {t("common.save")}
             </Button>
           </div>
         </AppModalDialog>

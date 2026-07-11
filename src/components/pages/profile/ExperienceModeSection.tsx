@@ -57,9 +57,9 @@ export function ExperienceModeSection() {
                 <Icon size={24} variant={active ? "Bold" : "Linear"} />
               </span>
               <span className="block text-start">
-                <span className="block text-sm font-semibold">{mode.label}</span>
+                <span className="block text-sm font-semibold">{t(mode.labelKey)}</span>
                 <span className="mt-1 block text-xs leading-5 text-muted">
-                  {mode.description}
+                  {t(mode.descriptionKey)}
                 </span>
               </span>
             </button>

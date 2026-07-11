@@ -82,7 +82,7 @@ export function AddPartnerModal({
       }
       setStep("details");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در جستجو");
+      showToast(err instanceof Error ? err.message : t("auto.k7a6825b192"));
     } finally {
       setLookupLoading(false);
     }
@@ -122,7 +122,7 @@ export function AddPartnerModal({
       setStep("result");
       onCreated?.();
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در افزودن شریک");
+      showToast(err instanceof Error ? err.message : t("auto.k2d9ecf415e"));
     } finally {
       setSaving(false);
     }
@@ -140,12 +140,12 @@ export function AddPartnerModal({
 
   const stepDescription =
     step === "mobile"
-      ? "شماره موبایل شریک را وارد کنید"
+      ? t("auto.k7479e37cce")
       : step === "details"
         ? exists
-          ? "این شماره در میز پردیس ثبت شده است"
-          : "اطلاعات شریک خارج از برنامه"
-        : "شریک اضافه شد";
+          ? t("auto.kc86d73cfaa")
+          : t("auto.k120e090ef7")
+        : t("auto.k51760327af");
 
   return (
     <AppModal open={open} onOpenChange={onOpenChange}>
@@ -171,7 +171,7 @@ export function AddPartnerModal({
               onPress={() => void checkMobile()}
               isPending={lookupLoading}
             >
-              بررسی شماره
+              {t("auto.k43d41fd6bd")}
             </Button>
           </>
         ) : null}
@@ -180,8 +180,8 @@ export function AddPartnerModal({
           <>
             {exists ? (
               <div className="rounded-xl bg-success/10 px-3 py-2 text-sm text-success-foreground">
-                کاربر برنامه: {displayName}
-                {hasTelegram ? " · تلگرام فعال" : " · بدون تلگرام"}
+                {t("auto.keecaed2c84")}{displayName}
+                {hasTelegram ? t("auto.kbba5337a6b") : t("auto.k996df2b7bc")}
               </div>
             ) : (
               <FormInput
@@ -204,8 +204,8 @@ export function AddPartnerModal({
               selectedKey={permissionLevel}
               onSelectionChange={setPermissionLevel}
               options={[
-                { id: "viewer", label: "مشاهده — فقط خواندن" },
-                { id: "editor", label: "ویرایشگر — افزودن تراکنش و تسک" },
+                { id: "viewer", label: t("auto.k1ade08c72f") },
+                { id: "editor", label: t("auto.k39b30e32ed") },
               ]}
             />
             <FormTextArea
@@ -220,14 +220,14 @@ export function AddPartnerModal({
                 className="flex-1"
                 onPress={() => setStep("mobile")}
               >
-                بازگشت
+                {t("common.back")}
               </Button>
               <Button
                 className="flex-1"
                 onPress={() => void submitPartner()}
                 isPending={saving}
               >
-                {exists ? "ارسال دعوت" : "ثبت شریک"}
+                {exists ? t("auto.kd6c542b90e") : t("auto.k4ad190e8a5")}
               </Button>
             </div>
           </>
@@ -237,8 +237,8 @@ export function AddPartnerModal({
           <>
             <p className="text-sm leading-7 text-muted">
               {exists
-                ? "دعوت برای شریک ارسال شد. تا زمانی که تأیید نکند، وضعیت «در انتظار» است."
-                : "شریک به عنوان مخاطب خارج از برنامه ثبت شد و برای حساب‌کتاب در دسترس است."}
+                ? t("auto.kcafad1f40f")
+                : t("auto.k5932981276")}
             </p>
 
             {inviteLink ? (
@@ -251,14 +251,14 @@ export function AddPartnerModal({
                   className="w-full"
                   onPress={() => void copyInviteLink()}
                 >
-                  کپی لینک
+                  {t("auto.kac0faf914a")}
                 </Button>
               </div>
             ) : null}
 
             {exists && telegramSent ? (
               <p className="rounded-xl bg-success/10 px-3 py-2 text-sm text-success-foreground">
-                پیام دعوت از طریق تلگرام هم ارسال شد
+                {t("auto.k52cf6005a1")}
               </p>
             ) : null}
 
@@ -274,7 +274,7 @@ export function AddPartnerModal({
                       className="w-full"
                       onPress={() => void copyInviteLink()}
                     >
-                      کپی لینک دعوت
+                      {t("auto.k6ddb9c9697")}
                     </Button>
                   </>
                 ) : null}
@@ -282,7 +282,7 @@ export function AddPartnerModal({
             ) : null}
 
             <Button className="w-full" size="lg" onPress={closeModal}>
-              بستن
+              {t("common.close")}
             </Button>
           </>
         ) : null}

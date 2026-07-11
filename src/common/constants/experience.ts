@@ -4,26 +4,26 @@ export const EXPERIENCE_COOKIE = "pbudget-experience";
 
 export const EXPERIENCE_MODES: {
   id: ExperienceMode;
-  label: string;
-  description: string;
+  labelKey: string;
+  descriptionKey: string;
 }[] = [
   {
     id: "classic",
-    label: "کلاسیک",
-    description: "همان پنل فعلی با منوی sidebar و صفحات جدا",
+    labelKey: "common.experienceClassicLabel",
+    descriptionKey: "common.experienceClassicDesc",
   },
   {
     id: "timeline",
-    label: "خط زمانی",
-    description: "تقویم در مرکز + ویجت‌های HMI بر اساس بازه انتخاب‌شده",
+    labelKey: "common.experienceTimelineLabel",
+    descriptionKey: "common.experienceTimelineDesc",
   },
 ];
 
 export type PeriodDuration = "daily" | "monthly" | "yearly" | "all";
 
-export const PERIOD_DURATIONS: { id: PeriodDuration; label: string }[] = [
-  { id: "daily", label: "روز" },
-  { id: "monthly", label: "ماه" },
-  { id: "yearly", label: "سال" },
-  { id: "all", label: "کلی" },
+export const PERIOD_DURATIONS: { id: PeriodDuration; labelKey: string }[] = [
+  { id: "daily", labelKey: "common.periodDay" },
+  { id: "monthly", labelKey: "common.periodMonth" },
+  { id: "yearly", labelKey: "common.periodYear" },
+  { id: "all", labelKey: "common.periodAll" },
 ];

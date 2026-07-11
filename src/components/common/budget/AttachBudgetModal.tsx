@@ -43,7 +43,7 @@ type AttachBudgetModalProps = {
   context: AttachBudgetContext;
   onAttach: (budgetId: string) => Promise<void>;
   onAttachMultiple?: (budgetIds: string[]) => Promise<void>;
-  /** چندتایی = چک‌باکس؛ تکی = فقط یک تراکنش */
+  /** Multi = checkbox; single = one transaction only */
   selectionMode?: "single" | "multiple";
   attachLabel?: string;
 };
@@ -145,7 +145,7 @@ export function AttachBudgetModal({
         setHasMore(result.hasMore);
         setTotal(result.total);
       } catch (err) {
-        showErrorToast(err, "خطا در بارگذاری تراکنش‌ها");
+        showErrorToast(err, t("auto.k0b952d2d1b"));
         if (!append) {
           setBudgets([]);
           setHasMore(false);
@@ -234,13 +234,13 @@ export function AttachBudgetModal({
       }
       showToast(
         budgetIds.length === 1
-          ? "تراکنش وصل شد"
-          : `${toPersianDigits(budgetIds.length)} تراکنش وصل شد`,
+          ? t("auto.k8d4d55dab7")
+          : `${toPersianDigits(budgetIds.length)} ${t("auto.keb7bb3e55b")} ${t("auto.k0c2b72681b")}`,
         "success",
       );
       onOpenChange(false);
     } catch (err) {
-      showErrorToast(err, "خطا در وصل کردن تراکنش‌ها");
+      showErrorToast(err, t("auto.keff3fe1941"));
     } finally {
       setAttachingMultiple(false);
     }
@@ -328,14 +328,14 @@ export function AttachBudgetModal({
               <p className="py-8 text-center text-sm text-muted">{t("common.loading")}</p>
             ) : budgets.length === 0 ? (
               <p className="rounded-xl bg-surface-secondary p-6 text-center text-sm text-muted">
-                {t("تراکنشی برای این بازه پیدا نشد")}
+                {t("budget.noTransactionsInRange")}
               </p>
             ) : (
               <div className="space-y-2">
                 <p className="text-xs text-muted">
                   {toPersianDigits(budgets.length)}
                   {total > budgets.length ? ` ${t("dashboard.ofDuration")} ${toPersianDigits(total)}` : ""}{" "}
-                  {t("تراکنش")}
+                  {t("nav.createTransaction")}
                 </p>
                 {budgets.map((budget) => {
                   const isIncome = budget.type === BudgetType.INCOME;
@@ -414,13 +414,13 @@ export function AttachBudgetModal({
           >
             {selectedIds.size > 0
               ? multiSelect
-                ? t("وصل کردن {{count}} تراکنش", {
+                ? t("budget.attachTransactions", {
                     count: toPersianDigits(selectedIds.size),
                   })
                 : resolvedAttachLabel
               : multiSelect
-                ? t("تراکنش انتخاب کنید")
-                : t("یک تراکنش انتخاب کنید")}
+                ? t("budget.selectTransaction")
+                : t("budget.selectOneTransaction")}
           </Button>
         </Modal.Footer>
       </AppModalDialog>

@@ -7,7 +7,7 @@ export function normalizeCardNumber(value: string, maxLength = 16) {
   return toEnglishDigits(value).replace(/\D/g, "").slice(0, maxLength);
 }
 
-/** نمایش شماره کارت — ۱۶ رقم گروه‌بندی، ۴ رقم به‌صورت •••• ۱۲۳۴ */
+/** Card number display — 16 digits grouped; middle 4 as •••• 1234 */
 export function formatCardNumberDisplay(value?: string | null, maskMiddle = false) {
   const digits = normalizeCardNumber(value ?? "");
   if (!digits) return "";
@@ -30,7 +30,7 @@ export function formatCardNumberDisplay(value?: string | null, maskMiddle = fals
   return toPersianDigits(digits);
 }
 
-/** همان formatCardNumberDisplay با جهت LTR برای نمایش در UI راست‌به‌چپ */
+/** Same as formatCardNumberDisplay with LTR direction for RTL UI */
 export function formatCardNumberForDisplay(value?: string | null, maskMiddle = false) {
   const formatted = formatCardNumberDisplay(value, maskMiddle);
   return formatted ? `${LTR_EMBED}${formatted}` : "";

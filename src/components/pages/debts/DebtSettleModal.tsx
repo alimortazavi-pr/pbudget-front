@@ -51,7 +51,7 @@ export function DebtSettleModal({
       .fetchSettlementCandidates(debt._id)
       .then((res) => setCandidates(res.budgets))
       .catch((err) =>
-        showToast(err instanceof Error ? err.message : "خطا در بارگذاری تراکنش‌ها"),
+        showToast(err instanceof Error ? err.message : t("auto.k0b952d2d1b")),
       )
       .finally(() => setLoading(false));
   }, [open, debt]);
@@ -88,7 +88,7 @@ export function DebtSettleModal({
       showToast(t("auto.k8c7eee466f"), "success");
       onSettled();
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در تسویه");
+      showToast(err instanceof Error ? err.message : t("auto.k70e3b5d0b8"));
     } finally {
       setSubmitting(false);
     }
@@ -99,10 +99,10 @@ export function DebtSettleModal({
   const hint =
     debt.type === DebtType.RECEIVABLE
       ? t(
-          "تراکنش‌های دریافتی (واریز) که واقعاً پول را گرفته‌اید انتخاب کنید.",
+          t("auto.k9599099c25"),
         )
       : t(
-          "تراکنش‌های پرداختی (برداشت) که واقعاً بدهی را پرداخت کرده‌اید انتخاب کنید.",
+          t("auto.k4b56b0a2a9"),
         );
 
   return (
@@ -110,7 +110,7 @@ export function DebtSettleModal({
       <AppModalDialog className="max-w-lg">
         <AppModalHeader onClose={() => onOpenChange(false)}>
           <Modal.Heading>
-            {t("تسویه")} {debt.person}
+            {t("debts.settle")} {debt.person}
           </Modal.Heading>
         </AppModalHeader>
         <Modal.Body className="space-y-4">
@@ -121,15 +121,13 @@ export function DebtSettleModal({
 
           {selectedIds.size <= 1 ? (
             <FormPriceInput
-              label={`${t("تسویه")} (${currencyLabel(preferredCurrency)})`}
+              label={`${t("debts.settle")} (${currencyLabel(preferredCurrency)})`}
               value={amount}
               onChange={setAmount}
             />
           ) : (
             <p className="rounded-xl bg-surface-secondary px-3 py-2 text-xs text-muted">
-              {t(
-                "برای تسویه چندتایی، از کل مبلغ هر تراکنش تا سقف مانده استفاده می‌شود.",
-              )}
+              {t("auto.kb2c7c2b915")}
             </p>
           )}
 
@@ -137,11 +135,11 @@ export function DebtSettleModal({
             <p className="text-sm text-muted">{t("auto.k28f661341f")}</p>
           ) : candidates.length === 0 ? (
             <p className="rounded-xl bg-surface-secondary p-3 text-sm text-muted">
-              {t("تراکنش مناسبی پیدا نشد. ابتدا تراکنش")}{" "}
+              {t("debts.noMatchingTransaction")}{" "}
               {debt.type === DebtType.RECEIVABLE
-                ? t("دریافتی (واریز)")
-                : t("پرداختی (برداشت)")}{" "}
-              {t("ثبت کنید.")}
+                ? t("debts.incomeDeposit")
+                : t("debts.costWithdraw")}{" "}
+              {t("debts.registerFirst")}
             </p>
           ) : (
             <div className="max-h-56 space-y-2 overflow-y-auto">
@@ -192,10 +190,10 @@ export function DebtSettleModal({
             {submitting
               ? t("common.loading")
               : selectedIds.size > 1
-                ? t("ثبت {{count}} تسویه", {
+                ? t("debts.registerSettlements", {
                     count: toPersianDigits(selectedIds.size),
                   })
-                : t("ثبت تسویه")}
+                : t("debts.registerSettlement")}
           </Button>
         </Modal.Footer>
       </AppModalDialog>

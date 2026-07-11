@@ -57,6 +57,7 @@ function parseDuration(value: string | null): PeriodDuration {
 }
 
 export const PeriodProvider: FC<PropsWithChildren> = ({ children }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
   const { hydrated, get } = useHydratedSearchParams();
@@ -68,11 +69,11 @@ export const PeriodProvider: FC<PropsWithChildren> = ({ children }) => {
   const day = hydrated ? get("day", String(now.jDate())) : String(now.jDate());
 
   const periodLabel = useMemo(() => {
-    if (duration === "all") return "همه زمان‌ها";
+    if (duration === "all") return t("auto.k9e425fc9f4");
     if (duration === "yearly") return formatJalaliYear(year);
     if (duration === "monthly") return formatJalaliMonthYear(year, month);
     return formatJalaliDate(year, month, day);
-  }, [duration, year, month, day]);
+  }, [duration, year, month, day, t]);
 
   const updatePeriod = useCallback(
     (patch: Partial<{

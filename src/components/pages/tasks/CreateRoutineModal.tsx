@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
@@ -19,9 +22,9 @@ import {
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 
 const PRIORITY_OPTIONS = [
-  { id: "low", label: "کم" },
-  { id: "medium", label: "متوسط" },
-  { id: "high", label: "زیاد" },
+  { id: "low", label: t("auto.k38b171ab8b") },
+  { id: "medium", label: t("auto.k1418425392") },
+  { id: "high", label: t("auto.k81e4de6a04") },
 ];
 
 const HOUR_OPTIONS = Array.from({ length: 24 }, (_, hour) => ({
@@ -80,10 +83,10 @@ export function CreateRoutineModal({
 
   const projectOptions = useMemo(
     () => [
-      { id: "none", label: "بدون پروژه" },
+      { id: "none", label: t("auto.kdeafaa63f0") },
       ...projects.map((p) => ({
         id: p._id,
-        label: p.category?.title ?? "پروژه",
+        label: p.category?.title ?? t("auto.kcce7e8ff41"),
       })),
     ],
     [projects],
@@ -130,11 +133,11 @@ export function CreateRoutineModal({
       const saved = routine
         ? await tasksApi.updateTaskRoutine(routine._id, payload)
         : await tasksApi.createTaskRoutine(payload);
-      showToast(routine ? "ذخیره شد" : "تسک ثابت ایجاد شد", "success");
+      showToast(routine ? t("common.saved") : t("auto.kb743342664"), "success");
       onSaved(saved);
       onOpenChange(false);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     } finally {
       setSaving(false);
     }
@@ -146,13 +149,13 @@ export function CreateRoutineModal({
         <form onSubmit={(e) => void save(e)}>
           <AppModalHeader onClose={() => onOpenChange(false)}>
             <Modal.Heading>
-              {routine ? "ویرایش تسک ثابت" : "تسک ثابت جدید"}
+              {routine ? t("auto.k98a33db221") : t("auto.k60b9386476")}
             </Modal.Heading>
           </AppModalHeader>
           <Modal.Body className="space-y-4">
             <p className="text-sm leading-7 text-muted">
-              تسک‌های ثابت هر روز (یا روزهای انتخابی) خودکار به برنامه روزانه اضافه
-              می‌شوند.
+              {t("auto.k6999166894")}
+              {t("auto.ke2ee3e868b")}
             </p>
             <FormInput
               label={t("common.title")}
@@ -210,7 +213,7 @@ export function CreateRoutineModal({
                       <Switch.Thumb />
                     </Switch.Control>
                   </Switch>
-                  هر روز
+                  {t("auto.k3e78d3ff88")}
                 </label>
               </div>
               {!everyDay && (
@@ -263,10 +266,10 @@ export function CreateRoutineModal({
           </Modal.Body>
           <Modal.Footer>
             <Button type="button" variant="ghost" onPress={() => onOpenChange(false)}>
-              انصراف
+              {t("common.cancel")}
             </Button>
             <Button type="submit" isPending={saving}>
-              ذخیره
+              {t("common.save")}
             </Button>
           </Modal.Footer>
         </form>

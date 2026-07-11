@@ -91,7 +91,7 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
         <Modal.Body className="max-h-[70vh] space-y-4 overflow-x-visible overflow-y-auto overscroll-contain">
           <p className="text-sm text-muted">
             {t(
-              "مثل پروژه، ابتدا طرف حساب را ثبت کنید. بعداً می‌توانید تراکنش مبدأ یا تسویه را از لیست تراکنش‌ها وصل کنید.",
+              t("auto.k844ff58c8f"),
             )}
           </p>
 

@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -45,7 +48,7 @@ const AnalysisCharts = dynamic(
     ssr: false,
     loading: () => (
       <div className="glass rounded-2xl p-10 text-center text-muted">
-        در حال رسم نمودارها…
+        {t("auto.k05d296b25f")}
       </div>
     ),
   },
@@ -270,8 +273,7 @@ export function AnalysisPage() {
         <>
           {usedFallback && (
             <div className="rounded-2xl border border-warning/30 bg-warning/10 px-4 py-3 text-sm text-warning-foreground">
-              API تحلیل در دسترس نیست؛ نمودارها از تراکنش‌های همین بازه ساخته
-              شده‌اند. برای تحلیل کامل، بک‌اند را deploy کنید.
+              {t("pages.analysis.apiFallbackNotice")}
             </div>
           )}
 
@@ -292,7 +294,7 @@ export function AnalysisPage() {
             <section className="glass rounded-2xl border border-border/50 p-4 text-sm lg:p-5">
               <p className="font-semibold">{t("auto.k4e36e299d7")}</p>
               <p className="mt-1 text-muted">
-                {report.comparison.currentPeriodLabel} در برابر{" "}
+                {report.comparison.currentPeriodLabel} {t("auto.k8cb2f18759")}{" "}
                 {report.comparison.previousPeriodLabel}
               </p>
             </section>

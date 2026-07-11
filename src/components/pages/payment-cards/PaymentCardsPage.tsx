@@ -52,7 +52,7 @@ export function PaymentCardsPage() {
     setDefaultPaymentCardId(nextId, user?._id);
     setDefaultCardId(nextId);
     showToast(
-      nextId ? "کارت به‌عنوان مبدا پیش‌فرض تنظیم شد" : "مبدا پیش‌فرض حذف شد",
+      nextId ? t("auto.k3f39d26f2a") : t("auto.k25dc526b9c"),
       "success",
     );
   }
@@ -99,7 +99,7 @@ export function PaymentCardsPage() {
       showToast(t("common.saved"), "success");
       setOpen(false);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     } finally {
       setSaving(false);
     }
@@ -115,7 +115,7 @@ export function PaymentCardsPage() {
       }
       showToast(t("common.deleted"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     }
   }
 
@@ -125,13 +125,13 @@ export function PaymentCardsPage() {
         <div>
           <h2 className="text-lg font-bold">{t("nav.myCards")}</h2>
           <p className="text-sm text-muted">
-            مبدا پرداخت یا مقصد دریافت تراکنش‌ها. با ستاره، کارت مبدا پیش‌فرض را
-            انتخاب کنید.
+            {t("auto.keb25d51f69")}
+            {t("auto.ke3e7d93891")}
           </p>
         </div>
         <Button className="bg-accent text-accent-foreground" onPress={openCreate}>
           <Add size={18} />
-          کارت جدید
+          {t("auto.k480ffe699b")}
         </Button>
       </div>
 
@@ -156,13 +156,13 @@ export function PaymentCardsPage() {
                     <p className="font-bold">{card.title}</p>
                     {defaultCardId === card._id ? (
                       <span className="rounded-full bg-accent/15 px-2 py-0.5 text-xs font-medium text-accent">
-                        مبدا پیش‌فرض
+                        {t("auto.kc2d5d42b5f")}
                       </span>
                     ) : null}
                   </div>
                   <p className="text-sm text-muted">
                     {paymentCardSubtitle(card.bankName, card.lastFour) ||
-                      "بدون جزئیات بانک"}
+                      t("auto.ke3686141e8")}
                   </p>
                 </div>
               </div>
@@ -173,8 +173,8 @@ export function PaymentCardsPage() {
                   variant={defaultCardId === card._id ? "primary" : "ghost"}
                   aria-label={
                     defaultCardId === card._id
-                      ? "حذف مبدا پیش‌فرض"
-                      : "تنظیم به‌عنوان مبدا پیش‌فرض"
+                      ? t("auto.k6003326f42")
+                      : t("auto.k709c0ac893")
                   }
                   onPress={() => toggleDefaultCard(card)}
                 >
@@ -199,7 +199,7 @@ export function PaymentCardsPage() {
         <AppModalDialog className="sm:max-w-md">
           <form onSubmit={(e) => void save(e)}>
             <AppModalHeader onClose={() => setOpen(false)}>
-              <Modal.Heading>{editItem ? "ویرایش کارت" : "کارت جدید"}</Modal.Heading>
+              <Modal.Heading>{editItem ? t("auto.kae26d3633e") : t("auto.k480ffe699b")}</Modal.Heading>
             </AppModalHeader>
             <Modal.Body className="space-y-4">
               <FormInput label={t("auto.k0f2c6c83bc")} value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("auto.k3aa276a7d3")} />

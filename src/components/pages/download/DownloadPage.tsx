@@ -180,7 +180,7 @@ export function DownloadPage() {
                   <div className="rounded-2xl bg-surface-secondary/80 p-3">
                     <p className="text-xs text-muted">{t("auto.k4497cf2376")}</p>
                     <p className="mt-1 text-xl font-bold text-income" dir="ltr">
-                      +۲۴,۵۰۰,۰۰۰
+                      {t("common.demoIncomeAmount")}
                     </p>
                   </div>
                   <div className="grid grid-cols-2 gap-2">

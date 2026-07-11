@@ -30,7 +30,7 @@ export function ProductFamilyBanner({ variant = "section" }: ProductFamilyBanner
         }}
       >
         <Image src={bizLogo} alt="" width={22} height={22} className="rounded-md" />
-        {business.tagline}
+        {t(business.taglineKey)}
       </Link>
     );
   }
@@ -48,7 +48,7 @@ export function ProductFamilyBanner({ variant = "section" }: ProductFamilyBanner
           }}
         >
           <Image src={bizLogo} alt="" width={20} height={20} className="rounded-md" />
-          {business.name}
+          {t(business.nameKey)}
         </Link>
       </div>
     );
@@ -68,8 +68,8 @@ export function ProductFamilyBanner({ variant = "section" }: ProductFamilyBanner
             <Image src={bizLogo} alt="" width={52} height={52} className="rounded-xl" />
           </span>
           <div>
-            <p className="text-base font-bold">{business.name}</p>
-            <p className="text-sm lp-muted">{business.tagline}</p>
+            <p className="text-base font-bold">{t(business.nameKey)}</p>
+            <p className="text-sm lp-muted">{t(business.taglineKey)}</p>
           </div>
         </div>
         <Link
@@ -80,11 +80,11 @@ export function ProductFamilyBanner({ variant = "section" }: ProductFamilyBanner
           }}
         >
           <Image src={bizLogo} alt="" width={22} height={22} className="rounded-md" />
-          مشاهده میز کسب‌وکار
+          {t("auto.k6c9b610326")}
         </Link>
         <div className="flex items-center gap-2 text-xs lp-muted">
           <Home2 size={14} />
-          شما اینجا: مالی شخصی
+          {t("auto.k7f620f4208")}
         </div>
       </div>
     </section>

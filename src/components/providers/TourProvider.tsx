@@ -52,6 +52,7 @@ type TourContextValue = {
 const TourContext = createContext<TourContextValue | null>(null);
 
 export function useTour() {
+  const { t } = useTranslation();
   const ctx = useContext(TourContext);
   if (!ctx) throw new Error("useTour must be used within TourProvider");
   return ctx;
@@ -77,6 +78,7 @@ function TourOverlay({
   onSkip: () => void;
   onFinish: () => void;
 }) {
+  const { t } = useTranslation();
   const maskId = useId().replace(/:/g, "");
   const tooltipRef = useRef<HTMLDivElement>(null);
   const step = active.steps[active.index];
@@ -173,7 +175,7 @@ function TourOverlay({
         </div>
 
         <p className="text-xs font-medium text-accent">
-          {active.index + 1} از {active.steps.length}
+          {active.index + 1} {t("common.of")} {active.steps.length}
           <span className="mx-1.5 text-border">·</span>
           {active.tour.name}
         </p>
@@ -187,20 +189,20 @@ function TourOverlay({
         <div className="mt-4 flex flex-wrap items-center gap-2">
           {!isFirst && (
             <Button size="sm" variant="ghost" onPress={onPrev}>
-              قبلی
+              {t("auto.k1a592f6b2d")}
             </Button>
           )}
           <div className="flex-1" />
           <Button size="sm" variant="ghost" onPress={onSkip}>
-            رد کردن
+            {t("auto.k47a00ee100")}
           </Button>
           {isLast ? (
             <Button size="sm" variant="primary" onPress={onFinish}>
-              پایان
+              {t("auto.k44856fc170")}
             </Button>
           ) : (
             <Button size="sm" variant="primary" onPress={onNext}>
-              بعدی
+              {t("auto.k54ee927e96")}
             </Button>
           )}
         </div>

@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
@@ -31,9 +34,9 @@ type CreateTaskModalProps = {
 };
 
 const PRIORITY_OPTIONS = [
-  { id: "low", label: "کم" },
-  { id: "medium", label: "متوسط" },
-  { id: "high", label: "زیاد" },
+  { id: "low", label: t("auto.k38b171ab8b") },
+  { id: "medium", label: t("auto.k1418425392") },
+  { id: "high", label: t("auto.k81e4de6a04") },
 ];
 
 export function CreateTaskModal({
@@ -75,10 +78,10 @@ export function CreateTaskModal({
 
   const projectOptions = useMemo(
     () => [
-      { id: "none", label: "بدون پروژه" },
+      { id: "none", label: t("auto.kdeafaa63f0") },
       ...projects.map((p) => ({
         id: p._id,
-        label: p.category?.title ?? "پروژه",
+        label: p.category?.title ?? t("auto.kcce7e8ff41"),
       })),
     ],
     [projects],
@@ -107,11 +110,11 @@ export function CreateTaskModal({
         ? await tasksApi.updateTask(task._id, payload)
         : await tasksApi.createTask(payload);
 
-      showToast(task ? "تسک ویرایش شد" : "تسک اضافه شد", "success");
+      showToast(task ? t("auto.k6d8364cd9e") : t("auto.k954f062479"), "success");
       onSaved(saved);
       onOpenChange(false);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     } finally {
       setSaving(false);
     }
@@ -122,7 +125,7 @@ export function CreateTaskModal({
       <AppModalDialog>
         <form onSubmit={(e) => void save(e)}>
           <AppModalHeader onClose={() => onOpenChange(false)}>
-            <Modal.Heading>{task ? "ویرایش تسک" : "تسک جدید"}</Modal.Heading>
+            <Modal.Heading>{task ? t("auto.k32d20898e1") : t("auto.k4e2c618bad")}</Modal.Heading>
           </AppModalHeader>
           <Modal.Body className="space-y-4">
             <FormInput
@@ -166,10 +169,10 @@ export function CreateTaskModal({
           </Modal.Body>
           <Modal.Footer>
             <Button type="button" variant="ghost" onPress={() => onOpenChange(false)}>
-              انصراف
+              {t("common.cancel")}
             </Button>
             <Button type="submit" isPending={saving}>
-              ذخیره
+              {t("common.save")}
             </Button>
           </Modal.Footer>
         </form>

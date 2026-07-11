@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useState } from "react";
@@ -21,21 +24,21 @@ type PartnerActivityPanelProps = {
 function actionLabel(action: PartnerActivityAction) {
   switch (action) {
     case "invited":
-      return "دعوت";
+      return t("auto.kd55b2c2282");
     case "accepted":
-      return "پذیرش";
+      return t("auto.kff24a8f243");
     case "declined":
-      return "رد";
+      return t("auto.kfa384f7e8b");
     case "share_changed":
-      return "تغییر سهم";
+      return t("auto.kc4589e6f1f");
     case "permission_changed":
-      return "تغییر دسترسی";
+      return t("auto.ka3f8641a4d");
     case "removed":
-      return "حذف";
+      return t("common.delete");
     case "settlement_applied":
-      return "تسویه";
+      return t("auto.k43ef5d91de");
     case "budget_attached":
-      return "تراکنش";
+      return t("auto.keb7bb3e55b");
     default:
       return action;
   }
@@ -65,7 +68,7 @@ export function PartnerActivityPanel({
       const list = await partnersApi.fetchPartnerActivity(contextType, contextId);
       setActivities(list);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در بارگذاری تاریخچه");
+      showToast(err instanceof Error ? err.message : t("auto.k35cd3918f6"));
     } finally {
       setLoading(false);
     }

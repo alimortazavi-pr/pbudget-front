@@ -45,7 +45,7 @@ export function AnalysisInsightsPanel({
       <div className="mb-4">
         <h2 className="text-base font-bold lg:text-lg">{t("auto.ke1b7612b05")}</h2>
         <p className="text-sm text-muted">
-          جمع‌بندی حرفه‌ای وضعیت مالی شما در «{periodLabel}»
+          {t("auto.kffb6e7a1c6")}{periodLabel}»
         </p>
       </div>
 

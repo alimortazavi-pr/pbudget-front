@@ -36,7 +36,7 @@ export function PartnerInvitePage({ token }: PartnerInvitePageProps) {
       const data = await partnersApi.fetchPartnerInvite(token);
       setInvite(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "دعوت نامعتبر است");
+      setError(err instanceof Error ? err.message : t("auto.k853acc5ec9"));
     } finally {
       setLoading(false);
     }
@@ -57,7 +57,7 @@ export function PartnerInvitePage({ token }: PartnerInvitePageProps) {
         contextType === "project" ? PATHS.PROJECTS : PATHS.VENTURES,
       );
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در تأیید");
+      showToast(err instanceof Error ? err.message : t("auto.ke18ed389dc"));
     } finally {
       setActing(false);
     }
@@ -70,7 +70,7 @@ export function PartnerInvitePage({ token }: PartnerInvitePageProps) {
       showToast(t("auto.kbaa8f3b1c7"));
       router.push(PATHS.HOME);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     } finally {
       setActing(false);
     }
@@ -79,7 +79,7 @@ export function PartnerInvitePage({ token }: PartnerInvitePageProps) {
   if (loading) {
     return (
       <div className="mx-auto max-w-md py-16 text-center text-muted">
-        در حال بارگذاری دعوت…
+        {t("auto.k4127f66ce6")}
       </div>
     );
   }
@@ -87,7 +87,7 @@ export function PartnerInvitePage({ token }: PartnerInvitePageProps) {
   if (error || !invite) {
     return (
       <div className="mx-auto max-w-md space-y-4 py-16 text-center">
-        <p className="text-danger">{error ?? "دعوت یافت نشد"}</p>
+        <p className="text-danger">{error ?? t("auto.kd044cdedaa")}</p>
         <Link href={PATHS.HOME}>
           <Button variant="secondary">{t("common.backToHome")}</Button>
         </Link>
@@ -96,7 +96,7 @@ export function PartnerInvitePage({ token }: PartnerInvitePageProps) {
   }
 
   const contextLabel =
-    invite.contextType === "project" ? "پروژه" : "کسب‌وکار";
+    invite.contextType === "project" ? t("auto.kcce7e8ff41") : t("auto.k9f48ae23bb");
 
   const expiresLabel = (() => {
     const m = moment(invite.expiresAt).locale("fa");
@@ -113,20 +113,24 @@ export function PartnerInvitePage({ token }: PartnerInvitePageProps) {
         <p className="text-sm text-muted">{t("auto.kaed62bd3e2")}</p>
         <h1 className="mt-2 text-2xl font-bold">{invite.contextTitle}</h1>
         <p className="mt-3 text-sm leading-7 text-muted">
-          <span className="font-medium text-foreground">{invite.ownerName}</span>{" "}
-          شما را به عنوان شریک در {contextLabel} «{invite.contextTitle}» دعوت
-          کرده است.
+          {t("pages.invites.inviteBody", {
+            owner: invite.ownerName,
+            context: contextLabel,
+            title: invite.contextTitle,
+          })}
         </p>
 
         <div className="mt-5 space-y-2 rounded-xl bg-surface-secondary p-4 text-sm">
           {invite.sharePercent > 0 ? (
             <p>
-              سهم پیشنهادی:{" "}
-              <span className="font-bold">{invite.sharePercent}٪</span>
+              {t("auto.k02000786d1")}{" "}
+              <span className="font-bold">
+                {t("pages.partners.totalSharePercent", { percent: invite.sharePercent })}
+              </span>
             </p>
           ) : null}
           <p className="text-muted">
-            اعتبار تا {expiresLabel}
+            {t("auto.ke18fd29fef")}{expiresLabel}
           </p>
         </div>
       </section>
@@ -134,22 +138,22 @@ export function PartnerInvitePage({ token }: PartnerInvitePageProps) {
       {!user ? (
         <div className="glass space-y-3 rounded-2xl p-5 text-center">
           <p className="text-sm text-muted">
-            برای تأیید دعوت باید با شماره{" "}
+            {t("auto.k000e4e5acb")}{" "}
             <span dir="ltr" className="font-medium text-foreground">
               {invite.mobile}
             </span>{" "}
-            وارد شوید
+            {t("auto.kf3369bb7a8")}
           </p>
           <Link href={buildGetStartedUrl(PATHS.PARTNER_INVITE(token))}>
             <Button className="w-full" size="lg">
-              ورود / ثبت‌نام
+              {t("auto.k8dfad36076")}
             </Button>
           </Link>
         </div>
       ) : (
         <div className="flex flex-col gap-2">
           <Button size="lg" onPress={() => void accept()} isPending={acting}>
-            تأیید دعوت
+            {t("auto.k6dd4cf3137")}
           </Button>
           <Button
             variant="secondary"
@@ -157,7 +161,7 @@ export function PartnerInvitePage({ token }: PartnerInvitePageProps) {
             onPress={() => void decline()}
             isPending={acting}
           >
-            رد دعوت
+            {t("auto.kb81c943244")}
           </Button>
         </div>
       )}

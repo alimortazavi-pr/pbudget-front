@@ -56,7 +56,7 @@ export function AdminAppPage() {
     try {
       const result = await adminApi.uploadAdminAndroidApk(file, versionName.trim(), code);
       setInfo(result);
-      showToast(result.message || "APK آپلود شد", "success");
+      showToast(result.message || t("auto.k7432a63a84"), "success");
       void load();
     } catch {
       showToast(t("auto.k9f32c31735"), "danger");
@@ -75,7 +75,7 @@ export function AdminAppPage() {
       <div>
         <h3 className="text-lg font-bold">{t("auto.k59143b1beb")}</h3>
         <p className="text-sm text-muted">
-          آپلود APK برای صفحه دانلود عمومی — کاربران از pdesk.ir/download دریافت می‌کنند
+          {t("auto.k99da1e3a09")}
         </p>
       </div>
 
@@ -88,7 +88,7 @@ export function AdminAppPage() {
           <dl className="space-y-3 text-sm">
             <div className="flex justify-between gap-4">
               <dt className="text-muted">{t("auto.k33a6a5ceb6")}</dt>
-              <dd>{info?.available ? "بله" : "خیر — APK آپلود نشده"}</dd>
+              <dd>{info?.available ? t("common.yes") : t("auto.kc1aa6a8243")}</dd>
             </div>
             <div className="flex justify-between gap-4">
               <dt className="text-muted">{t("auto.k24f4ed36d2")}</dt>
@@ -120,7 +120,7 @@ export function AdminAppPage() {
             >
               <Button variant="secondary">
                 <DocumentDownload size={18} />
-                لینک مستقیم APK
+                {t("auto.k642acf2223")}
               </Button>
             </a>
           ) : null}
@@ -132,8 +132,8 @@ export function AdminAppPage() {
             <h4 className="font-bold">{t("auto.k63ef300630")}</h4>
           </div>
           <p className="mb-4 text-sm text-muted">
-            فایل release امضاشده را انتخاب کنید. پس از آپلود، لینک دانلود و نسخه صفحه عمومی
-            به‌روز می‌شود.
+            {t("auto.k55adad0f50")}
+            {t("auto.ke16710c005")}
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
@@ -171,7 +171,7 @@ export function AdminAppPage() {
             isDisabled={uploading}
           >
             <DocumentUpload size={18} />
-            {uploading ? "در حال آپلود…" : "انتخاب و آپلود APK"}
+            {uploading ? t("auto.kb4444fd8b3") : t("auto.k3511a3a474")}
           </Button>
         </div>
       </section>

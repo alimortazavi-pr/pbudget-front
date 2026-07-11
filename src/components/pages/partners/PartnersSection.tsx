@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -34,10 +37,10 @@ type PartnersSectionProps = {
 };
 
 function statusLabel(status: IPartner["status"], isAppUser: boolean) {
-  if (status === "pending") return "در انتظار تأیید";
-  if (status === "declined") return "رد شده";
-  if (isAppUser) return "تأیید‌شده";
-  return "مخاطب خارجی";
+  if (status === "pending") return t("auto.k7474af631f");
+  if (status === "declined") return t("auto.kb653000a56");
+  if (isAppUser) return t("auto.kf016943a8b");
+  return t("auto.k8ad638a1b0");
 }
 
 function statusClass(status: IPartner["status"]) {
@@ -47,9 +50,9 @@ function statusClass(status: IPartner["status"]) {
 }
 
 function permissionLabel(level?: PartnerPermissionLevel) {
-  if (level === "owner") return "مالک";
-  if (level === "editor") return "ویرایشگر";
-  return "مشاهده";
+  if (level === "owner") return t("auto.kd1a740d28c");
+  if (level === "editor") return t("auto.kb0022d87ad");
+  return t("auto.k53404e4309");
 }
 
 function isOwnerPartner(partner: IPartner) {
@@ -59,7 +62,7 @@ function isOwnerPartner(partner: IPartner) {
 function partnerInitials(name: string) {
 
   const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return "؟";
+  if (parts.length === 0) return t("auto.kd14862b0be");
   if (parts.length === 1) return parts[0].slice(0, 1);
   return `${parts[0].slice(0, 1)}${parts[parts.length - 1].slice(0, 1)}`;
 }
@@ -94,7 +97,7 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
         setDebtBalances([]);
       }
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در بارگذاری شرکا");
+      showToast(err instanceof Error ? err.message : t("auto.k9e4fe8f578"));
     } finally {
       setLoading(false);
     }
@@ -128,26 +131,26 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
     if (row.netBalance < 0) {
       return (
         <span className="rounded-lg bg-expense-soft px-2 py-1 text-xs font-semibold text-expense">
-          {formatPrice(Math.abs(row.netBalance))} بدهکار
+          {formatPrice(Math.abs(row.netBalance))} {t("auto.k7146b67cab")}
         </span>
       );
     }
 
     return (
       <span className="rounded-lg bg-income-soft px-2 py-1 text-xs font-semibold text-income">
-        {formatPrice(row.netBalance)} طلبکار
+        {formatPrice(row.netBalance)} {t("auto.k8c310e32b6")}
       </span>
     );
   }
 
   async function removePartner(partner: IPartner) {
-    if (!confirm(`شریک «${partner.displayName}» حذف شود؟`)) return;
+    if (!confirm(t("pages.partners.deleteConfirm", { name: partner.displayName }))) return;
     try {
       await partnersApi.deletePartner(partner._id);
       showToast(t("auto.k4c8fce4807"), "success");
       void load();
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در حذف");
+      showToast(err instanceof Error ? err.message : t("auto.kcb7622491d"));
     }
   }
 
@@ -171,7 +174,7 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
       }
       void load();
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در ارسال مجدد");
+      showToast(err instanceof Error ? err.message : t("auto.k4508c413b1"));
     } finally {
       setResendingId(null);
     }
@@ -185,7 +188,7 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
       showToast(t("auto.kc1d6100623"), "success");
       void load();
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در به‌روزرسانی");
+      showToast(err instanceof Error ? err.message : t("auto.ke9863812ee"));
     } finally {
       setUpdatingId(null);
     }
@@ -197,12 +200,12 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
         <div>
           <h2 className="text-xl font-bold">{t("auto.kd7638a798e")}</h2>
           <p className="mt-1 text-sm text-muted">
-            دعوت، تقسیم سهم، حساب دفتری و دسترسی مشترک
+            {t("auto.k88043c2b0b")}
           </p>
         </div>
         <Button onPress={() => setAddOpen(true)} isDisabled={readOnly}>
           <Add size={16} />
-          شریک جدید
+          {t("auto.k9451f46bb3")}
         </Button>
       </div>
 
@@ -216,7 +219,9 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
         </div>
         <div className="rounded-2xl border border-border/50 bg-surface-secondary/40 p-4">
           <p className="text-xs text-muted">{t("auto.kbba92c3e90")}</p>
-          <p className="mt-2 text-2xl font-bold">{totalShare}٪</p>
+          <p className="mt-2 text-2xl font-bold">
+            {t("pages.partners.totalSharePercent", { percent: totalShare })}
+          </p>
           {totalShare > 100 ? (
             <p className="mt-1 text-xs text-danger">{t("auto.kd3faa370d8")}</p>
           ) : null}
@@ -246,13 +251,13 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
         <div className="flex items-center justify-between gap-3">
           <h3 className="font-bold">{t("auto.k4ded8be32e")}</h3>
           <span className="text-xs text-muted">
-            {activePartners.length} شریک فعال
+            {activePartners.length} {t("auto.k957ae7e66d")}
           </span>
         </div>
 
         {loading ? (
           <div className="rounded-2xl border border-border/50 p-8 text-center text-muted">
-            در حال بارگذاری…
+            {t("common.loading")}
           </div>
         ) : partners.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border p-8 text-center">
@@ -263,7 +268,7 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
               onPress={() => setAddOpen(true)}
               isDisabled={readOnly}
             >
-              اولین شریک را اضافه کنید
+              {t("auto.k36329a14ca")}
             </Button>
           </div>
         ) : (
@@ -297,7 +302,7 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
                     <div className="mt-3 flex flex-wrap gap-2">
                       {partner.sharePercent > 0 ? (
                         <span className="rounded-lg bg-surface-secondary px-2 py-1 text-xs">
-                          سهم {partner.sharePercent}٪
+                          {t("pages.partners.sharePercent", { percent: partner.sharePercent })}
                         </span>
                       ) : null}
                       {partner.isAppUser && partner.status === "active" ? (
@@ -309,7 +314,7 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
                       {partner.telegramNotified ? (
                         <span className="inline-flex items-center gap-1 rounded-lg bg-surface-secondary px-2 py-1 text-xs">
                           <Messages2 size={14} />
-                          تلگرام
+                          {t("auto.kca3d2562e4")}
                         </span>
                       ) : null}
                     </div>
@@ -328,8 +333,8 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
                           }
                           isDisabled={updatingId === partner._id}
                           options={[
-                            { id: "viewer", label: "مشاهده" },
-                            { id: "editor", label: "ویرایشگر" },
+                            { id: "viewer", label: t("auto.k53404e4309") },
+                            { id: "editor", label: t("auto.kb0022d87ad") },
                           ]}
                         />
                       </div>
@@ -351,7 +356,7 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
                             onPress={() => void copyLink(partner.inviteLink!)}
                           >
                             <Copy size={14} />
-                            کپی لینک
+                            {t("auto.kac0faf914a")}
                           </Button>
                           <Button
                             size="sm"
@@ -359,7 +364,7 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
                             isPending={resendingId === partner._id}
                             onPress={() => void resendInvite(partner._id)}
                           >
-                            ارسال مجدد
+                            {t("auto.k9330713652")}
                           </Button>
                         </>
                       ) : null}
@@ -370,7 +375,7 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
                           onPress={() => void removePartner(partner)}
                         >
                           <Trash size={14} />
-                          حذف
+                          {t("common.delete")}
                         </Button>
                       ) : null}
                     </div>
@@ -389,8 +394,8 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
           className="flex w-full items-center justify-between px-4 py-3 text-sm font-medium"
           onClick={() => setShowActivity((value) => !value)}
         >
-          تاریخچه همکاری
-          <span className="text-xs text-muted">{showActivity ? "بستن" : "نمایش"}</span>
+          {t("auto.k789357d8e6")}
+          <span className="text-xs text-muted">{showActivity ? t("common.close") : t("auto.kcf5a6721b9")}</span>
         </button>
         {showActivity ? (
           <div className="border-t border-border/40 px-4 pb-4">

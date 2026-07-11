@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useState } from "react";
@@ -16,8 +19,8 @@ import { showToast } from "@/common/utils/toast";
 import { CreateRoutineModal } from "@/components/pages/tasks/CreateRoutineModal";
 
 function weekdaysLabel(weekdays: number[]) {
-  if (!weekdays.length) return "هر روز";
-  return weekdays.map((day) => JALALI_WEEKDAYS_SHORT[day]).join("، ");
+  if (!weekdays.length) return t("auto.k3e78d3ff88");
+  return weekdays.map((day) => JALALI_WEEKDAYS_SHORT[day]).join(t("auto.k8715d7bc59"));
 }
 
 function getProjectTitle(routine: ITaskRoutine) {
@@ -38,7 +41,7 @@ export function TaskRoutinesSection() {
       const list = await tasksApi.fetchTaskRoutines();
       setRoutines(list);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در بارگذاری");
+      showToast(err instanceof Error ? err.message : t("auto.k0080763ff0"));
     } finally {
       setLoading(false);
     }
@@ -54,7 +57,7 @@ export function TaskRoutinesSection() {
       setRoutines((current) => current.filter((row) => row._id !== routine._id));
       showToast(t("common.deleted"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     }
   }
 
@@ -68,8 +71,8 @@ export function TaskRoutinesSection() {
           <div>
             <h2 className="font-bold">{t("auto.k8aacb53680")}</h2>
             <p className="mt-1 text-sm leading-7 text-muted">
-              مثل «رفتن سرکار ۱۰ تا ۱۶» — یک‌بار تعریف کن، هر روز خودکار به لیست
-              روزانه اضافه می‌شود. یادآوری صبح هم از تلگرام می‌آید (اگر وصل باشی).
+              {t("auto.kff3d0ca345")}
+              {t("auto.ke86ee98e03")}
             </p>
           </div>
         </div>
@@ -83,17 +86,17 @@ export function TaskRoutinesSection() {
           }}
         >
           <Add size={18} />
-          تسک ثابت جدید
+          {t("auto.k60b9386476")}
         </Button>
       </div>
 
       {loading ? (
         <div className="glass rounded-2xl p-10 text-center text-muted">
-          در حال بارگذاری…
+          {t("common.loading")}
         </div>
       ) : routines.length === 0 ? (
         <div className="glass rounded-2xl p-10 text-center text-muted">
-          هنوز تسک ثابتی تعریف نشده
+          {t("auto.k1007227ab3")}
         </div>
       ) : (
         <div className="space-y-2">
@@ -109,7 +112,7 @@ export function TaskRoutinesSection() {
                       <h3 className="font-semibold">{routine.title}</h3>
                       {!routine.active && (
                         <span className="rounded-md bg-surface-secondary px-2 py-0.5 text-[10px] text-muted">
-                          غیرفعال
+                          {t("auto.k7fdadc73ac")}
                         </span>
                       )}
                     </div>

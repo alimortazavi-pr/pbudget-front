@@ -54,7 +54,7 @@ export function PartnerSettlementPanel({
         setBatches(history);
       }
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در بارگذاری تسویه");
+      showToast(err instanceof Error ? err.message : t("auto.k87d00bfbf0"));
     } finally {
       setLoading(false);
     }
@@ -84,7 +84,7 @@ export function PartnerSettlementPanel({
 
     if (
       !confirm(
-        "بدهی‌های قابل پرداخت به شرکا در بخش طلب و بدهی ثبت می‌شود. ادامه می‌دهید؟",
+        t("auto.ka7a5ce74aa"),
       )
     ) {
       return;
@@ -101,7 +101,7 @@ export function PartnerSettlementPanel({
       await load();
       onSettlementApplied?.();
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در ثبت تسویه");
+      showToast(err instanceof Error ? err.message : t("auto.k5ddbc40eed"));
     } finally {
       setApplying(false);
     }
@@ -129,7 +129,7 @@ export function PartnerSettlementPanel({
           <div>
             <h3 className="text-base font-bold">{t("auto.k7f98ae4f61")}</h3>
             <p className="mt-0.5 text-xs text-muted">
-              سهم هر نفر از کل تراکنش‌های مرتبط
+              {t("auto.k14c44810cc")}
             </p>
           </div>
         </div>
@@ -169,7 +169,7 @@ export function PartnerSettlementPanel({
           <div className="space-y-2 p-4 sm:p-5">
             {settlement.partners.length === 0 ? (
               <p className="text-sm text-muted">
-                سهم شرکا را ثبت کنید تا تقسیم نمایش داده شود.
+                {t("auto.k28a5f1d3ae")}
               </p>
             ) : (
               settlement.partners.map((row) => (
@@ -181,9 +181,11 @@ export function PartnerSettlementPanel({
                     <div>
                       <p className="font-semibold">
                         {row.displayName}
-                        {row.isOwner ? " (شما)" : ""}
+                        {row.isOwner ? t("auto.kb3ac553a3d") : ""}
                       </p>
-                      <p className="mt-0.5 text-xs text-muted">سهم {row.sharePercent}٪</p>
+                      <p className="mt-0.5 text-xs text-muted">
+                        {t("pages.partners.sharePercent", { percent: row.sharePercent })}
+                      </p>
                     </div>
                     <div className="text-left">
                       <p
@@ -224,7 +226,7 @@ export function PartnerSettlementPanel({
 
       {settlement.allocatedPercent > 100 ? (
         <p className="px-4 pb-3 text-xs text-danger sm:px-5">
-          جمع سهم‌ها بیش از ۱۰۰٪ است — تقسیم را اصلاح کنید.
+          {t("auto.k035e2e0213")}
         </p>
       ) : null}
 
@@ -243,7 +245,7 @@ export function PartnerSettlementPanel({
             onPress={() => void applySettlement()}
             isPending={applying}
           >
-            ثبت {partnerDebts.length} بدهی در طلب و بدهی
+            {t("nav.create")}{partnerDebts.length} {t("auto.k037318552a")}
           </Button>
         </div>
       ) : null}
@@ -256,7 +258,7 @@ export function PartnerSettlementPanel({
               key={batch._id}
               className="rounded-xl bg-surface-secondary/60 px-3 py-2 text-xs text-muted"
             >
-              {batch.debts.length} بدهی · سود {formatPrice(batch.profitAmount)}
+              {batch.debts.length} {t("auto.k3232b8e966")} {formatPrice(batch.profitAmount)}
             </div>
           ))}
         </div>

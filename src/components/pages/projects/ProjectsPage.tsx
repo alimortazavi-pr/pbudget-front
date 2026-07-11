@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -123,12 +126,12 @@ export function ProjectsPage() {
       )}
 
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-muted">{formatCount(projects.length)} پروژه</p>
+        <p className="text-sm text-muted">{formatCount(projects.length)} {t("nav.projects")}</p>
         <div className="flex flex-wrap gap-2">
           <Link href={PATHS.WORK_ATTENDANCE}>
             <Button size="sm" variant="secondary">
               <Clock size={18} />
-              حضور و غیاب
+              {t("auto.ka4b30b68b9")}
             </Button>
           </Link>
           <Button
@@ -137,7 +140,7 @@ export function ProjectsPage() {
             onPress={() => setCreateOpen(true)}
           >
             <Add size={18} />
-            پروژه جدید
+            {t("auto.ka82d423cdf")}
           </Button>
         </div>
       </div>
@@ -150,7 +153,7 @@ export function ProjectsPage() {
           <p className="text-muted">{t("auto.kf26286709b")}</p>
           <Button className="mt-4" onPress={() => setCreateOpen(true)}>
             <Add size={18} />
-            اولین پروژه
+            {t("auto.k253859e061")}
           </Button>
         </div>
       ) : (
@@ -183,17 +186,17 @@ export function ProjectsPage() {
                       </span>
                       {project.fixedIncome ? (
                         <span className="rounded-lg bg-income-soft px-2 py-0.5 text-xs font-medium text-income">
-                          درآمد ثابت
+                          {t("auto.k063dde53ff")}
                         </span>
                       ) : null}
                       {!project.trackWorkTime ? (
                         <span className="rounded-lg bg-surface-secondary px-2 py-0.5 text-xs text-muted">
-                          بدون ساعت کاری
+                          {t("auto.k1b3930df64")}
                         </span>
                       ) : null}
                       {project.accessRole === "partner" ? (
                         <span className="rounded-lg bg-accent/15 px-2 py-0.5 text-xs font-medium text-accent">
-                          مشترک
+                          {t("auto.kc406af7131")}
                         </span>
                       ) : null}
                     </div>
@@ -224,7 +227,7 @@ export function ProjectsPage() {
                 <div className="mt-3">
                   <div className="mb-1 flex justify-between text-xs text-muted">
                     <span>{t("auto.k033ab31f95")}</span>
-                    <span>{Math.round(progress)}٪</span>
+                    <span>{Math.round(progress)}{t("common.percentSign")}</span>
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-surface-secondary">
                     <div
@@ -248,7 +251,7 @@ export function ProjectsPage() {
                         onPress={() => void handleQuickClockIn(project._id)}
                       >
                         <Login size={16} />
-                        ورود
+                        {t("auto.k32a81e5587")}
                       </Button>
                       <Link
                         href={PATHS.PROJECT_ATTENDANCE(project._id)}
@@ -257,7 +260,7 @@ export function ProjectsPage() {
                       >
                         <Button size="sm" variant="secondary">
                           <Clock size={16} />
-                          حضور
+                          {t("auto.k400ef06dff")}
                         </Button>
                       </Link>
                     </>

@@ -40,7 +40,7 @@ export function TelegramConnectSection() {
       window.open(url, "_blank", "noopener,noreferrer");
       showToast(t("auto.k316f633607"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در اتصال تلگرام");
+      showToast(err instanceof Error ? err.message : t("auto.k29f284e281"));
     } finally {
       setConnecting(false);
     }
@@ -53,7 +53,7 @@ export function TelegramConnectSection() {
       notifyTelegramStatusChanged();
       showToast(t("auto.k237d8718db"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در قطع اتصال");
+      showToast(err instanceof Error ? err.message : t("auto.kb6e4d70efa"));
     } finally {
       setDisconnecting(false);
     }
@@ -64,7 +64,7 @@ export function TelegramConnectSection() {
       <div className="space-y-1">
         <h2 className="text-lg font-bold">{t("nav.telegramBot")}</h2>
         <p className="text-sm text-muted">
-          تراکنش‌ها، دسته‌بندی‌ها و گزارش‌ها را مستقیم از تلگرام مدیریت کنید.
+          {t("auto.k79ade96aa1")}
         </p>
       </div>
 
@@ -73,7 +73,7 @@ export function TelegramConnectSection() {
       ) : linked ? (
         <div className="space-y-3">
           <p className="rounded-xl bg-success/15 px-3 py-2 text-sm text-success-foreground">
-            حساب شما به بات تلگرام متصل است
+            {t("auto.kc85d9f42db")}
           </p>
           <div className="flex flex-col gap-2 sm:flex-row">
             {resolvedBotUsername && (
@@ -89,7 +89,7 @@ export function TelegramConnectSection() {
                   )
                 }
               >
-                باز کردن بات
+                {t("auto.kc41a153bdd")}
               </Button>
             )}
             <Button
@@ -99,15 +99,15 @@ export function TelegramConnectSection() {
               isPending={disconnecting}
               onPress={() => void disconnectTelegram()}
             >
-              قطع اتصال
+              {t("common.disconnect")}
             </Button>
           </div>
         </div>
       ) : (
         <div className="space-y-3">
           <p className="text-sm text-muted">
-            با زدن دکمه زیر، بات {APP_NAME_EN} در تلگرام باز می‌شود و حساب
-            وب‌اپ به بات متصل می‌شود.
+            {t("auto.k8e7f4f0002")}{APP_NAME_EN} {t("auto.k0940628caf")}
+            {t("auto.k5e0e6f8797")}
           </p>
           <Button
             type="button"
@@ -115,7 +115,7 @@ export function TelegramConnectSection() {
             isPending={connecting}
             onPress={() => void connectTelegram()}
           >
-            اتصال به بات تلگرام
+            {t("auto.k959bbb9c16")}
           </Button>
           <Button
             type="button"
@@ -126,7 +126,7 @@ export function TelegramConnectSection() {
               void refresh().then(() => notifyTelegramStatusChanged());
             }}
           >
-            بروزرسانی وضعیت
+            {t("auto.k9240a36c8f")}
           </Button>
         </div>
       )}

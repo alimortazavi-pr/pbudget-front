@@ -212,7 +212,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
       showToast(t("common.deleted"), "success");
       await load();
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     }
   }
 
@@ -337,12 +337,12 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
                 isActive ? (
                   <div className="inline-flex items-center gap-2 rounded-xl bg-income/15 px-4 py-2 text-sm font-medium text-income">
                     <Login size={16} />
-                    داخل محل کار (همگام با Business)
+                    {t("auto.ke9b29d6c51")}
                   </div>
                 ) : (
                   <div className="inline-flex items-center gap-2 rounded-xl bg-surface-secondary px-4 py-2 text-sm text-muted">
                     <Logout size={16} />
-                    خارج از محل کار
+                    {t("auto.k9fb2f268c0")}
                   </div>
                 )
               ) : isActive ? (
@@ -352,7 +352,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
                   isPending={actionLoading}
                 >
                   <Logout size={16} />
-                  خروج
+                  {t("common.logoutShort")}
                 </Button>
               ) : (
                 <Button
@@ -361,26 +361,27 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
                   isPending={actionLoading}
                 >
                   <Login size={16} />
-                  ورود
+                  {t("auto.k32a81e5587")}
                 </Button>
               )}
               {!businessSynced ? (
                 <Button variant="secondary" onPress={() => setManualOpen(true)}>
                   <Add size={16} />
-                  ثبت دستی
+                  {t("auto.kbba3b5a823")}
                 </Button>
               ) : null}
             </div>
             <div className="rounded-xl bg-surface-secondary p-3 text-sm">
-              کارکرد این ماه:{" "}
+              {t("auto.k0d7cdbf4fe")}{" "}
               <span className="font-bold">{formatDurationMinutes(data.monthWorkedMinutes)}</span>
               {data.monthTargetMinutes
-                ? ` · هدف ماه ${formatDurationMinutes(data.monthTargetMinutes)}`
+                ? t("projects.monthTargetSuffix", {
+                    duration: formatDurationMinutes(data.monthTargetMinutes),
+                  })
                 : ""}
               {data.dailyStatus?.workedTodayMinutes !== undefined ? (
                 <>
-                  {" · "}
-                  امروز {formatDurationMinutes(data.dailyStatus.workedTodayMinutes)}
+                  {" · "} {t("auto.kaac7d1e045")} {formatDurationMinutes(data.dailyStatus.workedTodayMinutes)}
                 </>
               ) : null}
             </div>
@@ -400,17 +401,17 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
             {!fixedIncome && hourlyRate > 0 ? (
               <div className="rounded-xl border border-income/30 bg-income-soft/30 p-3 text-sm">
                 <p className="text-muted">
-                  نرخ ساعتی:{" "}
+                  {t("auto.k6ed1f39277")}{" "}
                   <span className="font-semibold text-foreground">
                     {formatPrice(hourlyRate)}
                   </span>
                 </p>
                 <p className="mt-2 font-bold text-income">
-                  مبلغ قابل دریافت این ماه:{" "}
+                  {t("auto.k8a4f5aae8a")}{" "}
                   {expectedEarnings ? formatPrice(expectedEarnings) : "—"}
                 </p>
                 <p className="mt-1 text-xs text-muted">
-                  بر اساس {formatDurationMinutes(data.monthWorkedMinutes)} کارکرد ثبت‌شده
+                  {t("auto.k6d694699a1")}{formatDurationMinutes(data.monthWorkedMinutes)} {t("auto.k1f1551310b")}
                 </p>
               </div>
             ) : null}
@@ -426,11 +427,10 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
               <h2 className="font-semibold">{t("auto.k1f55474ae3")}</h2>
             </div>
             <p className="text-xs text-muted">
-              جمعه‌ها و تعطیلات رسمی از محاسبه کم می‌شوند.
+              {t("auto.k14b554d2b1")}
               {workingDaysInMonth > 0 ? (
                 <>
-                  {" "}
-                  این ماه {toPersianDigits(String(workingDaysInMonth))} روز کاری است.
+                  {" "} {t("auto.k30d7dd4f17")} {toPersianDigits(String(workingDaysInMonth))} {t("auto.k4212b64fed")}.
                 </>
               ) : null}
             </p>
@@ -444,17 +444,17 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
                 />
               </div>
               <Button onPress={() => void saveTarget()} isPending={savingTarget}>
-                ذخیره
+                {t("common.save")}
               </Button>
             </div>
             {savedMonthTarget && workingDaysInMonth > 0 && targetHours ? (
               <p className="rounded-xl bg-accent/10 p-3 text-sm">
-                هدف این ماه:{" "}
+                {t("auto.k6dd5db0816")}{" "}
                 <span className="font-bold">{formatDurationMinutes(savedMonthTarget)}</span>
                 <span className="text-muted">
                   {" "}
-                  ({targetHours} ساعت × {toPersianDigits(String(workingDaysInMonth))} روز
-                  کاری)
+                  ({targetHours} {t("auto.k4dbe762d48")} × {toPersianDigits(String(workingDaysInMonth))} {t("auto.k6702edb75e")}
+                  {t("auto.k13a8d415d7")}
                 </span>
               </p>
             ) : null}
@@ -470,7 +470,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
 
           {data.sessions.length === 0 ? (
             <div className="glass rounded-2xl p-8 text-center text-muted">
-              هنوز ساعتی برای این ماه ثبت نشده
+              {t("auto.kc96acc3ffc")}
             </div>
           ) : (
             <section className="space-y-2">
@@ -487,7 +487,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="font-medium">
-                          {range.date} · {toPersianDigits(range.start)} تا{" "}
+                          {range.date} · {toPersianDigits(range.start)} {t("auto.k19330ade57")}{" "}
                           {toPersianDigits(range.end)}
                         </p>
                         <p className="mt-1 text-sm text-muted">{range.duration}</p>

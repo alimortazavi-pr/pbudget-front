@@ -30,14 +30,14 @@ export function PricingPage({
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-4 md:px-6">
           <Link href={PATHS.LANDING} className="flex items-center gap-2 font-bold">
             <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--brand-rose)] to-[var(--brand-violet)] text-sm text-white">
-              پ
+              {t("brand.logoMark")}
             </span>
             <span>{content.hero.title}</span>
           </Link>
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <Link href={primaryCta}>
-              <Button size="sm">{isAuth ? "داشبورد" : "شروع رایگان"}</Button>
+              <Button size="sm">{isAuth ? t("nav.dashboard") : t("auto.k4bbf9a5a8b")}</Button>
             </Link>
           </div>
         </div>
@@ -49,7 +49,7 @@ export function PricingPage({
           className="mb-8 inline-flex items-center gap-1 text-sm text-muted hover:text-foreground"
         >
           <ArrowRight2 size={16} />
-          بازگشت به صفحه اصلی
+          {t("auto.k1bd7e08e16")}
         </Link>
 
         <LandingPricingSection
@@ -63,7 +63,7 @@ export function PricingPage({
         <div className="mt-14 rounded-3xl border lp-border lp-card p-8 text-center">
           <h2 className="text-xl font-bold">{t("auto.k8777c8ead8")}</h2>
           <p className="mt-2 text-sm lp-muted">
-            برای دمو کسب‌وکار یا پلن سازمانی با ما در تماس باشید.
+            {t("auto.k2f8db09e58")}
           </p>
           <Link href={`${PATHS.LANDING}#contact`} className="mt-6 inline-block">
             <Button size="lg">{t("auto.k26dbf2a80c")}</Button>

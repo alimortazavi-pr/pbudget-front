@@ -32,6 +32,7 @@ function NavLink({
   icon: Icon;
 }) {
   const pathname = usePathname();
+  const { t } = useTranslation();
   const active =
     href === PATHS.ADMIN
       ? pathname === PATHS.ADMIN
@@ -47,7 +48,7 @@ function NavLink({
       }`}
     >
       <IconComponent size={20} variant={active ? "Bold" : "Linear"} />
-      {label}
+      {t(label)}
     </Link>
   );
 }
@@ -67,12 +68,13 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
     }
   }, [didTryAutoLogin, isAuth, user, router]);
 
-  const pageTitle =
+  const pageTitleKey =
     ADMIN_NAV.find((item) =>
       item.href === PATHS.ADMIN
         ? pathname === PATHS.ADMIN
         : pathname.startsWith(item.href),
-    )?.label ?? t("common.adminPanel");
+    )?.label ?? "common.adminPanel";
+  const pageTitle = t(pageTitleKey);
 
   const isCheckingAccess =
     !didTryAutoLogin || !isAuth || (isAuth && !user);

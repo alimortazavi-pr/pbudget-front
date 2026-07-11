@@ -15,7 +15,10 @@ import { downloadMessages } from "./download";
 import { landingMessages } from "./landing";
 import { brandMessages } from "./brand";
 import { pagesMessages } from "./pages";
+import { authMessages } from "./auth";
 import { autoMessages } from "./auto";
+import { errorsMessages } from "./errors";
+import { changelogMessages } from "./changelog";
 
 function merge(...trees: MessageTree[]): Record<string, string> {
   return Object.assign({}, ...trees.map((t) => flattenMessages(t)));
@@ -42,6 +45,9 @@ export const messages = {
     { landing: landingMessages },
     { brand: brandMessages },
     { pages: pagesMessages },
+    { auth: authMessages },
+    { errors: errorsMessages },
+    { changelog: changelogMessages },
   ),
   ...autoFlat,
 };

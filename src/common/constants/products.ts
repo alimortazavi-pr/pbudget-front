@@ -1,4 +1,4 @@
-/** آدرس محصولات خانواده میز پردیس — برای لینک متقابل */
+/** Cross-links between Paradise Desk product family sites */
 
 export const PERSONAL_SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://pdesk.ir";
@@ -8,18 +8,18 @@ export const BUSINESS_SITE_URL =
 
 export const PRODUCT_FAMILY = {
   personal: {
-    name: "میز پردیس",
-    tagline: "مدیریت مالی شخصی",
+    nameKey: "brand.appName",
+    taglineKey: "brand.tagline",
     url: PERSONAL_SITE_URL,
   },
   business: {
-    name: "میز پردیس کسب‌وکار",
-    tagline: "حضور GPS، پرسنل و مالی تیمی",
+    nameKey: "common.businessProductName",
+    taglineKey: "common.businessProductTagline",
     url: BUSINESS_SITE_URL,
   },
 } as const;
 
-/** تم سبز میز کسب‌وکار — برای لینک‌های متقابل در pbudget */
+/** Business desk green theme — cross-links in pbudget */
 export const BUSINESS_BRAND = {
   primary: "#2dd4bf",
   primaryDeep: "#0d9488",

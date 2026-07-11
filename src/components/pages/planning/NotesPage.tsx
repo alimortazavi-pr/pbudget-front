@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
@@ -37,7 +40,7 @@ import { PeriodNavigator } from "@/components/pages/planning/PeriodNavigator";
 import { usePeriodQuery } from "@/components/pages/planning/usePeriodQuery";
 
 function getCategoryTitle(note: IUserNote) {
-  if (!note.category || typeof note.category === "string") return "بدون دسته";
+  if (!note.category || typeof note.category === "string") return t("auto.kb5b0dc4c64");
   return note.category.title;
 }
 
@@ -92,7 +95,7 @@ export function NotesPage() {
   const canEdit = Boolean(categoryFilter);
 
   const periodLabel = useMemo(() => {
-    if (noteDuration === "general") return "یادداشت کلی";
+    if (noteDuration === "general") return t("auto.k71cc54b74a");
     if (noteDuration === "daily") return formatJalaliDate(year, month, day);
     if (noteDuration === "yearly") return formatJalaliYear(year);
     return formatJalaliMonthYear(year, month);
@@ -105,7 +108,7 @@ export function NotesPage() {
       const data = await noteCategoriesApi.fetchNoteCategories();
       setCategories(data);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در بارگذاری دسته‌ها");
+      showToast(err instanceof Error ? err.message : t("auto.kd005e1835b"));
     }
   }, []);
 
@@ -135,7 +138,7 @@ export function NotesPage() {
       setPreviewDocs([]);
       lastSavedRef.current = JSON.stringify(nextLines);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در بارگذاری");
+      showToast(err instanceof Error ? err.message : t("auto.k0080763ff0"));
     } finally {
       setLoading(false);
     }
@@ -170,7 +173,7 @@ export function NotesPage() {
           showToast(t("common.saved"), "success");
         }
       } catch (err) {
-        showToast(err instanceof Error ? err.message : "خطا در ذخیره");
+        showToast(err instanceof Error ? err.message : t("auto.k01981ce4e8"));
       } finally {
         setSaving(false);
       }
@@ -254,7 +257,7 @@ export function NotesPage() {
       setCategoryTitle("");
       setEditCategory(null);
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     } finally {
       setCategorySaving(false);
     }
@@ -269,14 +272,14 @@ export function NotesPage() {
       }
       showToast(t("common.deleted"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     }
   }
 
   async function clearCurrentNote() {
     if (!canEdit) return;
     if (!hasEditorContent(lines) && !noteDoc) return;
-    if (!confirm("یادداشت این دسته و بازه پاک شود؟")) return;
+    if (!confirm(t("auto.kd1388e3268"))) return;
 
     setClearing(true);
     try {
@@ -290,7 +293,7 @@ export function NotesPage() {
       lastSavedRef.current = "";
       showToast(t("auto.k48eda39ee6"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا");
+      showToast(err instanceof Error ? err.message : t("common.error"));
     } finally {
       setClearing(false);
     }
@@ -298,9 +301,9 @@ export function NotesPage() {
 
   const editingCategoryLabel =
     editingCategoryId === "none"
-      ? "بدون دسته"
+      ? t("auto.kb5b0dc4c64")
       : categories.find((item) => item._id === editingCategoryId)?.title ??
-        "دسته انتخاب‌شده";
+        t("auto.kfa22aa2997");
 
   return (
     <div className="space-y-5 pb-6">
@@ -354,7 +357,7 @@ export function NotesPage() {
           </div>
           <Button size="sm" variant="secondary" onPress={() => openCategoryModal()}>
             <Add size={16} />
-            دسته جدید
+            {t("auto.ke0d38a852f")}
           </Button>
         </div>
 
@@ -364,14 +367,14 @@ export function NotesPage() {
             className={chipClass(!categoryFilter)}
             onClick={() => setCategoryFilter()}
           >
-            همه
+            {t("common.all")}
           </button>
           <button
             type="button"
             className={chipClass(categoryFilter === "none")}
             onClick={() => setCategoryFilter("none")}
           >
-            بدون دسته
+            {t("auto.kb5b0dc4c64")}
           </button>
           {categories.map((category) => (
             <button
@@ -422,12 +425,12 @@ export function NotesPage() {
       ) : !canEdit ? (
         <section className="space-y-4 rounded-2xl border border-border bg-surface p-4">
           <p className="text-sm leading-7 text-muted">
-            برای نوشتن یا ویرایش، یک دسته انتخاب کنید (مثلاً «بدون دسته» یا «طلب
-            و بدهی»).
+            {t("auto.ke0a8421028")}
+            {t("auto.k3b19104967")}
           </p>
           {previewDocs.length === 0 ? (
             <p className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted">
-              یادداشتی در این بازه نیست.
+              {t("auto.k1bbda9c301")}
             </p>
           ) : (
             previewDocs.map((doc) => (
@@ -451,9 +454,9 @@ export function NotesPage() {
         <section className="space-y-3 rounded-2xl border border-border bg-surface p-4">
           <div className="flex items-center justify-between gap-2">
             <div>
-              <h2 className="font-semibold">یادداشت {editingCategoryLabel}</h2>
+              <h2 className="font-semibold">{t("auto.k3ec8c91053")}{editingCategoryLabel}</h2>
               <p className="text-xs text-muted">
-                {saving ? "در حال ذخیره…" : "ذخیره خودکار"}
+                {saving ? t("auto.k4d58255c24") : t("auto.k85eb93fe75")}
               </p>
             </div>
             <div className="flex gap-2">
@@ -463,7 +466,7 @@ export function NotesPage() {
                 isPending={saving}
                 onPress={() => void saveDocument(lines)}
               >
-                ذخیره
+                {t("common.save")}
               </Button>
               <Button
                 size="sm"
@@ -471,7 +474,7 @@ export function NotesPage() {
                 isPending={clearing}
                 onPress={() => void clearCurrentNote()}
               >
-                پاک کردن
+                {t("auto.ke8936e60e5")}
               </Button>
             </div>
           </div>
@@ -485,7 +488,7 @@ export function NotesPage() {
           <form onSubmit={(e) => void saveCategory(e)}>
             <AppModalHeader onClose={() => setCategoryModalOpen(false)}>
               <Modal.Heading>
-                {editCategory ? "ویرایش دسته یادداشت" : "دسته یادداشت جدید"}
+                {editCategory ? t("auto.k872f6f6971") : t("auto.k1ca31b69ed")}
               </Modal.Heading>
             </AppModalHeader>
             <Modal.Body>
@@ -504,10 +507,10 @@ export function NotesPage() {
                 variant="ghost"
                 onPress={() => setCategoryModalOpen(false)}
               >
-                انصراف
+                {t("common.cancel")}
               </Button>
               <Button type="submit" isPending={categorySaving}>
-                ذخیره
+                {t("common.save")}
               </Button>
             </Modal.Footer>
           </form>

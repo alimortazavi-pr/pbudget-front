@@ -87,20 +87,20 @@ export function InstallmentsPage() {
       {monthlyData && (
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="glass rounded-2xl p-4">
-            <p className="text-sm text-muted">باقی‌مانده {periodLabel}</p>
+            <p className="text-sm text-muted">{t("debts.remaining")}{periodLabel}</p>
             <p className="mt-2 text-2xl font-bold text-expense">
               {formatPrice(monthlyData.pendingAmount)}
             </p>
             <p className="mt-1 text-xs text-muted">
-              {formatCount(monthlyData.pendingCount)} قسط در انتظار
+              {formatCount(monthlyData.pendingCount)} {t("auto.ked1b246579")}
             </p>
           </div>
           <div className="glass rounded-2xl p-4">
-            <p className="text-sm text-muted">پرداخت‌شده {periodLabel}</p>
+            <p className="text-sm text-muted">{t("auto.k4db2de0c95")}{periodLabel}</p>
             <p className="mt-2 text-2xl font-bold text-income">
               {formatPrice(monthlyData.paidAmount)}
             </p>
-            <p className="mt-1 text-xs text-muted">{formatCount(monthlyData.paidCount)} قسط</p>
+            <p className="mt-1 text-xs text-muted">{formatCount(monthlyData.paidCount)} {t("auto.kd673bbfe0f")}</p>
           </div>
         </div>
       )}
@@ -125,10 +125,10 @@ export function InstallmentsPage() {
       )}
 
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted">{formatCount(plans.length)} برنامه پرداخت</p>
+        <p className="text-sm text-muted">{formatCount(plans.length)} {t("auto.k2234933fad")}</p>
         <Button size="sm" onPress={() => setCreatePlanOpen(true)}>
           <Add size={18} />
-          برنامه جدید
+          {t("auto.ka5b452289b")}
         </Button>
       </div>
 
@@ -140,7 +140,7 @@ export function InstallmentsPage() {
           <p className="text-muted">{t("auto.kb79e02bfee")}</p>
           <Button className="mt-4" onPress={() => setCreatePlanOpen(true)}>
             <Add size={18} />
-            اولین برنامه
+            {t("auto.ke4cc5b8b99")}
           </Button>
         </div>
       ) : (
@@ -172,7 +172,7 @@ export function InstallmentsPage() {
                       </span>
                     </div>
                     <p className="mt-1 text-xs leading-6 text-muted">
-                      {formatPrice(plan.amount)} · روز {plan.dueDayOfMonth} هر ماه
+                      {formatPrice(plan.amount)} · {t("auto.k6702edb75e")}{plan.dueDayOfMonth} {t("auto.k63c83a62df")}
                       {plan.person ? ` · ${plan.person}` : ""}
                     </p>
                   </div>
@@ -187,7 +187,7 @@ export function InstallmentsPage() {
                   <div className="rounded-xl bg-income-soft/50 p-2">
                     <p className="text-muted">{t("auto.k4db2de0c95")}</p>
                     <p className="mt-1 font-semibold text-income">
-                      {formatCount(plan.completedInstallments)} قسط
+                      {formatCount(plan.completedInstallments)} {t("auto.kd673bbfe0f")}
                     </p>
                   </div>
                   <div className="rounded-xl bg-expense-soft/50 p-2 col-span-2 sm:col-span-1">
@@ -204,7 +204,7 @@ export function InstallmentsPage() {
                   <div className="mt-3">
                     <div className="mb-1 flex justify-between text-xs text-muted">
                       <span>{t("auto.k9998d1625f")}</span>
-                      <span>{Math.round(progress)}٪</span>
+                      <span>{Math.round(progress)}{t("common.percentSign")}</span>
                     </div>
                     <div className="h-2 overflow-hidden rounded-full bg-surface-secondary">
                       <div
@@ -222,7 +222,7 @@ export function InstallmentsPage() {
 
       {!loading && monthlyData && monthlyData.occurrences.length > 0 && (
         <section className="space-y-3">
-          <h2 className="text-sm font-semibold">اقساط {periodLabel}</h2>
+          <h2 className="text-sm font-semibold">{t("nav.installments")}{periodLabel}</h2>
           {monthlyData.occurrences.map((item) => {
             const planId =
               typeof item.plan === "object" && item.plan?._id
@@ -243,7 +243,7 @@ export function InstallmentsPage() {
                       {typeof item.plan === "object" ? item.plan.title : t("pages.planning.installmentDefaultTitle")}
                     </p>
                     <p className="mt-1 text-xs text-muted">
-                      قسط {item.sequence} · روز {item.day} ·{" "}
+                      {t("auto.kd673bbfe0f")}{item.sequence} · {t("auto.k6702edb75e")}{item.day} ·{" "}
                       {item.status === "paid"
                         ? t("pages.planning.installmentPaid")
                         : item.status === "skipped"

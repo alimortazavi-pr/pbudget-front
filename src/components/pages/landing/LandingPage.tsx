@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import Link from "next/link";
@@ -80,7 +83,7 @@ function scrollToId(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-/** آخرین کارت اگر در ردیف تنها بماند، کل عرض گرید را می‌گیرد */
+/** Last card spans full grid width when alone on its row */
 function featureGridItemClass(index: number, total: number) {
   const isLast = index === total - 1;
   if (!isLast) return "";
@@ -149,11 +152,11 @@ function Product3D() {  const { t } = useTranslation();
             <div className="mb-3 flex items-center justify-between">
               <span className="text-xs font-semibold">{t("auto.kbc3d6cfc08")}</span>
               <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
-                امروز
+                {t("auto.kaac7d1e045")}
               </span>
             </div>
             <div className="grid grid-cols-3 gap-2 text-center text-sm">
-              {[{ l: "درآمد", v: "۱۲.۸M" }, { l: "هزینه", v: "۴.۲M" }, { l: "مانده", v: "۸.۶M" }].map((s) => (
+              {[{ l: t("common.income"), v: t("auto.k3e7be45fb2") }, { l: t("common.expense"), v: t("auto.ka703d53a1b") }, { l: t("auto.k23d4b4c189"), v: t("auto.ka37f282344") }].map((s) => (
                 <div key={s.l} className="rounded-lg bg-[var(--lp-card)] p-2">
                   <p className="text-[10px] lp-muted">{s.l}</p>
                   <p className="font-bold">{toPersianDigits(s.v)}</p>
@@ -166,11 +169,11 @@ function Product3D() {  const { t } = useTranslation();
               ))}
             </div>
             <div className="mt-3 space-y-1.5">
-              {["خرید هفتگی", "حقوق پروژه", "اشتراک ابری"].map((row, i) => (
+              {[t("auto.k62f970e9b6"), t("auto.kf1c560c443"), t("auto.k0362143b58")].map((row, i) => (
                 <div key={row} className="flex items-center justify-between rounded-lg bg-[var(--lp-card)] px-2.5 py-1.5 text-[11px]">
                   <span className="lp-muted">{row}</span>
                   <span className={`font-semibold ${i === 1 ? "text-[var(--brand-teal-deep)]" : ""}`}>
-                    {toPersianDigits(i === 1 ? "+۲.۴M" : "-۸۵۰K")}
+                    {toPersianDigits(i === 1 ? t("auto.k289084873a") : t("auto.k31a951fbd5"))}
                   </span>
                 </div>
               ))}
@@ -181,13 +184,13 @@ function Product3D() {  const { t } = useTranslation();
       <div className="landing-float-badge absolute -left-2 top-12 z-10 lp-card rounded-xl px-3 py-2 backdrop-blur-xl md:-left-4 md:top-14">
         <div className="flex items-center gap-2 text-xs font-medium md:text-sm">
           <Chart size={18} className="text-[var(--brand-rose)]" />
-          بودجه ماهانه
+          {t("auto.kdf811d2985")}
         </div>
       </div>
       <div className="landing-float-badge landing-float-badge-2 absolute -right-1 bottom-6 z-10 lp-card rounded-xl px-3 py-2 backdrop-blur-xl md:-right-2 md:bottom-8">
         <div className="flex items-center gap-2 text-xs font-medium">
           <TickCircle size={16} className="text-emerald-500" variant="Bold" />
-          تراکنش ثبت شد
+          {t("auto.k99542d84e0")}
         </div>
       </div>
     </div>
@@ -205,20 +208,20 @@ function ContactForm() {  const { t } = useTranslation();
 
   function validateForm() {
     const next: Record<string, string> = {};
-    if (!name.trim()) next.name = "نام الزامی است";
+    if (!name.trim()) next.name = t("auto.kd403fd3ef7");
 
     const phoneNorm = toEnglishDigits(phone.trim());
     if (phoneNorm && !/^09\d{9}$/.test(phoneNorm)) {
-      next.phone = "شماره موبایل معتبر نیست (مثال: ۰۹۱۲۳۴۵۶۷۸۹)";
+      next.phone = t("auto.kbe90794ac7");
     }
 
     const emailTrim = email.trim();
     if (emailTrim && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrim)) {
-      next.email = "ایمیل معتبر نیست";
+      next.email = t("auto.kbf6143fb62");
     }
 
     if (message.trim().length < 10) {
-      next.message = "پیام باید حداقل ۱۰ کاراکتر باشد";
+      next.message = t("auto.kd4f0ec7945");
     }
 
     setErrors(next);
@@ -244,7 +247,7 @@ function ContactForm() {  const { t } = useTranslation();
       setMessage("");
       setErrors({});
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "ارسال ناموفق");
+      showToast(err instanceof Error ? err.message : t("auto.k6102777c2b"));
     } finally {
       setSending(false);
     }
@@ -303,7 +306,7 @@ function ContactForm() {  const { t } = useTranslation();
       <div className="sm:col-span-2">
         <Button type="submit" size="lg" isDisabled={sending}>
           <DirectboxSend size={18} />
-          {sending ? "در حال ارسال…" : "ارسال پیام"}
+          {sending ? t("auto.k5dbce29fce") : t("auto.kce3479088e")}
         </Button>
       </div>
     </form>
@@ -481,7 +484,7 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
           <Reveal className="mx-auto max-w-2xl text-center">
             <h2 className="text-2xl font-bold md:text-4xl">{t("auto.kd4caaca0fc")}<span className="landing-text-shimmer">{t("auto.kce39b11865")}</span></h2>
             <p className="mt-3 text-sm lp-muted md:text-base">
-              همه ابزارهای مالی شخصی در یک میز — از تراکنش روزانه تا پروژه و تحلیل.
+              {t("auto.k44556cbf61")}
             </p>
           </Reveal>
           <div className="landing-features-grid mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -533,7 +536,7 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
           </Reveal>
           <p className="mt-8 text-center">
             <Link href={PATHS.PRICING} className="text-sm text-accent hover:underline">
-              مشاهده صفحه کامل قیمت‌ها
+              {t("auto.k01ed918887")}
             </Link>
           </p>
         </div>
@@ -573,7 +576,7 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
 
       <section className="py-12">
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-2 px-4 sm:grid-cols-4 md:px-6">
-          {[{ icon: Calendar, label: "شمسی" }, { icon: Messages2, label: "تلگرام" }, { icon: Microphone2, label: "صوتی" }, { icon: Chart, label: "تحلیل" }, { icon: Building, label: "تیمی" }, { icon: Clock, label: "زمان" }, { icon: DocumentDownload, label: "اکسل" }, { icon: Wallet2, label: "صندوق" }].map(({ icon: Icon, label }) => (
+          {[{ icon: Calendar, label: t("auto.k0f46ab6712") }, { icon: Messages2, label: t("auto.kca3d2562e4") }, { icon: Microphone2, label: t("auto.k21575dae23") }, { icon: Chart, label: t("auto.k161f3de3c1") }, { icon: Building, label: t("auto.k7ef7c399e7") }, { icon: Clock, label: t("auto.k299c8c9aa7") }, { icon: DocumentDownload, label: t("auto.k34eb5f9ec7") }, { icon: Wallet2, label: t("auto.kc2b3e54546") }].map(({ icon: Icon, label }) => (
             <div key={label} className="lp-card flex flex-col items-center gap-2 rounded-xl p-4 text-center text-sm">
               <Icon size={22} className="text-[var(--brand-rose)]" /><span>{label}</span>
             </div>

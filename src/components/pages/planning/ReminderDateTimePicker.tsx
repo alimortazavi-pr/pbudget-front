@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useEffect, useRef, useState } from "react";
@@ -120,7 +123,7 @@ export function ReminderDateTimePicker({
           variant="secondary"
           onPress={() => pickerRef.current?.closeCalendar()}
         >
-          بستن تقویم
+          {t("auto.kc11fcd5b58")}
         </Button>
       </div>
     </div>

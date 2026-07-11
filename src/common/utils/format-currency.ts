@@ -20,7 +20,7 @@ export function formatPriceWithCurrency(
   return `${formatted} ${currencyShortLabel(resolved)}`;
 }
 
-/** Backward-compatible: uses تومان when currency omitted */
+/** Backward-compatible: defaults to toman when currency omitted */
 export function formatPriceForUser(
   amount: number | string,
   currency?: UserCurrency | null,

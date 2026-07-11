@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useMemo } from "react";
@@ -68,7 +71,7 @@ function CustomTooltip({
       <p className="mb-1 font-medium">{label}</p>
       {payload.map((entry) => (
         <p key={entry.name} style={{ color: entry.color }}>
-          {entry.name}: {formatPrice(entry.value)} تومان
+          {entry.name}: {formatPrice(entry.value)} {t("common.toman")}
         </p>
       ))}
     </div>
@@ -142,8 +145,8 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
 
   const overviewData = useMemo(
     () => [
-      { name: "درآمد", value: report.summary.income, fill: CHART_COLORS.income },
-      { name: "هزینه", value: report.summary.cost, fill: CHART_COLORS.cost },
+      { name: t("common.income"), value: report.summary.income, fill: CHART_COLORS.income },
+      { name: t("common.expense"), value: report.summary.cost, fill: CHART_COLORS.cost },
     ].filter((item) => item.value > 0),
     [report.summary],
   );
@@ -183,13 +186,13 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
         <div>
           <h2 className="text-lg font-bold lg:text-xl">{t("auto.kf8c419ec92")}</h2>
           <p className="text-sm text-muted">
-            نمای تصویری درآمد، هزینه و توزیع دسته‌بندی‌ها
+            {t("auto.kc76c3df1a7")}
           </p>
         </div>
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
-        <ChartCard title={t("auto.k94c6c32903")} subtitle="سهم درآمد و هزینه">
+        <ChartCard title={t("auto.k94c6c32903")} subtitle={t("auto.kfdb1236f54")}>
           {overviewData.length > 0 ? (
             <div className="pb-chart-canvas h-64 w-full min-h-[16rem]" dir="ltr">
               <ResponsiveContainer width="100%" height="100%" minHeight={256}>
@@ -213,8 +216,8 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
                   </Pie>
                   <Tooltip
                     formatter={(value) => [
-                      `${formatPrice(Number(value ?? 0))} تومان`,
-                      "مبلغ",
+                      `${formatPrice(Number(value ?? 0))} ${t("common.toman")}`,
+                      t("common.amount"),
                     ]}
                   />
                   <Legend />
@@ -223,12 +226,12 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
             </div>
           ) : (
             <p className="py-12 text-center text-sm text-muted">
-              برای نمایش نمودار، تراکنش ثبت کنید
+              {t("auto.k3c7e88f3ce")}
             </p>
           )}
         </ChartCard>
 
-        <ChartCard title={t("auto.ke6ad730907")} subtitle="خلاصه همین بازه">
+        <ChartCard title={t("auto.ke6ad730907")} subtitle={t("auto.k7fc2f6858c")}>
           <div className="pb-chart-canvas h-64 w-full min-h-[16rem]" dir="ltr">
             <ResponsiveContainer width="100%" height="100%" minHeight={256}>
               <BarChart data={overviewBarData}>
@@ -237,8 +240,8 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
                 <YAxis tickFormatter={formatChartPrice} tick={{ fontSize: 11 }} />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend />
-                <Bar dataKey="income" name="درآمد" fill={CHART_COLORS.income} radius={[8, 8, 0, 0]} />
-                <Bar dataKey="cost" name="هزینه" fill={CHART_COLORS.cost} radius={[8, 8, 0, 0]} />
+                <Bar dataKey="income" name={t("common.income")} fill={CHART_COLORS.income} radius={[8, 8, 0, 0]} />
+                <Bar dataKey="cost" name={t("common.expense")} fill={CHART_COLORS.cost} radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -250,8 +253,8 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
           title={t("auto.kb9aad2b7eb")}
           subtitle={
             duration === "monthly"
-              ? "نمودار روزانه ماه جاری"
-              : "روند ماهانه"
+              ? t("auto.kc281155ebc")
+              : t("auto.k8b91d7ff21")
           }
         >
           <div className="pb-chart-canvas h-72 w-full min-h-[18rem]" dir="ltr">
@@ -275,7 +278,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
                 <Area
                   type="monotone"
                   dataKey="income"
-                  name="درآمد"
+                  name={t("common.income")}
                   stroke={CHART_COLORS.income}
                   fill="url(#incomeGrad)"
                   strokeWidth={2}
@@ -283,7 +286,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
                 <Area
                   type="monotone"
                   dataKey="cost"
-                  name="هزینه"
+                  name={t("common.expense")}
                   stroke={CHART_COLORS.cost}
                   fill="url(#costGrad)"
                   strokeWidth={2}
@@ -293,7 +296,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
           </div>
         </ChartCard>
 
-        <ChartCard title={t("auto.k35b908d245")} subtitle="درآمد منهای هزینه">
+        <ChartCard title={t("auto.k35b908d245")} subtitle={t("auto.k5649ce19cc")}>
           <div className="pb-chart-canvas h-72 w-full min-h-[18rem]" dir="ltr">
             <ResponsiveContainer width="100%" height="100%" minHeight={288}>
               <BarChart data={cashFlowData}>
@@ -301,7 +304,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
                 <XAxis dataKey="label" tick={{ fontSize: 11 }} />
                 <YAxis tickFormatter={formatChartPrice} tick={{ fontSize: 11 }} />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="net" name="خالص" radius={[6, 6, 0, 0]}>
+                <Bar dataKey="net" name={t("auto.k306c8ddc1c")} radius={[6, 6, 0, 0]}>
                   {cashFlowData.map((entry, index) => (
                     <Cell
                       key={`net-${index}`}
@@ -316,7 +319,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
-        <ChartCard title={t("auto.k3e3995d7f3")} subtitle="بر اساس دسته‌بندی">
+        <ChartCard title={t("auto.k3e3995d7f3")} subtitle={t("auto.kf291cf2a60")}>
           {expensePieData.length > 0 ? (
             <div className="pb-chart-canvas h-72 w-full min-h-[18rem]" dir="ltr">
               <ResponsiveContainer width="100%" height="100%" minHeight={288}>
@@ -337,8 +340,8 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
                   </Pie>
                   <Tooltip
                     formatter={(value) => [
-                      `${formatPrice(Number(value ?? 0))} تومان`,
-                      "مبلغ",
+                      `${formatPrice(Number(value ?? 0))} ${t("common.toman")}`,
+                      t("common.amount"),
                     ]}
                   />
                   <Legend />
@@ -350,7 +353,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
           )}
         </ChartCard>
 
-        <ChartCard title={t("auto.kb161d91f75")} subtitle="بر اساس دسته‌بندی">
+        <ChartCard title={t("auto.kb161d91f75")} subtitle={t("auto.kf291cf2a60")}>
           {incomePieData.length > 0 ? (
             <div className="pb-chart-canvas h-72 w-full min-h-[18rem]" dir="ltr">
               <ResponsiveContainer width="100%" height="100%" minHeight={288}>
@@ -371,8 +374,8 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
                   </Pie>
                   <Tooltip
                     formatter={(value) => [
-                      `${formatPrice(Number(value ?? 0))} تومان`,
-                      "مبلغ",
+                      `${formatPrice(Number(value ?? 0))} ${t("common.toman")}`,
+                      t("common.amount"),
                     ]}
                   />
                   <Legend />
@@ -385,7 +388,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
         </ChartCard>
       </div>
 
-      <ChartCard title={t("auto.k06b64776cc")} subtitle="درآمد و هزینه هر دسته">
+      <ChartCard title={t("auto.k06b64776cc")} subtitle={t("auto.kb1e41b1722")}>
         {categoryBarData.length > 0 ? (
           <div className="pb-chart-canvas h-80 w-full min-h-[20rem]" dir="ltr">
             <ResponsiveContainer width="100%" height="100%" minHeight={320}>
@@ -395,8 +398,8 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
                 <YAxis type="category" dataKey="name" width={90} tick={{ fontSize: 11 }} />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend />
-                <Bar dataKey="income" name="درآمد" fill={CHART_COLORS.income} radius={[0, 4, 4, 0]} />
-                <Bar dataKey="cost" name="هزینه" fill={CHART_COLORS.cost} radius={[0, 4, 4, 0]} />
+                <Bar dataKey="income" name={t("common.income")} fill={CHART_COLORS.income} radius={[0, 4, 4, 0]} />
+                <Bar dataKey="cost" name={t("common.expense")} fill={CHART_COLORS.cost} radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -406,7 +409,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
       </ChartCard>
 
       {paymentCardBarData.length > 0 && (
-        <ChartCard title={t("auto.k337e6243ed")} subtitle="پرداخت و دریافت در این بازه">
+        <ChartCard title={t("auto.k337e6243ed")} subtitle={t("auto.k4595c69cd7")}>
           <div className="pb-chart-canvas h-72 w-full min-h-[18rem]" dir="ltr">
             <ResponsiveContainer width="100%" height="100%" minHeight={288}>
               <BarChart data={paymentCardBarData}>
@@ -415,8 +418,8 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
                 <YAxis tickFormatter={formatChartPrice} tick={{ fontSize: 11 }} />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend />
-                <Bar dataKey="cost" name="پرداخت" fill={CHART_COLORS.cost} radius={[6, 6, 0, 0]} />
-                <Bar dataKey="income" name="دریافت" fill={CHART_COLORS.income} radius={[6, 6, 0, 0]} />
+                <Bar dataKey="cost" name={t("auto.k1025955b55")} fill={CHART_COLORS.cost} radius={[6, 6, 0, 0]} />
+                <Bar dataKey="income" name={t("auto.k63397316b7")} fill={CHART_COLORS.income} radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -425,7 +428,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
 
       <div className="grid gap-4 xl:grid-cols-2">
         {boxData.length > 0 && (
-          <ChartCard title={t("auto.kcac5d51cfc")} subtitle="سهم از کل دارایی نقدی">
+          <ChartCard title={t("auto.kcac5d51cfc")} subtitle={t("auto.k41fe75d862")}>
             <div className="pb-chart-canvas h-64 w-full min-h-[16rem]" dir="ltr">
               <ResponsiveContainer width="100%" height="100%" minHeight={256}>
                 <PieChart>
@@ -436,7 +439,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
                         value: box.balance,
                       })),
                       {
-                        name: "کیف پول اصلی",
+                        name: t("auto.ka9c56f2829"),
                         value: report.summary.userBalance,
                       },
                     ].filter((item) => item.value > 0)}
@@ -455,8 +458,8 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
                   </Pie>
                   <Tooltip
                     formatter={(value) => [
-                      `${formatPrice(Number(value ?? 0))} تومان`,
-                      "موجودی",
+                      `${formatPrice(Number(value ?? 0))} ${t("common.toman")}`,
+                      t("auto.k90c9e7cad5"),
                     ]}
                   />
                   <Legend />
@@ -478,7 +481,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
             count: item.count,
             color: resolveCategoryColor(item.color, index),
           }))}
-          amountLabel="هزینه"
+          amountLabel={t("common.expense")}
         />
         <CategoryTable
           title={t("auto.k9e91112d6d")}
@@ -489,7 +492,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
             count: item.count,
             color: resolveCategoryColor(item.color, index),
           }))}
-          amountLabel="درآمد"
+          amountLabel={t("common.income")}
         />
       </div>
     </div>
@@ -543,7 +546,10 @@ function CategoryTable({
                     </span>
                   </td>
                   <td className="py-2.5">{formatPrice(row.amount)}</td>
-                  <td className="py-2.5">{toPersianDigits(row.share.toFixed(1))}٪</td>
+                  <td className="py-2.5">
+                    {toPersianDigits(row.share.toFixed(1))}
+                    {t("common.percentSign")}
+                  </td>
                   <td className="py-2.5">{toPersianDigits(row.count)}</td>
                 </tr>
               ))}

@@ -64,7 +64,7 @@ export function ProjectWorkTimeTab({
           : "",
       );
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در بارگذاری");
+      showToast(err instanceof Error ? err.message : t("auto.k0080763ff0"));
     } finally {
       setLoading(false);
     }
@@ -90,7 +90,7 @@ export function ProjectWorkTimeTab({
     try {
       const result = await workTimeApi.clockIn(projectId);
       const msg = formatDailyRemainingMessage(result.dailyStatus);
-      showToast(msg ? `ورود ثبت شد · ${msg}` : "ورود ثبت شد", "success");
+      showToast(msg ? t("projects.clockInWithDetail", { detail: msg }) : t("auto.k2482a145bd"), "success");
       await load();
     } catch (err) {
       showErrorToast(err);
@@ -136,7 +136,7 @@ export function ProjectWorkTimeTab({
   }
 
   async function removeSession(session: IWorkSession) {
-    if (!confirm("این ردیف حذف شود؟")) return;
+    if (!confirm(t("auto.kb2d6766c6f"))) return;
     try {
       await workTimeApi.deleteWorkSession(projectId, session._id);
       showToast(t("common.deleted"), "success");
@@ -148,7 +148,7 @@ export function ProjectWorkTimeTab({
 
   function budgetLabel(budget: IBudget | string | undefined) {
     if (!budget || typeof budget === "string") return null;
-    return budget.description || "تراکنش مرتبط";
+    return budget.description || t("auto.k1e4443bd87");
   }
 
   if (loading || !data) {
@@ -174,8 +174,8 @@ export function ProjectWorkTimeTab({
       <section className="glass space-y-3 rounded-2xl p-4">
         <p className="text-sm text-muted">
           {fixedIncome
-            ? "پروژه با درآمد ثابت — ساعت موظف معمولاً ثابت ماهانه است."
-            : "پروژه ساعتی/قراردادی — ساعت کار را برای فاکتور و تحلیل ثبت کنید."}
+            ? t("auto.k630579e758")
+            : t("auto.k2ff98502db")}
         </p>
         <div className="flex flex-wrap gap-2">
           {isActive ? (
@@ -185,7 +185,7 @@ export function ProjectWorkTimeTab({
               isPending={actionLoading}
             >
               <Logout size={16} />
-              خروج از {projectTitle}
+              {t("auto.kb7d46a1957")}{projectTitle}
             </Button>
           ) : (
             <Button
@@ -194,24 +194,26 @@ export function ProjectWorkTimeTab({
               isPending={actionLoading}
             >
               <Login size={16} />
-              ورود به {projectTitle}
+              {t("auto.k0553387a65")}{projectTitle}
             </Button>
           )}
           <Button variant="secondary" onPress={() => setManualOpen(true)}>
             <Add size={16} />
-            ثبت دستی
+            {t("auto.kbba3b5a823")}
           </Button>
           <Link href={PATHS.PROJECT_ATTENDANCE(projectId)}>
             <Button variant="ghost" size="sm">
-              صفحه کامل حضور و غیاب
+              {t("auto.k29c4888248")}
             </Button>
           </Link>
         </div>
         <div className="rounded-xl bg-surface-secondary p-3 text-sm">
-          کارکرد این ماه:{" "}
+          {t("auto.k0d7cdbf4fe")}{" "}
           <span className="font-bold">{formatDurationMinutes(data.monthWorkedMinutes)}</span>
           {data.monthTargetMinutes
-            ? ` · هدف ${formatDurationMinutes(data.monthTargetMinutes)}`
+            ? t("projects.monthTargetSuffix", {
+                duration: formatDurationMinutes(data.monthTargetMinutes),
+              })
             : ""}
         </div>
         {progress !== null ? (
@@ -230,20 +232,20 @@ export function ProjectWorkTimeTab({
           <div className="min-w-[140px] flex-1">
             <FormInput
               label={t("auto.kc378ba89e4")}
-              placeholder={fixedIncome ? "مثلاً ۱۷۶" : "مثلاً ۸۰"}
+              placeholder={fixedIncome ? t("auto.k8e348fa444") : t("auto.k08fb89a4c9")}
               value={targetHours}
               onChange={(e) => setTargetHours(e.target.value)}
             />
           </div>
           <Button onPress={() => void saveTarget()} isPending={savingTarget}>
-            ذخیره
+            {t("common.save")}
           </Button>
         </div>
       </section>
 
       {data.sessions.length === 0 ? (
         <div className="glass rounded-2xl p-8 text-center text-muted">
-          هنوز ساعتی برای این ماه ثبت نشده
+          {t("auto.kc96acc3ffc")}
         </div>
       ) : (
         <div className="space-y-2">
@@ -259,7 +261,7 @@ export function ProjectWorkTimeTab({
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-medium">
-                      {range.date} · {toPersianDigits(range.start)} تا{" "}
+                      {range.date} · {toPersianDigits(range.start)} {t("auto.k19330ade57")}{" "}
                       {toPersianDigits(range.end)}
                     </p>
                     <p className="mt-1 text-sm text-muted">{range.duration}</p>

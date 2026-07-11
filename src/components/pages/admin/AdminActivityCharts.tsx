@@ -46,9 +46,9 @@ export function AdminActivityCharts({ activity }: AdminActivityChartsProps) {
                 formatter={(value, name) => [
                   toPersianDigits(Number(value)),
                   name === "users"
-                    ? "کاربر"
+                    ? t("auto.k883da9f030")
                     : name === "transactions"
-                      ? "تراکنش"
+                      ? t("auto.keb7bb3e55b")
                       : String(name),
                 ]}
               />
@@ -56,14 +56,14 @@ export function AdminActivityCharts({ activity }: AdminActivityChartsProps) {
               <Area
                 type="monotone"
                 dataKey="users"
-                name="کاربر جدید"
+                name={t("auto.kb73ff9ea8b")}
                 stroke="#8b5cf6"
                 fill="#8b5cf633"
               />
               <Area
                 type="monotone"
                 dataKey="transactions"
-                name="تراکنش"
+                name={t("auto.keb7bb3e55b")}
                 stroke="#f43f5e"
                 fill="#f43f5e33"
               />
@@ -82,13 +82,13 @@ export function AdminActivityCharts({ activity }: AdminActivityChartsProps) {
               <YAxis tick={{ fontSize: 11 }} />
               <Tooltip
                 formatter={(value, name) => [
-                  `${formatPrice(Number(value))} تومان`,
-                  name === "income" ? "درآمد" : "هزینه",
+                  `${formatPrice(Number(value))} ${t("common.toman")}`,
+                  name === "income" ? t("common.income") : t("common.expense"),
                 ]}
               />
               <Legend />
-              <Bar dataKey="income" name="درآمد" fill="#10b981" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="cost" name="هزینه" fill="#f43f5e" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="income" name={t("common.income")} fill="#10b981" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="cost" name={t("common.expense")} fill="#f43f5e" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

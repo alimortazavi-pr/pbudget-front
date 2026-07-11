@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useEffect, useMemo, useState } from "react";
@@ -34,7 +37,7 @@ function resolveVentureId(venture: IBudget["venture"]): string {
 function resolveVentureTitle(
   venture: NonNullable<IBudget["venture"]> | string,
 ): string {
-  if (typeof venture === "string") return "کسب‌وکار مشترک";
+  if (typeof venture === "string") return t("auto.k4ced105246");
   return venture.title;
 }
 
@@ -47,8 +50,8 @@ export function LinkedVentureSummary({ venture }: LinkedVentureSummaryProps) {
         <p className="font-semibold">{resolveVentureTitle(venture)}</p>
       </div>
       <p className="text-xs leading-6 text-muted">
-        این تراکنش بین شما و شرکا در این کسب‌وکار قابل مشاهده است. برای تغییر، به
-        صفحه کسب‌وکار بروید.
+        {t("auto.k7344ec03a8")}
+        {t("auto.k088468c192")}
       </p>
     </div>
   );
@@ -84,7 +87,7 @@ export function VentureLedgerSection({
       <div className="space-y-2 rounded-2xl border border-border/60 bg-surface-secondary/60 p-4">
         <p className="text-sm font-medium">{t("auto.k691d16e3d6")}</p>
         <p className="text-xs leading-6 text-muted">
-          تراکنش‌های وصل‌شده به پروژه را نمی‌توان هم‌زمان به کسب‌وکار مشترک وصل کرد.
+          {t("auto.k15c9c52688")}
         </p>
       </div>
     );
@@ -96,7 +99,7 @@ export function VentureLedgerSection({
         <div className="min-w-0">
           <p className="text-sm font-medium">{t("auto.k691d16e3d6")}</p>
           <p className="mt-1 text-xs text-muted">
-            نمایش تراکنش برای شما و شرکای کسب‌وکار
+            {t("auto.k66e5eca228")}
           </p>
         </div>
         <Switch
@@ -119,11 +122,11 @@ export function VentureLedgerSection({
             selectedKey={value.ventureId || undefined}
             onSelectionChange={(key) => onChange({ ventureId: key })}
             options={ventureOptions}
-            emptyMessage="کسب‌وکاری ثبت نشده"
+            emptyMessage={t("auto.k5d24b04648")}
           />
           <p className="text-xs leading-6 text-muted">
-            پس از ثبت تراکنش، در تب تراکنش‌های آن کسب‌وکار و محاسبات شراکت نمایش داده
-            می‌شود.
+            {t("auto.k5401a5ae4d")}
+            {t("auto.kb2d8ac8e4d")}
           </p>
         </div>
       ) : null}

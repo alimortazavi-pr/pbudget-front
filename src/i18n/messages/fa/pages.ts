@@ -27,6 +27,11 @@ export const pagesMessages: MessageTree = {
     filterDone: "انجام‌شده",
     loadError: "خطا در بارگذاری",
     defaultProject: "پروژه",
+    addQuick: "افزودن",
+    addDetailed: "تسک با جزئیات",
+    firstTask: "اولین تسک",
+    overdue: "عقب‌افتاده",
+    routine: "ثابت",
   },
   projects: {
     statusActive: "فعال",
@@ -40,6 +45,15 @@ export const pagesMessages: MessageTree = {
     labelRemaining: "مانده",
     loadError: "خطا در بارگذاری",
     clockInRecorded: "ورود ثبت شد",
+    projectCount: "{{count}} پروژه",
+    attendance: "حضور و غیاب",
+    newProject: "پروژه جدید",
+    firstProject: "اولین پروژه",
+    fixedIncome: "درآمد ثابت",
+    noWorkTime: "بدون ساعت کاری",
+    shared: "مشترک",
+    clockIn: "ورود",
+    attendanceShort: "حضور",
   },
   planning: {
     loadError: "خطا در بارگذاری",
@@ -65,9 +79,14 @@ export const pagesMessages: MessageTree = {
     runningNewTitle: "تعهد جاری جدید",
     runningSave: "ذخیره",
     runningSubmit: "ثبت",
+    progressDueDay: "{{percent}}٪ · روز {{day}} هر ماه",
+    deleteTabConfirm: "«{{name}}» حذف شود؟",
   },
   analysis: {
     loadError: "خطا در بارگذاری تحلیل",
+    apiFallbackNotice:
+      "API تحلیل در دسترس نیست؛ نمودارها از تراکنش‌های همین بازه ساخته شده‌اند.",
+    categoriesOverLimit: "{{count}} دسته از سقف ماهانه عبور کرده‌اند.",
   },
   attendance: {
     defaultProject: "پروژه",
@@ -87,6 +106,14 @@ export const pagesMessages: MessageTree = {
   invites: {
     sharePercent: " · سهم {{percent}}٪",
     loadError: "خطا",
+    inviteBody:
+      "{{owner}} شما را به عنوان شریک در {{context}} «{{title}}» دعوت کرده است.",
+  },
+  partners: {
+    deleteConfirm: "شریک «{{name}}» حذف شود؟",
+    sharePercent: "سهم {{percent}}٪",
+    totalSharePercent: "{{percent}}٪",
+    totalShareLabel: "جمع سهم:",
   },
   ventures: {
     loadError: "خطا در بارگذاری",

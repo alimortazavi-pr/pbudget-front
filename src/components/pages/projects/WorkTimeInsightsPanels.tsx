@@ -1,5 +1,8 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
+const t = getTranslator();
+
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import Link from "next/link";
@@ -24,10 +27,10 @@ const insightClass: Record<IWorkTimeInsight["type"], string> = {
 };
 
 function alertActionLabel(action: IWorkTimeAlert["action"]) {
-  if (action === "clock-out") return "ثبت خروج";
-  if (action === "open-project") return "حضور و غیاب پروژه";
-  if (action === "set-target") return "تعریف ساعت موظف";
-  return "مشاهده حضور و غیاب";
+  if (action === "clock-out") return t("auto.keb9b1f60d5");
+  if (action === "open-project") return t("auto.ka38440a09c");
+  if (action === "set-target") return t("auto.keb2bed9c00");
+  return t("auto.k2ef0bd649a");
 }
 
 function attendanceHref(alert: IWorkTimeAlert) {

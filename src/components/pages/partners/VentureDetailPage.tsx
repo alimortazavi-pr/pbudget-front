@@ -51,7 +51,7 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
       setTitle(data.venture.title);
       setDescription(data.venture.description ?? "");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "خطا در بارگذاری");
+      showToast(err instanceof Error ? err.message : t("auto.k0080763ff0"));
     } finally {
       setLoading(false);
     }
@@ -83,7 +83,7 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
   }
 
   async function remove() {
-    if (!confirm("کسب‌وکار و شرکای آن حذف شوند؟")) return;
+    if (!confirm(t("auto.ke897b1df29"))) return;
     setDeleting(true);
     try {
       await partnersApi.deleteVenture(ventureId);
@@ -99,7 +99,7 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
   if (loading || !venture) {
     return (
       <div className="glass rounded-2xl p-10 text-center text-muted">
-        در حال بارگذاری…
+        {t("common.loading")}
       </div>
     );
   }
@@ -107,11 +107,11 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
   const isPartner = venture.accessRole === "partner";
 
   const tabs = [
-    { id: "overview" as const, label: "خلاصه" },
-    { id: "partners" as const, label: "شرکا" },
-    { id: "board" as const, label: "بورد برنامه‌ریزی" },
-    { id: "transactions" as const, label: "تراکنش‌ها" },
-    ...(!isPartner ? [{ id: "settings" as const, label: "تنظیمات" }] : []),
+    { id: "overview" as const, label: t("auto.kf5d8f72df7") },
+    { id: "partners" as const, label: t("auto.kae6a285197") },
+    { id: "board" as const, label: t("auto.k11dd432167") },
+    { id: "transactions" as const, label: t("auto.k4ad10a7f11") },
+    ...(!isPartner ? [{ id: "settings" as const, label: t("nav.settings") }] : []),
   ];
 
   return (
@@ -121,7 +121,7 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
         <h1 className="mt-1 text-2xl font-bold">{venture.title}</h1>
         {isPartner ? (
           <p className="mt-2 rounded-lg bg-accent/10 px-2 py-1 text-xs text-accent">
-            دسترسی مشترک — فقط مشاهده
+            {t("auto.k0d7e2324b4")}
           </p>
         ) : null}
       </section>
@@ -195,7 +195,7 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
               onChange={(e) => setDescription(e.target.value)}
             />
             <Button className="w-full" size="lg" onPress={() => void save()} isPending={saving}>
-              ذخیره تغییرات
+              {t("auto.k55d482e181")}
             </Button>
           </div>
 
@@ -208,7 +208,7 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
               isPending={deleting}
             >
               <Trash size={16} />
-              حذف کسب‌وکار
+              {t("auto.k020a419754")}
             </Button>
           </section>
         </div>

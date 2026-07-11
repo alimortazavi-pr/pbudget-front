@@ -1,6 +1,9 @@
 "use client";
 
+import { getTranslator } from "@/i18n";
 import { useCallback, useRef, useState } from "react";
+
+const t = getTranslator();
 
 type SpeechResult = {
   isFinal?: boolean;
@@ -48,7 +51,7 @@ export function useVoiceAssistant() {
     (onFinal: (text: string) => void) => {
       const Ctor = getRecognitionCtor();
       if (!Ctor) {
-        setError("مرورگر شما از تشخیص صدا پشتیبانی نمی‌کند");
+        setError(t("auto.kd81b4adffc"));
         return;
       }
 
@@ -83,7 +86,7 @@ export function useVoiceAssistant() {
 
       rec.onerror = (event) => {
         if (event.error !== "aborted") {
-          setError("خطا در تشخیص صدا — دوباره تلاش کنید");
+          setError(t("auto.kf5dea1fb8d"));
         }
         setState("idle");
       };
@@ -99,7 +102,7 @@ export function useVoiceAssistant() {
         rec.start();
         setState("listening");
       } catch {
-        setError("شروع ضبط صدا ممکن نشد");
+        setError(t("auto.kf230c678b4"));
         setState("idle");
       }
     },
