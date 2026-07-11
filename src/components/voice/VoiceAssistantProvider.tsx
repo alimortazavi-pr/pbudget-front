@@ -60,6 +60,8 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) { 
   const voice = useVoiceAssistant();
   const { enabled: voiceAssistantEnabled, mounted: preferenceMounted } =
     useVoiceAssistantPreference();
+  const isAdmin = user?.mobile === "09125519818";
+  const isEnabled = isAdmin && voiceAssistantEnabled;
   const { count: mobileOverlayCount } = useMobileOverlay();
   const isMobile = useMediaQuery("(max-width: 1023px)");
 
@@ -183,7 +185,7 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) { 
 
   const showFab =
     preferenceMounted &&
-    voiceAssistantEnabled &&
+    isEnabled &&
     !(isMobile && mobileOverlayCount > 0);
 
   return (
@@ -202,7 +204,7 @@ export function VoiceAssistantProvider({ children }: { children: ReactNode }) { 
         </button>
       )}
 
-      {voiceAssistantEnabled && (
+      {isEnabled && (
         <AppModal open={modalOpen} onOpenChange={(v) => { if (!v) void handleCancel(); }} mobileFull>
           <AppModalDialog className="flex max-h-[100dvh] flex-col sm:max-w-lg">
           <AppModalHeader>

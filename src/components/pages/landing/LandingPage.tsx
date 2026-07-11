@@ -346,7 +346,7 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
   const primaryLabel = isAuth ? landingDashboardCta(t) : content.hero.primaryCta;
   const appSoon = content.settings.downloadComingSoon;
   const { apkAvailable } = useAndroidAppAvailability();
-  const showAppDownload = !appSoon;
+  const showAppDownload = true;
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 32);

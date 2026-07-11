@@ -10,7 +10,7 @@ import { PATHS } from "@/common/constants";
 import { usePendingInvitesCount } from "@/common/hooks/usePendingInvitesCount";
 import { AppLogo } from "@/components/common/brand/AppLogo";
 import { ShellAccountMenu } from "@/components/common/layout/ShellAccountMenu";
-import { CREATE_NAV_ITEM, BANK_IMPORT_NAV_ITEM, PLANNING_NAV_ITEMS } from "@/components/common/layout/shell-nav";
+import { CREATE_NAV_ITEM, BANK_IMPORT_NAV_ITEM, PLANNING_NAV_ITEMS, DOWNLOAD_NAV_ITEM } from "@/components/common/layout/shell-nav";
 
 const TIMELINE_PRIMARY = [
   { href: PATHS.HOME, labelKey: "nav.timeline", icon: Calendar },
@@ -98,7 +98,14 @@ export function TimelineSidebar() {
           })}
         </nav>
 
-        <div className="mt-auto border-t border-border/50 pt-4">
+        <div className="mt-auto border-t border-border/50 pt-4 flex flex-col gap-2">
+          <Link
+            href={DOWNLOAD_NAV_ITEM.href}
+            className="pb-sidebar-link !py-2 text-xs text-muted hover:text-foreground"
+          >
+            <DOWNLOAD_NAV_ITEM.icon size={20} />
+            <span>{t(DOWNLOAD_NAV_ITEM.label)}</span>
+          </Link>
           <ShellAccountMenu variant="sidebar" showPlanning={false} />
         </div>
       </div>

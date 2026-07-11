@@ -32,6 +32,7 @@ import {
 } from "@/common/utils/post-auth";
 import { showToast } from "@/common/utils/toast";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
+import { LanguageSelector } from "@/components/common/layout/LanguageSelector";
 import { AppLogo } from "@/components/common/brand/AppLogo";
 import { SiteFooterCredits } from "@/components/common/brand/SiteFooterCredits";
 import { FormInput } from "@/components/common/form/FormFields";
@@ -223,7 +224,10 @@ export function GetStartedPage() {
                 <AppLogo size={40} />
               </Link>
             </div>
-            <ThemeToggle />
+            <div className="flex items-center gap-2">
+              <LanguageSelector />
+              <ThemeToggle />
+            </div>
           </div>
 
           <div className="flex flex-1 items-center justify-center px-5 py-8 lg:px-12 lg:py-14">
