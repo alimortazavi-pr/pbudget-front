@@ -9,6 +9,7 @@ import { AuthBootstrap } from "@/components/common/layout/AuthBootstrap";
 import { MobileAppShell } from "@/components/common/layout/MobileAppShell";
 import { SimpleModeGuard } from "@/components/common/layout/SimpleModeGuard";
 import { BalanceModalProvider } from "@/components/providers/BalanceModalProvider";
+import { useAppMode } from "@/components/providers/AppModeProvider";
 import { VoiceAssistantProvider } from "@/components/voice/VoiceAssistantProvider";
 
 const PAGE_TITLE_KEYS: Record<string, string> = {
@@ -30,6 +31,7 @@ const PAGE_TITLE_KEYS: Record<string, string> = {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const { isSimple } = useAppMode();
   const isLandingPage = pathname === PATHS.LANDING;
   const isLandingPreview = pathname === PATHS.LANDING_PREVIEW;
   const isPricingPage = pathname === PATHS.PRICING;
@@ -81,7 +83,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           ? "nav.paymentPlan"
           : isDebtDetail
             ? "nav.debts"
-            : PAGE_TITLE_KEYS[pathname]) ?? APP_NAME_FA;
+            : isSimple && pathname === PATHS.HOME
+              ? "nav.home"
+              : PAGE_TITLE_KEYS[pathname]) ?? APP_NAME_FA;
 
   const shellProps = {
     title: titleKey,
@@ -100,7 +104,11 @@ export function AppShell({ children }: { children: ReactNode }) {
       pathname === PATHS.SETTINGS ||
       pathname.startsWith("/projects/") ||
       isInstallmentDetail ||
-      isDebtDetail,
+      isDebtDetail ||
+      (isSimple &&
+        (pathname === PATHS.BOXES ||
+          pathname === PATHS.CATEGORIES ||
+          pathname === PATHS.SETTINGS)),
   };
 
   return (

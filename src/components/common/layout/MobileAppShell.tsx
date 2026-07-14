@@ -6,8 +6,10 @@ import { Button } from "@heroui/react";
 import {
   Add,
   ArrowRight2,
+  Home2,
   InfoCircle,
   Menu,
+  Profile,
 } from "iconsax-reactjs";
 import { useState, type ReactNode } from "react";
 
@@ -22,7 +24,6 @@ import {
   CREATE_NAV_ITEM,
   MOBILE_TAB_SIDE_ITEMS,
   PRIMARY_NAV_ITEMS,
-  SIMPLE_MOBILE_TAB_SIDE_ITEMS,
 } from "./shell-nav";
 import { useTranslation } from "@/components/providers/LanguageProvider";
 import { LanguageSelector } from "./LanguageSelector";
@@ -44,12 +45,10 @@ const MOBILE_TAB_ITEMS = [
 ];
 
 const SIMPLE_MOBILE_TAB_ITEMS = [
-  PRIMARY_NAV_ITEMS[0],
-  SIMPLE_MOBILE_TAB_SIDE_ITEMS[0],
+  { href: PATHS.HOME, label: "nav.home", icon: Home2 },
   { ...CREATE_NAV_ITEM, label: "nav.create", fab: true as const },
-  SIMPLE_MOBILE_TAB_SIDE_ITEMS[1],
-  { href: "#more", label: "nav.more", icon: Menu, isMore: true as const },
-];
+  { href: PATHS.PROFILE, label: "nav.profile", icon: Profile },
+] as const;
 
 export function MobileAppShell({
   children,
@@ -67,10 +66,12 @@ export function MobileAppShell({
   const tabItems = isSimple ? SIMPLE_MOBILE_TAB_ITEMS : MOBILE_TAB_ITEMS;
 
   return (
-    <div className="min-h-screen w-full bg-background lg:flex lg:flex-row">
-      <ShellSidebar />
+    <div
+      className={`min-h-screen w-full bg-background ${isSimple ? "pb-app-simple" : "lg:flex lg:flex-row"}`}
+    >
+      {!isSimple ? <ShellSidebar /> : null}
 
-      <div className="flex min-h-screen min-w-0 flex-1 flex-col">
+      <div className={`flex min-h-screen min-w-0 flex-1 flex-col ${isSimple ? "mx-auto w-full max-w-md" : ""}`}>
         <header className="pb-header-full lg:static lg:z-auto lg:border-b lg:bg-surface/80">
           <div className="pb-header-inner">
             <div className="flex min-w-0 items-center gap-2">
@@ -91,31 +92,35 @@ export function MobileAppShell({
                 <h1 className="truncate text-base font-semibold lg:text-xl">
                   {displayTitle}
                 </h1>
-                <span className="hidden shrink-0 rounded-full bg-rose-500/12 px-2 py-0.5 text-[10px] font-medium text-rose-600 dark:text-rose-400 sm:inline">
-                  {t("nav.personalDesk")}
-                </span>
+                {!isSimple ? (
+                  <span className="hidden shrink-0 rounded-full bg-rose-500/12 px-2 py-0.5 text-[10px] font-medium text-rose-600 dark:text-rose-400 sm:inline">
+                    {t("nav.personalDesk")}
+                  </span>
+                ) : null}
               </div>
             </div>
             <div className="flex items-center gap-1">
-              <Button
-                isIconOnly
-                variant="ghost"
-                size="sm"
-                aria-label={t("common.help")}
-                data-tour="tour-button"
-                onPress={() => {
-                  if (pathname === PATHS.HOME) {
-                    startOnboarding();
-                  } else {
-                    startPageTour();
-                  }
-                }}
-              >
-                <InfoCircle size={20} />
-              </Button>
-              <ChangeAccountPopover />
-              <LanguageSelector />
-              <div className="lg:hidden">
+              {!isSimple ? (
+                <Button
+                  isIconOnly
+                  variant="ghost"
+                  size="sm"
+                  aria-label={t("common.help")}
+                  data-tour="tour-button"
+                  onPress={() => {
+                    if (pathname === PATHS.HOME) {
+                      startOnboarding();
+                    } else {
+                      startPageTour();
+                    }
+                  }}
+                >
+                  <InfoCircle size={20} />
+                </Button>
+              ) : null}
+              {!isSimple ? <ChangeAccountPopover /> : null}
+              {!isSimple ? <LanguageSelector /> : null}
+              <div className={isSimple ? "" : "lg:hidden"}>
                 <ThemeToggle />
               </div>
             </div>
@@ -126,7 +131,7 @@ export function MobileAppShell({
           <main
             className={`pb-main-content px-4 pt-14 ${
               hideTabBar ? "pb-8" : "pb-page-with-tabbar"
-            } pb-page-enter lg:px-10 lg:pb-10 lg:pt-8`}
+            } pb-page-enter ${isSimple ? "lg:px-4 lg:pb-10 lg:pt-8" : "lg:px-10 lg:pb-10 lg:pt-8"}`}
             data-tour="page-content"
           >
             {children}
@@ -135,7 +140,7 @@ export function MobileAppShell({
 
         {!hideTabBar && (
           <nav
-            className="pb-tab-bar lg:hidden"
+            className={`pb-tab-bar ${isSimple ? "" : "lg:hidden"}`}
             aria-label={t("common.mainNavigation")}
             data-tour="nav-tab-bar"
           >
@@ -198,7 +203,9 @@ export function MobileAppShell({
         )}
       </div>
 
-      <AppDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
+      {!isSimple ? (
+        <AppDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
+      ) : null}
     </div>
   );
 }

@@ -450,4 +450,92 @@
   .pb-experience-card-icon {
     @apply flex size-11 shrink-0 items-center justify-center rounded-xl bg-surface text-accent;
   }
+
+  .pb-app-simple .pb-main-shell {
+    @apply mx-auto w-full max-w-md;
+  }
+
+  .pb-simple-dashboard {
+    @apply flex flex-col gap-2 md:mt-2;
+  }
+
+  .pb-simple-panel {
+    @apply rounded-2xl p-5;
+  }
+
+  .pb-simple-duration-tabs {
+    @apply mb-6 flex items-center gap-2;
+  }
+
+  .pb-simple-duration-tab {
+    @apply flex-1 cursor-pointer rounded-xl border border-accent/40 px-3 py-2 text-center text-sm font-medium transition-colors;
+  }
+
+  .pb-simple-duration-tab[data-active="true"] {
+    @apply border-accent bg-accent text-accent-foreground;
+  }
+
+  .pb-simple-duration-tab[data-active="false"] {
+    @apply bg-transparent text-muted;
+  }
+
+  .pb-simple-period-nav {
+    @apply flex items-center justify-between gap-2 text-sm font-medium;
+  }
+
+  .pb-simple-period-btn {
+    @apply flex cursor-pointer items-center gap-1 text-muted transition-colors hover:text-foreground;
+  }
+
+  .pb-simple-period-label {
+    @apply text-center text-sm font-semibold text-foreground;
+  }
+
+  .pb-simple-stat-balance {
+    @apply rounded-xl px-3 py-3;
+    background: linear-gradient(
+      145deg,
+      color-mix(in oklch, #0c4a6e 92%, var(--foreground)),
+      color-mix(in oklch, #075985 80%, black)
+    );
+  }
+
+  .pb-simple-stat-income {
+    @apply rounded-xl px-3 py-3;
+    background: linear-gradient(
+      145deg,
+      color-mix(in oklch, var(--brand-teal) 88%, white),
+      color-mix(in oklch, var(--brand-teal-deep) 75%, black)
+    );
+  }
+
+  .pb-simple-stat-expense {
+    @apply rounded-xl px-3 py-3;
+    background: linear-gradient(
+      145deg,
+      color-mix(in oklch, var(--brand-rose) 88%, white),
+      color-mix(in oklch, var(--brand-rose-deep) 75%, black)
+    );
+  }
+
+  .pb-simple-stat-count {
+    @apply flex items-center justify-between rounded-xl px-3 py-2;
+    background: color-mix(in oklch, var(--brand-teal) 22%, var(--surface-secondary));
+  }
+
+  .pb-simple-transaction {
+    @apply list-none rounded-xl border-2 bg-surface px-3 py-3 transition-colors;
+  }
+
+  .pb-simple-transaction[data-type="income"] {
+    @apply border-[color-mix(in_oklch,var(--brand-teal)_55%,transparent)];
+  }
+
+  .pb-simple-transaction[data-type="expense"] {
+    @apply border-[color-mix(in_oklch,var(--brand-rose)_55%,transparent)];
+  }
+
+  .pb-app-simple .pb-tab-bar-inner {
+    @apply max-w-sm gap-6 rounded-2xl border border-border/40 bg-surface/80 px-6 py-1 backdrop-blur-xl;
+  }
 }

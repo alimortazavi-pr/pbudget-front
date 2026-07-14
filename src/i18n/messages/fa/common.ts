@@ -249,6 +249,7 @@ export const commonMessages: MessageTree = {
     "تحلیل مالی، بدهی، پروژه، برنامه‌ریزی و سایر ابزارهای کامل",
   simpleModeRedirect:
     "این بخش در حالت ساده در دسترس نیست — به داشبورد منتقل شدید",
+  quickAccess: "دسترسی سریع",
   periodDay: "روز",
   periodMonth: "ماه",
   periodYear: "سال",

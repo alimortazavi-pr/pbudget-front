@@ -248,6 +248,7 @@ export const commonMessages: MessageTree = {
     "Financial analysis, debts, projects, planning, and all tools",
   simpleModeRedirect:
     "This section is not available in simple mode — redirected to dashboard",
+  quickAccess: "Quick access",
   periodDay: "Day",
   periodMonth: "Month",
   periodYear: "Year",

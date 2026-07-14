@@ -248,6 +248,7 @@ export const commonMessages: MessageTree = {
     "التحليل المالي والديون والمشاريع والتخطيط وجميع الأدوات",
   simpleModeRedirect:
     "هذا القسم غير متاح في الوضع البسيط — تم التوجيه إلى لوحة التحكم",
+  quickAccess: "وصول سريع",
   periodDay: "يوم",
   periodMonth: "شهر",
   periodYear: "سنة",

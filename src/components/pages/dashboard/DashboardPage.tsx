@@ -20,6 +20,8 @@ import { BudgetStats } from "@/components/pages/dashboard/BudgetStats";
 import { DashboardFilterSection } from "@/components/pages/dashboard/DashboardFilterSection";
 import { DashboardHero } from "@/components/pages/dashboard/DashboardHero";
 import { WorkTimeQuickWidget } from "@/components/pages/projects/WorkTimeQuickWidget";
+import { SimpleDashboardPanel } from "@/components/pages/dashboard/SimpleDashboardPanel";
+import { SimpleTransactionCard } from "@/components/pages/dashboard/SimpleTransactionCard";
 import { TransactionCard } from "@/components/pages/dashboard/TransactionCard";
 import { TransactionListSkeleton } from "@/components/pages/dashboard/TransactionListSkeleton";
 import type { IBudget, IBudgetsSummary } from "@/common/interfaces/budget.interface";
@@ -175,21 +177,85 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
     }
   }
 
+  function setDuration(nextDuration: "monthly" | "daily") {
+    if (nextDuration === duration) return;
+    if (nextDuration === "daily") {
+      updateQuery({ duration: "daily", year, month, day });
+      return;
+    }
+    updateQuery({ duration: "monthly", year, month, day: "" });
+  }
+
+  const periodLabel =
+    calendarType === "gregorian"
+      ? duration === "daily"
+        ? formatDayMonthYear(
+            parseInt(day, 10),
+            parseInt(month, 10),
+            year,
+            "gregorian",
+          )
+        : formatMonthYear(parseInt(month, 10), year, "gregorian")
+      : duration === "daily"
+        ? formatDayMonthYear(
+            parseInt(day, 10),
+            parseInt(month, 10),
+            year,
+            "jalali",
+          )
+        : formatMonthYear(parseInt(month, 10), year, "jalali");
+
+  if (isSimple) {
+    return (
+      <div className="pb-simple-dashboard">
+        <SimpleDashboardPanel
+          duration={duration}
+          year={year}
+          month={month}
+          day={day}
+          periodLabel={periodLabel}
+          income={totalIncome ?? 0}
+          expense={totalCost ?? 0}
+          count={filteredBudgets.length}
+          onDurationChange={setDuration}
+          onShiftPeriod={(delta) =>
+            duration === "daily" ? shiftDay(delta) : shiftMonth(delta)
+          }
+        />
+
+        {loading ? (
+          <TransactionListSkeleton />
+        ) : filteredBudgets.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-border p-8 text-center">
+            <Filter size={32} className="mx-auto mb-3 text-muted" />
+            <p className="font-medium">{t("dashboard.noTransactionsFound")}</p>
+            <p className="mt-1 text-sm text-muted">
+              {t("dashboard.noTransactionsInRange")}
+            </p>
+          </div>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {filteredBudgets.map((budget: IBudget) => (
+              <SimpleTransactionCard key={budget._id} budget={budget} />
+            ))}
+          </ul>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="pb-dashboard-page">
       <DashboardHero
         firstName={user?.firstName}
         income={totalIncome ?? 0}
         expense={totalCost ?? 0}
-        simple={isSimple}
         data-tour="dashboard-balance"
       />
 
-      {!isSimple ? (
-        <div className="px-4 pb-4">
-          <WorkTimeQuickWidget />
-        </div>
-      ) : null}
+      <div className="px-4 pb-4">
+        <WorkTimeQuickWidget />
+      </div>
 
       <BudgetStats
         count={filteredBudgets.length}
@@ -232,23 +298,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
             <ArrowRight2 size={18} />
           </Button>
           <p className="text-sm font-medium lg:text-base">
-            {calendarType === "gregorian"
-              ? duration === "daily"
-                ? formatDayMonthYear(
-                    parseInt(day, 10),
-                    parseInt(month, 10),
-                    year,
-                    "gregorian",
-                  )
-                : formatMonthYear(parseInt(month, 10), year, "gregorian")
-              : duration === "daily"
-                ? formatDayMonthYear(
-                    parseInt(day, 10),
-                    parseInt(month, 10),
-                    year,
-                    "jalali",
-                  )
-                : formatMonthYear(parseInt(month, 10), year, "jalali")}
+            {periodLabel}
           </p>
           <Button
             isIconOnly
@@ -268,7 +318,6 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
           year={year}
           month={month}
           day={day}
-          compact={isSimple}
           onCategoryChange={(nextCategory) =>
             updateQuery({ category: nextCategory })
           }
@@ -287,31 +336,27 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         <h3 className="text-base font-semibold lg:text-lg">
           {t("dashboard.transactions")}
         </h3>
-        {!isSimple ? (
-          <Button
-            size="sm"
-            variant="ghost"
-            className="text-muted"
-            onPress={() => setExportOpen(true)}
-          >
-            <Export size={16} />
-            {t("common.export")}
-          </Button>
-        ) : null}
+        <Button
+          size="sm"
+          variant="ghost"
+          className="text-muted"
+          onPress={() => setExportOpen(true)}
+        >
+          <Export size={16} />
+          {t("common.export")}
+        </Button>
       </div>
 
-      {!isSimple ? (
-        <BudgetExportModal
-          open={exportOpen}
-          onOpenChange={setExportOpen}
-          categories={categories ?? []}
-          initialCategory={category}
-          initialYear={year}
-          initialMonth={month}
-          initialDay={day}
-          initialDuration={duration === "daily" ? "daily" : "monthly"}
-        />
-      ) : null}
+      <BudgetExportModal
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        categories={categories ?? []}
+        initialCategory={category}
+        initialYear={year}
+        initialMonth={month}
+        initialDay={day}
+        initialDuration={duration === "daily" ? "daily" : "monthly"}
+      />
 
       {loading ? (
         <TransactionListSkeleton />
