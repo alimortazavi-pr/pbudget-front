@@ -18,6 +18,7 @@ type DashboardHeroProps = {
   firstName?: string;
   income: number;
   expense: number;
+  simple?: boolean;
   "data-tour"?: string;
 };
 
@@ -34,6 +35,7 @@ export function DashboardHero({
   firstName,
   income,
   expense,
+  simple = false,
   "data-tour": dataTour,
 }: DashboardHeroProps) {
   const { t } = useTranslation();
@@ -61,7 +63,9 @@ export function DashboardHero({
               })}
             </p>
             <h2 className="mt-0.5 text-lg font-bold text-white lg:text-2xl">
-              {t("dashboard.financialDashboard")}
+              {simple
+                ? t("dashboard.simpleDashboardTitle")
+                : t("dashboard.financialDashboard")}
             </h2>
           </div>
           <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm lg:size-12">

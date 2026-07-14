@@ -237,6 +237,17 @@ export const commonMessages: MessageTree = {
   experienceTimelineLabel: "الخط الزمني",
   experienceTimelineDesc:
     "تقويم في المركز + ويدجتات HMI حسب الفترة المختارة",
+  appMode: "وضع التطبيق",
+  appModeDesc:
+    "اختر بين الوضع البسيط (المعاملات فقط) والوضع المتقدم (جميع الميزات)",
+  appModeSimpleLabel: "بسيط",
+  appModeSimpleDesc:
+    "تتبع المعاملات والفئات والصناديق فقط — مثل النسخة الأولى",
+  appModeAdvancedLabel: "متقدم",
+  appModeAdvancedDesc:
+    "التحليل المالي والديون والمشاريع والتخطيط وجميع الأدوات",
+  simpleModeRedirect:
+    "هذا القسم غير متاح في الوضع البسيط — تم التوجيه إلى لوحة التحكم",
   periodDay: "يوم",
   periodMonth: "شهر",
   periodYear: "سنة",

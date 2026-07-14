@@ -238,6 +238,17 @@ export const commonMessages: MessageTree = {
   experienceTimelineLabel: "خط زمانی",
   experienceTimelineDesc:
     "تقویم در مرکز + ویجت‌های HMI بر اساس بازه انتخاب‌شده",
+  appMode: "حالت اپ",
+  appModeDesc:
+    "بین حالت ساده (فقط تراکنش‌ها) و حالت پیشرفته (تمام امکانات) انتخاب کنید",
+  appModeSimpleLabel: "ساده",
+  appModeSimpleDesc:
+    "فقط ثبت و مشاهده تراکنش‌ها، دسته‌بندی‌ها و صندوق‌ها — مثل نسخه اولیه",
+  appModeAdvancedLabel: "پیشرفته",
+  appModeAdvancedDesc:
+    "تحلیل مالی، بدهی، پروژه، برنامه‌ریزی و سایر ابزارهای کامل",
+  simpleModeRedirect:
+    "این بخش در حالت ساده در دسترس نیست — به داشبورد منتقل شدید",
   periodDay: "روز",
   periodMonth: "ماه",
   periodYear: "سال",

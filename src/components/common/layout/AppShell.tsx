@@ -7,6 +7,7 @@ import { PATHS } from "@/common/constants";
 import { APP_NAME_FA } from "@/common/constants/brand";
 import { AuthBootstrap } from "@/components/common/layout/AuthBootstrap";
 import { MobileAppShell } from "@/components/common/layout/MobileAppShell";
+import { SimpleModeGuard } from "@/components/common/layout/SimpleModeGuard";
 import { BalanceModalProvider } from "@/components/providers/BalanceModalProvider";
 import { VoiceAssistantProvider } from "@/components/voice/VoiceAssistantProvider";
 
@@ -110,7 +111,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           {...shellProps}
           showBack={pathname !== PATHS.HOME}
         >
-          {children}
+          <SimpleModeGuard>{children}</SimpleModeGuard>
         </MobileAppShell>
       </VoiceAssistantProvider>
     </BalanceModalProvider>

@@ -188,12 +188,10 @@ export function ShellAccountMenu({
             <Call size={20} />
             {t("common.support")}
           </a>
-          {variant === "sidebar" ? (
-            <Link href={DOWNLOAD_NAV_ITEM.href} className={utilityLinkClass} onClick={onNavigate}>
-              <Mobile size={20} />
-              {t(DOWNLOAD_NAV_ITEM.label)}
-            </Link>
-          ) : null}
+          <Link href={DOWNLOAD_NAV_ITEM.href} className={utilityLinkClass} onClick={onNavigate}>
+            <Mobile size={20} />
+            {t(DOWNLOAD_NAV_ITEM.label)}
+          </Link>
         </div>
       </div>
 

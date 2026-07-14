@@ -14,6 +14,7 @@ import { VersionProvider } from "./VersionProvider";
 import { AppShell } from "@/components/common/layout/AppShell";
 import { PwaInstallPrompt } from "@/components/common/PwaInstallPrompt";
 import { LanguageProvider } from "./LanguageProvider";
+import { AppModeProvider } from "./AppModeProvider";
 
 export const ClientProvider: FC<PropsWithChildren> = ({ children }) => {
   return (
@@ -21,20 +22,22 @@ export const ClientProvider: FC<PropsWithChildren> = ({ children }) => {
       <ReduxProvider>
         <ThemeProvider>
           <LanguageProvider>
-            <VoiceAssistantPreferenceProvider>
-              <MobileOverlayProvider>
-                <VersionProvider>
-                  <TourProvider>
-                    <I18nProvider locale="fa-IR">
-                      <RootProvider>
-                        <AppShell>{children}</AppShell>
-                        <PwaInstallPrompt />
-                      </RootProvider>
-                    </I18nProvider>
-                  </TourProvider>
-                </VersionProvider>
-              </MobileOverlayProvider>
-            </VoiceAssistantPreferenceProvider>
+            <AppModeProvider>
+              <VoiceAssistantPreferenceProvider>
+                <MobileOverlayProvider>
+                  <VersionProvider>
+                    <TourProvider>
+                      <I18nProvider locale="fa-IR">
+                        <RootProvider>
+                          <AppShell>{children}</AppShell>
+                          <PwaInstallPrompt />
+                        </RootProvider>
+                      </I18nProvider>
+                    </TourProvider>
+                  </VersionProvider>
+                </MobileOverlayProvider>
+              </VoiceAssistantPreferenceProvider>
+            </AppModeProvider>
           </LanguageProvider>
         </ThemeProvider>
       </ReduxProvider>

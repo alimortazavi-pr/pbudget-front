@@ -32,6 +32,7 @@ import {
   totalIncomeSelector,
 } from "@/stores/budget";
 import { categoriesSelector } from "@/stores/category";
+import { useAppMode } from "@/components/providers/AppModeProvider";
 import { userSelector } from "@/stores/profile";
 
 type DashboardPageProps = {
@@ -40,6 +41,7 @@ type DashboardPageProps = {
 
 export function DashboardPage({ initialData }: DashboardPageProps) {
   const { t } = useTranslation();
+  const { isSimple } = useAppMode();
   const { formatMonthYear, formatDayMonthYear } = useLocalizedDate();
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -179,12 +181,15 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         firstName={user?.firstName}
         income={totalIncome ?? 0}
         expense={totalCost ?? 0}
+        simple={isSimple}
         data-tour="dashboard-balance"
       />
 
-      <div className="px-4 pb-4">
-        <WorkTimeQuickWidget />
-      </div>
+      {!isSimple ? (
+        <div className="px-4 pb-4">
+          <WorkTimeQuickWidget />
+        </div>
+      ) : null}
 
       <BudgetStats
         count={filteredBudgets.length}
@@ -263,6 +268,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
           year={year}
           month={month}
           day={day}
+          compact={isSimple}
           onCategoryChange={(nextCategory) =>
             updateQuery({ category: nextCategory })
           }
@@ -281,27 +287,31 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         <h3 className="text-base font-semibold lg:text-lg">
           {t("dashboard.transactions")}
         </h3>
-        <Button
-          size="sm"
-          variant="ghost"
-          className="text-muted"
-          onPress={() => setExportOpen(true)}
-        >
-          <Export size={16} />
-          {t("common.export")}
-        </Button>
+        {!isSimple ? (
+          <Button
+            size="sm"
+            variant="ghost"
+            className="text-muted"
+            onPress={() => setExportOpen(true)}
+          >
+            <Export size={16} />
+            {t("common.export")}
+          </Button>
+        ) : null}
       </div>
 
-      <BudgetExportModal
-        open={exportOpen}
-        onOpenChange={setExportOpen}
-        categories={categories ?? []}
-        initialCategory={category}
-        initialYear={year}
-        initialMonth={month}
-        initialDay={day}
-        initialDuration={duration === "daily" ? "daily" : "monthly"}
-      />
+      {!isSimple ? (
+        <BudgetExportModal
+          open={exportOpen}
+          onOpenChange={setExportOpen}
+          categories={categories ?? []}
+          initialCategory={category}
+          initialYear={year}
+          initialMonth={month}
+          initialDay={day}
+          initialDuration={duration === "daily" ? "daily" : "monthly"}
+        />
+      ) : null}
 
       {loading ? (
         <TransactionListSkeleton />

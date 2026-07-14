@@ -52,6 +52,7 @@ import {
 } from "@/components/pages/budget/VentureLedgerSection";
 import { CreateCategoryModal } from "@/components/pages/categories/CreateCategoryModal";
 import { UserPreferencesOnboardingModal } from "@/components/pages/settings/UserPreferencesSection";
+import { useAppMode } from "@/components/providers/AppModeProvider";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { bumpBudgetRevision } from "@/stores/budget";
 import { categoriesSelector } from "@/stores/category";
@@ -88,6 +89,7 @@ function buildMoreHint(parts: string[]) {
 
 export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   const { t } = useTranslation();
+  const { isSimple } = useAppMode();
   const { currencyLabel } = useCurrencyLabels();
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -472,7 +474,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
             <p className="text-sm text-muted">
               {budget ? t("budget.editTransaction") : t("budget.newTransaction")}
             </p>
-            {!budget ? (
+            {!budget && !isSimple ? (
               <Link
                 href={PATHS.BANK_IMPORT}
                 className="text-xs font-semibold text-accent underline-offset-2 hover:underline"
@@ -568,69 +570,73 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
             onChange={(e) => setDescription(e.target.value)}
           />
 
-          <BudgetMoreToggle
-            open={moreOpen}
-            onToggle={() => setMoreOpen((current) => !current)}
-            hint={moreOpen ? null : moreHint}
-          />
-
-          {moreOpen ? (
-            <div className="space-y-4">
-              <FormSelect
-                label={
-                  type === String(BudgetType.COST)
-                    ? t("budget.paymentCardSource")
-                    : t("budget.paymentCardDestination")
-                }
-                placeholder={t("auto.k33fcba0b6e")}
-                selectedKey={paymentCardId || "none"}
-                onSelectionChange={(key) =>
-                  setPaymentCardId(key === "none" ? "" : key)
-                }
-                options={[{ id: "none", label: t("budget.noCard") }, ...paymentCardOptions]}
-                emptyMessage={t("budget.noCardRegistered")}
+          {!isSimple ? (
+            <>
+              <BudgetMoreToggle
+                open={moreOpen}
+                onToggle={() => setMoreOpen((current) => !current)}
+                hint={moreOpen ? null : moreHint}
               />
-              {paymentCards.length === 0 ? (
-                <p className="text-xs text-muted">
-                  {t("budget.noCardsYetPrefix")}{" "}
-                  <Link href={PATHS.PAYMENT_CARDS} className="text-accent underline">
-                    {t("budget.myCardsLink")}
-                  </Link>{" "}
-                  {t("budget.noCardsYetSuffix")}
-                </p>
+
+              {moreOpen ? (
+                <div className="space-y-4">
+                  <FormSelect
+                    label={
+                      type === String(BudgetType.COST)
+                        ? t("budget.paymentCardSource")
+                        : t("budget.paymentCardDestination")
+                    }
+                    placeholder={t("auto.k33fcba0b6e")}
+                    selectedKey={paymentCardId || "none"}
+                    onSelectionChange={(key) =>
+                      setPaymentCardId(key === "none" ? "" : key)
+                    }
+                    options={[{ id: "none", label: t("budget.noCard") }, ...paymentCardOptions]}
+                    emptyMessage={t("budget.noCardRegistered")}
+                  />
+                  {paymentCards.length === 0 ? (
+                    <p className="text-xs text-muted">
+                      {t("budget.noCardsYetPrefix")}{" "}
+                      <Link href={PATHS.PAYMENT_CARDS} className="text-accent underline">
+                        {t("budget.myCardsLink")}
+                      </Link>{" "}
+                      {t("budget.noCardsYetSuffix")}
+                    </p>
+                  ) : null}
+
+                  {!budget?.debt ? (
+                    <DebtLedgerSection
+                      amount={price}
+                      value={debtLedger}
+                      onChange={updateDebtLedger}
+                    />
+                  ) : (
+                    <LinkedDebtSummary debt={budget.debt} />
+                  )}
+
+                  {existingVentureId ? (
+                    <LinkedVentureSummary
+                      venture={budget?.venture ?? existingVentureId}
+                    />
+                  ) : (
+                    <VentureLedgerSection
+                      value={ventureLedger}
+                      onChange={updateVentureLedger}
+                      projectBlocked={projectBlockedForVenture}
+                    />
+                  )}
+
+                  {!existingVentureId ? (
+                    <ProjectLedgerSection
+                      value={projectLedger}
+                      onChange={updateProjectLedger}
+                      isProjectCategory={isProjectCategory}
+                      categoryTitle={selectedCategory?.title}
+                    />
+                  ) : null}
+                </div>
               ) : null}
-
-              {!budget?.debt ? (
-                <DebtLedgerSection
-                  amount={price}
-                  value={debtLedger}
-                  onChange={updateDebtLedger}
-                />
-              ) : (
-                <LinkedDebtSummary debt={budget.debt} />
-              )}
-
-              {existingVentureId ? (
-                <LinkedVentureSummary
-                  venture={budget?.venture ?? existingVentureId}
-                />
-              ) : (
-                <VentureLedgerSection
-                  value={ventureLedger}
-                  onChange={updateVentureLedger}
-                  projectBlocked={projectBlockedForVenture}
-                />
-              )}
-
-              {!existingVentureId ? (
-                <ProjectLedgerSection
-                  value={projectLedger}
-                  onChange={updateProjectLedger}
-                  isProjectCategory={isProjectCategory}
-                  categoryTitle={selectedCategory?.title}
-                />
-              ) : null}
-            </div>
+            </>
           ) : null}
 
           <div className="border-t border-border/50 pt-4">

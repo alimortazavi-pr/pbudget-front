@@ -237,6 +237,17 @@ export const commonMessages: MessageTree = {
   experienceTimelineLabel: "Timeline",
   experienceTimelineDesc:
     "Calendar-centered HMI widgets for the selected period",
+  appMode: "App mode",
+  appModeDesc:
+    "Choose between simple mode (transactions only) and advanced mode (full features)",
+  appModeSimpleLabel: "Simple",
+  appModeSimpleDesc:
+    "Track transactions, categories, and boxes only — like the original app",
+  appModeAdvancedLabel: "Advanced",
+  appModeAdvancedDesc:
+    "Financial analysis, debts, projects, planning, and all tools",
+  simpleModeRedirect:
+    "This section is not available in simple mode — redirected to dashboard",
   periodDay: "Day",
   periodMonth: "Month",
   periodYear: "Year",

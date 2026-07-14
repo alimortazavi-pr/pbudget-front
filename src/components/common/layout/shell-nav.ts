@@ -33,6 +33,12 @@ export function getTelegramHref() {
     : `${PATHS.SETTINGS}#telegram`;
 }
 
+export const SIMPLE_NAV_ITEMS = [
+  { href: PATHS.HOME, label: "nav.home", icon: Home2 },
+  { href: PATHS.CATEGORIES, label: "nav.categories", icon: Category },
+  { href: PATHS.BOXES, label: "nav.boxes", icon: Box1 },
+] as const;
+
 export const PRIMARY_NAV_ITEMS = [
   { href: PATHS.HOME, label: "nav.home", icon: Home2 },
   { href: PATHS.BANK_IMPORT, label: "nav.bankImport", icon: DocumentUpload },
@@ -40,6 +46,12 @@ export const PRIMARY_NAV_ITEMS = [
   { href: PATHS.BOXES, label: "nav.boxes", icon: Box1 },
   { href: PATHS.PAYMENT_CARDS, label: "nav.myCards", icon: Card },
   { href: PATHS.CATEGORIES, label: "nav.categories", icon: Category },
+] as const;
+
+/** Simple mobile tab bar — beside the center FAB */
+export const SIMPLE_MOBILE_TAB_SIDE_ITEMS = [
+  { href: PATHS.CATEGORIES, label: "nav.categoriesShort", icon: Category },
+  { href: PATHS.BOXES, label: "nav.boxes", icon: Box1 },
 ] as const;
 
 export const BANK_IMPORT_NAV_ITEM = {

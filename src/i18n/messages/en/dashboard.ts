@@ -4,6 +4,7 @@ export const dashboardMessages: MessageTree = {
   greeting: "Hi, {{name}} 👋",
   defaultUserName: "User",
   financialDashboard: "Financial dashboard",
+  simpleDashboardTitle: "My transactions",
   walletBalance: "Wallet balance",
   insufficientFunds: "(Insufficient funds — {{currency}})",
   periodIncome: "Period income",

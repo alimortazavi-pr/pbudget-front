@@ -14,6 +14,7 @@ import { SUPPORT_PHONE } from "@/components/common/layout/shell-nav";
 import { VoiceAssistantSection } from "@/components/pages/profile/VoiceAssistantSection";
 import { TelegramConnectSection } from "@/components/pages/profile/TelegramConnectSection";
 import { UserPreferencesSettings } from "@/components/pages/settings/UserPreferencesSection";
+import { AppModeSection } from "@/components/pages/settings/AppModeSection";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { useVersion } from "@/components/providers/VersionProvider";
 
@@ -48,6 +49,8 @@ export function SettingsPage() {
           {theme === "dark" ? t("common.lightMode") : t("common.darkMode")}
         </button>
       </div>
+
+      <AppModeSection />
 
       <UserPreferencesSettings />
 

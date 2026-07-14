@@ -12,16 +12,19 @@ import {
   BANK_IMPORT_NAV_ITEM,
   PLANNING_NAV_GROUPS,
   PRIMARY_NAV_ITEMS,
+  SIMPLE_NAV_ITEMS,
   DOWNLOAD_NAV_ITEM,
 } from "@/components/common/layout/shell-nav";
 import { PATHS } from "@/common/constants";
 import { usePendingInvitesCount } from "@/common/hooks/usePendingInvitesCount";
 import { AppLogo } from "@/components/common/brand/AppLogo";
 import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useAppMode } from "@/components/providers/AppModeProvider";
 
 export function ShellSidebar() {
   const pathname = usePathname();
   const { t } = useTranslation();
+  const { isSimple } = useAppMode();
   const { count: pendingInvitesCount } = usePendingInvitesCount();
   const navBadges = useMemo(
     () =>
@@ -30,6 +33,7 @@ export function ShellSidebar() {
         : undefined,
     [pendingInvitesCount],
   );
+  const navItems = isSimple ? SIMPLE_NAV_ITEMS : PRIMARY_NAV_ITEMS;
 
   return (
     <aside className="pb-sidebar" aria-label={t("common.desktopNavigation")} data-tour="sidebar">
@@ -43,7 +47,7 @@ export function ShellSidebar() {
             {t("nav.primary")}
           </p>
           <nav className="flex flex-col gap-0.5">
-            {PRIMARY_NAV_ITEMS.map((item) => {
+            {navItems.map((item) => {
               const active =
                 item.href === PATHS.HOME
                    ? pathname === PATHS.HOME
@@ -74,20 +78,24 @@ export function ShellSidebar() {
           {t(CREATE_NAV_ITEM.label)}
         </Link>
 
-        <Link href={BANK_IMPORT_NAV_ITEM.href} className="pb-sidebar-secondary-cta mt-2">
-          <BANK_IMPORT_NAV_ITEM.icon size={18} variant="Bold" />
-          {t(BANK_IMPORT_NAV_ITEM.label)}
-        </Link>
+        {!isSimple ? (
+          <>
+            <Link href={BANK_IMPORT_NAV_ITEM.href} className="pb-sidebar-secondary-cta mt-2">
+              <BANK_IMPORT_NAV_ITEM.icon size={18} variant="Bold" />
+              {t(BANK_IMPORT_NAV_ITEM.label)}
+            </Link>
 
-        {PLANNING_NAV_GROUPS.map((group) => (
-          <ShellNavGroup
-            key={group.title}
-            title={t(group.title)}
-            items={group.items}
-            variant="sidebar"
-            itemBadges={navBadges}
-          />
-        ))}
+            {PLANNING_NAV_GROUPS.map((group) => (
+              <ShellNavGroup
+                key={group.title}
+                title={t(group.title)}
+                items={group.items}
+                variant="sidebar"
+                itemBadges={navBadges}
+              />
+            ))}
+          </>
+        ) : null}
 
         <div className="min-h-4 shrink-0" aria-hidden />
 
@@ -99,7 +107,7 @@ export function ShellSidebar() {
             <DOWNLOAD_NAV_ITEM.icon size={20} />
             <span>{t(DOWNLOAD_NAV_ITEM.label)}</span>
           </Link>
-          <ShellAccountMenu variant="sidebar" showPlanning={false} />
+          <ShellAccountMenu variant="sidebar" showPlanning={!isSimple} />
         </div>
       </div>
     </aside>

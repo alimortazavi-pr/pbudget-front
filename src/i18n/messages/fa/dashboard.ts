@@ -4,6 +4,7 @@ export const dashboardMessages: MessageTree = {
   greeting: "سلام، {{name}} 👋",
   defaultUserName: "کاربر",
   financialDashboard: "داشبورد مالی",
+  simpleDashboardTitle: "تراکنش‌های من",
   walletBalance: "موجودی کیف پول",
   insufficientFunds: "(کمبود وجه — {{currency}})",
   periodIncome: "دریافتی دوره",

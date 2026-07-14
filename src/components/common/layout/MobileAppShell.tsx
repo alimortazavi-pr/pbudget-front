@@ -22,9 +22,11 @@ import {
   CREATE_NAV_ITEM,
   MOBILE_TAB_SIDE_ITEMS,
   PRIMARY_NAV_ITEMS,
+  SIMPLE_MOBILE_TAB_SIDE_ITEMS,
 } from "./shell-nav";
 import { useTranslation } from "@/components/providers/LanguageProvider";
 import { LanguageSelector } from "./LanguageSelector";
+import { useAppMode } from "@/components/providers/AppModeProvider";
 
 type MobileAppShellProps = {
   children: ReactNode;
@@ -41,6 +43,14 @@ const MOBILE_TAB_ITEMS = [
   { href: "#more", label: "nav.more", icon: Menu, isMore: true as const },
 ];
 
+const SIMPLE_MOBILE_TAB_ITEMS = [
+  PRIMARY_NAV_ITEMS[0],
+  SIMPLE_MOBILE_TAB_SIDE_ITEMS[0],
+  { ...CREATE_NAV_ITEM, label: "nav.create", fab: true as const },
+  SIMPLE_MOBILE_TAB_SIDE_ITEMS[1],
+  { href: "#more", label: "nav.more", icon: Menu, isMore: true as const },
+];
+
 export function MobileAppShell({
   children,
   title = APP_NAME_FA,
@@ -52,7 +62,9 @@ export function MobileAppShell({
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { startOnboarding, startPageTour } = useTour();
   const { t } = useTranslation();
+  const { isSimple } = useAppMode();
   const displayTitle = t(title);
+  const tabItems = isSimple ? SIMPLE_MOBILE_TAB_ITEMS : MOBILE_TAB_ITEMS;
 
   return (
     <div className="min-h-screen w-full bg-background lg:flex lg:flex-row">
@@ -128,7 +140,7 @@ export function MobileAppShell({
             data-tour="nav-tab-bar"
           >
             <div className="pb-tab-bar-inner">
-              {MOBILE_TAB_ITEMS.map((item) => {
+              {tabItems.map((item) => {
                 if ("fab" in item && item.fab) {
                   return (
                     <Link
