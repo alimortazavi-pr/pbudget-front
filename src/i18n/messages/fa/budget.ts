@@ -35,4 +35,14 @@ export const budgetMessages: MessageTree = {
   settleDebtOptionLabel: "{{person}} · {{type}} · مانده {{amount}}",
   duplicateRowsRemoved:
     "{{count}} تراکنش تکراری — از لیست حذف شده‌اند",
+  dateRangeTitle: "بازه روز",
+  dateRangeHint: "مثلاً از ۱ تا ۲۰ برای لغو انتخاب روزهایی که قبلاً وارد کرده‌اید",
+  fromDay: "از روز",
+  toDay: "تا روز",
+  selectRange: "انتخاب بازه",
+  unselectRange: "لغو انتخاب بازه",
+  rangeInvalid: "بازه روز نامعتبر است",
+  rangeAppliedSelect: "{{count}} تراکنش در بازه انتخاب شد",
+  rangeAppliedUnselect: "{{count}} تراکنش در بازه از انتخاب خارج شد",
+  rangeNoMatch: "تراکنشی در این بازه پیدا نشد",
 };

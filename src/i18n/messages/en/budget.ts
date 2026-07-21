@@ -35,4 +35,14 @@ export const budgetMessages: MessageTree = {
   settleDebtOptionLabel: "{{person}} · {{type}} · remaining {{amount}}",
   duplicateRowsRemoved:
     "{{count}} duplicate transactions removed from the list",
+  dateRangeTitle: "Day range",
+  dateRangeHint: "e.g. 1 to 20 to unselect days you already imported",
+  fromDay: "From day",
+  toDay: "To day",
+  selectRange: "Select range",
+  unselectRange: "Unselect range",
+  rangeInvalid: "Invalid day range",
+  rangeAppliedSelect: "{{count}} transactions selected in range",
+  rangeAppliedUnselect: "{{count}} transactions unselected in range",
+  rangeNoMatch: "No transactions found in this range",
 };

@@ -21,9 +21,10 @@ import * as paymentCardsApi from "@/common/api/payment-cards";
 import { PATHS } from "@/common/constants";
 import type { IBank } from "@/common/interfaces/bank.interface";
 import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
-import { toPersianDigits, formatPrice } from "@/common/utils";
+import { toPersianDigits, toEnglishDigits } from "@/common/utils";
 import { mergeProfileWallet } from "@/common/utils/wallet-balances";
 import { showToast } from "@/common/utils/toast";
+import { FormInput } from "@/components/common/form/FormFields";
 import { BankImportRowCard } from "@/components/pages/bank-import/BankImportRowCard";
 import { BankImportRowGroup } from "@/components/pages/bank-import/BankImportRowGroup";
 import { BankImportRowEditorModal } from "@/components/pages/bank-import/BankImportRowEditorModal";
@@ -71,6 +72,8 @@ export function BankImportWizardPage() {
     skippedDuplicates: number;
   } | null>(null);
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
+  const [rangeFromDay, setRangeFromDay] = useState("");
+  const [rangeToDay, setRangeToDay] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const selectedBank = useMemo(
@@ -225,6 +228,50 @@ export function BankImportWizardPage() {
     );
   }
 
+  function parseDayInput(value: string): number | null {
+    const normalized = toEnglishDigits(value).replace(/[^\d]/g, "");
+    if (!normalized) return null;
+    const day = Number(normalized);
+    if (!Number.isInteger(day) || day < 1 || day > 31) return null;
+    return day;
+  }
+
+  function setSelectedByDayRange(selected: boolean) {
+    const fromDay = parseDayInput(rangeFromDay);
+    const toDay = parseDayInput(rangeToDay);
+    if (fromDay == null || toDay == null || fromDay > toDay) {
+      showToast(t("budget.rangeInvalid"), "danger");
+      return;
+    }
+
+    const matchedCount = rows.filter((row) => {
+      if (row.isDuplicate) return false;
+      const day = Number(row.day);
+      return Number.isFinite(day) && day >= fromDay && day <= toDay;
+    }).length;
+
+    if (matchedCount === 0) {
+      showToast(t("budget.rangeNoMatch"), "warning");
+      return;
+    }
+
+    setRows((prev) =>
+      prev.map((row) => {
+        if (row.isDuplicate) return row;
+        const day = Number(row.day);
+        if (!Number.isFinite(day) || day < fromDay || day > toDay) return row;
+        return { ...row, selected };
+      }),
+    );
+
+    showToast(
+      t(selected ? "budget.rangeAppliedSelect" : "budget.rangeAppliedUnselect", {
+        count: toPersianDigits(matchedCount),
+      }),
+      "success",
+    );
+  }
+
   function saveRowDraft(updated: ImportRowDraft) {
     setRows((prev) =>
       prev.map((row) => (row.tempId === updated.tempId ? updated : row)),
@@ -238,6 +285,8 @@ export function BankImportWizardPage() {
     setMeta({});
     setImportResult(null);
     setEditingRowId(null);
+    setRangeFromDay("");
+    setRangeToDay("");
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
@@ -390,6 +439,45 @@ export function BankImportWizardPage() {
               </Button>
               <Button size="sm" variant="secondary" onPress={() => setStep(2)}>
                 {t("auto.kbdfa7129cd")}
+              </Button>
+            </div>
+          </div>
+
+          <div className="glass space-y-3 rounded-2xl p-4">
+            <div>
+              <p className="text-sm font-medium">{t("budget.dateRangeTitle")}</p>
+              <p className="mt-1 text-xs text-muted">{t("budget.dateRangeHint")}</p>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <FormInput
+                label={t("budget.fromDay")}
+                inputMode="numeric"
+                value={rangeFromDay}
+                onChange={(e) => setRangeFromDay(e.target.value)}
+                placeholder={toPersianDigits("1")}
+              />
+              <FormInput
+                label={t("budget.toDay")}
+                inputMode="numeric"
+                value={rangeToDay}
+                onChange={(e) => setRangeToDay(e.target.value)}
+                placeholder={toPersianDigits("20")}
+              />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                size="sm"
+                variant="secondary"
+                onPress={() => setSelectedByDayRange(true)}
+              >
+                {t("budget.selectRange")}
+              </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                onPress={() => setSelectedByDayRange(false)}
+              >
+                {t("budget.unselectRange")}
               </Button>
             </div>
           </div>
