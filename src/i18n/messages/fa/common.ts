@@ -168,6 +168,7 @@ export const commonMessages: MessageTree = {
     "معماری و دیزاین کل سایت را عوض کن — کلاسیک همان پنل فعلی است",
   personAccountPlaceholder: "نام طرف حساب را انتخاب یا وارد کنید",
   searchCategoryPlaceholder: "جستجو یا انتخاب دسته‌بندی",
+  createNamedCategory: "ایجاد «{{name}}»",
   clockOut: "خروج",
   clockIn: "ورود",
   backToHome: "بازگشت به خانه",

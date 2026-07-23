@@ -9,18 +9,20 @@ import { Add } from "iconsax-reactjs";
 import { PATHS } from "@/common/constants";
 import * as checksApi from "@/common/api/checks";
 import type { ICheck, ICheckSummary } from "@/common/interfaces/check.interface";
-import { formatJalaliMonthYear, formatPrice } from "@/common/utils";
+import { formatPrice } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { ClearCheckModal } from "@/components/pages/planning/ClearCheckModal";
 import { CreateCheckModal } from "@/components/pages/planning/CreateCheckModal";
 import { PeriodNavigator } from "@/components/pages/planning/PeriodNavigator";
 import { PageHeroSection } from "@/components/common/layout/PageHeroSection";
 import { usePeriodQuery } from "@/components/pages/planning/usePeriodQuery";
+import { useLocalizedDate } from "@/i18n/hooks/useLocalizedDate";
 import { CheckType } from "@/types/enums";
 
 export function ChecksPage() {
   const { t } = useTranslation();
-  const { year, month, goToToday, shiftMonth } = usePeriodQuery(PATHS.CHECKS);
+  const { formatMonthYear } = useLocalizedDate();
+  const { year, month, calendarType, goToToday, shiftMonth } = usePeriodQuery(PATHS.CHECKS);
 
   const [loading, setLoading] = useState(true);
   const [checkSummary, setCheckSummary] = useState<ICheckSummary | null>(null);
@@ -30,8 +32,8 @@ export function ChecksPage() {
   const [clearTarget, setClearTarget] = useState<ICheck | null>(null);
 
   const periodLabel = useMemo(
-    () => formatJalaliMonthYear(year, month),
-    [year, month],
+    () => formatMonthYear(parseInt(month, 10), year, calendarType),
+    [calendarType, formatMonthYear, month, year],
   );
 
   const load = useCallback(async () => {

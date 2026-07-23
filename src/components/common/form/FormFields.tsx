@@ -14,12 +14,20 @@ import {
 } from "@heroui/react";
 import type { ChangeEvent, ComponentProps, FocusEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
+import * as categoriesApi from "@/common/api/categories";
+import { DEFAULT_CATEGORY_COLORS } from "@/common/constants/category-colors";
+import type { UserDateCalendar } from "@/common/constants/user-preferences";
 import { formatPriceInput, parsePriceInput } from "@/common/utils/price-input";
 import { useFormModalPortalPopover } from "@/common/hooks/useFormModalPortalPopover";
 import { isFormOverlayFocusTarget } from "@/common/utils/form-overlay.util";
-import type { UserDateCalendar } from "@/common/constants/user-preferences";
+import { showErrorToast, showToast } from "@/common/utils/toast";
 import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
 import { scrollFieldIntoView } from "@/common/utils/scroll";
+import { useAppDispatch, useAppSelector } from "@/stores/hooks";
+import { categoriesSelector, setCategories } from "@/stores/category";
+import { userSelector } from "@/stores/profile";
+
+const CREATE_CATEGORY_PREFIX = "__create_category__:";
 
 type FormPersonComboBoxProps = {
   label: string;
@@ -102,6 +110,8 @@ type FormCategoryComboBoxProps = {
   options: FormSelectOption[];
   emptyMessage?: string;
   isDisabled?: boolean;
+  /** Inline create when typed title is missing. Off for filter/export selects. */
+  allowCreate?: boolean;
 };
 
 export function FormCategoryComboBox({
@@ -112,8 +122,11 @@ export function FormCategoryComboBox({
   options,
   emptyMessage,
   isDisabled,
+  allowCreate = true,
 }: FormCategoryComboBoxProps) {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+  const categories = useAppSelector(categoriesSelector);
   const resolvedPlaceholder = placeholder ?? t("common.searchCategoryPlaceholder");
   const resolvedEmptyMessage = emptyMessage ?? t("common.noCategoryFound");
 
@@ -129,6 +142,7 @@ export function FormCategoryComboBox({
 
   const [inputValue, setInputValue] = useState(committedLabel);
   const [isSearching, setIsSearching] = useState(false);
+  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     if (!isSearching) {
@@ -136,12 +150,35 @@ export function FormCategoryComboBox({
     }
   }, [committedLabel, isSearching]);
 
+  const createQuery = inputValue.trim();
+  const canCreate =
+    allowCreate &&
+    Boolean(createQuery) &&
+    !options.some(
+      (item) =>
+        item.id === "all" ||
+        item.id === "" ||
+        item.label.trim().toLowerCase() === createQuery.toLowerCase(),
+    );
+
   const filteredItems = useMemo(() => {
-    if (!isSearching) return options;
-    const query = inputValue.trim().toLowerCase();
-    if (!query) return options;
-    return options.filter((item) => item.label.toLowerCase().includes(query));
-  }, [inputValue, isSearching, options]);
+    const base =
+      !isSearching || !createQuery
+        ? options
+        : options.filter((item) =>
+            item.label.toLowerCase().includes(createQuery.toLowerCase()),
+          );
+
+    if (!canCreate) return base;
+
+    return [
+      ...base,
+      {
+        id: `${CREATE_CATEGORY_PREFIX}${createQuery}`,
+        label: t("common.createNamedCategory", { name: createQuery }),
+      },
+    ];
+  }, [canCreate, createQuery, isSearching, options, t]);
 
   function handleFocus(event: FocusEvent<HTMLInputElement>) {
     requestAnimationFrame(() => {
@@ -157,13 +194,33 @@ export function FormCategoryComboBox({
     setInputValue(committedLabel);
   }
 
+  async function createCategoryFromQuery(title: string) {
+    if (creating) return;
+    setCreating(true);
+    try {
+      const created = await categoriesApi.createCategory({
+        title,
+        color: DEFAULT_CATEGORY_COLORS[(categories?.length ?? 0) % DEFAULT_CATEGORY_COLORS.length],
+      });
+      dispatch(setCategories([...(categories ?? []), created]));
+      onSelectionChange?.(created._id);
+      setInputValue(created.title);
+      setIsSearching(false);
+      showToast(t("auto.kff352f6015"), "success");
+    } catch (err) {
+      showErrorToast(err, t("auto.kc41c2b611b"));
+    } finally {
+      setCreating(false);
+    }
+  }
+
   return (
     <div ref={wrapperRef} className="pb-form-combobox relative z-[1]">
       <ComboBox
         fullWidth
         variant="secondary"
         menuTrigger="input"
-        isDisabled={isDisabled}
+        isDisabled={isDisabled || creating}
         selectedKey={selectedKey ?? null}
         inputValue={inputValue}
         onInputChange={(value) => {
@@ -173,9 +230,18 @@ export function FormCategoryComboBox({
         onSelectionChange={(key) => {
           if (key == null) return;
           const nextKey = String(key);
-          const isNeutral = nextKey === "all";
+          if (nextKey.startsWith(CREATE_CATEGORY_PREFIX)) {
+            const title = nextKey.slice(CREATE_CATEGORY_PREFIX.length).trim();
+            if (title) void createCategoryFromQuery(title);
+            return;
+          }
+          const isNeutral = nextKey === "all" || nextKey === "";
           onSelectionChange?.(nextKey);
-          setInputValue(isNeutral ? "" : options.find((item) => item.id === nextKey)?.label ?? "");
+          setInputValue(
+            isNeutral
+              ? ""
+              : options.find((item) => item.id === nextKey)?.label ?? "",
+          );
           setIsSearching(false);
         }}
         items={filteredItems}
@@ -383,8 +449,12 @@ export function FormDatePicker({
   onChange,
   hint,
   inModal = false,
-  calendarType = "jalali",
+  calendarType,
 }: FormDatePickerProps) {
+  const user = useAppSelector(userSelector);
+  const resolvedCalendar =
+    calendarType ?? user?.preferences?.dateCalendar ?? "jalali";
+
   return (
     <div className="pb-filter-date flex flex-col gap-2">
       <Label>{label}</Label>
@@ -396,7 +466,7 @@ export function FormDatePicker({
         onChange={onChange}
         hideHint
         inModal={inModal}
-        calendarType={calendarType}
+        calendarType={resolvedCalendar}
       />
     </div>
   );

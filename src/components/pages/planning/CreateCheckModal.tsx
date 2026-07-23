@@ -6,7 +6,8 @@ import { useEffect, useState } from "react";
 import { Button, Modal } from "@heroui/react";
 
 import * as checksApi from "@/common/api/checks";
-import { getJalaliNow, toEnglishDigits } from "@/common/utils";
+import { toEnglishDigits } from "@/common/utils";
+import { getNowDateParts } from "@/common/utils/calendar-date";
 import { showToast } from "@/common/utils/toast";
 import {
   FormDatePicker,
@@ -38,25 +39,26 @@ export function CreateCheckModal({
   const { currencyLabel } = useCurrencyLabels();
   const user = useAppSelector(userSelector);
   const preferredCurrency = user?.preferences?.currency ?? "toman";
-  const now = getJalaliNow();
+  const formCalendar = user?.preferences?.dateCalendar ?? "jalali";
+  const nowParts = getNowDateParts(formCalendar);
   const [type, setType] = useState(String(CheckType.PAYABLE));
   const [amount, setAmount] = useState("");
   const [person, setPerson] = useState("");
   const [bankName, setBankName] = useState("");
   const [checkNumber, setCheckNumber] = useState("");
-  const [dueYear, setDueYear] = useState(String(now.jYear()));
-  const [dueMonth, setDueMonth] = useState(String(now.jMonth() + 1));
-  const [dueDay, setDueDay] = useState(String(now.jDate()));
+  const [dueYear, setDueYear] = useState(nowParts.year);
+  const [dueMonth, setDueMonth] = useState(nowParts.month);
+  const [dueDay, setDueDay] = useState(nowParts.day);
   const [description, setDescription] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (!open) return;
-    const fresh = getJalaliNow();
-    setDueYear(String(fresh.jYear()));
-    setDueMonth(String(fresh.jMonth() + 1));
-    setDueDay(String(fresh.jDate()));
-  }, [open]);
+    const fresh = getNowDateParts(formCalendar);
+    setDueYear(fresh.year);
+    setDueMonth(fresh.month);
+    setDueDay(fresh.day);
+  }, [open, formCalendar]);
 
   function handleDueDateChange(value: {
     year: string;
@@ -147,6 +149,7 @@ export function CreateCheckModal({
             month={dueMonth}
             day={dueDay}
             inModal
+            calendarType={formCalendar}
             onChange={handleDueDateChange}
           />
           <FormTextArea

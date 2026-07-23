@@ -2,12 +2,16 @@
 
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Modal } from "@heroui/react";
 
 import * as debtsApi from "@/common/api/debts";
+import {
+  CURRENCY_OPTIONS,
+  type UserCurrency,
+} from "@/common/constants/user-preferences";
 import { useMergedPersons } from "@/common/hooks/useMergedPersons";
-import { getJalaliNow, toEnglishDigits } from "@/common/utils";
+import { getNowDateParts, toEnglishDigits } from "@/common/utils";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import {
@@ -30,25 +34,44 @@ type CreateDebtModalProps = {
   onCreated?: (debtId: string) => void;
 };
 
+function optionClass(selected: boolean) {
+  return `rounded-xl border transition-colors ${
+    selected
+      ? "border-accent bg-accent/15 text-accent font-semibold shadow-sm ring-1 ring-accent/35"
+      : "border-border/50 bg-surface-secondary/60 text-muted hover:border-accent/40"
+  }`;
+}
+
 export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtModalProps) {
   const { t } = useTranslation();
   const { currencyLabel } = useCurrencyLabels();
   const categories = useAppSelector(categoriesSelector);
   const user = useAppSelector(userSelector);
   const preferredCurrency = user?.preferences?.currency ?? "toman";
+  const formCalendar = user?.preferences?.dateCalendar ?? "jalali";
   const categoryOptions = getCategorySelectOptions(categories ?? []);
   const persons = useMergedPersons(open);
-  const now = getJalaliNow();
+  const nowParts = getNowDateParts(formCalendar);
 
   const [debtType, setDebtType] = useState(String(DebtType.PAYABLE));
   const [person, setPerson] = useState("");
   const [amount, setAmount] = useState("");
+  const [currency, setCurrency] = useState<UserCurrency>(preferredCurrency);
   const [category, setCategory] = useState("");
-  const [year, setYear] = useState(String(now.jYear()));
-  const [month, setMonth] = useState(String(now.jMonth() + 1));
-  const [day, setDay] = useState(String(now.jDate()));
+  const [year, setYear] = useState(nowParts.year);
+  const [month, setMonth] = useState(nowParts.month);
+  const [day, setDay] = useState(nowParts.day);
   const [description, setDescription] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const parts = getNowDateParts(formCalendar);
+    setCurrency(preferredCurrency);
+    setYear(parts.year);
+    setMonth(parts.month);
+    setDay(parts.day);
+  }, [open, formCalendar, preferredCurrency]);
 
   async function handleSubmit() {
     if (!person.trim() || !amount.trim() || !category) {
@@ -62,6 +85,8 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
         type: debtType,
         person: person.trim(),
         amount: toEnglishDigits(amount),
+        currency,
+        dateCalendar: formCalendar,
         category,
         year: toEnglishDigits(year),
         month: toEnglishDigits(month),
@@ -104,11 +129,7 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
                 key={item.id}
                 type="button"
                 onClick={() => setDebtType(item.id)}
-                className={`flex-1 cursor-pointer rounded-xl border px-3 py-2 text-sm font-medium ${
-                  debtType === item.id
-                    ? "border-accent bg-accent/10 text-accent"
-                    : "border-border text-muted"
-                }`}
+                className={`flex-1 cursor-pointer px-3 py-2 text-sm ${optionClass(debtType === item.id)}`}
               >
                 {item.label}
               </button>
@@ -121,10 +142,32 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
             onChange={setPerson}
             options={persons}
           />
+
+          <div className="space-y-2">
+            <p className="text-sm font-medium">{t("common.currencyType")}</p>
+            <div className="grid grid-cols-3 gap-2">
+              {CURRENCY_OPTIONS.map((option) => {
+                const selected = currency === option.id;
+                return (
+                  <button
+                    key={option.id}
+                    type="button"
+                    aria-pressed={selected}
+                    className={`cursor-pointer px-3 py-2.5 text-sm ${optionClass(selected)}`}
+                    onClick={() => setCurrency(option.id)}
+                  >
+                    {currencyLabel(option.id)}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <FormPriceInput
-            label={`${t("common.amount")} (${currencyLabel(preferredCurrency)})`}
+            label={`${t("common.amount")} (${currencyLabel(currency)})`}
             value={amount}
             onChange={setAmount}
+            currency={currency}
           />
           <FormCategoryComboBox
             label={t("auto.kb561a47a9b")}
@@ -138,11 +181,16 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
             onChange={(e) => setDescription(e.target.value)}
           />
           <FormDatePicker
-            label={t("auto.k80d27df1cd")}
+            label={
+              formCalendar === "gregorian"
+                ? t("budget.dateGregorian")
+                : t("budget.dateJalali")
+            }
             year={year}
             month={month}
             day={day}
             inModal
+            calendarType={formCalendar}
             onChange={(value) => {
               setYear(value.year);
               setMonth(value.month);

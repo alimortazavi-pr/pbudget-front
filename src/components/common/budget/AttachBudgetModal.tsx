@@ -306,6 +306,7 @@ export function AttachBudgetModal({
               placeholder={t("common.allCategories")}
               selectedKey={category || "all"}
               onSelectionChange={(key) => setCategory(key === "all" ? "" : key)}
+              allowCreate={false}
               options={[{ id: "all", label: t("common.allCategories") }, ...categoryOptions]}
             />
 

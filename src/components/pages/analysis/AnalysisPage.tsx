@@ -24,7 +24,7 @@ import type {
   IWorkTimeReport,
 } from "@/common/interfaces/work-time.interface";
 import { buildClientAnalyticsReport } from "@/common/utils/analytics-fallback";
-import { getJalaliNow } from "@/common/utils/jalali-date";
+import { getNowDateParts } from "@/common/utils/calendar-date";
 import { DEFAULT_USER_PREFERENCES } from "@/common/constants/user-preferences";
 import { getWalletBalance } from "@/common/utils/wallet-balances";
 import { showToast } from "@/common/utils/toast";
@@ -67,11 +67,12 @@ export function AnalysisPage() {
   const [loading, setLoading] = useState(true);
   const [usedFallback, setUsedFallback] = useState(false);
 
-  const now = getJalaliNow();
+  const calendarType = user?.preferences?.dateCalendar ?? "jalali";
+  const nowParts = getNowDateParts(calendarType);
   const duration = (hydrated ? get("duration", "monthly") : "monthly") as AnalyticsDuration;
-  const year = hydrated ? get("year", String(now.jYear())) : String(now.jYear());
-  const month = hydrated ? get("month", String(now.jMonth() + 1)) : String(now.jMonth() + 1);
-  const day = hydrated ? get("day", String(now.jDate())) : String(now.jDate());
+  const year = hydrated ? get("year", nowParts.year) : nowParts.year;
+  const month = hydrated ? get("month", nowParts.month) : nowParts.month;
+  const day = hydrated ? get("day", nowParts.day) : nowParts.day;
   const category = hydrated ? get("category", "") : "";
   const paymentCard = hydrated ? get("paymentCard", "") : "";
   const type = (hydrated ? get("type", "all") : "all") as AnalyticsTypeFilter;

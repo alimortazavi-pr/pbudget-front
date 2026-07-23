@@ -14,7 +14,8 @@ import { Add, ArrowDown, ArrowUp, Profile2User } from "iconsax-reactjs";
 import { PATHS } from "@/common/constants";
 import * as debtsApi from "@/common/api/debts";
 import type { IDebt, IDebtSummary } from "@/common/interfaces/debt.interface";
-import { formatJalaliDate, formatPrice, formatCount } from "@/common/utils";
+import { formatBudgetDate, formatPrice, formatPriceWithCurrency, formatCount } from "@/common/utils";
+import { resolveBudgetCurrency } from "@/common/constants/user-preferences";
 import { showToast } from "@/common/utils/toast";
 import { CreateDebtModal } from "@/components/pages/debts/CreateDebtModal";
 import { SettlementProgressBar } from "@/components/common/ui/SettlementProgressBar";
@@ -198,15 +199,31 @@ export function DebtsPage() {
                       {debt.person}
                     </p>
                     <p className="mt-1 text-xs text-muted">
-                      {formatJalaliDate(String(debt.year), String(debt.month), String(debt.day))}
+                      {formatBudgetDate(
+                        String(debt.year),
+                        String(debt.month),
+                        String(debt.day),
+                        debt.dateCalendar,
+                      )}
                       {debt.settlements?.length
                         ? ` · ${formatCount(debt.settlements.length)} ${t("auto.k43ef5d91de")}`
                         : ""}
                     </p>
                   </div>
                   <div className="text-left">
-                    <p className="text-lg font-bold">{formatPrice(debt.remainingAmount)}</p>
-                    <p className="text-xs text-muted">{t("auto.k9aeccd708e")}{formatPrice(debt.totalAmount)}</p>
+                    <p className="text-lg font-bold">
+                      {formatPriceWithCurrency(
+                        debt.remainingAmount,
+                        resolveBudgetCurrency(debt.currency),
+                      )}
+                    </p>
+                    <p className="text-xs text-muted">
+                      {t("auto.k9aeccd708e")}
+                      {formatPriceWithCurrency(
+                        debt.totalAmount,
+                        resolveBudgetCurrency(debt.currency),
+                      )}
+                    </p>
                   </div>
                 </div>
 

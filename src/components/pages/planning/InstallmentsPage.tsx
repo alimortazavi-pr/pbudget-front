@@ -14,17 +14,19 @@ import type {
   IMonthlyPaymentOverview,
   IPaymentPlan,
 } from "@/common/interfaces/payment-plan.interface";
-import { formatJalaliMonthYear, formatPrice, formatCount } from "@/common/utils";
+import { formatPrice, formatCount } from "@/common/utils";
 import { showErrorToast } from "@/common/utils/toast";
 import { PageHeroSection } from "@/components/common/layout/PageHeroSection";
 import { CreatePaymentPlanModal } from "@/components/pages/planning/CreatePaymentPlanModal";
 import { PeriodNavigator } from "@/components/pages/planning/PeriodNavigator";
 import { usePeriodQuery } from "@/components/pages/planning/usePeriodQuery";
+import { useLocalizedDate } from "@/i18n/hooks/useLocalizedDate";
 
 export function InstallmentsPage() {
   const { t } = useTranslation();
+  const { formatMonthYear } = useLocalizedDate();
   const router = useRouter();
-  const { year, month, goToToday, shiftMonth } = usePeriodQuery(PATHS.INSTALLMENTS);
+  const { year, month, calendarType, goToToday, shiftMonth } = usePeriodQuery(PATHS.INSTALLMENTS);
 
   const [loading, setLoading] = useState(true);
   const [monthlyData, setMonthlyData] = useState<IMonthlyPaymentOverview | null>(null);
@@ -32,8 +34,8 @@ export function InstallmentsPage() {
   const [createPlanOpen, setCreatePlanOpen] = useState(false);
 
   const periodLabel = useMemo(
-    () => formatJalaliMonthYear(year, month),
-    [year, month],
+    () => formatMonthYear(parseInt(month, 10), year, calendarType),
+    [calendarType, formatMonthYear, month, year],
   );
 
   const load = useCallback(async () => {

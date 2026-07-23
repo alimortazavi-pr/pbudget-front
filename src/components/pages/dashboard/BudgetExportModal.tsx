@@ -20,6 +20,8 @@ import { FormCategoryComboBox } from "@/components/common/form/FormFields";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
 import { useLocalizedDate } from "@/i18n/hooks/useLocalizedDate";
+import { useAppSelector } from "@/stores/hooks";
+import { userSelector } from "@/stores/profile";
 
 type BudgetExportModalProps = {
   open: boolean;
@@ -52,6 +54,8 @@ export function BudgetExportModal({
 }: BudgetExportModalProps) {
   const { t } = useTranslation();
   const { formatMonthYear, formatDayMonthYear } = useLocalizedDate();
+  const user = useAppSelector(userSelector);
+  const calendarType = user?.preferences?.dateCalendar ?? "jalali";
   const [category, setCategory] = useState(initialCategory);
   const [date, setDate] = useState({
     year: initialYear,
@@ -126,10 +130,10 @@ export function BudgetExportModal({
       return t("dashboard.yearLabel", { year: date.year });
     }
     if (duration === "monthly") {
-      return formatMonthYear(monthNum, date.year, "jalali");
+      return formatMonthYear(monthNum, date.year, calendarType);
     }
-    return formatDayMonthYear(dayNum, monthNum, date.year, "jalali");
-  }, [duration, date, formatDayMonthYear, formatMonthYear, t]);
+    return formatDayMonthYear(dayNum, monthNum, date.year, calendarType);
+  }, [calendarType, duration, date, formatDayMonthYear, formatMonthYear, t]);
 
   useEffect(() => {
     if (!open) return;
@@ -228,6 +232,7 @@ export function BudgetExportModal({
             placeholder={t("dashboard.allCategories")}
             selectedKey={category || "all"}
             onSelectionChange={(key) => setCategory(key === "all" ? "" : key)}
+            allowCreate={false}
             options={[
               { id: "all", label: t("dashboard.allCategories") },
               ...categoryOptions,
@@ -241,6 +246,7 @@ export function BudgetExportModal({
               month={date.month}
               day={date.day}
               inModal
+              calendarType={calendarType}
               onChange={setDate}
             />
           ) : null}

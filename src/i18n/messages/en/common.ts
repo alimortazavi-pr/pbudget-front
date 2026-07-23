@@ -168,6 +168,7 @@ export const commonMessages: MessageTree = {
     "Switch the overall site layout — Classic is the current panel",
   personAccountPlaceholder: "Select or enter counterparty name",
   searchCategoryPlaceholder: "Search or select category",
+  createNamedCategory: "Create \"{{name}}\"",
   clockOut: "Clock out",
   clockIn: "Clock in",
   backToHome: "Back to home",

@@ -5,21 +5,16 @@ import { useRouter } from "next/navigation";
 import moment from "moment-jalali";
 
 import { useHydratedSearchParams } from "@/common/hooks/useHydratedSearchParams";
-import { getJalaliNow } from "@/common/utils";
-
-function defaultPeriod(now = getJalaliNow()) {
-  return {
-    year: String(now.jYear()),
-    month: String(now.jMonth() + 1),
-    day: String(now.jDate()),
-  };
-}
+import { getNowDateParts } from "@/common/utils";
+import { useAppSelector } from "@/stores/hooks";
+import { userSelector } from "@/stores/profile";
 
 export function usePeriodQuery(basePath: string) {
   const router = useRouter();
   const { hydrated, get, getAll } = useHydratedSearchParams();
-  const now = getJalaliNow();
-  const defaults = defaultPeriod(now);
+  const user = useAppSelector(userSelector);
+  const calendarType = user?.preferences?.dateCalendar ?? "jalali";
+  const defaults = getNowDateParts(calendarType);
 
   const year = hydrated ? get("year", defaults.year) : defaults.year;
   const month = hydrated ? get("month", defaults.month) : defaults.month;
@@ -42,22 +37,47 @@ export function usePeriodQuery(basePath: string) {
   );
 
   const goToToday = useCallback(() => {
-    updateQuery(defaultPeriod());
-  }, [updateQuery]);
+    updateQuery(getNowDateParts(calendarType));
+  }, [calendarType, updateQuery]);
 
   const shiftMonth = useCallback(
     (delta: number) => {
+      if (calendarType === "gregorian") {
+        const date = moment()
+          .year(parseInt(year, 10))
+          .month(parseInt(month, 10) - 1)
+          .date(1)
+          .add(delta, "month");
+        updateQuery({
+          year: String(date.year()),
+          month: String(date.month() + 1),
+        });
+        return;
+      }
       const date = moment(`${year}/${month}/1`, "jYYYY/jM/jD").add(delta, "jMonth");
       updateQuery({
         year: String(date.jYear()),
         month: String(date.jMonth() + 1),
       });
     },
-    [month, updateQuery, year],
+    [calendarType, month, updateQuery, year],
   );
 
   const shiftDay = useCallback(
     (delta: number) => {
+      if (calendarType === "gregorian") {
+        const date = moment()
+          .year(parseInt(year, 10))
+          .month(parseInt(month, 10) - 1)
+          .date(parseInt(day, 10))
+          .add(delta, "day");
+        updateQuery({
+          year: String(date.year()),
+          month: String(date.month() + 1),
+          day: String(date.date()),
+        });
+        return;
+      }
       const date = moment(`${year}/${month}/${day}`, "jYYYY/jM/jD").add(delta, "day");
       updateQuery({
         year: String(date.jYear()),
@@ -65,7 +85,7 @@ export function usePeriodQuery(basePath: string) {
         day: String(date.jDate()),
       });
     },
-    [day, month, updateQuery, year],
+    [calendarType, day, month, updateQuery, year],
   );
 
   const shiftYear = useCallback(
@@ -80,7 +100,7 @@ export function usePeriodQuery(basePath: string) {
     year,
     month,
     day,
-    now,
+    calendarType,
     updateQuery,
     goToToday,
     shiftMonth,

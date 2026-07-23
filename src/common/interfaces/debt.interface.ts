@@ -1,3 +1,4 @@
+import type { UserCurrency, UserDateCalendar } from "@/common/constants/user-preferences";
 import type { IBudget } from "./budget.interface";
 import type { ICategory } from "./category.interface";
 
@@ -22,6 +23,8 @@ export interface IDebt {
   year: number;
   month: number;
   day: number;
+  currency?: UserCurrency;
+  dateCalendar?: UserDateCalendar;
   description?: string;
   settlements: DebtSettlement[];
   createdAt: string;

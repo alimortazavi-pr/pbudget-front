@@ -20,12 +20,17 @@ import { formatCardNumberForDisplay } from "@/common/utils/payment-card";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { toPersianDigits } from "@/common/utils";
 import {
-  getJalaliNow,
+  GREGORIAN_MONTHS,
+  getNowDateParts,
+} from "@/common/utils/calendar-date";
+import {
   JALALI_MONTHS,
   moment,
 } from "@/common/utils/jalali-date";
 import { FormCategoryComboBox, FormSelect } from "@/components/common/form/FormFields";
 import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
+import { useAppSelector } from "@/stores/hooks";
+import { userSelector } from "@/stores/profile";
 
 const DURATION_OPTIONS: Array<{ id: AnalyticsDuration; label: string }> = [
   { id: "daily", label: t("common.daily") },
@@ -74,6 +79,9 @@ export function AnalysisFilters({
   onChange,
 }: AnalysisFiltersProps) {
   const { t } = useTranslation();
+  const user = useAppSelector(userSelector);
+  const calendarType = user?.preferences?.dateCalendar ?? "jalali";
+  const isGregorian = calendarType === "gregorian";
   const categoryOptions = useMemo(
     () => getCategorySelectOptions(categories),
     [categories],
@@ -98,7 +106,8 @@ export function AnalysisFilters({
   );
 
   const periodTitle = useMemo(() => {
-    const monthName = JALALI_MONTHS[Number(month) - 1] ?? month;
+    const months = isGregorian ? GREGORIAN_MONTHS : JALALI_MONTHS;
+    const monthName = months[Number(month) - 1] ?? month;
     if (duration === "daily") {
       return `${toPersianDigits(day)} ${monthName} ${toPersianDigits(year)}`;
     }
@@ -106,13 +115,45 @@ export function AnalysisFilters({
       return `${monthName} ${toPersianDigits(year)}`;
     }
     if (duration === "yearly") {
-      return t("common.jalaliYear", { year: toPersianDigits(year) });
+      return isGregorian
+        ? toPersianDigits(year)
+        : t("common.jalaliYear", { year: toPersianDigits(year) });
     }
     return t("auto.ke039e3d6b1");
-  }, [duration, year, month, day, t]);
+  }, [calendarType, duration, year, month, day, isGregorian, t]);
 
   function shiftPeriod(direction: -1 | 1) {
     if (duration === "all") return;
+
+    if (isGregorian) {
+      const anchor = moment()
+        .year(Number(year))
+        .month(Number(month) - 1)
+        .date(Number(day || 1));
+
+      if (duration === "daily") {
+        const next = anchor.clone().add(direction, "day");
+        onChange({
+          year: String(next.year()),
+          month: String(next.month() + 1),
+          day: String(next.date()),
+        });
+        return;
+      }
+
+      if (duration === "monthly") {
+        const next = anchor.clone().add(direction, "month");
+        onChange({
+          year: String(next.year()),
+          month: String(next.month() + 1),
+          day: String(next.date()),
+        });
+        return;
+      }
+
+      onChange({ year: String(Number(year) + direction) });
+      return;
+    }
 
     const anchor = moment(
       `${year}/${month}/${day || 1}`,
@@ -143,12 +184,7 @@ export function AnalysisFilters({
   }
 
   function goToToday() {
-    const now = getJalaliNow();
-    onChange({
-      year: String(now.jYear()),
-      month: String(now.jMonth() + 1),
-      day: String(now.jDate()),
-    });
+    onChange(getNowDateParts(calendarType));
   }
 
   return (
@@ -203,6 +239,7 @@ export function AnalysisFilters({
           year={year}
           month={month}
           day={day}
+          calendarType={calendarType}
           onChange={(next) =>
             onChange({
               year: next.year,
@@ -219,6 +256,7 @@ export function AnalysisFilters({
           placeholder={t("auto.k8215849f02")}
           selectedKey={category || ""}
           onSelectionChange={(key) => onChange({ category: key === "all" ? "" : key })}
+          allowCreate={false}
           options={[
             { id: "", label: t("auto.k8215849f02") },
             ...categoryOptions,

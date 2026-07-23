@@ -21,13 +21,14 @@ import {
   formatCount,
   formatHourRange,
   formatJalaliDate,
-  formatJalaliMonthYear,
   formatJalaliYear,
   getJalaliNow,
+  toPersianDigits,
 } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { PageHeroSection } from "@/components/common/layout/PageHeroSection";
 import { FormSelect } from "@/components/common/form/FormFields";
+import { useLocalizedDate } from "@/i18n/hooks/useLocalizedDate";
 import { PeriodNavigator } from "@/components/pages/planning/PeriodNavigator";
 import { usePeriodQuery } from "@/components/pages/planning/usePeriodQuery";
 import { CreateTaskModal } from "@/components/pages/tasks/CreateTaskModal";
@@ -65,11 +66,13 @@ function getProjectTitle(task: ITask) {
 
 export function TasksPage() {
   const { t } = useTranslation();
+  const { formatMonthYear, formatDayMonthYear } = useLocalizedDate();
   const { get } = useHydratedSearchParams();
   const {
     year,
     month,
     day,
+    calendarType,
     updateQuery,
     goToToday,
     shiftDay,
@@ -92,10 +95,21 @@ export function TasksPage() {
   const [editTask, setEditTask] = useState<ITask | null>(null);
 
   const periodLabel = useMemo(() => {
-    if (duration === "yearly") return formatJalaliYear(year);
-    if (duration === "monthly") return formatJalaliMonthYear(year, month);
-    return formatJalaliDate(year, month, day);
-  }, [duration, year, month, day]);
+    if (duration === "yearly") {
+      return calendarType === "gregorian"
+        ? toPersianDigits(year)
+        : formatJalaliYear(year);
+    }
+    if (duration === "monthly") {
+      return formatMonthYear(parseInt(month, 10), year, calendarType);
+    }
+    return formatDayMonthYear(
+      parseInt(day, 10),
+      parseInt(month, 10),
+      year,
+      calendarType,
+    );
+  }, [calendarType, duration, year, month, day, formatMonthYear, formatDayMonthYear]);
 
   const listParams = useMemo(
     () => ({

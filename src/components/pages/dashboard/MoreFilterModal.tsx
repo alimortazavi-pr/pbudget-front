@@ -81,6 +81,7 @@ export function MoreFilterModal({
             placeholder={t("dashboard.allCategories")}
             selectedKey={category || "all"}
             onSelectionChange={(key) => setCategory(key === "all" ? "" : key)}
+            allowCreate={false}
             options={[
               { id: "all", label: t("dashboard.allCategories") },
               ...categoryOptions,

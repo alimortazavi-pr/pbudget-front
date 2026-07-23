@@ -16,7 +16,8 @@ import * as debtsApi from "@/common/api/debts";
 import type { IDebt } from "@/common/interfaces/debt.interface";
 import type { IBudget } from "@/common/interfaces/budget.interface";
 import type { ICategory } from "@/common/interfaces/category.interface";
-import { formatJalaliDate, formatPrice, formatCount } from "@/common/utils";
+import { formatBudgetDate, formatPriceWithCurrency, formatCount } from "@/common/utils";
+import { resolveBudgetCurrency } from "@/common/constants/user-preferences";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { AttachBudgetButton } from "@/components/common/budget/AttachBudgetModal";
 import { SettlementProgressBar } from "@/components/common/ui/SettlementProgressBar";
@@ -188,7 +189,12 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
               {debt.person}
             </h1>
             <p className="mt-1 text-sm text-muted">
-              {formatJalaliDate(String(debt.year), String(debt.month), String(debt.day))}
+              {formatBudgetDate(
+                String(debt.year),
+                String(debt.month),
+                String(debt.day),
+                debt.dateCalendar,
+              )}
             </p>
           </div>
           {isReceivable ? (
@@ -201,15 +207,30 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
           <div className="rounded-xl bg-surface-secondary p-3">
             <p className="text-xs text-muted">{t("common.totalAmount")}</p>
-            <p className="mt-1 font-bold">{formatPrice(debt.totalAmount)}</p>
+            <p className="mt-1 font-bold">
+              {formatPriceWithCurrency(
+                debt.totalAmount,
+                resolveBudgetCurrency(debt.currency),
+              )}
+            </p>
           </div>
           <div className="rounded-xl bg-income-soft/50 p-3">
             <p className="text-xs text-muted">{t("debts.settled")}</p>
-            <p className="mt-1 font-bold text-income">{formatPrice(settledAmount)}</p>
+            <p className="mt-1 font-bold text-income">
+              {formatPriceWithCurrency(
+                settledAmount,
+                resolveBudgetCurrency(debt.currency),
+              )}
+            </p>
           </div>
           <div className="rounded-xl bg-expense-soft/50 p-3">
             <p className="text-xs text-muted">{t("debts.remaining")}</p>
-            <p className="mt-1 font-bold text-expense">{formatPrice(debt.remainingAmount)}</p>
+            <p className="mt-1 font-bold text-expense">
+              {formatPriceWithCurrency(
+                debt.remainingAmount,
+                resolveBudgetCurrency(debt.currency),
+              )}
+            </p>
           </div>
         </div>
 
@@ -267,7 +288,15 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
                 <article key={settlement._id ?? `${settlement.amount}-${settlement.settledAt}`} className="glass rounded-2xl p-4">
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="font-semibold">{t("auto.k43ef5d91de")}{formatPrice(settlement.amount)}</p>
+                      <p className="font-semibold">
+                        {t("auto.k43ef5d91de")}
+                        {formatPriceWithCurrency(
+                          settlement.amount,
+                          resolveBudgetCurrency(
+                            budget?.currency ?? debt.currency,
+                          ),
+                        )}
+                      </p>
                       {budget?.category && typeof budget.category === "object" ? (
                         <p className="mt-1 text-xs text-muted">{budget.category.title}</p>
                       ) : null}
@@ -464,7 +493,10 @@ function BudgetRow({
         </Link>
         <div className="flex shrink-0 items-center gap-2">
           <p className={`font-bold ${isIncome ? "text-income" : "text-expense"}`}>
-            {formatPrice(budget.price)}
+            {formatPriceWithCurrency(
+              budget.price,
+              resolveBudgetCurrency(budget.currency),
+            )}
           </p>
           {onDetach ? (
             <Button

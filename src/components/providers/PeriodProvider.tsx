@@ -17,11 +17,16 @@ import moment from "moment-jalali";
 import type { PeriodDuration } from "@/common/constants/experience";
 import { useHydratedSearchParams } from "@/common/hooks/useHydratedSearchParams";
 import {
+  formatGregorianDate,
   formatJalaliDate,
   formatJalaliMonthYear,
   formatJalaliYear,
-  getJalaliNow,
+  getNowDateParts,
 } from "@/common/utils";
+import { GREGORIAN_MONTHS } from "@/common/utils/calendar-date";
+import { toPersianDigits } from "@/common/utils/persian-digits";
+import { useAppSelector } from "@/stores/hooks";
+import { userSelector } from "@/stores/profile";
 
 type PeriodContextValue = {
   duration: PeriodDuration;
@@ -29,6 +34,7 @@ type PeriodContextValue = {
   month: string;
   day: string;
   periodLabel: string;
+  calendarType: "jalali" | "gregorian";
   updatePeriod: (patch: Partial<{
     duration: PeriodDuration;
     year: string;
@@ -56,24 +62,36 @@ function parseDuration(value: string | null): PeriodDuration {
   return "monthly";
 }
 
+function formatGregorianMonthYear(year: string, month: string) {
+  const monthName = GREGORIAN_MONTHS[parseInt(month, 10) - 1] ?? month;
+  return `${monthName} ${toPersianDigits(year)}`;
+}
+
 export const PeriodProvider: FC<PropsWithChildren> = ({ children }) => {
   const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
   const { hydrated, get } = useHydratedSearchParams();
-  const now = getJalaliNow();
+  const user = useAppSelector(userSelector);
+  const calendarType = user?.preferences?.dateCalendar ?? "jalali";
+  const nowParts = getNowDateParts(calendarType);
 
   const duration = parseDuration(hydrated ? get("duration", "monthly") : "monthly");
-  const year = hydrated ? get("year", String(now.jYear())) : String(now.jYear());
-  const month = hydrated ? get("month", String(now.jMonth() + 1)) : String(now.jMonth() + 1);
-  const day = hydrated ? get("day", String(now.jDate())) : String(now.jDate());
+  const year = hydrated ? get("year", nowParts.year) : nowParts.year;
+  const month = hydrated ? get("month", nowParts.month) : nowParts.month;
+  const day = hydrated ? get("day", nowParts.day) : nowParts.day;
 
   const periodLabel = useMemo(() => {
     if (duration === "all") return t("auto.k9e425fc9f4");
+    if (calendarType === "gregorian") {
+      if (duration === "yearly") return toPersianDigits(year);
+      if (duration === "monthly") return formatGregorianMonthYear(year, month);
+      return formatGregorianDate(year, month, day);
+    }
     if (duration === "yearly") return formatJalaliYear(year);
     if (duration === "monthly") return formatJalaliMonthYear(year, month);
     return formatJalaliDate(year, month, day);
-  }, [duration, year, month, day, t]);
+  }, [calendarType, duration, year, month, day, t]);
 
   const updatePeriod = useCallback(
     (patch: Partial<{
@@ -101,15 +119,24 @@ export const PeriodProvider: FC<PropsWithChildren> = ({ children }) => {
   );
 
   const goToToday = useCallback(() => {
-    updatePeriod({
-      year: String(now.jYear()),
-      month: String(now.jMonth() + 1),
-      day: String(now.jDate()),
-    });
-  }, [now, updatePeriod]);
+    updatePeriod(getNowDateParts(calendarType));
+  }, [calendarType, updatePeriod]);
 
   const shiftMonth = useCallback(
     (delta: number) => {
+      if (calendarType === "gregorian") {
+        const date = moment()
+          .year(parseInt(year, 10))
+          .month(parseInt(month, 10) - 1)
+          .date(1)
+          .add(delta, "month");
+        updatePeriod({
+          year: String(date.year()),
+          month: String(date.month() + 1),
+          day: String(date.date()),
+        });
+        return;
+      }
       const date = moment(`${year}/${month}/1`, "jYYYY/jM/jD").add(
         delta,
         "jMonth",
@@ -120,11 +147,24 @@ export const PeriodProvider: FC<PropsWithChildren> = ({ children }) => {
         day: String(date.jDate()),
       });
     },
-    [month, updatePeriod, year],
+    [calendarType, month, updatePeriod, year],
   );
 
   const shiftDay = useCallback(
     (delta: number) => {
+      if (calendarType === "gregorian") {
+        const date = moment()
+          .year(parseInt(year, 10))
+          .month(parseInt(month, 10) - 1)
+          .date(parseInt(day, 10))
+          .add(delta, "day");
+        updatePeriod({
+          year: String(date.year()),
+          month: String(date.month() + 1),
+          day: String(date.date()),
+        });
+        return;
+      }
       const date = moment(`${year}/${month}/${day}`, "jYYYY/jM/jD").add(
         delta,
         "day",
@@ -135,7 +175,7 @@ export const PeriodProvider: FC<PropsWithChildren> = ({ children }) => {
         day: String(date.jDate()),
       });
     },
-    [day, month, updatePeriod, year],
+    [calendarType, day, month, updatePeriod, year],
   );
 
   const shiftYear = useCallback(
@@ -159,6 +199,7 @@ export const PeriodProvider: FC<PropsWithChildren> = ({ children }) => {
       month,
       day,
       periodLabel,
+      calendarType,
       updatePeriod,
       goToToday,
       shiftMonth,
@@ -172,6 +213,7 @@ export const PeriodProvider: FC<PropsWithChildren> = ({ children }) => {
       month,
       day,
       periodLabel,
+      calendarType,
       updatePeriod,
       goToToday,
       shiftMonth,

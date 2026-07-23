@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslation, useLanguage } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useEffect } from "react";
 import DateObject from "react-date-object";
@@ -13,6 +13,8 @@ import DatePicker from "react-multi-date-picker";
 import type { UserDateCalendar } from "@/common/constants/user-preferences";
 import { DATE_PICKER_Z_INDEX } from "@/common/constants/overlay-z-index";
 import { useDatePickerOverlay } from "@/common/hooks/useDatePickerOverlay";
+import { useAppSelector } from "@/stores/hooks";
+import { userSelector } from "@/stores/profile";
 
 import "react-multi-date-picker/styles/colors/teal.css";
 
@@ -34,10 +36,12 @@ export function FilterDatePicker({
   onChange,
   hideHint,
   inModal = false,
-  calendarType = "jalali",
+  calendarType,
 }: FilterDatePickerProps) {
   const { t } = useTranslation();
-  const { language } = useLanguage();
+  const user = useAppSelector(userSelector);
+  const resolvedCalendar =
+    calendarType ?? user?.preferences?.dateCalendar ?? "jalali";
 
   const {
     wrapperRef,
@@ -47,10 +51,10 @@ export function FilterDatePicker({
     resolvedPortalTarget,
   } = useDatePickerOverlay(inModal);
 
-  const isGregorian = calendarType === "gregorian";
+  const isGregorian = resolvedCalendar === "gregorian";
   const calendar = isGregorian ? gregorianCalendar : persianCalendar;
   const locale = isGregorian ? gregorianLocale : persianLocale;
-  const format = isGregorian ? "YYYY/MM/DD" : "YYYY/MM/DD";
+  const format = "YYYY/MM/DD";
 
   useEffect(() => {
     if (!inModal) return;

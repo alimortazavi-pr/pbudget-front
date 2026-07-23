@@ -168,6 +168,7 @@ export const commonMessages: MessageTree = {
     "غيّر تخطيط الموقع بالكامل — الكلاسيكي هو اللوحة الحالية",
   personAccountPlaceholder: "اختر أو أدخل اسم الطرف",
   searchCategoryPlaceholder: "ابحث أو اختر فئة",
+  createNamedCategory: "إنشاء «{{name}}»",
   clockOut: "خروج",
   clockIn: "دخول",
   backToHome: "العودة للرئيسية",

@@ -4,6 +4,7 @@ import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useEffect, useState } from "react";
 import { Button, Modal } from "@heroui/react";
+import { TickCircle } from "iconsax-reactjs";
 
 import * as profileApi from "@/common/api/profile";
 import {
@@ -17,6 +18,14 @@ import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 import { AppModal } from "@/components/common/ui/AppModal";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { setProfile, userSelector } from "@/stores/profile";
+
+function preferenceOptionClass(selected: boolean) {
+  return `rounded-xl border transition-colors ${
+    selected
+      ? "border-accent bg-accent/15 text-accent font-semibold shadow-sm ring-1 ring-accent/35"
+      : "border-border/50 bg-surface-secondary/60 text-muted hover:border-accent/40"
+  }`;
+}
 
 type UserPreferencesSettingsProps = {
   compact?: boolean;
@@ -70,41 +79,54 @@ export function UserPreferencesSettings({ compact }: UserPreferencesSettingsProp
       <div className="space-y-2">
         <p className="text-sm font-medium">{t("common.defaultCurrencyType")}</p>
         <div className="grid gap-2 sm:grid-cols-3">
-          {CURRENCY_OPTIONS.map((option) => (
-            <button
-              key={option.id}
-              type="button"
-              className={`rounded-xl border px-3 py-2.5 text-sm transition-colors ${
-                currency === option.id
-                  ? "border-primary bg-primary/10 font-medium"
-                  : "border-border/50 bg-surface-secondary/60"
-              }`}
-              onClick={() => setCurrency(option.id)}
-            >
-              {currencyLabel(option.id)}
-            </button>
-          ))}
+          {CURRENCY_OPTIONS.map((option) => {
+            const selected = currency === option.id;
+            return (
+              <button
+                key={option.id}
+                type="button"
+                aria-pressed={selected}
+                className={`px-3 py-2.5 text-sm ${preferenceOptionClass(selected)}`}
+                onClick={() => setCurrency(option.id)}
+              >
+                {currencyLabel(option.id)}
+              </button>
+            );
+          })}
         </div>
       </div>
 
       <div className="space-y-2">
         <p className="text-sm font-medium">{t("common.defaultDateType")}</p>
         <div className="grid gap-2">
-          {CALENDAR_OPTIONS.map((option) => (
-            <button
-              key={option.id}
-              type="button"
-              className={`rounded-xl border px-4 py-3 text-start transition-colors ${
-                dateCalendar === option.id
-                  ? "border-primary bg-primary/10"
-                  : "border-border/50 bg-surface-secondary/60"
-              }`}
-              onClick={() => setDateCalendar(option.id)}
-            >
-              <p className="text-sm font-medium">{calendarLabel(option.id)}</p>
-              <p className="mt-0.5 text-xs text-muted">{calendarDescription(option.id)}</p>
-            </button>
-          ))}
+          {CALENDAR_OPTIONS.map((option) => {
+            const selected = dateCalendar === option.id;
+            return (
+              <button
+                key={option.id}
+                type="button"
+                aria-pressed={selected}
+                className={`flex items-start gap-3 px-4 py-3 text-start ${preferenceOptionClass(selected)}`}
+                onClick={() => setDateCalendar(option.id)}
+              >
+                <span className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold">{calendarLabel(option.id)}</p>
+                  <p
+                    className={`mt-0.5 text-xs ${selected ? "text-accent/75" : "text-muted"}`}
+                  >
+                    {calendarDescription(option.id)}
+                  </p>
+                </span>
+                {selected ? (
+                  <TickCircle
+                    size={18}
+                    variant="Bold"
+                    className="mt-0.5 shrink-0 text-accent"
+                  />
+                ) : null}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -167,43 +189,54 @@ export function UserPreferencesOnboardingModal({
               <div className="space-y-2">
                 <p className="text-sm font-medium">{t("common.currencyType")}</p>
                 <div className="grid gap-2">
-                  {CURRENCY_OPTIONS.map((option) => (
-                    <button
-                      key={option.id}
-                      type="button"
-                      className={`rounded-xl border px-4 py-3 text-start text-sm transition-colors ${
-                        currency === option.id
-                          ? "border-primary bg-primary/10 font-medium"
-                          : "border-border/50 bg-surface-secondary/60"
-                      }`}
-                      onClick={() => setCurrency(option.id)}
-                    >
-                      {currencyLabel(option.id)}
-                    </button>
-                  ))}
+                  {CURRENCY_OPTIONS.map((option) => {
+                    const selected = currency === option.id;
+                    return (
+                      <button
+                        key={option.id}
+                        type="button"
+                        aria-pressed={selected}
+                        className={`px-4 py-3 text-start text-sm ${preferenceOptionClass(selected)}`}
+                        onClick={() => setCurrency(option.id)}
+                      >
+                        {currencyLabel(option.id)}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
               <div className="space-y-2">
                 <p className="text-sm font-medium">{t("common.dateType")}</p>
                 <div className="grid gap-2">
-                  {CALENDAR_OPTIONS.map((option) => (
-                    <button
-                      key={option.id}
-                      type="button"
-                      className={`rounded-xl border px-4 py-3 text-start transition-colors ${
-                        dateCalendar === option.id
-                          ? "border-primary bg-primary/10"
-                          : "border-border/50 bg-surface-secondary/60"
-                      }`}
-                      onClick={() => setDateCalendar(option.id)}
-                    >
-                      <p className="text-sm font-medium">{calendarLabel(option.id)}</p>
-                      <p className="mt-0.5 text-xs text-muted">
-                        {calendarDescription(option.id)}
-                      </p>
-                    </button>
-                  ))}
+                  {CALENDAR_OPTIONS.map((option) => {
+                    const selected = dateCalendar === option.id;
+                    return (
+                      <button
+                        key={option.id}
+                        type="button"
+                        aria-pressed={selected}
+                        className={`flex items-start gap-3 px-4 py-3 text-start ${preferenceOptionClass(selected)}`}
+                        onClick={() => setDateCalendar(option.id)}
+                      >
+                        <span className="min-w-0 flex-1">
+                          <p className="text-sm font-semibold">{calendarLabel(option.id)}</p>
+                          <p
+                            className={`mt-0.5 text-xs ${selected ? "text-accent/75" : "text-muted"}`}
+                          >
+                            {calendarDescription(option.id)}
+                          </p>
+                        </span>
+                        {selected ? (
+                          <TickCircle
+                            size={18}
+                            variant="Bold"
+                            className="mt-0.5 shrink-0 text-accent"
+                          />
+                        ) : null}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </Modal.Body>

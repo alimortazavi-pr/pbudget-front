@@ -54,6 +54,7 @@ export function DashboardFilterSection({
             onSelectionChange={(key) =>
               onCategoryChange(key === "all" ? "" : key)
             }
+            allowCreate={false}
             options={[
               { id: "all", label: t("dashboard.allCategories") },
               ...categoryOptions,

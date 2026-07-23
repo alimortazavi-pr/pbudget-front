@@ -20,10 +20,9 @@ import type {
   NoteDuration,
 } from "@/common/interfaces/note.interface";
 import {
-  formatJalaliDate,
   formatJalaliDateTime,
-  formatJalaliMonthYear,
   formatJalaliYear,
+  toPersianDigits,
 } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
@@ -38,6 +37,7 @@ import { useHydratedSearchParams } from "@/common/hooks/useHydratedSearchParams"
 import { chipClass } from "@/components/pages/planning/planning-shared";
 import { PeriodNavigator } from "@/components/pages/planning/PeriodNavigator";
 import { usePeriodQuery } from "@/components/pages/planning/usePeriodQuery";
+import { useLocalizedDate } from "@/i18n/hooks/useLocalizedDate";
 
 function getCategoryTitle(note: IUserNote) {
   if (!note.category || typeof note.category === "string") return t("auto.kb5b0dc4c64");
@@ -61,12 +61,14 @@ function periodPayload(
 
 export function NotesPage() {
   const { t } = useTranslation();
+  const { formatMonthYear, formatDayMonthYear } = useLocalizedDate();
   const router = useRouter();
   const { get } = useHydratedSearchParams();
   const {
     year,
     month,
     day,
+    calendarType,
     updateQuery,
     goToToday,
     shiftDay,
@@ -96,10 +98,30 @@ export function NotesPage() {
 
   const periodLabel = useMemo(() => {
     if (noteDuration === "general") return t("auto.k71cc54b74a");
-    if (noteDuration === "daily") return formatJalaliDate(year, month, day);
-    if (noteDuration === "yearly") return formatJalaliYear(year);
-    return formatJalaliMonthYear(year, month);
-  }, [noteDuration, year, month, day]);
+    if (noteDuration === "daily") {
+      return formatDayMonthYear(
+        parseInt(day, 10),
+        parseInt(month, 10),
+        year,
+        calendarType,
+      );
+    }
+    if (noteDuration === "yearly") {
+      return calendarType === "gregorian"
+        ? toPersianDigits(year)
+        : formatJalaliYear(year);
+    }
+    return formatMonthYear(parseInt(month, 10), year, calendarType);
+  }, [
+    noteDuration,
+    year,
+    month,
+    day,
+    calendarType,
+    formatDayMonthYear,
+    formatMonthYear,
+    t,
+  ]);
 
   const showPeriodNav = noteDuration !== "general";
 

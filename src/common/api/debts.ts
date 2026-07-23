@@ -43,6 +43,8 @@ export async function createStandaloneDebt(payload: {
   type: string;
   person: string;
   amount: string;
+  currency?: string;
+  dateCalendar?: string;
   category: string;
   year: string;
   month: string;
