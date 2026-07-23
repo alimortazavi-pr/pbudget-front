@@ -22,6 +22,7 @@ import type { IBudget, IBudgetMutationResult } from "@/common/interfaces/budget.
 import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
 import { getJalaliNow, normalizeJalaliPart, toEnglishDigits, formatPrice, getNowDateParts } from "@/common/utils";
 import { formatPriceWithCurrency } from "@/common/utils/format-currency";
+import { fetchOpenDebtsForPerson } from "@/common/utils/debt-person-match";
 import {
   DEFAULT_USER_PREFERENCES,
   resolveBudgetCurrency,
@@ -69,6 +70,7 @@ const initialDebtLedger: DebtLedgerValue = {
   debtType: String(DebtType.RECEIVABLE),
   person: "",
   settleDebtId: "",
+  forceCreateNew: false,
 };
 
 function isSettleDebtMode(mode: DebtLedgerMode) {
@@ -371,6 +373,30 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
 
     setLoading(true);
     try {
+      if (
+        debtLedger.enabled &&
+        canAttachDebt &&
+        debtLedger.mode === "create" &&
+        !debtLedger.forceCreateNew
+      ) {
+        const matches = await fetchOpenDebtsForPerson(
+          debtsApi.fetchDebts,
+          debtLedger.person,
+          debtLedger.debtType,
+        );
+        if (matches.length > 0) {
+          setMoreOpen(true);
+          showToast(
+            t("debts.chooseLinkOrCreate", {
+              count: matches.length,
+              person: debtLedger.person.trim(),
+            }),
+          );
+          setLoading(false);
+          return;
+        }
+      }
+
       let mutationResult: IBudgetMutationResult | undefined;
       let savedBudgetId = budget?._id ?? "";
 

@@ -3,15 +3,24 @@
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Button, Modal } from "@heroui/react";
 
 import * as debtsApi from "@/common/api/debts";
+import { PATHS } from "@/common/constants";
 import {
   CURRENCY_OPTIONS,
+  resolveBudgetCurrency,
   type UserCurrency,
 } from "@/common/constants/user-preferences";
 import { useMergedPersons } from "@/common/hooks/useMergedPersons";
-import { getNowDateParts, toEnglishDigits } from "@/common/utils";
+import type { IDebt } from "@/common/interfaces/debt.interface";
+import {
+  formatPriceWithCurrency,
+  getNowDateParts,
+  toEnglishDigits,
+} from "@/common/utils";
+import { fetchOpenDebtsForPerson } from "@/common/utils/debt-person-match";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import {
@@ -63,6 +72,9 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
   const [day, setDay] = useState(nowParts.day);
   const [description, setDescription] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [forceCreateNew, setForceCreateNew] = useState(false);
+  const [personMatches, setPersonMatches] = useState<IDebt[]>([]);
+  const [checkingPerson, setCheckingPerson] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -71,12 +83,61 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
     setYear(parts.year);
     setMonth(parts.month);
     setDay(parts.day);
+    setForceCreateNew(false);
+    setPersonMatches([]);
   }, [open, formCalendar, preferredCurrency]);
+
+  useEffect(() => {
+    if (!open) return;
+    const trimmed = person.trim();
+    if (!trimmed || forceCreateNew) {
+      setPersonMatches([]);
+      return;
+    }
+
+    let cancelled = false;
+    setCheckingPerson(true);
+    const timer = window.setTimeout(() => {
+      void fetchOpenDebtsForPerson(debtsApi.fetchDebts, trimmed, debtType)
+        .then((matches) => {
+          if (!cancelled) setPersonMatches(matches);
+        })
+        .catch(() => {
+          if (!cancelled) setPersonMatches([]);
+        })
+        .finally(() => {
+          if (!cancelled) setCheckingPerson(false);
+        });
+    }, 350);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [open, person, debtType, forceCreateNew]);
 
   async function handleSubmit() {
     if (!person.trim() || !amount.trim() || !category) {
       showToast(t("auto.k0abe282ca2"));
       return;
+    }
+
+    if (!forceCreateNew) {
+      const matches = await fetchOpenDebtsForPerson(
+        debtsApi.fetchDebts,
+        person,
+        debtType,
+      );
+      if (matches.length > 0) {
+        setPersonMatches(matches);
+        showToast(
+          t("debts.chooseLinkOrCreate", {
+            count: matches.length,
+            person: person.trim(),
+          }),
+        );
+        return;
+      }
     }
 
     setSubmitting(true);
@@ -100,6 +161,7 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
       setAmount("");
       setCategory("");
       setDescription("");
+      setForceCreateNew(false);
     } catch (err) {
       showErrorToast(err);
     } finally {
@@ -128,7 +190,10 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
               <button
                 key={item.id}
                 type="button"
-                onClick={() => setDebtType(item.id)}
+                onClick={() => {
+                  setDebtType(item.id);
+                  setForceCreateNew(false);
+                }}
                 className={`flex-1 cursor-pointer px-3 py-2 text-sm ${optionClass(debtType === item.id)}`}
               >
                 {item.label}
@@ -139,9 +204,79 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
           <FormPersonComboBox
             label={t("auto.k8feed14e36")}
             value={person}
-            onChange={setPerson}
+            onChange={(next) => {
+              setPerson(next);
+              setForceCreateNew(false);
+            }}
             options={persons}
           />
+
+          {checkingPerson ? (
+            <p className="text-xs text-muted">{t("common.loading")}</p>
+          ) : null}
+
+          {personMatches.length > 0 && !forceCreateNew ? (
+            <div className="space-y-3 rounded-xl border border-accent/40 bg-accent/5 p-3">
+              <div>
+                <p className="text-sm font-semibold text-accent">
+                  {t("debts.existingActiveTitle", {
+                    count: personMatches.length,
+                    person: person.trim(),
+                  })}
+                </p>
+                <p className="mt-1 text-xs leading-6 text-muted">
+                  {t("debts.existingActiveHint")}
+                </p>
+              </div>
+
+              <ul className="space-y-2">
+                {personMatches.map((debt) => (
+                  <li key={debt._id}>
+                    <Link
+                      href={PATHS.DEBT(debt._id)}
+                      className="block rounded-xl border border-border bg-surface px-3 py-2.5 transition hover:border-accent/50"
+                      onClick={() => onOpenChange(false)}
+                    >
+                      <p className="text-sm font-medium">
+                        {debt.type === DebtType.RECEIVABLE
+                          ? t("common.receivable")
+                          : t("common.payable")}{" "}
+                        ·{" "}
+                        {formatPriceWithCurrency(
+                          debt.remainingAmount,
+                          resolveBudgetCurrency(debt.currency),
+                        )}
+                      </p>
+                      <p className="mt-0.5 text-xs text-muted">
+                        {t("debts.linkToExisting")}
+                      </p>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+
+              <button
+                type="button"
+                onClick={() => setForceCreateNew(true)}
+                className={`w-full cursor-pointer px-3 py-2.5 text-sm ${optionClass(false)}`}
+              >
+                {t("debts.createNewAnyway")}
+              </button>
+            </div>
+          ) : null}
+
+          {forceCreateNew && personMatches.length > 0 ? (
+            <p className="rounded-xl bg-surface-secondary px-3 py-2 text-xs text-muted">
+              {t("debts.creatingNewConfirmed")}{" "}
+              <button
+                type="button"
+                className="cursor-pointer font-medium text-accent underline-offset-2 hover:underline"
+                onClick={() => setForceCreateNew(false)}
+              >
+                {t("debts.showExistingAgain")}
+              </button>
+            </p>
+          ) : null}
 
           <div className="space-y-2">
             <p className="text-sm font-medium">{t("common.currencyType")}</p>

@@ -15,4 +15,14 @@ export const debtsMessages: MessageTree = {
   incomeDeposit: "دریافتی (واریز)",
   costWithdraw: "پرداختی (برداشت)",
   registerFirst: "ثبت کنید.",
+  existingActiveTitle:
+    "از قبل {{count}} مورد فعال به نام «{{person}}» هست",
+  existingActiveHint:
+    "برای جلوگیری از ثبت تکراری، یکی از موارد موجود را برای تسویه انتخاب کنید یا اگر واقعاً تعهد جدیدی است، ایجاد جدید را بزنید.",
+  linkToExisting: "لینک و تسویه با این مورد",
+  createNewAnyway: "ایجاد طلب/بدهی جدید",
+  creatingNewConfirmed: "در حال ثبت مورد جدید برای این نام هستید.",
+  showExistingAgain: "نمایش موارد موجود",
+  chooseLinkOrCreate:
+    "از قبل {{count}} مورد فعال به نام «{{person}}» هست. لینک به موجود را انتخاب کنید یا «ایجاد جدید» را بزنید.",
 };

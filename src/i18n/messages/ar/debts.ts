@@ -15,4 +15,14 @@ export const debtsMessages: MessageTree = {
   incomeDeposit: "وارد (إيداع)",
   costWithdraw: "صادر (سحب)",
   registerFirst: ".",
+  existingActiveTitle:
+    "هناك بالفعل {{count}} عنصر/عناصر نشطة باسم «{{person}}»",
+  existingActiveHint:
+    "لتجنب التكرار، اختر عنصراً موجوداً للتسوية، أو أنشئ عنصراً جديداً إذا كان التزاماً جديداً فعلاً.",
+  linkToExisting: "ربط والتسوية مع هذا العنصر",
+  createNewAnyway: "إنشاء مستحق/دين جديد",
+  creatingNewConfirmed: "أنت بصدد إنشاء عنصر جديد لهذا الاسم.",
+  showExistingAgain: "عرض العناصر الموجودة",
+  chooseLinkOrCreate:
+    "هناك بالفعل {{count}} عنصر/عناصر نشطة باسم «{{person}}». اربط بموجود أو اختر إنشاء جديد.",
 };

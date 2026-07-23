@@ -6,6 +6,8 @@ import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
 import type { DebtLedgerMode } from "@/components/pages/budget/DebtLedgerSection";
 import { DebtType, BudgetType } from "@/types/enums";
 import type { ImportRowDraft, ImportRowExtras } from "./import-row.types";
+import * as debtsApi from "@/common/api/debts";
+import { fetchOpenDebtsForPerson } from "@/common/utils/debt-person-match";
 
 const t = getTranslator();
 
@@ -15,6 +17,7 @@ const initialDebtLedger = {
   debtType: String(DebtType.RECEIVABLE),
   person: "",
   settleDebtId: "",
+  forceCreateNew: false,
 };
 
 export function createImportRowDraft(
@@ -99,6 +102,37 @@ export function validateImportRowDraft(row: ImportRowDraft): string | null {
       return t("auto.k55cf141e8e");
     }
   }
+  return null;
+}
+
+export async function validateImportRowDraftAsync(
+  row: ImportRowDraft,
+): Promise<string | null> {
+  const syncError = validateImportRowDraft(row);
+  if (syncError) return syncError;
+
+  if (
+    row.debtLedger.enabled &&
+    row.debtLedger.mode === "create" &&
+    !row.debtLedger.forceCreateNew
+  ) {
+    try {
+      const matches = await fetchOpenDebtsForPerson(
+        debtsApi.fetchDebts,
+        row.debtLedger.person,
+        row.debtLedger.debtType,
+      );
+      if (matches.length > 0) {
+        return t("debts.chooseLinkOrCreate", {
+          count: matches.length,
+          person: row.debtLedger.person.trim(),
+        });
+      }
+    } catch {
+      // Ignore lookup failures; sync validation already passed.
+    }
+  }
+
   return null;
 }
 

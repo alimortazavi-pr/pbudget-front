@@ -35,6 +35,7 @@ import {
   createImportRowDraft,
   isImportRowConfigured,
   validateImportRowDraft,
+  validateImportRowDraftAsync,
 } from "@/components/pages/bank-import/import-row.util";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { bumpBudgetRevision } from "@/stores/budget";
@@ -172,7 +173,7 @@ export function BankImportWizardPage() {
     }
 
     for (const row of selectedRows) {
-      const error = validateImportRowDraft(row);
+      const error = await validateImportRowDraftAsync(row);
       if (error) {
         showToast(error, "danger");
         setEditingRowId(row.tempId);

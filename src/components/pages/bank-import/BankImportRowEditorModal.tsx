@@ -46,7 +46,7 @@ import { userSelector } from "@/stores/profile";
 import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 import { BudgetType, CategoryKind, DebtType } from "@/types/enums";
 import type { ImportRowDraft } from "./import-row.types";
-import { validateImportRowDraft } from "./import-row.util";
+import { validateImportRowDraftAsync } from "./import-row.util";
 
 type BankImportRowEditorModalProps = {
   open: boolean;
@@ -237,14 +237,12 @@ export function BankImportRowEditorModal({
     });
   }
 
-  function handleSave() {
+  async function handleSave() {
     if (!form) return;
-    const error = validateImportRowDraft(form);
+    const error = await validateImportRowDraftAsync(form);
     if (error) {
       showToast(error, "danger");
-      if (error.includes(t("auto.kac5759fe2a")) || error.includes(t("auto.kf48e3aa79d")) || error.includes(t("auto.k7d84c3b4f7"))) {
-        setMoreOpen(true);
-      }
+      setMoreOpen(true);
       return;
     }
 
