@@ -121,6 +121,7 @@ export async function validateImportRowDraftAsync(
         debtsApi.fetchDebts,
         row.debtLedger.person,
         row.debtLedger.debtType,
+        "toman",
       );
       if (matches.length > 0) {
         return t("debts.chooseLinkOrCreate", {

@@ -37,4 +37,5 @@ export interface IDebtSummary {
   openReceivableCount: number;
   openPayableCount: number;
   openCount: number;
+  currency?: UserCurrency;
 }

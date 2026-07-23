@@ -377,6 +377,7 @@ export function BankImportRowEditorModal({
                   amount={form.price}
                   value={form.debtLedger}
                   onChange={updateDebtLedger}
+                  formCurrency={preferredCurrency}
                 />
 
                 <VentureLedgerSection

@@ -2,8 +2,10 @@ import { axiosInstance } from "@/common/axiosInstance";
 import type { IBudget } from "@/common/interfaces/budget.interface";
 import type { IDebt, IDebtSummary } from "@/common/interfaces/debt.interface";
 
-export async function fetchDebtSummary() {
-  const { data } = await axiosInstance.get<IDebtSummary>("/debts/summary");
+export async function fetchDebtSummary(currency?: string) {
+  const { data } = await axiosInstance.get<IDebtSummary>("/debts/summary", {
+    params: currency ? { currency } : undefined,
+  });
   return data;
 }
 
@@ -16,6 +18,7 @@ export async function fetchDebts(params?: {
   status?: string;
   type?: string;
   person?: string;
+  currency?: string;
 }) {
   const { data } = await axiosInstance.get<{ debts: IDebt[] }>("/debts", {
     params,

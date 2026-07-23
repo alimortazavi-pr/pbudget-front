@@ -98,7 +98,7 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
     let cancelled = false;
     setCheckingPerson(true);
     const timer = window.setTimeout(() => {
-      void fetchOpenDebtsForPerson(debtsApi.fetchDebts, trimmed, debtType)
+      void fetchOpenDebtsForPerson(debtsApi.fetchDebts, trimmed, debtType, currency)
         .then((matches) => {
           if (!cancelled) setPersonMatches(matches);
         })
@@ -114,7 +114,7 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [open, person, debtType, forceCreateNew]);
+  }, [open, person, debtType, forceCreateNew, currency]);
 
   async function handleSubmit() {
     if (!person.trim() || !amount.trim() || !category) {
@@ -127,6 +127,7 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
         debtsApi.fetchDebts,
         person,
         debtType,
+        currency,
       );
       if (matches.length > 0) {
         setPersonMatches(matches);

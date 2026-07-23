@@ -8,13 +8,17 @@ import { Button, Modal } from "@heroui/react";
 import * as debtsApi from "@/common/api/debts";
 import type { IBudget } from "@/common/interfaces/budget.interface";
 import type { IDebt } from "@/common/interfaces/debt.interface";
-import { formatJalaliDate, formatPrice, toEnglishDigits, toPersianDigits } from "@/common/utils";
+import { resolveBudgetCurrency } from "@/common/constants/user-preferences";
+import {
+  formatBudgetDate,
+  formatPriceWithCurrency,
+  toEnglishDigits,
+  toPersianDigits,
+} from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { FormPriceInput } from "@/components/common/form/FormFields";
 import { DebtType } from "@/types/enums";
-import { useAppSelector } from "@/stores/hooks";
-import { userSelector } from "@/stores/profile";
 import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 
 type DebtSettleModalProps = {
@@ -32,8 +36,7 @@ export function DebtSettleModal({
 }: DebtSettleModalProps) {
   const { t } = useTranslation();
   const { currencyLabel } = useCurrencyLabels();
-  const user = useAppSelector(userSelector);
-  const preferredCurrency = user?.preferences?.currency ?? "toman";
+  const debtCurrency = resolveBudgetCurrency(debt?.currency);
   const [candidates, setCandidates] = useState<IBudget[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -54,7 +57,7 @@ export function DebtSettleModal({
         showToast(err instanceof Error ? err.message : t("auto.k0b952d2d1b")),
       )
       .finally(() => setLoading(false));
-  }, [open, debt]);
+  }, [open, debt, t]);
 
   function toggleSelection(budgetId: string) {
     setSelectedIds((prev) => {
@@ -98,12 +101,8 @@ export function DebtSettleModal({
 
   const hint =
     debt.type === DebtType.RECEIVABLE
-      ? t(
-          t("auto.k9599099c25"),
-        )
-      : t(
-          t("auto.k4b56b0a2a9"),
-        );
+      ? t(t("auto.k9599099c25"))
+      : t(t("auto.k4b56b0a2a9"));
 
   return (
     <AppModal open={open} onOpenChange={onOpenChange}>
@@ -116,14 +115,18 @@ export function DebtSettleModal({
         <Modal.Body className="space-y-4">
           <p className="text-sm text-muted">{hint}</p>
           <p className="text-sm">
-            {t("debts.remaining")}: <strong>{formatPrice(debt.remainingAmount)}</strong>
+            {t("debts.remaining")}:{" "}
+            <strong>
+              {formatPriceWithCurrency(debt.remainingAmount, debtCurrency)}
+            </strong>
           </p>
 
           {selectedIds.size <= 1 ? (
             <FormPriceInput
-              label={`${t("debts.settle")} (${currencyLabel(preferredCurrency)})`}
+              label={`${t("debts.settle")} (${currencyLabel(debtCurrency)})`}
               value={amount}
               onChange={setAmount}
+              currency={debtCurrency}
             />
           ) : (
             <p className="rounded-xl bg-surface-secondary px-3 py-2 text-xs text-muted">
@@ -139,12 +142,14 @@ export function DebtSettleModal({
               {debt.type === DebtType.RECEIVABLE
                 ? t("debts.incomeDeposit")
                 : t("debts.costWithdraw")}{" "}
-              {t("debts.registerFirst")}
+              {t("debts.registerFirst")}{" "}
+              ({currencyLabel(debtCurrency)})
             </p>
           ) : (
             <div className="max-h-56 space-y-2 overflow-y-auto">
               {candidates.map((budget) => {
                 const isSelected = selectedIds.has(budget._id);
+                const budgetCurrency = resolveBudgetCurrency(budget.currency);
                 return (
                   <button
                     key={budget._id}
@@ -166,11 +171,18 @@ export function DebtSettleModal({
                       >
                         {isSelected ? "✓" : ""}
                       </span>
-                      <span className="truncate font-medium">{budget.category?.title}</span>
+                      <span className="truncate font-medium">
+                        {budget.category?.title}
+                      </span>
                     </span>
                     <span className="shrink-0 text-muted">
-                      {formatJalaliDate(budget.year, budget.month, budget.day)} ·{" "}
-                      {formatPrice(budget.price)}
+                      {formatBudgetDate(
+                        String(budget.year),
+                        String(budget.month),
+                        String(budget.day),
+                        budget.dateCalendar,
+                      )}{" "}
+                      · {formatPriceWithCurrency(budget.price, budgetCurrency)}
                     </span>
                   </button>
                 );

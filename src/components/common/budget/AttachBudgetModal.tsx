@@ -9,13 +9,15 @@ import { Add, ArrowLeft2, ArrowRight2, SearchNormal1 } from "iconsax-reactjs";
 import * as budgetsApi from "@/common/api/budgets";
 import type { IBudget } from "@/common/interfaces/budget.interface";
 import {
-  formatJalaliDate,
+  formatBudgetDate,
   formatJalaliMonthYear,
   formatJalaliYear,
-  formatPrice,
-  getJalaliNow,
+  formatPriceWithCurrency,
+  getNowDateParts,
   toPersianDigits,
 } from "@/common/utils";
+import { resolveBudgetCurrency } from "@/common/constants/user-preferences";
+import moment from "moment-jalali";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { FormCategoryComboBox } from "@/components/common/form/FormFields";
@@ -27,6 +29,7 @@ import {
 } from "@/components/common/ui/AppModal";
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
+import { userSelector } from "@/stores/profile";
 import { BudgetType } from "@/types/enums";
 
 export type AttachBudgetContext =
@@ -67,12 +70,14 @@ export function AttachBudgetModal({
   const resolvedAttachLabel = attachLabel || t("common.attachSelect");
   const multiSelect = selectionMode === "multiple";
   const categories = useAppSelector(categoriesSelector);
+  const user = useAppSelector(userSelector);
+  const calendarType = user?.preferences?.dateCalendar ?? "jalali";
   const categoryOptions = getCategorySelectOptions(categories ?? []);
-  const now = getJalaliNow();
+  const nowParts = getNowDateParts(calendarType);
 
   const [duration, setDuration] = useState<DurationFilter>("monthly");
-  const [year, setYear] = useState(String(now.jYear()));
-  const [month, setMonth] = useState(String(now.jMonth() + 1));
+  const [year, setYear] = useState(nowParts.year);
+  const [month, setMonth] = useState(nowParts.month);
   const [category, setCategory] = useState("");
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -193,10 +198,17 @@ export function AttachBudgetModal({
   }, [open, hasMore, loading, page, fetchPage]);
 
   function shiftMonth(delta: number) {
-    const next = getJalaliNow()
-      .jYear(parseInt(year, 10))
-      .jMonth(parseInt(month, 10) - 1)
-      .add(delta, "month");
+    if (calendarType === "gregorian") {
+      const next = moment()
+        .year(parseInt(year, 10))
+        .month(parseInt(month, 10) - 1)
+        .date(1)
+        .add(delta, "month");
+      setYear(String(next.year()));
+      setMonth(String(next.month() + 1));
+      return;
+    }
+    const next = moment(`${year}/${month}/1`, "jYYYY/jM/jD").add(delta, "jMonth");
     setYear(String(next.jYear()));
     setMonth(String(next.jMonth() + 1));
   }
@@ -373,10 +385,11 @@ export function AttachBudgetModal({
                         <div className="min-w-0">
                           <p className="truncate font-medium">{categoryTitle}</p>
                           <p className="mt-1 text-xs text-muted">
-                            {formatJalaliDate(
+                            {formatBudgetDate(
                               String(budget.year),
                               String(budget.month),
                               String(budget.day),
+                              budget.dateCalendar,
                             )}
                             {budget.description ? ` · ${budget.description}` : ""}
                           </p>
@@ -385,7 +398,10 @@ export function AttachBudgetModal({
                       <p
                         className={`shrink-0 text-sm font-bold ${isIncome ? "text-income" : "text-expense"}`}
                       >
-                        {formatPrice(budget.price)}
+                        {formatPriceWithCurrency(
+                          budget.price,
+                          resolveBudgetCurrency(budget.currency),
+                        )}
                       </p>
                     </button>
                   );

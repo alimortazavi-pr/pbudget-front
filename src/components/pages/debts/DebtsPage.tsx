@@ -14,13 +14,19 @@ import { Add, ArrowDown, ArrowUp, Profile2User } from "iconsax-reactjs";
 import { PATHS } from "@/common/constants";
 import * as debtsApi from "@/common/api/debts";
 import type { IDebt, IDebtSummary } from "@/common/interfaces/debt.interface";
-import { formatBudgetDate, formatPrice, formatPriceWithCurrency, formatCount } from "@/common/utils";
-import { resolveBudgetCurrency } from "@/common/constants/user-preferences";
+import { formatBudgetDate, formatPriceWithCurrency, formatCount } from "@/common/utils";
+import {
+  DEFAULT_USER_PREFERENCES,
+  resolveBudgetCurrency,
+} from "@/common/constants/user-preferences";
 import { showToast } from "@/common/utils/toast";
 import { CreateDebtModal } from "@/components/pages/debts/CreateDebtModal";
 import { SettlementProgressBar } from "@/components/common/ui/SettlementProgressBar";
 import { PageHeroSection } from "@/components/common/layout/PageHeroSection";
 import { DebtType } from "@/types/enums";
+import { useAppSelector } from "@/stores/hooks";
+import { userSelector } from "@/stores/profile";
+import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 
 type FilterTab = "open" | "all" | "settled";
 
@@ -38,7 +44,11 @@ function statusLabel(status: IDebt["status"], t: (key: string) => string) {
 
 export function DebtsPage() {
   const { t } = useTranslation();
+  const { currencyLabel } = useCurrencyLabels();
   const router = useRouter();
+  const user = useAppSelector(userSelector);
+  const summaryCurrency =
+    user?.preferences?.currency ?? DEFAULT_USER_PREFERENCES.currency;
   const [summary, setSummary] = useState<IDebtSummary | null>(null);
   const [debts, setDebts] = useState<IDebt[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,7 +59,7 @@ export function DebtsPage() {
     setLoading(true);
     try {
       const [summaryRes, debtsRes] = await Promise.all([
-        debtsApi.fetchDebtSummary(),
+        debtsApi.fetchDebtSummary(summaryCurrency),
         debtsApi.fetchDebts({
           status: tab === "open" ? "open" : tab === "settled" ? "settled" : "all",
         }),
@@ -67,7 +77,7 @@ export function DebtsPage() {
     } finally {
       setLoading(false);
     }
-  }, [tab, t]);
+  }, [summaryCurrency, tab, t]);
 
   useEffect(() => {
     void load();
@@ -100,9 +110,13 @@ export function DebtsPage() {
               <ArrowDown size={18} variant="Bold" />
               <span className="text-sm font-medium">{t("auto.k26835ea41b")}</span>
             </div>
-            <p className="mt-2 text-2xl font-bold">{formatPrice(summary.openReceivable)}</p>
+            <p className="mt-2 text-2xl font-bold">
+              {formatPriceWithCurrency(summary.openReceivable, summaryCurrency)}
+            </p>
             <p className="mt-1 text-xs text-muted">
               {formatCount(summary.openReceivableCount)} {t("auto.k209d590f8f")}
+              {" · "}
+              {currencyLabel(summaryCurrency)}
             </p>
           </div>
           <div className="glass rounded-2xl p-4">
@@ -110,9 +124,13 @@ export function DebtsPage() {
               <ArrowUp size={18} variant="Bold" />
               <span className="text-sm font-medium">{t("auto.k4b51a6b0f8")}</span>
             </div>
-            <p className="mt-2 text-2xl font-bold">{formatPrice(summary.openPayable)}</p>
+            <p className="mt-2 text-2xl font-bold">
+              {formatPriceWithCurrency(summary.openPayable, summaryCurrency)}
+            </p>
             <p className="mt-1 text-xs text-muted">
               {formatCount(summary.openPayableCount)} {t("auto.k0fd1994e7f")}
+              {" · "}
+              {currencyLabel(summaryCurrency)}
             </p>
           </div>
         </div>

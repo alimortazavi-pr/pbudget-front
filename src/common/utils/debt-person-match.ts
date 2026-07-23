@@ -16,9 +16,11 @@ export async function fetchOpenDebtsForPerson(
     status?: string;
     type?: string;
     person?: string;
+    currency?: string;
   }) => Promise<{ debts: IDebt[] } | IDebt[]>,
   person: string,
   type?: string,
+  currency?: string,
 ) {
   const trimmed = person.trim();
   if (!trimmed) return [] as IDebt[];
@@ -27,7 +29,13 @@ export async function fetchOpenDebtsForPerson(
     status: "open",
     person: trimmed,
     ...(type ? { type } : {}),
+    ...(currency ? { currency } : {}),
   });
   const debts = Array.isArray(result) ? result : result.debts;
-  return filterDebtsByExactPerson(debts, trimmed);
+  const exact = filterDebtsByExactPerson(debts, trimmed);
+  if (!currency) return exact;
+  const resolved = currency.trim().toLowerCase();
+  return exact.filter(
+    (debt) => (debt.currency ?? "toman").toLowerCase() === resolved,
+  );
 }

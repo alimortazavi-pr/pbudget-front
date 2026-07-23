@@ -33,6 +33,8 @@ type DebtLedgerSectionProps = {
   amount: string;
   value: DebtLedgerValue;
   onChange: (patch: Partial<DebtLedgerValue>) => void;
+  /** Currency of the transaction being created/edited — used to isolate debt matches */
+  formCurrency?: import("@/common/constants/user-preferences").UserCurrency;
 };
 
 function debtTypeLabel(type: number) {
@@ -96,6 +98,7 @@ export function DebtLedgerSection({
   amount,
   value,
   onChange,
+  formCurrency = "toman",
 }: DebtLedgerSectionProps) {
   const { t } = useTranslation();
 
@@ -110,10 +113,14 @@ export function DebtLedgerSection({
   useEffect(() => {
     if (!value.enabled || !isSettleMode(value.mode)) return;
     void debtsApi
-      .fetchDebts({ status: "open", type: String(settleDebtType) })
+      .fetchDebts({
+        status: "open",
+        type: String(settleDebtType),
+        currency: formCurrency,
+      })
       .then((res) => setOpenDebts(res.debts))
       .catch(() => setOpenDebts([]));
-  }, [value.enabled, value.mode, settleDebtType]);
+  }, [value.enabled, value.mode, settleDebtType, formCurrency]);
 
   useEffect(() => {
     if (!value.enabled || value.mode !== "create") {
@@ -130,7 +137,12 @@ export function DebtLedgerSection({
     let cancelled = false;
     setCheckingPerson(true);
     const timer = window.setTimeout(() => {
-      void fetchOpenDebtsForPerson(debtsApi.fetchDebts, person, value.debtType)
+      void fetchOpenDebtsForPerson(
+        debtsApi.fetchDebts,
+        person,
+        value.debtType,
+        formCurrency,
+      )
         .then((matches) => {
           if (!cancelled) setPersonMatches(matches);
         })
@@ -152,6 +164,7 @@ export function DebtLedgerSection({
     value.person,
     value.debtType,
     value.forceCreateNew,
+    formCurrency,
   ]);
 
   const settleOptions = useMemo(

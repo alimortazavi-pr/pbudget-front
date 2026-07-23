@@ -24,9 +24,11 @@ import { getJalaliNow, normalizeJalaliPart, toEnglishDigits, formatPrice, getNow
 import { formatPriceWithCurrency } from "@/common/utils/format-currency";
 import { fetchOpenDebtsForPerson } from "@/common/utils/debt-person-match";
 import {
+  CURRENCY_OPTIONS,
   DEFAULT_USER_PREFERENCES,
   resolveBudgetCurrency,
   resolveBudgetDateCalendar,
+  type UserCurrency,
 } from "@/common/constants/user-preferences";
 import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
@@ -102,9 +104,11 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   const formCalendar = budget
     ? resolveBudgetDateCalendar(budget.dateCalendar)
     : userPrefs.dateCalendar;
-  const formCurrency = budget
-    ? resolveBudgetCurrency(budget.currency)
-    : userPrefs.currency;
+  const [formCurrency, setFormCurrency] = useState<UserCurrency>(() =>
+    budget
+      ? resolveBudgetCurrency(budget.currency)
+      : userPrefs.currency,
+  );
   const nowParts = getNowDateParts(formCalendar);
   const defaultYear = nowParts.year;
   const defaultMonth = nowParts.month;
@@ -171,6 +175,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
     setYear(parts.year);
     setMonth(parts.month);
     setDay(parts.day);
+    setFormCurrency(userPrefs.currency);
   }, [budget, userPrefs.dateCalendar, userPrefs.currency]);
 
   const paymentCardOptions = useMemo(
@@ -383,6 +388,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
           debtsApi.fetchDebts,
           debtLedger.person,
           debtLedger.debtType,
+          formCurrency,
         );
         if (matches.length > 0) {
           setMoreOpen(true);
@@ -547,6 +553,34 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
             ))}
           </div>
 
+          <div className="space-y-2">
+            <p className="text-sm font-medium">{t("common.currencyType")}</p>
+            <div className="grid grid-cols-3 gap-2">
+              {CURRENCY_OPTIONS.map((option) => {
+                const selected = formCurrency === option.id;
+                const locked = Boolean(budget);
+                return (
+                  <button
+                    key={option.id}
+                    type="button"
+                    disabled={locked}
+                    aria-pressed={selected}
+                    onClick={() => {
+                      if (!locked) setFormCurrency(option.id);
+                    }}
+                    className={`px-3 py-2.5 text-sm ${
+                      selected
+                        ? "rounded-xl border border-accent bg-accent/15 font-semibold text-accent shadow-sm ring-1 ring-accent/35"
+                        : "rounded-xl border border-border/50 bg-surface-secondary/60 text-muted hover:border-accent/40"
+                    } ${locked ? "cursor-default opacity-80" : "cursor-pointer"}`}
+                  >
+                    {currencyLabel(option.id)}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <FormPriceInput
             label={t("budget.amountWithCurrency", {
               currency: currencyLabel(formCurrency),
@@ -635,6 +669,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
                       amount={price}
                       value={debtLedger}
                       onChange={updateDebtLedger}
+                      formCurrency={formCurrency}
                     />
                   ) : (
                     <LinkedDebtSummary debt={budget.debt} />
