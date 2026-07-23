@@ -23,6 +23,9 @@ export const budgetMessages: MessageTree = {
   projectLedgerVisibility:
     "تراکنش در صفحه پروژه و گزارش‌های مالی آن نمایش داده می‌شود.",
   noTransactionsInRange: "تراکنشی برای این بازه پیدا نشد",
+  noTransactionsTryAll:
+    "تراکنشی برای این بازه پیدا نشد. بازه «همه» را امتحان کنید یا تراکنش هم‌ارز ثبت کنید.",
+  showAllPeriods: "نمایش همه بازه‌ها",
   attachTransactions: "وصل کردن {{count}} تراکنش",
   selectTransaction: "تراکنش انتخاب کنید",
   selectOneTransaction: "یک تراکنش انتخاب کنید",

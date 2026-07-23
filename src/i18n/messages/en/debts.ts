@@ -15,6 +15,10 @@ export const debtsMessages: MessageTree = {
   incomeDeposit: "Income (deposit)",
   costWithdraw: "Expense (withdrawal)",
   registerFirst: "transaction.",
+  attachEmptySettlement:
+    "No matching settlement transaction. For a {{kind}} you need an unused {{txType}} in {{currency}}.",
+  attachEmptySource:
+    "No matching source transaction. For a {{kind}} you need an unused {{txType}} in {{currency}}.",
   existingActiveTitle:
     "{{count}} active item(s) already exist for «{{person}}»",
   existingActiveHint:

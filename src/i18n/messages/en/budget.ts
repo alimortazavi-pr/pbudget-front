@@ -23,6 +23,9 @@ export const budgetMessages: MessageTree = {
   projectLedgerVisibility:
     "The transaction appears on the project page and its financial reports.",
   noTransactionsInRange: "No transactions found for this period",
+  noTransactionsTryAll:
+    "No transactions found for this period. Try «All» or record a matching-currency transaction.",
+  showAllPeriods: "Show all periods",
   attachTransactions: "Link {{count}} transactions",
   selectTransaction: "Select transaction",
   selectOneTransaction: "Select one transaction",

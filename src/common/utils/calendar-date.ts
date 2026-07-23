@@ -7,6 +7,8 @@ import {
 import {
   formatJalaliDate,
   formatJalaliDateSlashed,
+  formatJalaliMonthYear,
+  formatJalaliYear,
   getJalaliNow,
   normalizeJalaliPart,
   padJalaliPart,
@@ -70,6 +72,39 @@ export function formatGregorianDate(
   const monthIndex = parseInt(month, 10) - 1;
   const monthName = GREGORIAN_MONTHS[monthIndex] ?? month;
   return `${toPersianDigits(day)} ${monthName} ${toPersianDigits(year)}`;
+}
+
+/** Display month and year for Gregorian: e.g. July ۲۰۲۶ */
+export function formatGregorianMonthYear(year: string, month: string) {
+  const monthIndex = parseInt(month, 10) - 1;
+  const monthName = GREGORIAN_MONTHS[monthIndex] ?? month;
+  return `${monthName} ${toPersianDigits(year)}`;
+}
+
+export function formatGregorianYear(year: string) {
+  return toPersianDigits(year);
+}
+
+/** Period label that respects jalali vs gregorian calendar prefs */
+export function formatPeriodMonthYear(
+  year: string,
+  month: string,
+  calendar: UserDateCalendar = "jalali",
+) {
+  if (resolveBudgetDateCalendar(calendar) === "gregorian") {
+    return formatGregorianMonthYear(year, month);
+  }
+  return formatJalaliMonthYear(year, month);
+}
+
+export function formatPeriodYear(
+  year: string,
+  calendar: UserDateCalendar = "jalali",
+) {
+  if (resolveBudgetDateCalendar(calendar) === "gregorian") {
+    return formatGregorianYear(year);
+  }
+  return formatJalaliYear(year);
 }
 
 export function formatBudgetDate(

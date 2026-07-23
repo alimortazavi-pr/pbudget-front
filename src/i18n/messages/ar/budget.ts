@@ -23,6 +23,9 @@ export const budgetMessages: MessageTree = {
   projectLedgerVisibility:
     "تظهر المعاملة في صفحة المشروع وتقاريره المالية.",
   noTransactionsInRange: "لا توجد معاملات في هذه الفترة",
+  noTransactionsTryAll:
+    "لا توجد معاملات في هذه الفترة. جرّب «الكل» أو سجّل معاملة بنفس العملة.",
+  showAllPeriods: "عرض كل الفترات",
   attachTransactions: "ربط {{count}} معاملات",
   selectTransaction: "اختر معاملة",
   selectOneTransaction: "اختر معاملة واحدة",

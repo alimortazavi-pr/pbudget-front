@@ -15,6 +15,10 @@ export const debtsMessages: MessageTree = {
   incomeDeposit: "وارد (إيداع)",
   costWithdraw: "صادر (سحب)",
   registerFirst: ".",
+  attachEmptySettlement:
+    "لا توجد معاملة تسوية مطابقة. لـ {{kind}} تحتاج معاملة {{txType}} غير مستخدمة بعملة {{currency}}.",
+  attachEmptySource:
+    "لا توجد معاملة مصدر مطابقة. لـ {{kind}} تحتاج معاملة {{txType}} غير مستخدمة بعملة {{currency}}.",
   existingActiveTitle:
     "هناك بالفعل {{count}} عنصر/عناصر نشطة باسم «{{person}}»",
   existingActiveHint:

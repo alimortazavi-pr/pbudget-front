@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import moment from "moment-jalali";
 
@@ -37,6 +37,13 @@ export function usePeriodQuery(basePath: string) {
   );
 
   const goToToday = useCallback(() => {
+    updateQuery(getNowDateParts(calendarType));
+  }, [calendarType, updateQuery]);
+
+  const prevCalendarRef = useRef(calendarType);
+  useEffect(() => {
+    if (prevCalendarRef.current === calendarType) return;
+    prevCalendarRef.current = calendarType;
     updateQuery(getNowDateParts(calendarType));
   }, [calendarType, updateQuery]);
 

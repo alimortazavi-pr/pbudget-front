@@ -15,6 +15,10 @@ export const debtsMessages: MessageTree = {
   incomeDeposit: "دریافتی (واریز)",
   costWithdraw: "پرداختی (برداشت)",
   registerFirst: "ثبت کنید.",
+  attachEmptySettlement:
+    "تراکنش تسویه هم‌ارز پیدا نشد. برای {{kind}} باید تراکنش {{txType}} با ارز {{currency}} ثبت کنید (و قبلاً به طلب/بدهی دیگری وصل نشده باشد).",
+  attachEmptySource:
+    "تراکنش مبدأ هم‌ارز پیدا نشد. برای {{kind}} باید تراکنش {{txType}} با ارز {{currency}} ثبت کنید.",
   existingActiveTitle:
     "از قبل {{count}} مورد فعال به نام «{{person}}» هست",
   existingActiveHint:

@@ -8,10 +8,11 @@ import { Add, ArrowLeft2, ArrowRight2, SearchNormal1 } from "iconsax-reactjs";
 
 import * as budgetsApi from "@/common/api/budgets";
 import type { IBudget } from "@/common/interfaces/budget.interface";
+import type { UserDateCalendar } from "@/common/constants/user-preferences";
 import {
   formatBudgetDate,
-  formatJalaliMonthYear,
-  formatJalaliYear,
+  formatPeriodMonthYear,
+  formatPeriodYear,
   formatPriceWithCurrency,
   getNowDateParts,
   toPersianDigits,
@@ -49,6 +50,10 @@ type AttachBudgetModalProps = {
   /** Multi = checkbox; single = one transaction only */
   selectionMode?: "single" | "multiple";
   attachLabel?: string;
+  /** Override empty-list copy (e.g. debt settle needs matching type+currency) */
+  emptyMessage?: string;
+  /** Prefer debt.dateCalendar when attaching to a debt */
+  calendarType?: UserDateCalendar;
 };
 
 type DurationFilter = "monthly" | "yearly" | "all";
@@ -65,15 +70,21 @@ export function AttachBudgetModal({
   onAttachMultiple,
   selectionMode = "multiple",
   attachLabel = "",
+  emptyMessage,
+  calendarType: calendarTypeProp,
 }: AttachBudgetModalProps) {
   const { t } = useTranslation();
   const resolvedAttachLabel = attachLabel || t("common.attachSelect");
   const multiSelect = selectionMode === "multiple";
   const categories = useAppSelector(categoriesSelector);
   const user = useAppSelector(userSelector);
-  const calendarType = user?.preferences?.dateCalendar ?? "jalali";
+  const calendarType =
+    calendarTypeProp ?? user?.preferences?.dateCalendar ?? "jalali";
   const categoryOptions = getCategorySelectOptions(categories ?? []);
-  const nowParts = getNowDateParts(calendarType);
+  const nowParts = useMemo(
+    () => getNowDateParts(calendarType),
+    [calendarType],
+  );
 
   const [duration, setDuration] = useState<DurationFilter>("monthly");
   const [year, setYear] = useState(nowParts.year);
@@ -93,6 +104,19 @@ export function AttachBudgetModal({
   const listRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const loadingMoreRef = useRef(false);
+
+  // Keep period in sync with calendar preference / debt calendar when modal opens
+  useEffect(() => {
+    if (!open) return;
+    const parts = getNowDateParts(calendarType);
+    setYear(parts.year);
+    setMonth(parts.month);
+    setDuration("monthly");
+    setCategory("");
+    setSearch("");
+    setDebouncedSearch("");
+    setSelectedIds(new Set());
+  }, [open, calendarType]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setDebouncedSearch(search.trim()), 300);
@@ -114,9 +138,9 @@ export function AttachBudgetModal({
 
   const periodLabel = useMemo(() => {
     if (duration === "all") return t("common.allTransactions");
-    if (duration === "yearly") return formatJalaliYear(year);
-    return formatJalaliMonthYear(year, month);
-  }, [duration, year, month]);
+    if (duration === "yearly") return formatPeriodYear(year, calendarType);
+    return formatPeriodMonthYear(year, month, calendarType);
+  }, [calendarType, duration, year, month, t]);
 
   const fetchPage = useCallback(
     async (pageToLoad: number, append: boolean) => {
@@ -165,7 +189,7 @@ export function AttachBudgetModal({
         }
       }
     },
-    [open, context, duration, year, month, category, debouncedSearch],
+    [open, context, duration, year, month, category, debouncedSearch, t],
   );
 
   useEffect(() => {
@@ -258,6 +282,12 @@ export function AttachBudgetModal({
     }
   }
 
+  const resolvedEmptyMessage =
+    emptyMessage ||
+    (duration === "all"
+      ? t("budget.noTransactionsInRange")
+      : t("budget.noTransactionsTryAll"));
+
   return (
     <AppModal open={open} onOpenChange={onOpenChange} size="lg" mobileFull>
       <AppModalDialog className="flex max-h-[min(92dvh,760px)] w-full flex-col overflow-hidden rounded-2xl border border-border/50 bg-surface sm:max-w-2xl">
@@ -340,9 +370,18 @@ export function AttachBudgetModal({
             {loading ? (
               <p className="py-8 text-center text-sm text-muted">{t("common.loading")}</p>
             ) : budgets.length === 0 ? (
-              <p className="rounded-xl bg-surface-secondary p-6 text-center text-sm text-muted">
-                {t("budget.noTransactionsInRange")}
-              </p>
+              <div className="space-y-2 rounded-xl bg-surface-secondary p-6 text-center text-sm text-muted">
+                <p>{resolvedEmptyMessage}</p>
+                {duration !== "all" && emptyMessage ? (
+                  <button
+                    type="button"
+                    className="cursor-pointer text-accent underline-offset-2 hover:underline"
+                    onClick={() => setDuration("all")}
+                  >
+                    {t("budget.showAllPeriods")}
+                  </button>
+                ) : null}
+              </div>
             ) : (
               <div className="space-y-2">
                 <p className="text-xs text-muted">
@@ -449,6 +488,7 @@ type AttachBudgetButtonProps = {
   title: string;
   description: string;
   emptyMessage?: string;
+  calendarType?: UserDateCalendar;
   context: AttachBudgetContext;
   onAttach: (budgetId: string) => Promise<void>;
   onAttachMultiple?: (budgetIds: string[]) => Promise<void>;
@@ -459,6 +499,8 @@ type AttachBudgetButtonProps = {
 export function AttachBudgetButton({
   title,
   description,
+  emptyMessage,
+  calendarType,
   context,
   onAttach,
   onAttachMultiple,
@@ -478,6 +520,8 @@ export function AttachBudgetButton({
         onOpenChange={setOpen}
         title={title}
         description={description}
+        emptyMessage={emptyMessage}
+        calendarType={calendarType}
         context={context}
         onAttach={onAttach}
         onAttachMultiple={onAttachMultiple}

@@ -8,6 +8,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   type FC,
   type PropsWithChildren,
 } from "react";
@@ -18,13 +19,13 @@ import type { PeriodDuration } from "@/common/constants/experience";
 import { useHydratedSearchParams } from "@/common/hooks/useHydratedSearchParams";
 import {
   formatGregorianDate,
+  formatGregorianMonthYear,
+  formatGregorianYear,
   formatJalaliDate,
   formatJalaliMonthYear,
   formatJalaliYear,
   getNowDateParts,
 } from "@/common/utils";
-import { GREGORIAN_MONTHS } from "@/common/utils/calendar-date";
-import { toPersianDigits } from "@/common/utils/persian-digits";
 import { useAppSelector } from "@/stores/hooks";
 import { userSelector } from "@/stores/profile";
 
@@ -62,11 +63,6 @@ function parseDuration(value: string | null): PeriodDuration {
   return "monthly";
 }
 
-function formatGregorianMonthYear(year: string, month: string) {
-  const monthName = GREGORIAN_MONTHS[parseInt(month, 10) - 1] ?? month;
-  return `${monthName} ${toPersianDigits(year)}`;
-}
-
 export const PeriodProvider: FC<PropsWithChildren> = ({ children }) => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -84,7 +80,7 @@ export const PeriodProvider: FC<PropsWithChildren> = ({ children }) => {
   const periodLabel = useMemo(() => {
     if (duration === "all") return t("auto.k9e425fc9f4");
     if (calendarType === "gregorian") {
-      if (duration === "yearly") return toPersianDigits(year);
+      if (duration === "yearly") return formatGregorianYear(year);
       if (duration === "monthly") return formatGregorianMonthYear(year, month);
       return formatGregorianDate(year, month, day);
     }
@@ -119,6 +115,15 @@ export const PeriodProvider: FC<PropsWithChildren> = ({ children }) => {
   );
 
   const goToToday = useCallback(() => {
+    updatePeriod(getNowDateParts(calendarType));
+  }, [calendarType, updatePeriod]);
+
+  // When user switches jalali ↔ gregorian, URL year/month must be rewritten
+  // (otherwise you get mixed labels like «مهر ۲۰۲۶» or empty month queries).
+  const prevCalendarRef = useRef(calendarType);
+  useEffect(() => {
+    if (prevCalendarRef.current === calendarType) return;
+    prevCalendarRef.current = calendarType;
     updatePeriod(getNowDateParts(calendarType));
   }, [calendarType, updatePeriod]);
 

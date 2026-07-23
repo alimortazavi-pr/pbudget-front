@@ -17,13 +17,17 @@ import type { IDebt } from "@/common/interfaces/debt.interface";
 import type { IBudget } from "@/common/interfaces/budget.interface";
 import type { ICategory } from "@/common/interfaces/category.interface";
 import { formatBudgetDate, formatPriceWithCurrency, formatCount } from "@/common/utils";
-import { resolveBudgetCurrency } from "@/common/constants/user-preferences";
+import {
+  resolveBudgetCurrency,
+  resolveBudgetDateCalendar,
+} from "@/common/constants/user-preferences";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { AttachBudgetButton } from "@/components/common/budget/AttachBudgetModal";
 import { SettlementProgressBar } from "@/components/common/ui/SettlementProgressBar";
 import { DebtSettleModal } from "@/components/pages/debts/DebtSettleModal";
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
+import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 import { BudgetType, DebtType } from "@/types/enums";
 
 type DebtDetailPageProps = {
@@ -73,6 +77,7 @@ function resolveBudgetTitle(budget: IBudget, categories: ICategory[]) {
 
 export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
   const { t } = useTranslation();
+  const { currencyLabel } = useCurrencyLabels();
   const router = useRouter();
   const [debt, setDebt] = useState<IDebt | null>(null);
   const [loading, setLoading] = useState(true);
@@ -162,10 +167,30 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
   }
 
   const isReceivable = debt.type === DebtType.RECEIVABLE;
+  const debtCurrency = resolveBudgetCurrency(debt.currency);
+  const debtCalendar = resolveBudgetDateCalendar(debt.dateCalendar);
+  const debtKindLabel = isReceivable
+    ? t("auto.kf48e3aa79d")
+    : t("auto.kebf7b80fd6");
   const progress =
     debt.totalAmount > 0
       ? Math.min((settledAmount / debt.totalAmount) * 100, 100)
       : 0;
+
+  const attachSourceEmpty = t("debts.attachEmptySource", {
+    kind: debtKindLabel,
+    txType: isReceivable
+      ? t("debts.costWithdraw")
+      : t("debts.incomeDeposit"),
+    currency: currencyLabel(debtCurrency),
+  });
+  const attachSettlementEmpty = t("debts.attachEmptySettlement", {
+    kind: debtKindLabel,
+    txType: isReceivable
+      ? t("debts.incomeDeposit")
+      : t("debts.costWithdraw"),
+    currency: currencyLabel(debtCurrency),
+  });
 
   return (
     <div className="space-y-5 pb-6">
@@ -362,6 +387,8 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
                       ? t("auto.k0bf30dbd5b")
                       : t("auto.k6ee2483e9c")
                   }
+                  emptyMessage={attachSourceEmpty}
+                  calendarType={debtCalendar}
                   context={{ type: "debt-source", contextId: debtId }}
                   selectionMode="single"
                   onAttach={async (budgetId) => {
@@ -380,6 +407,8 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
                         ? t("auto.k09057887d9")
                         : t("auto.kc88683808d")
                     }
+                    emptyMessage={attachSettlementEmpty}
+                    calendarType={debtCalendar}
                     context={{ type: "debt-settlement", contextId: debtId }}
                     selectionMode="multiple"
                     onAttach={async (budgetId) => {

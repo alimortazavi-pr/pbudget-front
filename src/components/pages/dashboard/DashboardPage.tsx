@@ -90,6 +90,13 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
     [router],
   );
 
+  const prevCalendarRef = useRef(calendarType);
+  useEffect(() => {
+    if (prevCalendarRef.current === calendarType) return;
+    prevCalendarRef.current = calendarType;
+    updateQuery(getNowDateParts(calendarType));
+  }, [calendarType, updateQuery]);
+
   useEffect(() => {
     if (initialData) {
       dispatch(setBudgets(initialData));
