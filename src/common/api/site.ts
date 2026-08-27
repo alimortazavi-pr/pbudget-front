@@ -1,14 +1,10 @@
 import { getTranslator } from "@/i18n";
 import { axiosInstance } from "@/common/axiosInstance";
+import { SERVER_BASE_API_URL } from "@/common/constants";
 import type { ILandingContent } from "@/common/interfaces/landing.interface";
 import axios from "axios";
 
 const t = getTranslator();
-
-const API_BASE =
-  process.env.INTERNAL_API_URL ??
-  process.env.NEXT_PUBLIC_API_URL ??
-  "http://localhost:7701/v1";
 
 export async function fetchLandingContent() {
   const { data } = await axiosInstance.get<ILandingContent>("/site/landing");
@@ -17,16 +13,22 @@ export async function fetchLandingContent() {
 
 /** ISR — server-side fetch with revalidation */
 export async function fetchLandingContentServer(): Promise<ILandingContent> {
-  const res = await fetch(`${API_BASE}/site/landing`, {
-    next: { revalidate: 60 },
-  });
-  if (!res.ok) {
+  try {
+    const res = await fetch(`${SERVER_BASE_API_URL}/site/landing`, {
+      next: { revalidate: 60 },
+    });
+
+    if (!res.ok) {
+      throw new Error(`Landing content request failed with ${res.status}`);
+    }
+
+    return (await res.json()) as ILandingContent;
+  } catch {
     const { DEFAULT_LANDING_CONTENT } = await import(
       "@/components/pages/landing/landing-data"
     );
     return DEFAULT_LANDING_CONTENT;
   }
-  return res.json() as Promise<ILandingContent>;
 }
 
 export async function submitSiteContact(payload: {
