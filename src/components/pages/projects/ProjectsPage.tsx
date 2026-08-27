@@ -1,8 +1,5 @@
 "use client";
 
-import { getTranslator } from "@/i18n";
-const t = getTranslator();
-
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -19,6 +16,7 @@ import { formatPrice, formatCount } from "@/common/utils";
 import { formatDailyRemainingMessage } from "@/common/hooks/useWorkSessionDailyReminder";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { PageHeroSection } from "@/components/common/layout/PageHeroSection";
+import { LinkButton } from "@/components/common/ui/LinkButton";
 import { CreateProjectModal } from "@/components/pages/projects/CreateProjectModal";
 import { ProjectStatus } from "@/types/enums";
 
@@ -52,7 +50,7 @@ export function ProjectsPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void load();
@@ -128,12 +126,10 @@ export function ProjectsPage() {
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm text-muted">{formatCount(projects.length)} {t("nav.projects")}</p>
         <div className="flex flex-wrap gap-2">
-          <Link href={PATHS.WORK_ATTENDANCE}>
-            <Button size="sm" variant="secondary">
-              <Clock size={18} />
-              {t("auto.ka4b30b68b9")}
-            </Button>
-          </Link>
+          <LinkButton href={PATHS.WORK_ATTENDANCE} size="sm" variant="secondary">
+            <Clock size={18} />
+            {t("auto.ka4b30b68b9")}
+          </LinkButton>
           <Button
             size="sm"
             className="bg-accent text-accent-foreground"
@@ -168,16 +164,20 @@ export function ProjectsPage() {
                 : 0;
 
             return (
-              <Link
+              <article
                 key={project._id}
-                href={PATHS.PROJECT(project._id)}
-                className="block glass rounded-2xl p-4 transition hover:border-accent/40"
+                className="glass relative rounded-2xl p-4 transition hover:border-accent/40"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <h2 className="truncate text-lg font-bold">
-                        {project.category?.title ?? t("pages.projects.noTitle")}
+                        <Link
+                          href={PATHS.PROJECT(project._id)}
+                          className="after:absolute after:inset-0 after:content-['']"
+                        >
+                          {project.category?.title ?? t("pages.projects.noTitle")}
+                        </Link>
                       </h2>
                       <span
                         className={`rounded-lg px-2 py-0.5 text-xs font-medium ${statusClass(project.status)}`}
@@ -236,12 +236,7 @@ export function ProjectsPage() {
                     />
                   </div>
                 </div>
-                <div
-                  className="mt-3 flex flex-wrap items-center gap-2"
-                  onClick={(e) => e.stopPropagation()}
-                  onKeyDown={(e) => e.stopPropagation()}
-                  role="presentation"
-                >
+                <div className="relative z-10 mt-3 flex flex-wrap items-center gap-2">
                   {project.trackWorkTime ? (
                     <>
                       <Button
@@ -253,20 +248,18 @@ export function ProjectsPage() {
                         <Login size={16} />
                         {t("auto.k32a81e5587")}
                       </Button>
-                      <Link
+                      <LinkButton
                         href={PATHS.PROJECT_ATTENDANCE(project._id)}
-                        onClick={(e) => e.stopPropagation()}
-                        className="inline-flex"
+                        size="sm"
+                        variant="secondary"
                       >
-                        <Button size="sm" variant="secondary">
-                          <Clock size={16} />
-                          {t("auto.k400ef06dff")}
-                        </Button>
-                      </Link>
+                        <Clock size={16} />
+                        {t("auto.k400ef06dff")}
+                      </LinkButton>
                     </>
                   ) : null}
                 </div>
-              </Link>
+              </article>
             );
           })}
         </div>

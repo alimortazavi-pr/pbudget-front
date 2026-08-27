@@ -10,7 +10,7 @@ import type { ICheck } from "@/common/interfaces/check.interface";
 import { getJalaliNow, toEnglishDigits } from "@/common/utils";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showToast } from "@/common/utils/toast";
-import { FormCategoryComboBox, FormPriceInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
+import { FormCategoryComboBox, FormPriceInput, FormTextArea } from "@/components/common/form/FormFields";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";

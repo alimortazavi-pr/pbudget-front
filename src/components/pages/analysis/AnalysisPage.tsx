@@ -228,6 +228,8 @@ export function AnalysisPage() {
     paymentCard,
     type,
     compare,
+    t,
+    user,
     user?.walletBalances,
     user?.preferences?.currency,
   ]);

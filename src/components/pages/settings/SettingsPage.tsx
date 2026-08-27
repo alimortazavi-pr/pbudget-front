@@ -5,7 +5,6 @@ import { useTranslation } from "@/components/providers/LanguageProvider";
 import { useState } from "react";
 import { Call, Building, Moon, Refresh, Sun1 } from "iconsax-reactjs";
 import { Button, Switch } from "@heroui/react";
-import Link from "next/link";
 
 import { APP_VERSION } from "@/common/constants/app-version";
 import { BUSINESS_SITE_URL } from "@/common/constants/products";

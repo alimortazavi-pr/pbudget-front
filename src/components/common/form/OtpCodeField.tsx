@@ -1,7 +1,5 @@
 "use client";
 
-import { useTranslation } from "@/components/providers/LanguageProvider";
-
 import { InputOTP, Label, TextField } from "@heroui/react";
 import { useEffect, useRef } from "react";
 
@@ -15,8 +13,7 @@ type OtpCodeFieldProps = {
   onChange: (value: string) => void;
 };
 
-export function OtpCodeField({ label, value, onChange }: OtpCodeFieldProps) {  const { t } = useTranslation();
-
+export function OtpCodeField({ label, value, onChange }: OtpCodeFieldProps) {
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

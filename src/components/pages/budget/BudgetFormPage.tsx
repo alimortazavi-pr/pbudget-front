@@ -1,8 +1,5 @@
 "use client";
 
-import { getTranslator } from "@/i18n";
-const t = getTranslator();
-
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useRouter } from "next/navigation";
@@ -21,7 +18,7 @@ import { resolveDefaultPaymentCardId } from "@/common/utils/default-payment-card
 import { formatCardNumberForDisplay } from "@/common/utils/payment-card";
 import type { IBudget, IBudgetMutationResult } from "@/common/interfaces/budget.interface";
 import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
-import { getJalaliNow, normalizeJalaliPart, toEnglishDigits, formatPrice, getNowDateParts } from "@/common/utils";
+import { getJalaliNow, normalizeJalaliPart, toEnglishDigits, getNowDateParts } from "@/common/utils";
 import { formatPriceWithCurrency } from "@/common/utils/format-currency";
 import { fetchOpenDebtsForPerson } from "@/common/utils/debt-person-match";
 import {

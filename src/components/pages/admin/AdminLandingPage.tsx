@@ -72,7 +72,7 @@ export function AdminLandingPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void load();

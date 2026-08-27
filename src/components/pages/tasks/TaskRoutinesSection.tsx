@@ -45,7 +45,7 @@ export function TaskRoutinesSection() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void load();

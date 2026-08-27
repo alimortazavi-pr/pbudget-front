@@ -52,7 +52,6 @@ type TourContextValue = {
 const TourContext = createContext<TourContextValue | null>(null);
 
 export function useTour() {
-  const { t } = useTranslation();
   const ctx = useContext(TourContext);
   if (!ctx) throw new Error("useTour must be used within TourProvider");
   return ctx;
@@ -216,7 +215,10 @@ export function TourProvider({ children }: { children: ReactNode }) {
   const [active, setActive] = useState<ActiveTourState | null>(null);
   const [mounted, setMounted] = useState(false);
   const activeRef = useRef(active);
-  activeRef.current = active;
+
+  useEffect(() => {
+    activeRef.current = active;
+  }, [active]);
 
   const showStep = useCallback(async (tour: TourDefinition, steps: TourStep[], index: number) => {
     const step = steps[index];

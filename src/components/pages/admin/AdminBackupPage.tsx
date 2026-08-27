@@ -41,7 +41,7 @@ export function AdminBackupPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void load();

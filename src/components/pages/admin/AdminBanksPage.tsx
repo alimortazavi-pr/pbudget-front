@@ -40,7 +40,7 @@ export function AdminBanksPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void load();

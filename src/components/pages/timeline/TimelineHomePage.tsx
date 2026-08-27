@@ -2,9 +2,9 @@
 
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
-import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@heroui/react";
+import { LinkButton } from "@/components/common/ui/LinkButton";
 import {
   Card,
   Chart,
@@ -39,7 +39,6 @@ import { useTimelineData } from "@/components/pages/timeline/useTimelineData";
 type DrawerKind = "finance" | "tasks" | "due" | null;
 
 export function TimelineHomePage() {
-  const { t } = useTranslation();
   return (
     <PeriodProvider>
       <TimelineHomePageContent />
@@ -166,9 +165,9 @@ function TimelineHomePageContent() {  const { t } = useTranslation();
             <TransactionCard key={budget._id} budget={budget} />
           ))
         )}
-        <Link href={PATHS.CREATE_BUDGET} className="block pt-2">
-          <Button className="w-full">{t("auto.k5af9c84809")}</Button>
-        </Link>
+        <LinkButton href={PATHS.CREATE_BUDGET} className="mt-2 w-full">
+          {t("auto.k5af9c84809")}
+        </LinkButton>
       </TimelineWidgetDrawer>
 
       <TimelineWidgetDrawer
@@ -206,11 +205,9 @@ function TimelineHomePageContent() {  const { t } = useTranslation();
             </div>
           ))
         )}
-        <Link href={PATHS.TASKS} className="block pt-2">
-          <Button variant="secondary" className="w-full">
-            {t("auto.kc59245a12b")}
-          </Button>
-        </Link>
+        <LinkButton href={PATHS.TASKS} variant="secondary" className="mt-2 w-full">
+          {t("auto.kc59245a12b")}
+        </LinkButton>
       </TimelineWidgetDrawer>
 
       <TimelineWidgetDrawer
@@ -247,16 +244,12 @@ function TimelineHomePageContent() {  const { t } = useTranslation();
           </>
         )}
         <div className="flex gap-2 pt-2">
-          <Link href={PATHS.CHECKS} className="flex-1">
-            <Button variant="secondary" className="w-full">
-              {t("nav.checks")}
-            </Button>
-          </Link>
-          <Link href={PATHS.INSTALLMENTS} className="flex-1">
-            <Button variant="secondary" className="w-full">
-              {t("nav.installments")}
-            </Button>
-          </Link>
+          <LinkButton href={PATHS.CHECKS} variant="secondary" className="flex-1">
+            {t("nav.checks")}
+          </LinkButton>
+          <LinkButton href={PATHS.INSTALLMENTS} variant="secondary" className="flex-1">
+            {t("nav.installments")}
+          </LinkButton>
         </div>
       </TimelineWidgetDrawer>
     </div>

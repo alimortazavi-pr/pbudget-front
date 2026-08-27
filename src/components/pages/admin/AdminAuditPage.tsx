@@ -53,7 +53,7 @@ export function AdminAuditPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, actionFilter]);
+  }, [page, actionFilter, t]);
 
   useEffect(() => {
     void load();

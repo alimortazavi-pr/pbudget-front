@@ -1,13 +1,11 @@
 "use client";
 
-import { getTranslator } from "@/i18n";
-const t = getTranslator();
-
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@heroui/react";
+import { LinkButton } from "@/components/common/ui/LinkButton";
 import {
   Calendar,
   CloseCircle,
@@ -196,11 +194,9 @@ export function InvitesPage() {
                     </>
                   ) : null}
                   {detailPath ? (
-                    <Link href={detailPath}>
-                      <Button size="sm" variant="ghost">
-                        {t("auto.k965db97fef")}
-                      </Button>
-                    </Link>
+                    <LinkButton href={detailPath} size="sm" variant="ghost">
+                      {t("auto.k965db97fef")}
+                    </LinkButton>
                   ) : null}
                 </div>
               </article>

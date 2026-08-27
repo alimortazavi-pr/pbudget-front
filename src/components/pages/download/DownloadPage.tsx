@@ -5,6 +5,8 @@ import { useTranslation } from "@/components/providers/LanguageProvider";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@heroui/react";
+import { buttonVariants } from "@heroui/styles";
+import { LinkButton } from "@/components/common/ui/LinkButton";
 import {
   Copy,
   DocumentDownload,
@@ -88,11 +90,9 @@ export function DownloadPage() {
             <Copy size={16} />
             {t("download.copyLink")}
           </Button>
-          <Link href={appHomeHref}>
-            <Button size="sm" variant="secondary">
-              {isAuth ? t("nav.dashboard") : t("download.webLogin")}
-            </Button>
-          </Link>
+          <LinkButton href={appHomeHref} size="sm" variant="secondary">
+            {isAuth ? t("nav.dashboard") : t("download.webLogin")}
+          </LinkButton>
         </div>
       </header>
 
@@ -114,14 +114,17 @@ export function DownloadPage() {
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
             {showDownloadPromo ? (
-              <a href={apkUrl} download="pdesk.apk" className="inline-flex">
-                <Button
-                  size="lg"
-                  className="min-h-14 bg-accent px-8 text-base font-bold text-accent-foreground shadow-lg shadow-accent/25"
-                >
-                  <DocumentDownload size={22} />
-                  {t("download.downloadApk")}
-                </Button>
+              <a
+                href={apkUrl}
+                download="pdesk.apk"
+                className={buttonVariants({
+                  size: "lg",
+                  className:
+                    "min-h-14 bg-accent px-8 text-base font-bold text-accent-foreground shadow-lg shadow-accent/25",
+                })}
+              >
+                <DocumentDownload size={22} />
+                {t("download.downloadApk")}
               </a>
             ) : (
               <Button

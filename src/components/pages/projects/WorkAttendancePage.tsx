@@ -3,7 +3,6 @@
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 import { Button } from "@heroui/react";
 import {
   Add,
@@ -32,6 +31,7 @@ import {
 } from "@/common/utils";
 import { WorkMonthCalendar } from "@/components/pages/projects/WorkMonthCalendar";
 import { PageHeroSection } from "@/components/common/layout/PageHeroSection";
+import { LinkButton } from "@/components/common/ui/LinkButton";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { WorkTimeAnalysisSection } from "@/components/pages/projects/WorkTimeAnalysisSection";
 import { WorkTimeInsightsPanels } from "@/components/pages/projects/WorkTimeInsightsPanels";
@@ -426,11 +426,9 @@ export function WorkAttendancePage() {
                           {t("common.clockIn")}
                         </Button>
                       )}
-                      <Link href={PATHS.PROJECT_ATTENDANCE(projectId)}>
-                        <Button variant="secondary" size="sm">
-                          {t("common.details")}
-                        </Button>
-                      </Link>
+                      <LinkButton href={PATHS.PROJECT_ATTENDANCE(projectId)} variant="secondary" size="sm">
+                        {t("common.details")}
+                      </LinkButton>
                     </div>
                     {blockedByOtherSession ? (
                       <p className="mt-2 text-xs text-muted">

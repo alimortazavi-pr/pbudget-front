@@ -72,7 +72,6 @@ function addHookToComponent(content) {
     /export function (\w+)\([^)]*\)\s*\{/,
   );
   if (fnMatch) {
-    const fnName = fnMatch[1];
     const idx = content.indexOf(fnMatch[0]) + fnMatch[0].length;
     return (
       content.slice(0, idx) +

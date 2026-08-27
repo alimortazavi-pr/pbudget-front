@@ -72,7 +72,7 @@ export function PartnerActivityPanel({
     } finally {
       setLoading(false);
     }
-  }, [contextId, contextType]);
+  }, [contextId, contextType, t]);
 
   useEffect(() => {
     void load();

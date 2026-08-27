@@ -107,7 +107,7 @@ export function AdminRequestLogsPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, method, statusCode, search]);
+  }, [page, method, statusCode, search, t]);
 
   useEffect(() => {
     void load();

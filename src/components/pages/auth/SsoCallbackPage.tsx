@@ -43,7 +43,7 @@ export function SsoCallbackPage() {
         setError(t("auto.k0c6458cc4d"));
       }
     })();
-  }, [dispatch, params, router]);
+  }, [dispatch, params, router, t]);
 
   return (
     <div className="flex min-h-dvh items-center justify-center p-6 text-center">

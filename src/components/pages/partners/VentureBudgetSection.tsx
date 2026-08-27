@@ -2,9 +2,9 @@
 
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
-import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Button, Modal } from "@heroui/react";
+import { LinkButton } from "@/components/common/ui/LinkButton";
 import { Add } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
@@ -51,7 +51,7 @@ export function VentureBudgetSection({
     } finally {
       setLoading(false);
     }
-  }, [ventureId]);
+  }, [ventureId, t]);
 
   useEffect(() => {
     void load();
@@ -99,12 +99,10 @@ export function VentureBudgetSection({
               <Add size={16} />
               {t("auto.k90a573a5af")}
             </Button>
-            <Link href={PATHS.CREATE_BUDGET}>
-              <Button size="sm" variant="secondary">
-                <Add size={16} />
-                {t("auto.kc26f42387e")}
-              </Button>
-            </Link>
+            <LinkButton href={PATHS.CREATE_BUDGET} size="sm" variant="secondary">
+              <Add size={16} />
+              {t("auto.kc26f42387e")}
+            </LinkButton>
           </div>
         ) : null}
       </div>

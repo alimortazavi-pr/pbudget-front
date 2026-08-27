@@ -17,9 +17,8 @@ import { LanguageProvider } from "./LanguageProvider";
 import { AppModeProvider } from "./AppModeProvider";
 
 export const ClientProvider: FC<PropsWithChildren> = ({ children }) => {
-  return (
-    <SerwistProvider swUrl="/sw.js">
-      <ReduxProvider>
+  const app = (
+    <ReduxProvider>
         <ThemeProvider>
           <LanguageProvider>
             <AppModeProvider>
@@ -40,7 +39,12 @@ export const ClientProvider: FC<PropsWithChildren> = ({ children }) => {
             </AppModeProvider>
           </LanguageProvider>
         </ThemeProvider>
-      </ReduxProvider>
-    </SerwistProvider>
+    </ReduxProvider>
+  );
+
+  return process.env.NODE_ENV === "production" ? (
+    <SerwistProvider swUrl="/sw.js">{app}</SerwistProvider>
+  ) : (
+    app
   );
 };

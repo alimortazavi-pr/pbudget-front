@@ -42,8 +42,8 @@
   --warning-foreground: oklch(28% 0.06 75);
   --radius: 1rem;
   --field-radius: 0.875rem;
-  --font-sans: "yekan-bakh", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-yekan-bakh), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
 }
 
 .dark,

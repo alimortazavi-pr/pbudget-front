@@ -5,9 +5,9 @@ const t = getTranslator();
 
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
-import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@heroui/react";
+import { LinkButton } from "@/components/common/ui/LinkButton";
 import {
   ArrowLeft2,
   ArrowRight2,
@@ -122,7 +122,7 @@ export function BankImportWizardPage() {
     } finally {
       setLoadingBanks(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void loadBanks();
@@ -532,11 +532,9 @@ export function BankImportWizardPage() {
           </div>
 
           <div className="flex flex-col gap-2 sm:flex-row">
-            <Link href={PATHS.HOME} className="flex-1">
-              <Button variant="secondary" className="w-full">
-                {t("auto.k0394842b1b")}
-              </Button>
-            </Link>
+            <LinkButton href={PATHS.HOME} variant="secondary" className="flex-1">
+              {t("auto.k0394842b1b")}
+            </LinkButton>
             <Button className="flex-1" onPress={resetWizard}>
               {t("auto.k8925aad6a3")}
             </Button>

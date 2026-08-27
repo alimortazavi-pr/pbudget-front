@@ -9,7 +9,6 @@ import {
   Add,
   ArrowLeft2,
   ArrowRight2,
-  Clock,
   Edit2,
   Login,
   Logout,
@@ -240,10 +239,10 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
     return budget.description || t("pages.attendance.relatedTransaction");
   }
 
-  const expectedEarnings = useMemo(() => {
-    if (!hourlyRate || !data?.monthWorkedMinutes) return null;
-    return Math.round((data.monthWorkedMinutes / 60) * hourlyRate);
-  }, [hourlyRate, data?.monthWorkedMinutes]);
+  const expectedEarnings =
+    hourlyRate && data?.monthWorkedMinutes
+      ? Math.round((data.monthWorkedMinutes / 60) * hourlyRate)
+      : null;
 
   const isActive = Boolean(data?.activeSession);
 

@@ -130,7 +130,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
     return () => {
       cancelled = true;
     };
-  }, [dispatch, queryString, budgetRevision]);
+  }, [dispatch, queryString, budgetRevision, t]);
 
   const filteredBudgets = budgets ?? [];
 

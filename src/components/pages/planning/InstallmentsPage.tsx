@@ -52,7 +52,7 @@ export function InstallmentsPage() {
     } finally {
       setLoading(false);
     }
-  }, [year, month]);
+  }, [year, month, t]);
 
   useEffect(() => {
     void load();

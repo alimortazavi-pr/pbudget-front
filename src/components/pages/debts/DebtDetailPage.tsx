@@ -96,7 +96,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
     } finally {
       setLoading(false);
     }
-  }, [debtId]);
+  }, [debtId, t]);
 
   useEffect(() => {
     void load();

@@ -1,8 +1,5 @@
 "use client";
 
-import { getTranslator } from "@/i18n";
-const t = getTranslator();
-
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useEffect, useMemo, useState } from "react";

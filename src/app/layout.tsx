@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from "next";
+import { Poppins } from "next/font/google";
+import localFont from "next/font/local";
 
 import "@/assets/css/globals.css";
 
@@ -11,6 +13,27 @@ import {
 } from "@/common/constants/brand";
 import { ThemeScript } from "@/components/common/ThemeScript";
 import { ClientProvider } from "@/components/providers/ClientProvider";
+
+const yekanBakh = localFont({
+  src: [
+    { path: "../../public/fonts/yekan-bakh/3 yekan bakh/yekan bakh en 03 light.woff2", weight: "300" },
+    { path: "../../public/fonts/yekan-bakh/4 yekan bakh/yekan bakh en 04 regular.woff2", weight: "400" },
+    { path: "../../public/fonts/yekan-bakh/5 yekan bakh/yekan bakh en 05 medium.woff2", weight: "500" },
+    { path: "../../public/fonts/yekan-bakh/6 yekan bakh/yekan bakh en 06 bold.woff2", weight: "600" },
+    { path: "../../public/fonts/yekan-bakh/7 yekan bakh/yekan bakh en 07 heavy.woff2", weight: "700" },
+    { path: "../../public/fonts/yekan-bakh/8 yekan bakh/yekan bakh en 08 fat.woff2", weight: "800" },
+  ],
+  variable: "--font-yekan-bakh",
+  display: "swap",
+  preload: false,
+});
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  variable: "--font-poppins",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -79,7 +102,6 @@ export const viewport: Viewport = {
   themeColor: "#fb7185",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
   viewportFit: "cover",
   interactiveWidget: "resizes-content",
 };
@@ -91,16 +113,11 @@ export default function RootLayout({
     <html
       lang="fa"
       dir="rtl"
-      className="light overflow-x-clip"
+      className={`${yekanBakh.variable} ${poppins.variable} light overflow-x-clip`}
       suppressHydrationWarning
     >
       <head>
         <ThemeScript />
-        <link rel="stylesheet" href="/fonts/yekan-bakh/yekan-font.css" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap"
-        />
       </head>
       <body>
         <ClientProvider>{children}</ClientProvider>

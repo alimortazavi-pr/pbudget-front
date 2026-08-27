@@ -1,5 +1,4 @@
 import type { ICategory } from "./category.interface";
-import type { IProject } from "./project.interface";
 
 export type TaskDuration = "daily" | "monthly" | "yearly";
 export type TaskPriority = "low" | "medium" | "high";

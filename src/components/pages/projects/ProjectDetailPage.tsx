@@ -1,22 +1,20 @@
 "use client";
 
-import { getTranslator } from "@/i18n";
-const t = getTranslator();
-
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Switch } from "@heroui/react";
-import { Add, Clock, Edit2, Task, TaskSquare, Trash, Wallet } from "iconsax-reactjs";
+import { Add, Clock, TaskSquare, Trash, Wallet } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 import * as projectsApi from "@/common/api/projects";
 import type { IProjectDetail, IProjectItem, ProjectStatus as ProjectStatusType } from "@/common/interfaces/project.interface";
-import { formatJalaliDate, formatPrice, formatCount, toEnglishDigits } from "@/common/utils";
+import { formatPrice, formatCount, toEnglishDigits } from "@/common/utils";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { AttachBudgetButton } from "@/components/common/budget/AttachBudgetModal";
+import { LinkButton } from "@/components/common/ui/LinkButton";
 import { FormInput, FormPriceInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
 import { CreatePaymentPlanModal } from "@/components/pages/planning/CreatePaymentPlanModal";
 import { ProjectWorkTimeTab } from "@/components/pages/projects/ProjectWorkTimeTab";
@@ -35,18 +33,20 @@ type ProjectDetailPageProps = {
 
 type TabId = "overview" | "transactions" | "installments" | "notebook" | "work" | "partners" | "board";
 
-const STATUS_OPTIONS = [
-  { id: ProjectStatus.ACTIVE, label: t("auto.k25c499f433") },
-  { id: ProjectStatus.ON_HOLD, label: t("auto.k2e7aff1bdd") },
-  { id: ProjectStatus.COMPLETED, label: t("auto.k6f126e2474") },
-];
-
-function itemTypeLabel(type: IProjectItem["type"]) {
+function itemTypeLabel(type: IProjectItem["type"], t: (key: string) => string) {
   return type === ProjectItemType.TASK ? t("auto.k631b0dcd4d") : t("auto.k3ec8c91053");
 }
 
 export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
   const { t } = useTranslation();
+  const statusOptions = useMemo(
+    () => [
+      { id: ProjectStatus.ACTIVE, label: t("auto.k25c499f433") },
+      { id: ProjectStatus.ON_HOLD, label: t("auto.k2e7aff1bdd") },
+      { id: ProjectStatus.COMPLETED, label: t("auto.k6f126e2474") },
+    ],
+    [t],
+  );
   const { currencyLabel } = useCurrencyLabels();
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -92,7 +92,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
     } finally {
       setLoading(false);
     }
-  }, [projectId]);
+  }, [projectId, t]);
 
   useEffect(() => {
     void load();
@@ -274,19 +274,15 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
           </div>
           <div className="flex flex-wrap gap-2">
             {showWorkTime ? (
-              <Link href={PATHS.PROJECT_ATTENDANCE(projectId)}>
-                <Button size="sm" className="bg-income text-white">
-                  <Clock size={16} />
-                  {t("auto.ka4b30b68b9")}
-                </Button>
-              </Link>
+              <LinkButton href={PATHS.PROJECT_ATTENDANCE(projectId)} size="sm" className="bg-income text-white">
+                <Clock size={16} />
+                {t("auto.ka4b30b68b9")}
+              </LinkButton>
             ) : null}
-            <Link href={`${PATHS.TASKS}?projectId=${projectId}&duration=daily`}>
-              <Button size="sm" variant="secondary">
-                <TaskSquare size={16} />
-                {t("auto.k640fa32e68")}
-              </Button>
-            </Link>
+            <LinkButton href={`${PATHS.TASKS}?projectId=${projectId}&duration=daily`} size="sm" variant="secondary">
+              <TaskSquare size={16} />
+              {t("auto.k640fa32e68")}
+            </LinkButton>
           </div>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -360,7 +356,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
               </p>
               <p className="text-sm">
                 {t("auto.k372c3f9526")}{" "}
-                {STATUS_OPTIONS.find((item) => item.id === status)?.label ?? status}
+                {statusOptions.find((item) => item.id === status)?.label ?? status}
               </p>
             </div>
           ) : (
@@ -388,7 +384,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
             label={t("auto.k2f3c6cf127")}
             selectedKey={status}
             onSelectionChange={(key) => setStatus(key as ProjectStatusType)}
-            options={STATUS_OPTIONS}
+            options={statusOptions}
           />
           <FormTextArea
             label={t("auto.k1e8529f4ec")}
@@ -516,12 +512,10 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
                   await load();
                 }}
               />
-              <Link href={PATHS.CREATE_BUDGET}>
-                <Button size="sm" variant="secondary">
-                  <Add size={16} />
-                  {t("auto.kc26f42387e")}
-                </Button>
-              </Link>
+              <LinkButton href={PATHS.CREATE_BUDGET} size="sm" variant="secondary">
+                <Add size={16} />
+                {t("auto.kc26f42387e")}
+              </LinkButton>
               </>
               ) : null}
             </div>
@@ -719,7 +713,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
                     </Button>
                     ) : null}
                   </div>
-                  <p className="mt-2 text-xs text-muted">{itemTypeLabel(item.type)}</p>
+                  <p className="mt-2 text-xs text-muted">{itemTypeLabel(item.type, t)}</p>
                 </article>
               ))}
             </section>

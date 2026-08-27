@@ -2,7 +2,7 @@
 
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Button, Modal } from "@heroui/react";
 
 import * as workTimeApi from "@/common/api/work-time";

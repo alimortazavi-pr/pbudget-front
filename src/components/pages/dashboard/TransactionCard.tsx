@@ -2,9 +2,9 @@
 
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
-import Link from "next/link";
 import { useState } from "react";
-import { Button, Modal } from "@heroui/react";
+import { Button } from "@heroui/react";
+import { LinkButton } from "@/components/common/ui/LinkButton";
 import { Edit2, Trash } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
@@ -153,12 +153,15 @@ export function TransactionCard({ budget }: TransactionCardProps) {
             <p className="mb-3 text-sm text-muted">{budget.description}</p>
           ) : null}
           <div className="flex gap-2">
-            <Link href={PATHS.BUDGET(budget._id)} className="flex-1">
-              <Button size="sm" variant="secondary" className="w-full">
-                <Edit2 size={16} />
-                {t("common.edit")}
-              </Button>
-            </Link>
+            <LinkButton
+              href={PATHS.BUDGET(budget._id)}
+              size="sm"
+              variant="secondary"
+              className="flex-1"
+            >
+              <Edit2 size={16} />
+              {t("common.edit")}
+            </LinkButton>
             <Button
               size="sm"
               variant="danger"

@@ -297,7 +297,7 @@ export function FormPriceInput({
   value,
   onChange,
   allowNegative = false,
-  currency: _currency = "toman",
+  currency = "toman",
   onFocus,
   ...props
 }: FormPriceInputProps) {
@@ -319,6 +319,7 @@ export function FormPriceInput({
         inputMode="numeric"
         dir="ltr"
         className="text-left"
+        data-currency={currency}
         value={formatPriceInput(value, allowNegative)}
         onChange={handleChange}
         onFocus={handleFocus}

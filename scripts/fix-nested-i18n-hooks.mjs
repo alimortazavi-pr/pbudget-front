@@ -44,7 +44,6 @@ function fixFile(file) {
   while ((match = funcRe.exec(content))) {
     const fnStart = match.index;
     const bodyStart = fnStart + match[0].length;
-    const nextFn = funcRe.lastIndex;
     // find function body until next function at same level - approximate by next `function `
     const searchFrom = bodyStart;
     let bodyEnd = content.length;

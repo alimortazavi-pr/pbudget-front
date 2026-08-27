@@ -139,7 +139,7 @@ export function TasksPage() {
     } finally {
       setLoading(false);
     }
-  }, [listParams]);
+  }, [listParams, t]);
 
   useEffect(() => {
     void load();

@@ -51,7 +51,7 @@ export function AdminDatabasePage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void load();

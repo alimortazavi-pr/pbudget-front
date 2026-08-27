@@ -52,7 +52,7 @@ export function ChecksPage() {
     } finally {
       setLoading(false);
     }
-  }, [year, month]);
+  }, [year, month, t]);
 
   useEffect(() => {
     void load();

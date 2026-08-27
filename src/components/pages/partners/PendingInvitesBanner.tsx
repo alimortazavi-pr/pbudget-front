@@ -3,8 +3,8 @@
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import { Button } from "@heroui/react";
+import { LinkButton } from "@/components/common/ui/LinkButton";
 import * as partnersApi from "@/common/api/partners";
 import type { IPendingPartnerInvite } from "@/common/interfaces/partner.interface";
 import { notifyPendingInvitesChanged } from "@/common/hooks/usePendingInvitesCount";
@@ -94,11 +94,9 @@ export function PendingInvitesBanner({ compact = false }: PendingInvitesBannerPr
                 </Button>
               ) : null}
               {invite.inviteLink ? (
-                <Link href={invite.inviteLink}>
-                  <Button size="sm" variant="secondary">
-                    {t("auto.kd65b37fd31")}
-                  </Button>
-                </Link>
+                <LinkButton href={invite.inviteLink} size="sm" variant="secondary">
+                  {t("auto.kd65b37fd31")}
+                </LinkButton>
               ) : null}
             </div>
           </article>

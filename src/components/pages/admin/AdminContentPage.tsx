@@ -66,7 +66,7 @@ export function AdminContentPage() {
     } finally {
       setLoading(false);
     }
-  }, [tab, page, search, includeDeleted]);
+  }, [tab, page, search, includeDeleted, t]);
 
   useEffect(() => {
     void load();

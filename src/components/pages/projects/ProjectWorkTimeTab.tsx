@@ -22,6 +22,7 @@ import {
 import { formatDailyRemainingMessage } from "@/common/hooks/useWorkSessionDailyReminder";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { AttachBudgetButton } from "@/components/common/budget/AttachBudgetModal";
+import { LinkButton } from "@/components/common/ui/LinkButton";
 import { FormInput } from "@/components/common/form/FormFields";
 import {
   formatSessionRange,
@@ -68,7 +69,7 @@ export function ProjectWorkTimeTab({
     } finally {
       setLoading(false);
     }
-  }, [projectId, year, month]);
+  }, [projectId, year, month, t]);
 
   useEffect(() => {
     void load();
@@ -201,11 +202,9 @@ export function ProjectWorkTimeTab({
             <Add size={16} />
             {t("auto.kbba3b5a823")}
           </Button>
-          <Link href={PATHS.PROJECT_ATTENDANCE(projectId)}>
-            <Button variant="ghost" size="sm">
-              {t("auto.k29c4888248")}
-            </Button>
-          </Link>
+          <LinkButton href={PATHS.PROJECT_ATTENDANCE(projectId)} variant="ghost" size="sm">
+            {t("auto.k29c4888248")}
+          </LinkButton>
         </div>
         <div className="rounded-xl bg-surface-secondary p-3 text-sm">
           {t("auto.k0d7cdbf4fe")}{" "}

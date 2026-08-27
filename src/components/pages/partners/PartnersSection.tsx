@@ -101,7 +101,7 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
     } finally {
       setLoading(false);
     }
-  }, [contextId, contextType]);
+  }, [contextId, contextType, t]);
 
   useEffect(() => {
     void load();

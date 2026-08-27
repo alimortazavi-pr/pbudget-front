@@ -84,7 +84,7 @@ export function CreateTaskModal({
         label: p.category?.title ?? t("auto.kcce7e8ff41"),
       })),
     ],
-    [projects],
+    [projects, t],
   );
 
   async function save(e?: FormEvent) {

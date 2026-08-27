@@ -1,7 +1,5 @@
 "use client";
 
-import { useTranslation } from "@/components/providers/LanguageProvider";
-
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
@@ -10,8 +8,7 @@ import { PATHS } from "@/common/constants";
 import type { IBudget } from "@/common/interfaces/budget.interface";
 import { BudgetFormPage } from "./BudgetFormPage";
 
-export function EditBudgetPage() {  const { t } = useTranslation();
-
+export function EditBudgetPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const [budget, setBudget] = useState<IBudget | null>(null);

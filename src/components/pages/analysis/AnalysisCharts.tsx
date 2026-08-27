@@ -148,7 +148,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
       { name: t("common.income"), value: report.summary.income, fill: CHART_COLORS.income },
       { name: t("common.expense"), value: report.summary.cost, fill: CHART_COLORS.cost },
     ].filter((item) => item.value > 0),
-    [report.summary],
+    [report.summary, t],
   );
 
   const overviewBarData = useMemo(

@@ -1,8 +1,5 @@
 "use client";
 
-import { getTranslator } from "@/i18n";
-const t = getTranslator();
-
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import Link from "next/link";
@@ -28,7 +25,6 @@ import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui
 import { BudgetMoreToggle } from "@/components/pages/budget/BudgetMoreToggle";
 import {
   DebtLedgerSection,
-  type DebtLedgerMode,
   type DebtLedgerValue,
 } from "@/components/pages/budget/DebtLedgerSection";
 import {
@@ -57,10 +53,6 @@ type BankImportRowEditorModalProps = {
 
 function buildMoreHint(parts: string[]) {
   return parts.length ? parts.join(" · ") : null;
-}
-
-function isSettleDebtMode(mode: DebtLedgerMode) {
-  return mode === "settle-receivable" || mode === "settle-payable";
 }
 
 export function BankImportRowEditorModal({
@@ -121,11 +113,13 @@ export function BankImportRowEditorModal({
     [paymentCards],
   );
 
+  const formCategoryId = form?.categoryId;
+  const formType = form?.type;
+
   useEffect(() => {
     if (
-      !form ||
-      form.type !== String(BudgetType.COST) ||
-      !form.categoryId ||
+      formType !== String(BudgetType.COST) ||
+      !formCategoryId ||
       !selectedCategory?.monthlyLimit
     ) {
       setCategorySpendHint(null);
@@ -140,7 +134,7 @@ export function BankImportRowEditorModal({
         duration: "monthly",
         year: String(now.jYear()),
         month: String(now.jMonth() + 1),
-        category: form.categoryId,
+        category: formCategoryId,
       })
       .then((data) => {
         const spent = data.totalCostPrice;
@@ -160,7 +154,7 @@ export function BankImportRowEditorModal({
         );
       })
       .catch(() => setCategorySpendHint(null));
-  }, [form?.categoryId, form?.type, selectedCategory?.monthlyLimit, t]);
+  }, [formCategoryId, formType, selectedCategory?.monthlyLimit, t]);
 
   if (!form) return null;
 

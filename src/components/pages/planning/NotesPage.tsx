@@ -132,7 +132,7 @@ export function NotesPage() {
     } catch (err) {
       showToast(err instanceof Error ? err.message : t("auto.kd005e1835b"));
     }
-  }, []);
+  }, [t]);
 
   const loadNotes = useCallback(async () => {
     setLoading(true);
@@ -164,7 +164,7 @@ export function NotesPage() {
     } finally {
       setLoading(false);
     }
-  }, [noteDuration, year, month, day, canEdit, editingCategoryId]);
+  }, [noteDuration, year, month, day, canEdit, editingCategoryId, t]);
 
   useEffect(() => {
     void loadCategories();
@@ -200,7 +200,7 @@ export function NotesPage() {
         setSaving(false);
       }
     },
-    [canEdit, noteDuration, year, month, day, editingCategoryId],
+    [canEdit, noteDuration, year, month, day, editingCategoryId, t],
   );
 
   function scheduleSave(nextLines: INoteLine[]) {

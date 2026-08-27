@@ -55,7 +55,7 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
     } finally {
       setLoading(false);
     }
-  }, [ventureId]);
+  }, [ventureId, t]);
 
   useEffect(() => {
     void load();

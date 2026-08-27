@@ -58,7 +58,7 @@ export function PartnerSettlementPanel({
     } finally {
       setLoading(false);
     }
-  }, [contextId, contextType, isOwner]);
+  }, [contextId, contextType, isOwner, t]);
 
   useEffect(() => {
     void load();

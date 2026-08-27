@@ -61,7 +61,6 @@ export function linesFromNote(
 }
 
 export function hasEditorContent(lines: EditorLine[]) {
-  const { t } = useTranslation();
   return lines.some((line) => line.text.trim().length > 0);
 }
 
@@ -84,13 +83,7 @@ function ReminderPanel({
 
   useEffect(() => {
     setDraft(reminder);
-  }, [
-    reminder.year,
-    reminder.month,
-    reminder.day,
-    reminder.hour,
-    reminder.minute,
-  ]);
+  }, [reminder]);
 
   return (
     <div className="mt-2 rounded-xl border border-default-200 bg-default-50 p-3 space-y-3">

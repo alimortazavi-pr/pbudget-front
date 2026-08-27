@@ -47,7 +47,7 @@ export function AdminVoiceLogsPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, status, intent]);
+  }, [page, status, intent, t]);
 
   useEffect(() => {
     void load();

@@ -3,9 +3,9 @@
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
+import { LinkButton } from "@/components/common/ui/LinkButton";
 
 import { PATHS } from "@/common/constants";
 import { buildGetStartedUrl } from "@/common/utils/auth-flow";
@@ -40,7 +40,7 @@ export function PartnerInvitePage({ token }: PartnerInvitePageProps) {
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [token, t]);
 
   useEffect(() => {
     void load();
@@ -88,9 +88,7 @@ export function PartnerInvitePage({ token }: PartnerInvitePageProps) {
     return (
       <div className="mx-auto max-w-md space-y-4 py-16 text-center">
         <p className="text-danger">{error ?? t("auto.kd044cdedaa")}</p>
-        <Link href={PATHS.HOME}>
-          <Button variant="secondary">{t("common.backToHome")}</Button>
-        </Link>
+        <LinkButton href={PATHS.HOME} variant="secondary">{t("common.backToHome")}</LinkButton>
       </div>
     );
   }
@@ -144,11 +142,13 @@ export function PartnerInvitePage({ token }: PartnerInvitePageProps) {
             </span>{" "}
             {t("auto.kf3369bb7a8")}
           </p>
-          <Link href={buildGetStartedUrl(PATHS.PARTNER_INVITE(token))}>
-            <Button className="w-full" size="lg">
-              {t("auto.k8dfad36076")}
-            </Button>
-          </Link>
+          <LinkButton
+            href={buildGetStartedUrl(PATHS.PARTNER_INVITE(token))}
+            className="w-full"
+            size="lg"
+          >
+            {t("auto.k8dfad36076")}
+          </LinkButton>
         </div>
       ) : (
         <div className="flex flex-col gap-2">

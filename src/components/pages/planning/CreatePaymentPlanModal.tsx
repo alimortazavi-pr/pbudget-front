@@ -67,7 +67,7 @@ export function CreatePaymentPlanModal({
         ),
       )
       .catch(() => undefined);
-  }, [open, defaultProjectId]);
+  }, [open, defaultProjectId, t]);
 
   useEffect(() => {
     if (open && defaultProjectId) {

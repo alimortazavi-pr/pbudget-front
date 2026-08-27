@@ -44,7 +44,7 @@ export function AdminAuthAuditPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, actionFilter]);
+  }, [page, actionFilter, t]);
 
   useEffect(() => {
     void load();

@@ -2,9 +2,9 @@
 
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
-import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@heroui/react";
+import { LinkButton } from "@/components/common/ui/LinkButton";
 import {
   ArrowLeft,
   Chart,
@@ -51,36 +51,46 @@ export function VentureOverviewSection({
   const [debtLoading, setDebtLoading] = useState(true);
 
   const activePartners = partners.filter((partner) => partner.status !== "declined");
+  const activePartnerCount = activePartners.length;
   const totalShare = activePartners.reduce(
     (sum, partner) => sum + (partner.sharePercent || 0),
     0,
   );
 
-  const loadDebtSummary = useCallback(async () => {
-    if (activePartners.length === 0) {
-      setTotalReceivable(0);
-      setDebtLoading(false);
-      return;
-    }
-
-    setDebtLoading(true);
-    try {
-      const data = await partnersApi.fetchPartnerDebtBalances("venture", ventureId);
-      const receivable = data.partners.reduce(
-        (sum, row) => sum + Math.max(row.netBalance, 0),
-        0,
-      );
-      setTotalReceivable(receivable);
-    } catch {
-      setTotalReceivable(0);
-    } finally {
-      setDebtLoading(false);
-    }
-  }, [activePartners.length, ventureId]);
-
   useEffect(() => {
+    let cancelled = false;
+
+    async function loadDebtSummary() {
+      if (activePartnerCount === 0) {
+        setTotalReceivable(0);
+        setDebtLoading(false);
+        return;
+      }
+
+      setDebtLoading(true);
+      try {
+        const data = await partnersApi.fetchPartnerDebtBalances(
+          "venture",
+          ventureId,
+        );
+        if (cancelled) return;
+        const receivable = data.partners.reduce(
+          (sum, row) => sum + Math.max(row.netBalance, 0),
+          0,
+        );
+        setTotalReceivable(receivable);
+      } catch {
+        if (!cancelled) setTotalReceivable(0);
+      } finally {
+        if (!cancelled) setDebtLoading(false);
+      }
+    }
+
     void loadDebtSummary();
-  }, [loadDebtSummary]);
+    return () => {
+      cancelled = true;
+    };
+  }, [activePartnerCount, ventureId]);
 
   async function saveDescription() {
     setSaving(true);
@@ -115,7 +125,7 @@ export function VentureOverviewSection({
             <People size={18} />
             <span className="text-xs">{t("auto.kae6a285197")}</span>
           </div>
-          <p className="mt-2 text-2xl font-bold">{formatCount(activePartners.length)}</p>
+          <p className="mt-2 text-2xl font-bold">{formatCount(activePartnerCount)}</p>
           <p className="mt-1 text-xs text-muted">
             {t("pages.partners.totalShareLabel")} {t("pages.partners.totalSharePercent", { percent: totalShare })}
           </p>
@@ -238,12 +248,10 @@ export function VentureOverviewSection({
           <Receipt size={16} />
           {t("auto.k4ad10a7f11")}
         </Button>
-        <Link href={PATHS.DEBTS}>
-          <Button size="sm" variant="secondary">
-            <ArrowLeft size={16} />
-            {t("nav.debts")}
-          </Button>
-        </Link>
+        <LinkButton href={PATHS.DEBTS} size="sm" variant="secondary">
+          <ArrowLeft size={16} />
+          {t("nav.debts")}
+        </LinkButton>
       </div>
     </div>
   );

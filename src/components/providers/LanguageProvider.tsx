@@ -2,9 +2,11 @@
 
 import React, {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useState,
 } from "react";
 import {
@@ -54,14 +56,18 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     setI18nState(language, mounted);
   }, [language, mounted]);
 
-  const setLanguage = (lang: Language) => {
+  const setLanguage = useCallback((lang: Language) => {
     setLanguageState(lang);
-  };
+  }, []);
 
-  const t = createTranslator(language, mounted);
+  const t = useMemo(() => createTranslator(language, mounted), [language, mounted]);
+  const value = useMemo(
+    () => ({ language, setLanguage, t }),
+    [language, setLanguage, t],
+  );
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={value}>
       {children}
     </LanguageContext.Provider>
   );

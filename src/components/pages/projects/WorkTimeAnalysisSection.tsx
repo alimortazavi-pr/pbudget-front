@@ -7,10 +7,10 @@ import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { Button } from "@heroui/react";
 import { Chart } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
+import { LinkButton } from "@/components/common/ui/LinkButton";
 import type { IWorkTimeReport } from "@/common/interfaces/work-time.interface";
 import {
   formatDurationMinutes,
@@ -80,19 +80,15 @@ export function WorkTimeAnalysisSection({
             </h2>
           </div>
           {isProjectScope && report.projectId ? (
-            <Link href={PATHS.WORK_ATTENDANCE}>
-              <Button size="sm" variant="secondary">
-                <Chart size={16} />
-                {t("auto.kfbf6ce5da9")}
-              </Button>
-            </Link>
+            <LinkButton href={PATHS.WORK_ATTENDANCE} size="sm" variant="secondary">
+              <Chart size={16} />
+              {t("auto.kfbf6ce5da9")}
+            </LinkButton>
           ) : (
-            <Link href={PATHS.WORK_ATTENDANCE}>
-              <Button size="sm" variant="secondary">
-                <Chart size={16} />
-                {t("auto.ka4b30b68b9")}
-              </Button>
-            </Link>
+            <LinkButton href={PATHS.WORK_ATTENDANCE} size="sm" variant="secondary">
+              <Chart size={16} />
+              {t("auto.ka4b30b68b9")}
+            </LinkButton>
           )}
         </div>
       ) : null}

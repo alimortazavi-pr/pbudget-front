@@ -4,6 +4,7 @@ import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@heroui/react";
+import { buttonVariants } from "@heroui/styles";
 import { DocumentDownload, DocumentUpload, Mobile } from "iconsax-reactjs";
 
 import * as adminApi from "@/common/api/admin";
@@ -33,7 +34,7 @@ export function AdminAppPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void load();
@@ -116,12 +117,10 @@ export function AdminAppPage() {
               href={info.downloadUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-6 inline-block"
+              className={buttonVariants({ className: "mt-6", variant: "secondary" })}
             >
-              <Button variant="secondary">
-                <DocumentDownload size={18} />
-                {t("auto.k642acf2223")}
-              </Button>
+              <DocumentDownload size={18} />
+              {t("auto.k642acf2223")}
             </a>
           ) : null}
         </div>

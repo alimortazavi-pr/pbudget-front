@@ -1,14 +1,12 @@
 "use client";
 
-import { getTranslator } from "@/i18n";
-const t = getTranslator();
-
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { motion } from "motion/react";
 import { Button, Input, Label, TextArea, TextField } from "@heroui/react";
+import { buttonVariants } from "@heroui/styles";
 import {
   ArrowLeft2,
   Building,
@@ -391,18 +389,32 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
             <ThemeToggle />
             <ProductFamilyBanner variant="header" />
             {showAppDownload ? (
-                <Link href={PATHS.DOWNLOAD} className="hidden sm:block">
-                  <Button variant="ghost" size="sm"><DocumentDownload size={18} />{t("nav.downloadApp")}</Button>
-                </Link>
+              <Link
+                href={PATHS.DOWNLOAD}
+                className={buttonVariants({ variant: "ghost", size: "sm", className: "hidden sm:flex" })}
+              >
+                <DocumentDownload size={18} />{t("nav.downloadApp")}
+              </Link>
             ) : null}
-            <Link href={primaryCta}>
-              <Button size="sm">{primaryLabel}<ArrowLeft2 size={16} /></Button>
+            <Link href={primaryCta} className={buttonVariants({ size: "sm" })}>
+              {primaryLabel}<ArrowLeft2 size={16} />
             </Link>
-            <Button isIconOnly variant="ghost" size="sm" className="lg:hidden" onPress={() => setMenuOpen((v) => !v)}><Menu size={22} /></Button>
+            <Button
+              isIconOnly
+              variant="ghost"
+              size="sm"
+              className="lg:hidden"
+              aria-label={t("nav.menu")}
+              aria-expanded={menuOpen}
+              aria-controls="landing-mobile-navigation"
+              onPress={() => setMenuOpen((v) => !v)}
+            >
+              <Menu size={22} />
+            </Button>
           </div>
         </div>
         {menuOpen ? (
-          <nav className="border-t lp-border bg-[var(--lp-bg-elevated)] px-4 py-2 lg:hidden">
+          <nav id="landing-mobile-navigation" className="border-t lp-border bg-[var(--lp-bg-elevated)] px-4 py-2 lg:hidden">
             {content.nav.map((item) => (
               <button key={item.id} type="button" className="block w-full rounded-lg px-3 py-2.5 text-start text-sm" onClick={() => { setMenuOpen(false); scrollToId(item.id); }}>{item.label}</button>
             ))}
@@ -419,6 +431,7 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
         ) : null}
       </header>
 
+      <main>
       <section ref={heroRef} className="landing-spotlight landing-noise relative overflow-hidden pt-28 pb-10 md:pt-32 md:pb-14 lg:pt-36 lg:pb-16">
         <LandingParticles />
         <div className="landing-aurora landing-aurora-1" style={{ transform: `translate(${parallax.x * 10}px, ${parallax.y * 6}px)` }} />
@@ -443,13 +456,16 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
             </motion.h1>
             <p className="landing-hero-enter landing-hero-enter-d3 mt-4 max-w-xl text-base leading-relaxed lp-muted md:mt-5 md:text-lg">{content.hero.description}</p>
             <div className="landing-hero-enter landing-hero-enter-d4 mt-6 flex flex-wrap gap-3 md:mt-8">
-              <Link href={primaryCta}><Button size="lg">{primaryLabel}<ArrowLeft2 size={18} /></Button></Link>
+              <Link className={buttonVariants({ size: "lg" })} href={primaryCta}>
+                {primaryLabel}<ArrowLeft2 size={18} />
+              </Link>
               {showAppDownload ? (
-                <Link href={PATHS.DOWNLOAD}>
-                  <Button size="lg" variant="secondary">
-                    <DocumentDownload size={18} />
-                    {apkAvailable ? t("common.download") : t("nav.downloadApp")}
-                  </Button>
+                <Link
+                  className={buttonVariants({ size: "lg", variant: "secondary" })}
+                  href={PATHS.DOWNLOAD}
+                >
+                  <DocumentDownload size={18} />
+                  {apkAvailable ? t("common.download") : t("nav.downloadApp")}
                 </Link>
               ) : null}
               <Button size="lg" variant="secondary" onPress={() => scrollToId("features")}>{content.hero.secondaryCta}</Button>
@@ -497,10 +513,6 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
                   className={`landing-bento flex h-full flex-col rounded-2xl border bg-gradient-to-br p-5 md:p-6 ${ACCENT[f.accent]} ${
                     fullWidth ? "lg:flex-row lg:items-start lg:gap-6 lg:p-8" : ""
                   }`}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-40px" }}
-                  transition={{ duration: 0.4, delay: i * 0.04 }}
                   whileHover={{ y: -4, transition: { duration: 0.2 } }}
                 >
                   <span className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${FEATURE_ICON_BG[f.accent]} ${fullWidth ? "mb-0" : "mb-4"}`}>
@@ -648,6 +660,7 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
           </Reveal>
         </div>
       </section>
+      </main>
 
       <footer className="border-t lp-border py-10">
         <div className="mx-auto max-w-6xl px-4 md:px-6">

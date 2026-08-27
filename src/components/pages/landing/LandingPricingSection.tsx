@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "motion/react";
 import { Button } from "@heroui/react";
+import { buttonVariants } from "@heroui/styles";
 import { TickCircle } from "iconsax-reactjs";
 
 import { BUSINESS_SITE_URL } from "@/common/constants/products";
@@ -14,6 +14,7 @@ type LandingPricingSectionProps = {
   primaryCta: string;
   onContactPress?: () => void;
   showHeader?: boolean;
+  headingLevel?: "h1" | "h2";
 };
 
 function planAction(
@@ -23,10 +24,14 @@ function planAction(
 ) {
   if (plan.id === "personal") {
     return (
-      <Link href={primaryCta}>
-        <Button className="w-full" variant={plan.highlighted ? "primary" : "secondary"}>
-          {plan.cta}
-        </Button>
+      <Link
+        href={primaryCta}
+        className={buttonVariants({
+          className: "w-full",
+          variant: plan.highlighted ? "primary" : "secondary",
+        })}
+      >
+        {plan.cta}
       </Link>
     );
   }
@@ -34,13 +39,16 @@ function planAction(
   if (plan.id === "business" || plan.externalUrl) {
     const href = plan.externalUrl ?? BUSINESS_SITE_URL;
     return (
-      <a href={href} target="_blank" rel="noopener noreferrer">
-        <Button
-          className="w-full bg-gradient-to-l from-teal-600 to-emerald-700 text-white"
-          variant="primary"
-        >
-          {plan.cta}
-        </Button>
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={buttonVariants({
+          className: "w-full bg-gradient-to-l from-teal-600 to-emerald-700 text-white",
+          variant: "primary",
+        })}
+      >
+        {plan.cta}
       </a>
     );
   }
@@ -61,7 +69,9 @@ export function LandingPricingSection({
   primaryCta,
   onContactPress,
   showHeader = true,
+  headingLevel = "h2",
 }: LandingPricingSectionProps) {
+  const Heading = headingLevel;
   const planCount = pricing.plans.length;
   const gridClass =
     planCount === 1
@@ -77,13 +87,13 @@ export function LandingPricingSection({
           <p className="text-sm font-semibold text-[var(--brand-violet)]">
             {pricing.eyebrow}
           </p>
-          <h2 className="mt-2 text-2xl font-bold md:text-4xl">{pricing.title}</h2>
+          <Heading className="mt-2 text-2xl font-bold md:text-4xl">{pricing.title}</Heading>
           <p className="mt-3 text-sm lp-muted md:text-base">{pricing.description}</p>
         </div>
       ) : null}
       <div className={`mt-10 grid gap-5 ${gridClass}`}>
-        {pricing.plans.map((plan, i) => (
-          <motion.div
+        {pricing.plans.map((plan) => (
+          <div
             key={plan.id}
             className={`landing-bento lp-card flex h-full flex-col rounded-2xl p-6 ${
               plan.highlighted
@@ -92,10 +102,6 @@ export function LandingPricingSection({
                   ? "border-2 border-teal-500/35 shadow-lg shadow-teal-500/10"
                   : ""
             }`}
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: i * 0.06 }}
           >
             <h3 className="text-lg font-bold">{plan.name}</h3>
             <p className="mt-2 text-3xl font-bold">
@@ -118,7 +124,7 @@ export function LandingPricingSection({
               ))}
             </ul>
             <div className="mt-6">{planAction(plan, primaryCta, onContactPress)}</div>
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>

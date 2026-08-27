@@ -3,7 +3,7 @@
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import Link from "next/link";
-import { Button } from "@heroui/react";
+import { buttonVariants } from "@heroui/styles";
 import { ArrowRight2 } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
@@ -36,8 +36,8 @@ export function PricingPage({
           </Link>
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <Link href={primaryCta}>
-              <Button size="sm">{isAuth ? t("nav.dashboard") : t("auto.k4bbf9a5a8b")}</Button>
+            <Link href={primaryCta} className={buttonVariants({ size: "sm" })}>
+              {isAuth ? t("nav.dashboard") : t("auto.k4bbf9a5a8b")}
             </Link>
           </div>
         </div>
@@ -55,6 +55,7 @@ export function PricingPage({
         <LandingPricingSection
           pricing={content.pricing}
           primaryCta={primaryCta}
+          headingLevel="h1"
           onContactPress={() => {
             window.location.href = `${PATHS.LANDING}#contact`;
           }}
@@ -65,8 +66,11 @@ export function PricingPage({
           <p className="mt-2 text-sm lp-muted">
             {t("auto.k2f8db09e58")}
           </p>
-          <Link href={`${PATHS.LANDING}#contact`} className="mt-6 inline-block">
-            <Button size="lg">{t("auto.k26dbf2a80c")}</Button>
+          <Link
+            href={`${PATHS.LANDING}#contact`}
+            className={buttonVariants({ size: "lg", className: "mt-6" })}
+          >
+            {t("auto.k26dbf2a80c")}
           </Link>
         </div>
       </main>

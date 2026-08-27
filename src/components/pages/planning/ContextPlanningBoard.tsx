@@ -91,7 +91,7 @@ export function ContextPlanningBoard({
     } finally {
       setLoading(false);
     }
-  }, [contextId, contextType]);
+  }, [contextId, contextType, t]);
 
   useEffect(() => {
     void load();

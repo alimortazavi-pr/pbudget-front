@@ -89,7 +89,7 @@ export function CreateRoutineModal({
         label: p.category?.title ?? t("auto.kcce7e8ff41"),
       })),
     ],
-    [projects],
+    [projects, t],
   );
 
   function toggleWeekday(day: number) {

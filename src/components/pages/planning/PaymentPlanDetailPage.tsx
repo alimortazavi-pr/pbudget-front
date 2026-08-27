@@ -27,6 +27,7 @@ import {
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { AttachBudgetButton } from "@/components/common/budget/AttachBudgetModal";
+import { LinkButton } from "@/components/common/ui/LinkButton";
 import {
   FormCategoryComboBox,
   FormDatePicker,
@@ -99,7 +100,7 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
     } finally {
       setLoading(false);
     }
-  }, [planId]);
+  }, [planId, t]);
 
   useEffect(() => {
     void load();
@@ -432,12 +433,10 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
             <p className="text-sm text-muted">
               {formatCount(data.budgets.length)} {t("auto.ka754673f58")}
             </p>
-            <Link href={PATHS.CREATE_BUDGET}>
-              <Button size="sm" variant="secondary">
-                <Add size={16} />
-                {t("auto.kc26f42387e")}
-              </Button>
-            </Link>
+            <LinkButton href={PATHS.CREATE_BUDGET} size="sm" variant="secondary">
+              <Add size={16} />
+              {t("auto.kc26f42387e")}
+            </LinkButton>
           </div>
           <p className="text-xs leading-6 text-muted">
             {t("auto.k25f86ecfce")}

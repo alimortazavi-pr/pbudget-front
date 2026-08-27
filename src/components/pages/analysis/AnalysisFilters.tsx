@@ -120,7 +120,7 @@ export function AnalysisFilters({
         : t("common.jalaliYear", { year: toPersianDigits(year) });
     }
     return t("auto.ke039e3d6b1");
-  }, [calendarType, duration, year, month, day, isGregorian, t]);
+  }, [duration, year, month, day, isGregorian, t]);
 
   function shiftPeriod(direction: -1 | 1) {
     if (duration === "all") return;

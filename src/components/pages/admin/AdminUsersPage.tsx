@@ -46,7 +46,7 @@ export function AdminUsersPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, search, includeDeleted]);
+  }, [page, search, includeDeleted, t]);
 
   useEffect(() => {
     void load();

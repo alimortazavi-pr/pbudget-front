@@ -135,7 +135,7 @@ export function AdminDashboardPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void load();

@@ -136,10 +136,6 @@ const map = { ...NAV, ...SEMANTIC };
 const extracted = JSON.parse(
   fs.readFileSync("scripts/i18n-extracted.json", "utf8"),
 );
-const translations = JSON.parse(
-  fs.readFileSync("scripts/i18n-translations.json", "utf8"),
-);
-
 let auto = 0;
 for (const fa of Object.keys(extracted)) {
   if (map[fa]) continue;

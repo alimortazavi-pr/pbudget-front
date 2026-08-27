@@ -5,10 +5,10 @@ const t = getTranslator();
 
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
-import Link from "next/link";
 import { Button } from "@heroui/react";
 
 import { PATHS } from "@/common/constants";
+import { LinkButton } from "@/components/common/ui/LinkButton";
 import type {
   IWorkTimeAlert,
   IWorkTimeInsight,
@@ -65,17 +65,13 @@ export function WorkTimeInsightsPanels({
               <p className="font-semibold">{alert.title}</p>
               <p className="mt-1 leading-6 opacity-90">{alert.message}</p>
               {alert.action === "open-project" && alert.projectId ? (
-                <Link href={attendanceHref(alert)} className="mt-2 inline-block">
-                  <Button size="sm" variant="secondary">
-                    {alertActionLabel(alert.action)}
-                  </Button>
-                </Link>
+                <LinkButton href={attendanceHref(alert)} className="mt-2" size="sm" variant="secondary">
+                  {alertActionLabel(alert.action)}
+                </LinkButton>
               ) : alert.action === "view-attendance" ? (
-                <Link href={attendanceHref(alert)} className="mt-2 inline-block">
-                  <Button size="sm" variant="secondary">
-                    {alertActionLabel(alert.action)}
-                  </Button>
-                </Link>
+                <LinkButton href={attendanceHref(alert)} className="mt-2" size="sm" variant="secondary">
+                  {alertActionLabel(alert.action)}
+                </LinkButton>
               ) : alert.action && onAlertAction ? (
                 <Button
                   size="sm"
