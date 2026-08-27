@@ -36,12 +36,10 @@ export const dashboardMessages: MessageTree = {
     "اختر العملة وأدخل مبلغ التغيير — موجب للزيادة وسالب للنقصان. لكل عملة رصيد منفصل.",
   amountChangeLabel: "مبلغ الزيادة/النقصان ({{currency}})",
   amountChangePlaceholder: "مثال: 500000 أو -200000",
-  amountChangeRequired:
-    "أدخل مبلغ التغيير (موجب للزيادة وسالب للنقصان)",
+  amountChangeRequired: "أدخل مبلغ التغيير (موجب للزيادة وسالب للنقصان)",
   applyChange: "تطبيق التغيير",
   balanceUpdated: "الرصيد {{currency}}: {{amount}}",
-  gregorianDateHint:
-    "التقويم الميلادي — تُحفظ تواريخ المعاملات كسنة/شهر/يوم",
+  gregorianDateHint: "التقويم الميلادي — تُحفظ تواريخ المعاملات كسنة/شهر/يوم",
   monthlyDateHint: "في الوضع الشهري، لا يُستخدم اليوم في حساب التاريخ",
   datePlaceholder: "التاريخ",
   gregorianDatePlaceholder: "تاريخ ميلادي",
@@ -73,8 +71,7 @@ export const dashboardMessages: MessageTree = {
   exportExcelHint:
     "٣ أوراق: ملخص التقرير، المعاملات (مع الملاحظات)، تفصيل الفئات",
   exportWebReport: "تقرير ويب",
-  exportWebReportHint:
-    "صفحة منسقة مع غلاف وإحصائيات وجدول أوصاف وزر طباعة/PDF",
+  exportWebReportHint: "صفحة منسقة مع غلاف وإحصائيات وجدول أوصاف وزر طباعة/PDF",
   exportPreviewSuccess: "تم فتح التقرير في المتصفح",
   exportDownloadSuccess: "تم تنزيل التصدير",
   exportFetchError: "فشل إنشاء التصدير",
@@ -88,6 +85,17 @@ export const dashboardMessages: MessageTree = {
   receivableLabel: "مستحق",
   debtLabel: "دين",
   deleteTransactionError: "فشل حذف المعاملة",
+  deleteTransactionTitle: "حذف المعاملة",
+  deleteTransactionPrompt:
+    "ستُحذف معاملة {{amount}} من القائمة. اختر كيفية تأثير ذلك على رصيد المحفظة.",
+  deleteTransactionBalanceMode: "تأثير الحذف على الرصيد",
+  deletePreserveBalanceTitle: "الحذف من القائمة فقط",
+  deletePreserveBalanceDescription:
+    "يبقى رصيد المحفظة دون تغيير. استخدم هذا الخيار لحذف السجل دون إعادة المبلغ.",
+  deleteReverseBalanceTitle: "الحذف وعكس الأثر المالي",
+  deleteReverseBalanceDescription:
+    "تُحذف المعاملة ويتغير رصيد المحفظة بمقدار {{change}}.",
+  confirmDeleteTransaction: "تأكيد الحذف",
   transactionFilters: "تصفية المعاملات",
   incomeExpenseSubtitle: "دخل {{income}} · مصروف {{expense}}",
 };

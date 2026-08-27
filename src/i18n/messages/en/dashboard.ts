@@ -88,6 +88,17 @@ export const dashboardMessages: MessageTree = {
   receivableLabel: "Receivable",
   debtLabel: "Debt",
   deleteTransactionError: "Failed to delete transaction",
+  deleteTransactionTitle: "Delete transaction",
+  deleteTransactionPrompt:
+    "The {{amount}} transaction will be removed. Choose how this should affect the wallet balance.",
+  deleteTransactionBalanceMode: "Wallet balance behavior",
+  deletePreserveBalanceTitle: "Remove from the list only",
+  deletePreserveBalanceDescription:
+    "Keep the wallet balance unchanged. Use this when removing history without refunding the amount.",
+  deleteReverseBalanceTitle: "Remove and reverse its financial effect",
+  deleteReverseBalanceDescription:
+    "Delete the transaction and change the wallet balance by {{change}}.",
+  confirmDeleteTransaction: "Confirm deletion",
   transactionFilters: "Transaction filters",
   incomeExpenseSubtitle: "Income {{income}} · expense {{expense}}",
 };

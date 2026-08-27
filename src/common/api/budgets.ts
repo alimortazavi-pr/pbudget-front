@@ -8,6 +8,7 @@ import { sortBudgetsByTransactionDateDesc } from "@/common/utils/jalali-date";
 
 export type BudgetDuration = "daily" | "monthly" | "yearly" | "all";
 export type BudgetExportType = "excel" | "html";
+export type DeleteBudgetBalanceMode = "preserve" | "reverse";
 
 export type BudgetExportParams = {
   duration: BudgetDuration;
@@ -18,7 +19,10 @@ export type BudgetExportParams = {
   type: BudgetExportType;
 };
 
-export async function fetchBudgets(params: Record<string, string>, token?: string) {
+export async function fetchBudgets(
+  params: Record<string, string>,
+  token?: string
+) {
   const { data } = await axiosInstance.get<IBudgetsSummary>("/budgets", {
     params,
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
@@ -58,19 +62,34 @@ export async function fetchBudgetById(id: string, token?: string) {
 }
 
 export async function createBudget(payload: Record<string, string>) {
-  const { data } = await axiosInstance.post<IBudgetMutationResult>("/budgets", payload);
+  const { data } = await axiosInstance.post<IBudgetMutationResult>(
+    "/budgets",
+    payload
+  );
   return data;
 }
 
-export async function updateBudget(id: string, payload: Record<string, string>) {
-  const { data } = await axiosInstance.put<IBudgetMutationResult>(`/budgets/${id}`, payload);
+export async function updateBudget(
+  id: string,
+  payload: Record<string, string>
+) {
+  const { data } = await axiosInstance.put<IBudgetMutationResult>(
+    `/budgets/${id}`,
+    payload
+  );
   return data;
 }
 
-export async function softDeleteBudget(id: string) {
+export async function softDeleteBudget(
+  id: string,
+  balanceMode: DeleteBudgetBalanceMode = "preserve"
+) {
   const { data } = await axiosInstance.delete<
-    Pick<IBudgetMutationResult, "userBudget" | "userWalletBalances" | "currency">
-  >(`/budgets/${id}/soft`);
+    Pick<
+      IBudgetMutationResult,
+      "userBudget" | "userWalletBalances" | "currency"
+    >
+  >(`/budgets/${id}/soft`, { params: { balanceMode } });
   return data;
 }
 
@@ -99,10 +118,7 @@ function buildExportQuery({
   return params;
 }
 
-export async function exportBudgets({
-  type,
-  ...filters
-}: BudgetExportParams) {
+export async function exportBudgets({ type, ...filters }: BudgetExportParams) {
   const endpoint =
     type === "excel" ? "/budgets/excel-export" : "/budgets/html-export";
 
@@ -118,17 +134,17 @@ export function downloadExportFile(
   blob: Blob,
   type: BudgetExportType,
   duration?: BudgetDuration,
-  date?: { year: string; month: string; day: string },
+  date?: { year: string; month: string; day: string }
 ) {
   const extension = type === "excel" ? "xlsx" : "html";
   const period =
     duration === "all"
       ? "all"
       : duration === "yearly"
-        ? date?.year ?? "year"
-        : duration === "monthly"
-          ? `${date?.year ?? "y"}-${date?.month ?? "m"}`
-          : `${date?.year ?? "y"}-${date?.month ?? "m"}-${date?.day ?? "d"}`;
+      ? date?.year ?? "year"
+      : duration === "monthly"
+      ? `${date?.year ?? "y"}-${date?.month ?? "m"}`
+      : `${date?.year ?? "y"}-${date?.month ?? "m"}-${date?.day ?? "d"}`;
   const filename = `paradise-budget-${period}-${Date.now()}.${extension}`;
   const url = window.URL.createObjectURL(blob);
   const link = document.createElement("a");

@@ -71,11 +71,9 @@ export const dashboardMessages: MessageTree = {
   durationYearlyHint: "تمام ماه‌های یک سال",
   durationAll: "همه",
   durationAllHint: "تمام تراکنش‌های ثبت‌شده",
-  exportExcelHint:
-    "۳ شیت: خلاصه گزارش، تراکنش‌ها (با توضیحات)، تفکیک دسته",
+  exportExcelHint: "۳ شیت: خلاصه گزارش، تراکنش‌ها (با توضیحات)، تفکیک دسته",
   exportWebReport: "گزارش وب",
-  exportWebReportHint:
-    "صفحه زیبا با کاور، آمار، جدول توضیحات و دکمه چاپ/PDF",
+  exportWebReportHint: "صفحه زیبا با کاور، آمار، جدول توضیحات و دکمه چاپ/PDF",
   exportPreviewSuccess: "گزارش در مرورگر باز شد",
   exportDownloadSuccess: "خروجی دانلود شد",
   exportFetchError: "خطا در دریافت خروجی",
@@ -89,6 +87,17 @@ export const dashboardMessages: MessageTree = {
   receivableLabel: "طلب",
   debtLabel: "بدهی",
   deleteTransactionError: "خطا در حذف",
+  deleteTransactionTitle: "حذف تراکنش",
+  deleteTransactionPrompt:
+    "تراکنش {{amount}} از فهرست حذف می‌شود. مشخص کنید موجودی کیف پول چه تغییری کند.",
+  deleteTransactionBalanceMode: "نحوه اثر حذف روی موجودی",
+  deletePreserveBalanceTitle: "حذف فقط از فهرست",
+  deletePreserveBalanceDescription:
+    "موجودی کیف پول تغییر نمی‌کند. این گزینه برای حذف سابقه بدون بازگرداندن مبلغ است.",
+  deleteReverseBalanceTitle: "حذف و برگرداندن اثر مالی",
+  deleteReverseBalanceDescription:
+    "تراکنش حذف می‌شود و موجودی کیف پول {{change}} تغییر می‌کند.",
+  confirmDeleteTransaction: "تأیید حذف",
   transactionFilters: "فیلتر تراکنش‌ها",
   incomeExpenseSubtitle: "درآمد {{income}} · هزینه {{expense}}",
 };
