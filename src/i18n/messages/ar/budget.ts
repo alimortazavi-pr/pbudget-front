@@ -22,6 +22,14 @@ export const budgetMessages: MessageTree = {
     "مع الفئة «{{category}}» تُربط هذه المعاملة تلقائياً بالمشروع.",
   projectLedgerVisibility:
     "تظهر المعاملة في صفحة المشروع وتقاريره المالية.",
+  relatedInstallment: "مرتبط بقسط",
+  relatedInstallmentHint: "اربط معاملة المصروف هذه بقسط معلّق.",
+  selectInstallment: "اختيار القسط",
+  selectInstallmentPlaceholder: "اختر قسطاً معلّقاً",
+  noPendingInstallments: "لا يوجد قسط معلّق",
+  selectInstallmentRequired: "اختر القسط المرتبط",
+  installmentLinked: "تم ربط المعاملة بالقسط",
+  installmentOptionLabel: "{{title}} · {{date}} · {{amount}}",
   noTransactionsInRange: "لا توجد معاملات في هذه الفترة",
   noTransactionsTryAll:
     "لا توجد معاملات في هذه الفترة. جرّب «الكل» أو سجّل معاملة بنفس العملة.",

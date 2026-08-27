@@ -69,6 +69,7 @@ export const pagesMessages: MessageTree = {
     installmentPaid: "Paid",
     installmentRejected: "Rejected",
     installmentPending: "Pending",
+    installmentStartDate: "Installment start date (Jalali)",
     runningFilterActive: "With balance",
     runningFilterAll: "All",
     runningFilterZero: "Zero",

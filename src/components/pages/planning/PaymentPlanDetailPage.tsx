@@ -19,7 +19,7 @@ import type {
 } from "@/common/interfaces/payment-plan.interface";
 import type { IBudget } from "@/common/interfaces/budget.interface";
 import {
-  formatJalaliMonthYear,
+  formatJalaliDate,
   formatPrice,
   formatCount,
   toEnglishDigits,
@@ -29,6 +29,7 @@ import { showErrorToast, showToast } from "@/common/utils/toast";
 import { AttachBudgetButton } from "@/components/common/budget/AttachBudgetModal";
 import {
   FormCategoryComboBox,
+  FormDatePicker,
   FormInput,
   FormPersonComboBox,
   FormPriceInput,
@@ -71,6 +72,9 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
   const [dueDayOfMonth, setDueDayOfMonth] = useState("");
+  const [startYear, setStartYear] = useState("");
+  const [startMonth, setStartMonth] = useState("");
+  const [startDay, setStartDay] = useState("");
   const [description, setDescription] = useState("");
   const [active, setActive] = useState(true);
 
@@ -85,6 +89,9 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
       setAmount(String(plan.amount));
       setCategory(plan.category?._id ?? "");
       setDueDayOfMonth(String(plan.dueDayOfMonth));
+      setStartYear(String(plan.startYear));
+      setStartMonth(String(plan.startMonth));
+      setStartDay(String(plan.startDay ?? plan.dueDayOfMonth));
       setDescription(plan.description ?? "");
       setActive(plan.active);
     } catch (err) {
@@ -123,6 +130,9 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
         amount: toEnglishDigits(amount),
         category: category || undefined,
         dueDayOfMonth: toEnglishDigits(dueDayOfMonth),
+        startYear: toEnglishDigits(startYear),
+        startMonth: toEnglishDigits(startMonth),
+        startDay: toEnglishDigits(startDay),
         description: description.trim(),
         active,
       });
@@ -233,8 +243,8 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
             <span>{t("auto.k28e53343c5")}</span>
             <span>
               {t("pages.planning.progressDueDay", {
-                percent: Math.round(progress),
-                day: plan.dueDayOfMonth,
+                percent: formatCount(Math.round(progress)),
+                day: formatCount(plan.dueDayOfMonth),
               })}
             </span>
           </div>
@@ -290,10 +300,18 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
             onSelectionChange={(key) => setCategory(key)}
             options={categoryOptions}
           />
-          <FormInput
-            label={t("auto.k3ea7c5f3b4")}
-            value={dueDayOfMonth}
-            onChange={(e) => setDueDayOfMonth(e.target.value)}
+          <FormDatePicker
+            label={t("pages.planning.installmentStartDate")}
+            year={startYear}
+            month={startMonth}
+            day={startDay}
+            calendarType="jalali"
+            onChange={(value) => {
+              setStartYear(value.year);
+              setStartMonth(value.month);
+              setStartDay(value.day);
+              setDueDayOfMonth(value.day);
+            }}
           />
           <FormTextArea
             label={t("common.description")}
@@ -350,14 +368,14 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
                   <div>
                     <p className="font-semibold">
                       {t("auto.kd673bbfe0f")}
-                      {item.sequence}
+                      {formatCount(item.sequence)}
                       {plan.totalInstallments
-                        ? ` ${t("common.of")} ${plan.totalInstallments}`
+                        ? ` ${t("common.of")} ${formatCount(plan.totalInstallments)}`
                         : ""}
                     </p>
                     <p className="mt-1 flex items-center gap-1 text-xs text-muted">
                       <Calendar size={14} />
-                      {formatJalaliMonthYear(String(item.year), String(item.month))} · {t("auto.k6702edb75e")}{item.day}
+                      {formatJalaliDate(String(item.year), String(item.month), String(item.day))}
                     </p>
                   </div>
                   <div className="text-left">

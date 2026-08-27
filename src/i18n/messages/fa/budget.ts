@@ -22,6 +22,14 @@ export const budgetMessages: MessageTree = {
     "با دسته «{{category}}» این تراکنش خودکار به پروژه مرتبط وصل می‌شود.",
   projectLedgerVisibility:
     "تراکنش در صفحه پروژه و گزارش‌های مالی آن نمایش داده می‌شود.",
+  relatedInstallment: "مرتبط با اقساط",
+  relatedInstallmentHint: "این تراکنش پرداختی را به یکی از اقساط در انتظار وصل کنید.",
+  selectInstallment: "انتخاب قسط",
+  selectInstallmentPlaceholder: "یک قسط در انتظار را انتخاب کنید",
+  noPendingInstallments: "قسط در انتظاری پیدا نشد",
+  selectInstallmentRequired: "قسط مرتبط را انتخاب کنید",
+  installmentLinked: "تراکنش به قسط وصل شد",
+  installmentOptionLabel: "{{title}} · {{date}} · {{amount}}",
   noTransactionsInRange: "تراکنشی برای این بازه پیدا نشد",
   noTransactionsTryAll:
     "تراکنشی برای این بازه پیدا نشد. بازه «همه» را امتحان کنید یا تراکنش هم‌ارز ثبت کنید.",

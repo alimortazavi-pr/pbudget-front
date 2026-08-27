@@ -10,7 +10,7 @@ import * as projectsApi from "@/common/api/projects";
 import { getJalaliNow, toEnglishDigits } from "@/common/utils";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showErrorToast, showToast } from "@/common/utils/toast";
-import { FormCategoryComboBox, FormInput, FormPersonComboBox, FormPriceInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
+import { FormCategoryComboBox, FormDatePicker, FormInput, FormPersonComboBox, FormPriceInput, FormSelect, FormTextArea } from "@/components/common/form/FormFields";
 import { useMergedPersons } from "@/common/hooks/useMergedPersons";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppSelector } from "@/stores/hooks";
@@ -44,7 +44,9 @@ export function CreatePaymentPlanModal({
   const [person, setPerson] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
-  const [dueDay, setDueDay] = useState("1");
+  const [startYear, setStartYear] = useState(String(now.jYear()));
+  const [startMonth, setStartMonth] = useState(String(now.jMonth() + 1));
+  const [startDay, setStartDay] = useState(String(now.jDate()));
   const [installments, setInstallments] = useState("");
   const [description, setDescription] = useState("");
   const [remindMonthStart, setRemindMonthStart] = useState(true);
@@ -86,10 +88,11 @@ export function CreatePaymentPlanModal({
         person: person.trim(),
         amount: toEnglishDigits(amount),
         category: category || undefined,
-        dueDayOfMonth: toEnglishDigits(dueDay),
+        dueDayOfMonth: toEnglishDigits(startDay),
         totalInstallments: installments ? toEnglishDigits(installments) : undefined,
-        startYear: String(now.jYear()),
-        startMonth: String(now.jMonth() + 1),
+        startYear: toEnglishDigits(startYear),
+        startMonth: toEnglishDigits(startMonth),
+        startDay: toEnglishDigits(startDay),
         remindOnMonthStart: remindMonthStart,
         remindDaysBefore: "3",
         description,
@@ -102,7 +105,10 @@ export function CreatePaymentPlanModal({
       setPerson("");
       setAmount("");
       setCategory("");
-      setDueDay("1");
+      const freshNow = getJalaliNow();
+      setStartYear(String(freshNow.jYear()));
+      setStartMonth(String(freshNow.jMonth() + 1));
+      setStartDay(String(freshNow.jDate()));
       setInstallments("");
       setDescription("");
     } catch (err) {
@@ -144,11 +150,17 @@ export function CreatePaymentPlanModal({
             options={categoryOptions}
             emptyMessage={t("auto.kf4be303fa3")}
           />
-          <FormInput
-            label={t("auto.kc90b6ae6eb")}
-            inputMode="numeric"
-            value={dueDay}
-            onChange={(e) => setDueDay(e.target.value)}
+          <FormDatePicker
+            label={t("pages.planning.installmentStartDate")}
+            year={startYear}
+            month={startMonth}
+            day={startDay}
+            calendarType="jalali"
+            onChange={(value) => {
+              setStartYear(value.year);
+              setStartMonth(value.month);
+              setStartDay(value.day);
+            }}
           />
           <FormInput
             label={t("auto.k4d7f2e3b09")}

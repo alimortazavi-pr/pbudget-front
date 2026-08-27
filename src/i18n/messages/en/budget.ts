@@ -22,6 +22,14 @@ export const budgetMessages: MessageTree = {
     "With category «{{category}}», this transaction auto-links to the project.",
   projectLedgerVisibility:
     "The transaction appears on the project page and its financial reports.",
+  relatedInstallment: "Related to an installment",
+  relatedInstallmentHint: "Link this expense transaction to a pending installment.",
+  selectInstallment: "Select installment",
+  selectInstallmentPlaceholder: "Choose a pending installment",
+  noPendingInstallments: "No pending installment found",
+  selectInstallmentRequired: "Select the related installment",
+  installmentLinked: "Transaction linked to installment",
+  installmentOptionLabel: "{{title}} · {{date}} · {{amount}}",
   noTransactionsInRange: "No transactions found for this period",
   noTransactionsTryAll:
     "No transactions found for this period. Try «All» or record a matching-currency transaction.",

@@ -24,6 +24,7 @@ export interface IPaymentPlan {
   completedInstallments: number;
   startYear: number;
   startMonth: number;
+  startDay?: number;
   remindOnMonthStart: boolean;
   remindDaysBefore: number;
   active: boolean;

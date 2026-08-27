@@ -174,7 +174,7 @@ export function InstallmentsPage() {
                       </span>
                     </div>
                     <p className="mt-1 text-xs leading-6 text-muted">
-                      {formatPrice(plan.amount)} · {t("auto.k6702edb75e")}{plan.dueDayOfMonth} {t("auto.k63c83a62df")}
+                      {formatPrice(plan.amount)} · {t("auto.k6702edb75e")}{formatCount(plan.dueDayOfMonth)} {t("auto.k63c83a62df")}
                       {plan.person ? ` · ${plan.person}` : ""}
                     </p>
                   </div>
@@ -206,7 +206,7 @@ export function InstallmentsPage() {
                   <div className="mt-3">
                     <div className="mb-1 flex justify-between text-xs text-muted">
                       <span>{t("auto.k9998d1625f")}</span>
-                      <span>{Math.round(progress)}{t("common.percentSign")}</span>
+                      <span>{formatCount(Math.round(progress))}{t("common.percentSign")}</span>
                     </div>
                     <div className="h-2 overflow-hidden rounded-full bg-surface-secondary">
                       <div
@@ -245,7 +245,7 @@ export function InstallmentsPage() {
                       {typeof item.plan === "object" ? item.plan.title : t("pages.planning.installmentDefaultTitle")}
                     </p>
                     <p className="mt-1 text-xs text-muted">
-                      {t("auto.kd673bbfe0f")}{item.sequence} · {t("auto.k6702edb75e")}{item.day} ·{" "}
+                      {t("auto.kd673bbfe0f")}{formatCount(item.sequence)} · {t("auto.k6702edb75e")}{formatCount(item.day)} ·{" "}
                       {item.status === "paid"
                         ? t("pages.planning.installmentPaid")
                         : item.status === "skipped"

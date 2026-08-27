@@ -15,6 +15,7 @@ import * as budgetsApi from "@/common/api/budgets";
 import * as debtsApi from "@/common/api/debts";
 import * as partnersApi from "@/common/api/partners";
 import * as paymentCardsApi from "@/common/api/payment-cards";
+import * as paymentPlansApi from "@/common/api/payment-plans";
 import { PATHS } from "@/common/constants";
 import { resolveDefaultPaymentCardId } from "@/common/utils/default-payment-card";
 import { formatCardNumberForDisplay } from "@/common/utils/payment-card";
@@ -47,6 +48,10 @@ import {
   resolveProjectId,
   type ProjectLedgerValue,
 } from "@/components/pages/budget/ProjectLedgerSection";
+import {
+  InstallmentLedgerSection,
+  type InstallmentLedgerValue,
+} from "@/components/pages/budget/InstallmentLedgerSection";
 import {
   LinkedVentureSummary,
   VentureLedgerSection,
@@ -136,6 +141,10 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   const [loading, setLoading] = useState(false);
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [debtLedger, setDebtLedger] = useState<DebtLedgerValue>(initialDebtLedger);
+  const [installmentLedger, setInstallmentLedger] = useState<InstallmentLedgerValue>({
+    enabled: false,
+    occurrenceId: "",
+  });
   const [projectLedger, setProjectLedger] = useState<ProjectLedgerValue>(() => ({
     enabled: Boolean(existingProjectId) && !existingVentureId,
     projectId: existingProjectId,
@@ -255,6 +264,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
     [
       paymentCardId ? t("auto.k275357e0fe") : "",
       debtLedger.enabled ? t("auto.k4ffe94cc2d") : "",
+      installmentLedger.enabled ? t("budget.relatedInstallment") : "",
       projectLedger.enabled || isProjectCategory ? t("auto.kcce7e8ff41") : "",
       ventureLedger.enabled || existingVentureId ? t("auto.k9f48ae23bb") : "",
       budget?.debt ? t("auto.k4ffe94cc2d") : "",
@@ -312,6 +322,13 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
       }
       return next;
     });
+  }
+
+  function updateInstallmentLedger(patch: Partial<InstallmentLedgerValue>) {
+    if (patch.enabled) {
+      setType(String(BudgetType.COST));
+    }
+    setInstallmentLedger((current) => ({ ...current, ...patch }));
   }
 
   async function submit(e?: FormEvent) {
@@ -374,6 +391,12 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
         showToast(t("auto.k55cf141e8e"));
         return;
       }
+    }
+
+    if (!budget && installmentLedger.enabled && !installmentLedger.occurrenceId) {
+      setMoreOpen(true);
+      showToast(t("budget.selectInstallmentRequired"));
+      return;
     }
 
     setLoading(true);
@@ -454,6 +477,14 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
         } else {
           showToast(t("auto.k99542d84e0"), "success");
         }
+
+        if (installmentLedger.enabled && installmentLedger.occurrenceId) {
+          await paymentPlansApi.linkOccurrenceBudget(
+            installmentLedger.occurrenceId,
+            { budgetId: res.budget._id },
+          );
+          showToast(t("budget.installmentLinked"), "success");
+        }
       }
 
       if (
@@ -526,6 +557,9 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
                 type="button"
                 onClick={() => {
                   setType(item.id);
+                  if (item.id === String(BudgetType.INCOME)) {
+                    setInstallmentLedger({ enabled: false, occurrenceId: "" });
+                  }
                   setDebtLedger((current) => {
                     if (!current.enabled) return current;
 
@@ -674,6 +708,13 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
                   ) : (
                     <LinkedDebtSummary debt={budget.debt} />
                   )}
+
+                  {!budget ? (
+                    <InstallmentLedgerSection
+                      value={installmentLedger}
+                      onChange={updateInstallmentLedger}
+                    />
+                  ) : null}
 
                   {existingVentureId ? (
                     <LinkedVentureSummary

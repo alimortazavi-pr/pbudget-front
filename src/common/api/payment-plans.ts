@@ -3,6 +3,7 @@ import type {
   IMonthlyPaymentOverview,
   IPaymentPlan,
   IPaymentPlanDetail,
+  IPaymentPlanOccurrence,
 } from "@/common/interfaces/payment-plan.interface";
 import type { IBudget } from "@/common/interfaces/budget.interface";
 
@@ -22,6 +23,13 @@ export async function fetchPaymentPlans() {
 export async function fetchPaymentPlanPersons() {
   const { data } = await axiosInstance.get<{ persons: string[] }>("/payment-plans/persons");
   return data.persons;
+}
+
+export async function fetchPendingOccurrenceCandidates() {
+  const { data } = await axiosInstance.get<{
+    occurrences: IPaymentPlanOccurrence[];
+  }>("/payment-plans/occurrence-candidates");
+  return data.occurrences;
 }
 
 export async function fetchPaymentPlanBudgetCandidates(planId: string) {
@@ -55,6 +63,9 @@ export async function updatePaymentPlan(
     amount?: string;
     category?: string;
     dueDayOfMonth?: string;
+    startYear?: string;
+    startMonth?: string;
+    startDay?: string;
     remindOnMonthStart?: boolean;
     remindDaysBefore?: string;
     active?: boolean;
@@ -78,6 +89,7 @@ export async function createPaymentPlan(payload: {
   totalInstallments?: string;
   startYear: string;
   startMonth: string;
+  startDay: string;
   remindOnMonthStart?: boolean;
   remindDaysBefore?: string;
   description?: string;

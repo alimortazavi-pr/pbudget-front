@@ -69,6 +69,7 @@ export const pagesMessages: MessageTree = {
     installmentPaid: "مدفوع",
     installmentRejected: "مرفوض",
     installmentPending: "قيد الانتظار",
+    installmentStartDate: "تاريخ بدء الأقساط (شمسي)",
     runningFilterActive: "له رصيد",
     runningFilterAll: "الكل",
     runningFilterZero: "صفر",
