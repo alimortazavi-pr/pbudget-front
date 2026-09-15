@@ -4,7 +4,6 @@ import { Button, Modal } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
-import type { DeleteBudgetBalanceMode } from "@/common/api/budgets";
 import type { UserCurrency } from "@/common/constants/user-preferences";
 import { formatPriceWithCurrency } from "@/common/utils/format-currency";
 import {
@@ -18,7 +17,7 @@ import { BudgetType } from "@/types/enums";
 type DeleteTransactionDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onConfirm: (mode: DeleteBudgetBalanceMode) => void;
+  onConfirm: () => void;
   isPending: boolean;
   price: number;
   type: number;
@@ -36,12 +35,8 @@ export function DeleteTransactionDialog({
 }: DeleteTransactionDialogProps) {
   const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
-  const [mode, setMode] = useState<DeleteBudgetBalanceMode>("preserve");
 
   useEffect(() => setMounted(true), []);
-  useEffect(() => {
-    if (open) setMode("preserve");
-  }, [open]);
 
   if (!mounted) return null;
 
@@ -67,50 +62,15 @@ export function DeleteTransactionDialog({
             })}
           </p>
 
-          <div
-            role="radiogroup"
-            aria-label={t("dashboard.deleteTransactionBalanceMode")}
-            className="space-y-2"
-          >
-            <button
-              type="button"
-              role="radio"
-              aria-checked={mode === "preserve"}
-              onClick={() => setMode("preserve")}
-              className={`w-full rounded-xl border p-4 text-start transition-colors ${
-                mode === "preserve"
-                  ? "border-accent bg-accent/10"
-                  : "border-border/70 bg-surface hover:border-accent/50"
-              }`}
-            >
-              <span className="block font-semibold text-foreground">
-                {t("dashboard.deletePreserveBalanceTitle")}
-              </span>
-              <span className="mt-1 block text-xs leading-6 text-muted">
-                {t("dashboard.deletePreserveBalanceDescription")}
-              </span>
-            </button>
-
-            <button
-              type="button"
-              role="radio"
-              aria-checked={mode === "reverse"}
-              onClick={() => setMode("reverse")}
-              className={`w-full rounded-xl border p-4 text-start transition-colors ${
-                mode === "reverse"
-                  ? "border-warning bg-warning/10"
-                  : "border-border/70 bg-surface hover:border-warning/50"
-              }`}
-            >
-              <span className="block font-semibold text-foreground">
-                {t("dashboard.deleteReverseBalanceTitle")}
-              </span>
-              <span className="mt-1 block text-xs leading-6 text-muted">
-                {t("dashboard.deleteReverseBalanceDescription", {
-                  change: reverseChange,
-                })}
-              </span>
-            </button>
+          <div className="rounded-xl border border-danger/30 bg-danger/5 p-4">
+            <span className="block font-semibold text-foreground">
+              {t("dashboard.deleteReverseBalanceTitle")}
+            </span>
+            <span className="mt-1 block text-xs leading-6 text-muted">
+              {t("dashboard.deleteReverseBalanceDescription", {
+                change: reverseChange,
+              })}
+            </span>
           </div>
         </Modal.Body>
         <Modal.Footer>
@@ -126,7 +86,7 @@ export function DeleteTransactionDialog({
             type="button"
             variant="danger"
             isPending={isPending}
-            onPress={() => onConfirm(mode)}
+            onPress={onConfirm}
           >
             {t("dashboard.confirmDeleteTransaction")}
           </Button>

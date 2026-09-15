@@ -8,8 +8,6 @@ import { sortBudgetsByTransactionDateDesc } from "@/common/utils/jalali-date";
 
 export type BudgetDuration = "daily" | "monthly" | "yearly" | "all";
 export type BudgetExportType = "excel" | "html";
-export type DeleteBudgetBalanceMode = "preserve" | "reverse";
-
 export type BudgetExportParams = {
   duration: BudgetDuration;
   year: string;
@@ -80,16 +78,13 @@ export async function updateBudget(
   return data;
 }
 
-export async function softDeleteBudget(
-  id: string,
-  balanceMode: DeleteBudgetBalanceMode = "preserve"
-) {
+export async function hardDeleteBudget(id: string) {
   const { data } = await axiosInstance.delete<
     Pick<
       IBudgetMutationResult,
       "userBudget" | "userWalletBalances" | "currency"
     >
-  >(`/budgets/${id}/soft`, { params: { balanceMode } });
+  >(`/budgets/${id}`);
   return data;
 }
 
