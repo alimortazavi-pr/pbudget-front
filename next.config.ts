@@ -29,8 +29,6 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: [
     "pdesk.ir",
     "www.pdesk.ir",
-    "business.pdesk.ir",
-    "www.business.pdesk.ir",
   ],
   async headers() {
     return [{ source: "/:path*", headers: [...securityHeaders] }];

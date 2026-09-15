@@ -27,8 +27,6 @@ export interface IProject {
   trackWorkTime?: boolean;
   showWorkTimeOnDashboard?: boolean;
   hourlyRate?: number;
-  businessId?: string | null;
-  syncSource?: 'business' | 'manual' | null;
   deleted: boolean;
   createdAt?: string;
   updatedAt?: string;

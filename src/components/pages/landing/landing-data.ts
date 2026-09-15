@@ -250,25 +250,6 @@ export const DEFAULT_LANDING_CONTENT: ILandingContent = {
         highlighted: true,
       },
       {
-        id: "business",
-        name: "میز کسب‌وکار",
-        price: "محصول جدا",
-        period: "پلن ماهانه",
-        description:
-          "حضور GPS، پرسنل، شیفت و مالی تیمی — روی دامنه و اپ جداگانه",
-        features: [
-          "ثبت حضور با Geofence",
-          "مدیریت پرسنل و دعوت QR",
-          "مالی تیمی و تنخواه",
-          "گزارش حضور و مرخصی",
-          "اتصال SSO با حساب شخصی",
-        ],
-        cta: "رفتن به business.pdesk.ir",
-        highlighted: false,
-        externalUrl:
-          process.env.NEXT_PUBLIC_BUSINESS_SITE_URL ?? "https://business.pdesk.ir",
-      },
-      {
         id: "support",
         name: "سازمانی",
         price: "تماس",

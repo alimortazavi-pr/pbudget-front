@@ -2,13 +2,10 @@
 
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
-import { useState } from "react";
-import { Call, Building, Moon, Refresh, Sun1 } from "iconsax-reactjs";
-import { Button, Switch } from "@heroui/react";
+import { Call, Moon, Refresh, Sun1 } from "iconsax-reactjs";
+import { Button } from "@heroui/react";
 
 import { APP_VERSION } from "@/common/constants/app-version";
-import { BUSINESS_SITE_URL } from "@/common/constants/products";
-import { navigateWithSso } from "@/common/utils/sso";
 import { SUPPORT_PHONE } from "@/components/common/layout/shell-nav";
 import { VoiceAssistantSection } from "@/components/pages/profile/VoiceAssistantSection";
 import { TelegramConnectSection } from "@/components/pages/profile/TelegramConnectSection";
@@ -21,18 +18,6 @@ export function SettingsPage() {
   const { t } = useTranslation();
   const { theme, toggleTheme } = useTheme();
   const { hasUpdate, applyUpdate, showChangelog } = useVersion();
-
-  const [showSynced, setShowSynced] = useState(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("pbudget_show_synced_projects") !== "false";
-    }
-    return true;
-  });
-
-  const handleToggleSynced = (checked: boolean) => {
-    setShowSynced(checked);
-    localStorage.setItem("pbudget_show_synced_projects", String(checked));
-  };
 
   return (
     <div className="pb-form-page space-y-6">
@@ -52,40 +37,6 @@ export function SettingsPage() {
       <AppModeSection />
 
       <UserPreferencesSettings />
-
-      <div className="glass rounded-2xl p-5">
-        <div className="flex items-center justify-between">
-          <div className="min-w-0 pr-4 text-start">
-            <h2 className="text-lg font-bold">{t("common.businessSync")}</h2>
-            <p className="mt-1 text-sm text-muted">{t("common.businessSyncDesc")}</p>
-          </div>
-          <Switch isSelected={showSynced} onChange={handleToggleSynced} size="sm">
-            <Switch.Control>
-              <Switch.Thumb />
-            </Switch.Control>
-          </Switch>
-        </div>
-      </div>
-
-      <div className="glass rounded-2xl p-5" data-tour="settings-business-product">
-        <h2 className="text-lg font-bold">{t("common.paradiseBusinessDesk")}</h2>
-        <p className="mt-1 text-sm text-muted">
-          {t("common.paradiseBusinessDeskDesc")}
-        </p>
-        <button
-          type="button"
-          onClick={() => void navigateWithSso(BUSINESS_SITE_URL, "/business")}
-          className="mt-4 flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-sm font-medium transition-colors hover:brightness-105"
-          style={{
-            borderColor: "color-mix(in oklch, #2dd4bf 30%, transparent)",
-            background: "color-mix(in oklch, #2dd4bf 10%, transparent)",
-            color: "#047857",
-          }}
-        >
-          <Building size={20} variant="Bold" />
-          {t("common.goToBusinessDesk")}
-        </button>
-      </div>
 
       <div data-tour="settings-voice">
         <VoiceAssistantSection />

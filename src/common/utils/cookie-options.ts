@@ -1,13 +1,4 @@
-/** Shared cookie options for *.pdesk.ir subdomains */
+/** Host-only cookie options. Personal and Business must never share sessions. */
 export function getCookieOptions() {
-  const domain =
-    typeof window !== "undefined" &&
-    window.location.hostname.endsWith("pdesk.ir")
-      ? ".pdesk.ir"
-      : undefined;
-
-  return {
-    path: "/",
-    ...(domain ? { domain } : {}),
-  } as const;
+  return { path: "/" } as const;
 }

@@ -8,7 +8,6 @@ export type PushConfig = {
 export type PushSubscriptionRow = {
   endpoint: string;
   attendanceReminders: boolean;
-  businessId?: string | null;
 };
 
 export async function fetchPushConfig() {
@@ -26,7 +25,6 @@ export async function fetchPushSubscriptions() {
 export async function subscribePush(body: {
   endpoint: string;
   keys: { p256dh: string; auth: string };
-  businessId?: string;
   attendanceReminders?: boolean;
 }) {
   const { data } = await axiosInstance.post("/push/subscribe", body);

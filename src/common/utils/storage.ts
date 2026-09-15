@@ -3,7 +3,8 @@ import jsCookies from "js-cookie";
 import type { ISaveToLocal } from "@/common/interfaces";
 import { getCookieOptions } from "@/common/utils/cookie-options";
 
-const AUTH_COOKIE = "userAuthorization";
+const AUTH_COOKIE = "pdesk-personal-auth";
+const LEGACY_SHARED_AUTH_COOKIE = "userAuthorization";
 const THEME_COOKIE = "pbudget-theme";
 
 const cookieOpts = () => ({ expires: 90, ...getCookieOptions() });
@@ -21,11 +22,13 @@ export const storage = {
   },
 
   setAuthData(data: ISaveToLocal) {
+    jsCookies.remove(LEGACY_SHARED_AUTH_COOKIE, { path: "/", domain: ".pdesk.ir" });
     jsCookies.set(AUTH_COOKIE, JSON.stringify(data), cookieOpts());
   },
 
   clearAuthData() {
     jsCookies.remove(AUTH_COOKIE, getCookieOptions());
+    jsCookies.remove(LEGACY_SHARED_AUTH_COOKIE, { path: "/", domain: ".pdesk.ir" });
   },
 
   getToken(): string | undefined {

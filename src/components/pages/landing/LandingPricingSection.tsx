@@ -5,7 +5,6 @@ import { Button } from "@heroui/react";
 import { buttonVariants } from "@heroui/styles";
 import { TickCircle } from "iconsax-reactjs";
 
-import { BUSINESS_SITE_URL } from "@/common/constants/products";
 import type { ILandingContent } from "@/common/interfaces/landing.interface";
 import { toPersianDigits } from "@/common/utils";
 
@@ -33,23 +32,6 @@ function planAction(
       >
         {plan.cta}
       </Link>
-    );
-  }
-
-  if (plan.id === "business" || plan.externalUrl) {
-    const href = plan.externalUrl ?? BUSINESS_SITE_URL;
-    return (
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={buttonVariants({
-          className: "w-full bg-gradient-to-l from-teal-600 to-emerald-700 text-white",
-          variant: "primary",
-        })}
-      >
-        {plan.cta}
-      </a>
     );
   }
 

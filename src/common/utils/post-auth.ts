@@ -20,7 +20,6 @@ export type PostLoginContext = {
   suggestedPath: string;
   choices: PostLoginChoice[];
   pendingInvitesCount: number;
-  businessCount: number;
 };
 
 export async function resolvePostAuthDestination(options?: {

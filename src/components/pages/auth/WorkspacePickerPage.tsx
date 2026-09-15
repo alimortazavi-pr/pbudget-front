@@ -8,7 +8,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "@heroui/react";
 import {
   ArrowLeft2,
-  Building,
   Home2,
   Login,
   Shield,
@@ -19,7 +18,6 @@ import { PATHS } from "@/common/constants";
 import { APP_NAME_FA } from "@/common/constants/brand";
 import type { PostLoginChoice } from "@/common/utils/post-auth";
 import { completeWorkspaceSelection } from "@/common/utils/workspace-selection";
-import { navigateWithSso, CROSS_PRODUCT } from "@/common/utils/sso";
 import {
   getSuggestedChoice,
   groupWorkspaceChoices,
@@ -41,11 +39,6 @@ const GROUP_STYLES: Record<
     iconBg: "bg-rose-500/15 text-rose-600 dark:text-rose-400",
     icon: Home2,
   },
-  business: {
-    ring: "ring-teal-500/35 hover:border-teal-500/55",
-    iconBg: "bg-teal-500/15 text-teal-700 dark:text-teal-300",
-    icon: Building,
-  },
   system: {
     ring: "ring-amber-500/30 hover:border-amber-500/50",
     iconBg: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
@@ -56,7 +49,6 @@ const GROUP_STYLES: Record<
 function choiceIcon(kind: string) {
   if (kind === "admin") return Shield;
   if (kind === "invites") return Login;
-  if (kind === "business" || kind === "attendance") return Building;
   return Home2;
 }
 
@@ -111,11 +103,6 @@ export function WorkspacePickerPage() {
     setSelectingId(choice.id);
     try {
       await completeWorkspaceSelection(choice);
-      if (choice.kind === "business" || choice.kind === "attendance") {
-        const returnPath = choice.path.replace(/^https?:\/\/[^/]+/, "") || "/";
-        void navigateWithSso(CROSS_PRODUCT.business, returnPath);
-        return;
-      }
       router.replace(choice.path);
     } finally {
       setSelectingId(null);

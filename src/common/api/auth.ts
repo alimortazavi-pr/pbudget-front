@@ -99,7 +99,6 @@ export type PostLoginContextResponse = {
     kind: string;
   }[];
   pendingInvitesCount: number;
-  businessCount: number;
 };
 
 export async function fetchPostLoginContext() {

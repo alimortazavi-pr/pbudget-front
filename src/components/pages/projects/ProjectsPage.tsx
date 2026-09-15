@@ -57,9 +57,7 @@ export function ProjectsPage() {
   }, [load]);
 
   const visibleProjects = useMemo(() => {
-    const showSynced = typeof window !== "undefined" && localStorage.getItem("pbudget_show_synced_projects") !== "false";
-    if (showSynced) return projects;
-    return projects.filter((p) => !p.description?.includes("Synced from Business"));
+    return projects;
   }, [projects]);
 
   const summary = useMemo(() => {

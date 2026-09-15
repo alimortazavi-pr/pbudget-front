@@ -40,7 +40,6 @@ import { AppLogo } from "@/components/common/brand/AppLogo";
 import { SiteFooterCredits } from "@/components/common/brand/SiteFooterCredits";
 import { useAppSelector } from "@/stores/hooks";
 import { isAuthSelector } from "@/stores/auth";
-import { ProductFamilyBanner } from "./ProductFamilyBanner";
 import { LandingParticles } from "./LandingParticles";
 import { LandingPricingSection } from "./LandingPricingSection";
 import { useLandingContent } from "./useLandingContent";
@@ -387,7 +386,6 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
           <div className="flex items-center gap-1.5">
             <LanguageSelector />
             <ThemeToggle />
-            <ProductFamilyBanner variant="header" />
             {showAppDownload ? (
               <Link
                 href={PATHS.DOWNLOAD}
@@ -535,8 +533,6 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
         </div>
       </section>
 
-      <ProductFamilyBanner variant="section" />
-
       <section id="pricing" className="scroll-mt-20 py-16 md:py-24">
         <div className="mx-auto max-w-6xl px-4 md:px-6">
           <Reveal>
@@ -679,7 +675,6 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
           </div>
           <SiteFooterCredits className="mt-6" />
           <p className="mt-4 text-center text-xs lp-muted">© {formatLocalizedDigits(String(new Date().getFullYear()), language)} {content.hero.title}</p>
-          <ProductFamilyBanner variant="footer" />
         </div>
       </footer>
     </div>

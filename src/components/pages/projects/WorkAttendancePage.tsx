@@ -105,11 +105,7 @@ export function WorkAttendancePage() {
 
   const visibleProjects = useMemo(() => {
     if (!data) return [];
-    const showSynced = typeof window !== "undefined" && localStorage.getItem("pbudget_show_synced_projects") !== "false";
-    let list = data.projects;
-    if (!showSynced) {
-      list = list.filter((row) => !row.project.description?.includes("Synced from Business"));
-    }
+    const list = data.projects;
     if (tab === "today") {
       return list.filter(
         (row) => row.activeSession || row.dailyStatus?.isWorkingDay !== false,

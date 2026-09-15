@@ -2,7 +2,7 @@ import { getTranslator } from "@/i18n";
 const t = getTranslator();
 import type { PostLoginChoice } from "@/common/utils/post-auth";
 
-export type WorkspaceGroupId = "personal" | "business" | "system";
+export type WorkspaceGroupId = "personal" | "system";
 
 export type WorkspaceGroup = {
   id: WorkspaceGroupId;
@@ -17,12 +17,6 @@ export const WORKSPACE_GROUPS: WorkspaceGroup[] = [
     title: t("nav.personalDesk"),
     description: t("auto.k96ae152a17"),
     kinds: ["personal"],
-  },
-  {
-    id: "business",
-    title: t("auto.k1872cb485c"),
-    description: t("auto.k0c35146ef2"),
-    kinds: ["business", "attendance"],
   },
   {
     id: "system",
@@ -48,7 +42,7 @@ export function groupWorkspaceChoices(choices: PostLoginChoice[]) {
 export function sortWorkspaceGroups(
   groups: ReturnType<typeof groupWorkspaceChoices>,
 ) {
-  const priority: WorkspaceGroupId[] = ["personal", "business", "system"];
+  const priority: WorkspaceGroupId[] = ["personal", "system"];
   return [...groups].sort(
     (a, b) => priority.indexOf(a.id) - priority.indexOf(b.id),
   );
