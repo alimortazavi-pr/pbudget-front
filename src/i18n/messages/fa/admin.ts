@@ -9,6 +9,8 @@ export const adminMessages: MessageTree = {
   restoreSuccess: "بازیابی {{count}} سند انجام شد",
   connectedLatency: "متصل ({{ms}}ms)",
   deleteBankConfirm: "بانک «{{name}}» حذف شود؟",
+  bankParserBluBank: "بلوبانک (Excel)",
+  bankParserPasargad: "بانک پاسارگاد (Excel)",
   protectedCollectionsHint:
     "کالکشن‌های backuphistories و adminauditlogs محافظت شده‌اند",
 };

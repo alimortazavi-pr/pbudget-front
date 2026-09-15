@@ -371,7 +371,7 @@ export function BankImportWizardPage() {
             <div className="text-center">
               <p className="font-medium">{t("auto.k1a605f5534")}</p>
               <p className="mt-1 text-xs text-muted">
-                {t("auto.k11e8214c0c")}
+                {t("budget.bankImportFileHint")}
               </p>
             </div>
             <input

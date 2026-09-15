@@ -10,6 +10,7 @@ export const budgetMessages: MessageTree = {
   dateGregorian: "التاريخ (ميلادي)",
   dateJalali: "التاريخ (هجري)",
   bankImportBulkLink: "استيراد جماعي من كشف حساب بنكي",
+  bankImportFileHint: "ملف Excel الأصلي المصدّر من البنك المحدد",
   paymentCardSource: "بطاقة الدفع (المصدر)",
   paymentCardDestination: "بطاقة الاستلام (الوجهة)",
   noCard: "بدون بطاقة",

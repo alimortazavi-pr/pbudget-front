@@ -15,7 +15,10 @@ import { showToast } from "@/common/utils/toast";
 import { FormInput, FormSelect } from "@/components/common/form/FormFields";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 
-const PARSER_OPTIONS = [{ id: "blubank", label: t("auto.k3237e32a0a") }];
+const PARSER_OPTIONS = [
+  { id: "blubank", label: t("admin.bankParserBluBank") },
+  { id: "pasargad", label: t("admin.bankParserPasargad") },
+];
 
 export function AdminBanksPage() {
   const { t } = useTranslation();
