@@ -92,28 +92,38 @@ export function AdminSubscriptionsPage() {
   function startNew() { setEditingId(null); setForm(createEmptyPlan()); }
 
   function updateFeature(index: number, patch: Partial<SubscriptionFeature>) {
-    const next = [...form.features]; next[index] = { ...next[index], ...patch }; updateForm("features", next);
+    setForm((current) => {
+      const next = [...current.features];
+      if (!next[index]) return current;
+      next[index] = { ...next[index], ...patch };
+      return { ...current, features: next };
+    });
   }
 
   function setCatalogFeatureEnabled(key: string, enabled: boolean) {
     const catalogFeature = SUBSCRIPTION_FEATURE_CATALOG.find((feature) => feature.key === key);
     if (!catalogFeature) return;
-    const index = form.features.findIndex((feature) => feature.key === key);
-    if (index >= 0) {
-      updateFeature(index, { enabled, label: catalogFeature.label });
-      return;
-    }
-    updateForm("features", [...form.features, { key, label: catalogFeature.label, description: "", enabled, limit: null }]);
+    setForm((current) => {
+      const index = current.features.findIndex((feature) => feature.key === key);
+      if (index >= 0) {
+        const next = [...current.features];
+        next[index] = { ...next[index], enabled, label: catalogFeature.label };
+        return { ...current, features: next };
+      }
+      return { ...current, features: [...current.features, { key, label: catalogFeature.label, description: "", enabled, limit: null }] };
+    });
   }
 
   function setCatalogFeatureLimit(key: string, limit: number | null) {
-    const index = form.features.findIndex((feature) => feature.key === key);
-    if (index >= 0) {
-      updateFeature(index, { limit });
-      return;
-    }
-    const next = [...form.features, { key, label: SUBSCRIPTION_FEATURE_CATALOG.find((feature) => feature.key === key)?.label ?? key, description: "", enabled: true, limit }];
-    updateForm("features", next);
+    setForm((current) => {
+      const index = current.features.findIndex((feature) => feature.key === key);
+      if (index >= 0) {
+        const next = [...current.features];
+        next[index] = { ...next[index], limit };
+        return { ...current, features: next };
+      }
+      return { ...current, features: [...current.features, { key, label: SUBSCRIPTION_FEATURE_CATALOG.find((feature) => feature.key === key)?.label ?? key, description: "", enabled: true, limit }] };
+    });
   }
 
   function planFeaturesForSave() {
