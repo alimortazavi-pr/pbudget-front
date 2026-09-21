@@ -9,7 +9,6 @@ import {
   AppModalDialog, AppModalHeader,
 } from "@/components/common/ui/AppModal";
 import { ShellAccountMenu } from "@/components/common/layout/ShellAccountMenu";
-import { useAppMode } from "@/components/providers/AppModeProvider";
 
 type AppDrawerProps = {
   open: boolean;
@@ -18,7 +17,6 @@ type AppDrawerProps = {
 
 export function AppDrawer({ open, onOpenChange }: AppDrawerProps) {
   const { t } = useTranslation();
-  const { isSimple } = useAppMode();
   return (
     <AppModal
       open={open}
@@ -35,7 +33,7 @@ export function AppDrawer({ open, onOpenChange }: AppDrawerProps) {
           <ShellAccountMenu
             variant="drawer"
             onNavigate={() => onOpenChange(false)}
-            showPlanning={!isSimple}
+            showPlanning
           />
         </div>
       </AppModalDialog>

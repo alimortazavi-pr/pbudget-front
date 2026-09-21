@@ -7,14 +7,20 @@ import {
   ArrowLeft2,
   ArrowRight2,
   Book1,
+  Briefcase,
+  Calendar,
   Calendar1,
+  Card,
   Chart2,
   Clock,
   Danger,
+  DocumentText,
   MoneyAdd,
   MoneyRemove,
+  MoneyRecive,
   Refresh2,
   Setting2,
+  Wallet,
   Wallet3,
 } from "iconsax-reactjs";
 import moment from "moment-jalali";
@@ -313,6 +319,38 @@ function HmiPeriodControls({
   );
 }
 
+function HmiModuleLinks() {
+  const { t } = useTranslation();
+  const modules = [
+    { href: PATHS.DEBTS, label: t("nav.debts"), icon: Card },
+    { href: PATHS.INSTALLMENTS, label: t("nav.installments"), icon: Calendar },
+    { href: PATHS.CHECKS, label: t("nav.checks"), icon: MoneyRecive },
+    { href: PATHS.COMMITMENTS, label: t("nav.commitments"), icon: Wallet },
+    { href: PATHS.PROJECTS, label: t("nav.projects"), icon: Briefcase },
+    { href: PATHS.NOTES, label: t("nav.notes"), icon: DocumentText },
+    { href: PATHS.ANALYSIS, label: t("nav.financialAnalysis"), icon: Chart2 },
+  ];
+
+  return (
+    <div className="pb-hmi-surface pb-hmi-modules">
+      <h3 className="font-bold">{t("common.quickAccess")}</h3>
+      <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        {modules.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className="pb-hmi-module-link"
+          >
+            <item.icon size={21} />
+            <span>{item.label}</span>
+            <ArrowLeft2 className="ms-auto text-muted" size={17} />
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function HmiDashboardPage({
   mode,
   user,
@@ -455,6 +493,7 @@ export function HmiDashboardPage({
           </div>
         </div>
         <div className="pb-hmi-surface"><h3 className="mb-3 font-bold">{t("common.hmiRangeEntries")}</h3>{loading ? <TransactionListSkeleton /> : budgets.length ? <ul className="grid gap-2 sm:grid-cols-2">{budgets.slice(0, 6).map((budget) => <SimpleTransactionCard key={budget._id} budget={budget} />)}</ul> : <p className="py-6 text-sm text-muted">{t("common.hmiNoEntries")}</p>}</div>
+        <HmiModuleLinks />
       </section>
     );
   }

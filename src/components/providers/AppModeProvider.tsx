@@ -20,8 +20,6 @@ type AppModeContextValue = {
   mounted: boolean;
   isAdvanced: boolean;
   isHmi: boolean;
-  /** Backward-compatible alias used by the shell and route guard. */
-  isSimple: boolean;
 };
 
 const AppModeContext = createContext<AppModeContextValue | null>(null);
@@ -47,7 +45,6 @@ export const AppModeProvider: FC<PropsWithChildren> = ({ children }) => {
       mounted,
       isAdvanced: appMode === "advanced",
       isHmi: appMode !== "advanced",
-      isSimple: appMode !== "advanced",
     }),
     [appMode, setAppMode, mounted],
   );

@@ -16,8 +16,6 @@ import { AppModal, AppModalHeader, AppModalSheet, modalSheetBodyClass, modalShee
 import { FormInput } from "@/components/common/form/FormFields";
 import { OtpCodeField } from "@/components/common/form/OtpCodeField";
 import { ChangeMobileModal } from "@/components/pages/profile/ChangeMobileModal";
-import { SimpleProfileShortcuts } from "@/components/pages/profile/SimpleProfileShortcuts";
-import { useAppMode } from "@/components/providers/AppModeProvider";
 import { useTelegramStatus } from "@/common/hooks/useTelegramStatus";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { setUsers, tokenSelector } from "@/stores/auth";
@@ -38,7 +36,6 @@ export function ProfilePage() {
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
   const { linked: telegramLinked } = useTelegramStatus();
-  const { isSimple } = useAppMode();
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -198,8 +195,6 @@ export function ProfilePage() {
           </div>
         </div>
       </form>
-
-      {isSimple ? <SimpleProfileShortcuts /> : null}
 
       {user?.isAdmin && (
         <div className="glass rounded-2xl p-5">
