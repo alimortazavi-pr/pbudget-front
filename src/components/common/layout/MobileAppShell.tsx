@@ -67,11 +67,11 @@ export function MobileAppShell({
 
   return (
     <div
-      className={`min-h-screen w-full bg-background ${isSimple ? "pb-app-simple" : "lg:flex lg:flex-row"}`}
+      className={`min-h-screen w-full bg-background ${isSimple ? "pb-app-simple pb-app-hmi" : "lg:flex lg:flex-row"}`}
     >
       {!isSimple ? <ShellSidebar /> : null}
 
-      <div className={`flex min-h-screen min-w-0 flex-1 flex-col ${isSimple ? "mx-auto w-full max-w-md" : ""}`}>
+      <div className={`flex min-h-screen min-w-0 flex-1 flex-col ${isSimple ? "mx-auto w-full max-w-6xl" : ""}`}>
         <header className="pb-header-full lg:static lg:z-auto lg:border-b lg:bg-surface/80">
           <div className="pb-header-inner">
             <div className="flex min-w-0 items-center gap-2">
@@ -131,7 +131,7 @@ export function MobileAppShell({
           <main
             className={`pb-main-content px-4 pt-14 ${
               hideTabBar ? "pb-8" : "pb-page-with-tabbar"
-            } pb-page-enter ${isSimple ? "lg:px-4 lg:pb-10 lg:pt-8" : "lg:px-10 lg:pb-10 lg:pt-8"}`}
+            } pb-page-enter ${isSimple ? "lg:px-6 lg:pb-10 lg:pt-8" : "lg:px-10 lg:pb-10 lg:pt-8"}`}
             data-tour="page-content"
           >
             {children}

@@ -3,7 +3,7 @@
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useRouter } from "next/navigation";
-import { Element4, Setting4 } from "iconsax-reactjs";
+import { Book1, Calendar1, CommandSquare, Setting4 } from "iconsax-reactjs";
 
 import { APP_MODES, type AppMode } from "@/common/constants/app-mode";
 import { PATHS } from "@/common/constants";
@@ -35,15 +35,24 @@ export function AppModeSection() {
         <p className="mt-1 text-sm text-muted">{t("common.appModeDesc")}</p>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {APP_MODES.map((mode) => {
           const active = appMode === mode.id;
-          const Icon = mode.id === "simple" ? Element4 : Setting4;
+          const Icon =
+            mode.id === "advanced"
+              ? Setting4
+              : mode.id === "calendar"
+                ? Calendar1
+                : mode.id === "command"
+                  ? CommandSquare
+                  : Book1;
 
           return (
             <button
               key={mode.id}
               type="button"
+              aria-pressed={active}
+              aria-label={t(mode.labelKey)}
               className="pb-experience-card"
               data-active={active ? "true" : "false"}
               onClick={() => selectMode(mode.id)}

@@ -20,8 +20,7 @@ import { BudgetStats } from "@/components/pages/dashboard/BudgetStats";
 import { DashboardFilterSection } from "@/components/pages/dashboard/DashboardFilterSection";
 import { DashboardHero } from "@/components/pages/dashboard/DashboardHero";
 import { WorkTimeQuickWidget } from "@/components/pages/projects/WorkTimeQuickWidget";
-import { SimpleDashboardPanel } from "@/components/pages/dashboard/SimpleDashboardPanel";
-import { SimpleTransactionCard } from "@/components/pages/dashboard/SimpleTransactionCard";
+import { HmiDashboardPage } from "@/components/pages/dashboard/HmiDashboardPage";
 import { TransactionCard } from "@/components/pages/dashboard/TransactionCard";
 import { TransactionListSkeleton } from "@/components/pages/dashboard/TransactionListSkeleton";
 import type { IBudget, IBudgetsSummary } from "@/common/interfaces/budget.interface";
@@ -43,7 +42,7 @@ type DashboardPageProps = {
 
 export function DashboardPage({ initialData }: DashboardPageProps) {
   const { t } = useTranslation();
-  const { isSimple } = useAppMode();
+  const { appMode } = useAppMode();
   const { formatMonthYear, formatDayMonthYear } = useLocalizedDate();
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -212,42 +211,28 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
           )
         : formatMonthYear(parseInt(month, 10), year, "jalali");
 
-  if (isSimple) {
+  if (appMode !== "advanced") {
     return (
-      <div className="pb-simple-dashboard">
-        <SimpleDashboardPanel
-          duration={duration}
-          year={year}
-          month={month}
-          day={day}
-          periodLabel={periodLabel}
-          income={totalIncome ?? 0}
-          expense={totalCost ?? 0}
-          count={filteredBudgets.length}
-          onDurationChange={setDuration}
-          onShiftPeriod={(delta) =>
-            duration === "daily" ? shiftDay(delta) : shiftMonth(delta)
-          }
-        />
-
-        {loading ? (
-          <TransactionListSkeleton />
-        ) : filteredBudgets.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border p-8 text-center">
-            <Filter size={32} className="mx-auto mb-3 text-muted" />
-            <p className="font-medium">{t("dashboard.noTransactionsFound")}</p>
-            <p className="mt-1 text-sm text-muted">
-              {t("dashboard.noTransactionsInRange")}
-            </p>
-          </div>
-        ) : (
-          <ul className="flex flex-col gap-2">
-            {filteredBudgets.map((budget: IBudget) => (
-              <SimpleTransactionCard key={budget._id} budget={budget} />
-            ))}
-          </ul>
-        )}
-      </div>
+      <HmiDashboardPage
+        mode={appMode}
+        user={user}
+        budgets={filteredBudgets}
+        totalIncome={totalIncome ?? 0}
+        totalCost={totalCost ?? 0}
+        loading={loading}
+        periodLabel={periodLabel}
+        duration={duration}
+        year={year}
+        month={month}
+        day={day}
+        calendarType={calendarType}
+        onShiftMonth={shiftMonth}
+        onShiftDay={shiftDay}
+        onDurationChange={setDuration}
+        onSelectDate={(nextDate) =>
+          updateQuery({ duration: "daily", ...nextDate })
+        }
+      />
     );
   }
 
