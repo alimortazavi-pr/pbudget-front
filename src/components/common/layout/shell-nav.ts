@@ -43,7 +43,7 @@ export const SIMPLE_NAV_ITEMS = [
 
 export const PRIMARY_NAV_ITEMS = [
   { href: PATHS.HOME, label: "nav.home", icon: Home2 },
-  { href: PATHS.BANK_IMPORT, label: "nav.bankImport", icon: DocumentUpload },
+  { href: PATHS.BANK_IMPORT, label: "nav.bankImport", icon: DocumentUpload, featureKey: "bank_import" },
   { href: PATHS.ANALYSIS, label: "nav.financialAnalysis", icon: Chart },
   { href: PATHS.BOXES, label: "nav.boxes", icon: Box1 },
   { href: PATHS.PAYMENT_CARDS, label: "nav.myCards", icon: Card },
@@ -60,6 +60,7 @@ export const BANK_IMPORT_NAV_ITEM = {
   href: PATHS.BANK_IMPORT,
   label: "nav.bankImportFull",
   icon: DocumentUpload,
+  featureKey: "bank_import",
 } as const;
 
 export const DOWNLOAD_NAV_ITEM = {
@@ -79,7 +80,7 @@ export const PLANNING_NAV_ITEMS = [
   { href: PATHS.TASKS, label: "nav.dailyPlanner", icon: Task },
   { href: PATHS.PROJECTS, label: "nav.projects", icon: Briefcase },
   { href: PATHS.VENTURES, label: "nav.businessPartners", icon: Profile2User },
-  { href: PATHS.WORK_ATTENDANCE, label: "nav.workAttendance", icon: Clock },
+  { href: PATHS.WORK_ATTENDANCE, label: "nav.workAttendance", icon: Clock, featureKey: "work_time" },
   { href: PATHS.DEBTS, label: "nav.debts", icon: Card },
   { href: PATHS.INSTALLMENTS, label: "nav.installments", icon: Calendar },
   { href: PATHS.CHECKS, label: "nav.checks", icon: MoneyRecive },
@@ -94,7 +95,7 @@ export const PLANNING_NAV_GROUPS = [
       { href: PATHS.TASKS, label: "nav.dailyPlanner", icon: Task },
       { href: PATHS.PROJECTS, label: "nav.projects", icon: Briefcase },
       { href: PATHS.NOTES, label: "nav.notes", icon: DocumentText },
-      { href: PATHS.EXPORTS, label: "nav.customExports", icon: DocumentDownload },
+      { href: PATHS.EXPORTS, label: "nav.customExports", icon: DocumentDownload, featureKey: "custom_exports" },
       { href: PATHS.PLANS, label: "nav.plans", icon: Crown },
     ],
   },
@@ -111,7 +112,7 @@ export const PLANNING_NAV_GROUPS = [
     title: "nav.partnership",
     items: [
       { href: PATHS.VENTURES, label: "nav.businessPartners", icon: Profile2User },
-      { href: PATHS.WORK_ATTENDANCE, label: "nav.workAttendance", icon: Clock },
+      { href: PATHS.WORK_ATTENDANCE, label: "nav.workAttendance", icon: Clock, featureKey: "work_time" },
     ],
   },
 ] as const;
@@ -138,6 +139,7 @@ export type ShellNavItem = {
   label: string;
   icon: (typeof PRIMARY_NAV_ITEMS)[number]["icon"];
   external?: boolean;
+  featureKey?: string;
 };
 
 /** Paths that must not mark a parent nav item active (e.g. /projects vs /projects/attendance) */

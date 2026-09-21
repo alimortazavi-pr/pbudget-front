@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { usePathname } from "next/navigation";
-import { Add } from "iconsax-reactjs";
+import { Add, Lock1 } from "iconsax-reactjs";
 
 import { ShellAccountMenu } from "@/components/common/layout/ShellAccountMenu";
 import { ShellNavGroup } from "@/components/common/layout/ShellNavGroup";
@@ -18,10 +18,13 @@ import { PATHS } from "@/common/constants";
 import { usePendingInvitesCount } from "@/common/hooks/usePendingInvitesCount";
 import { AppLogo } from "@/components/common/brand/AppLogo";
 import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
+import { showToast } from "@/common/utils/toast";
 
 export function ShellSidebar() {
   const pathname = usePathname();
   const { t } = useTranslation();
+  const { loading: subscriptionLoading, isFeatureEnabled } = useSubscriptionAccess();
   const { count: pendingInvitesCount } = usePendingInvitesCount();
   const navBadges = useMemo(
     () =>
@@ -49,6 +52,30 @@ export function ShellSidebar() {
                 item.href === PATHS.HOME
                    ? pathname === PATHS.HOME
                   : pathname.startsWith(item.href);
+              const featureKey = "featureKey" in item ? item.featureKey : undefined;
+              const featureLocked = Boolean(featureKey && !subscriptionLoading && isFeatureEnabled(featureKey) === false);
+              const content = (
+                <>
+                  {featureLocked ? <Lock1 size={18} variant="Bold" /> : <item.icon size={20} variant={active ? "Bold" : "Linear"} />}
+                  <span>{t(item.label)}</span>
+                </>
+              );
+
+              if (featureLocked) {
+                return (
+                  <button
+                    key={item.href}
+                    type="button"
+                    className="pb-sidebar-link !cursor-not-allowed opacity-55"
+                    aria-disabled="true"
+                    title={t("common.subscription.notForYourPlan")}
+                    data-tour={`nav-${item.href.replace(/\//g, "") || "home"}`}
+                    onClick={() => showToast(t("common.subscription.notForYourPlan"), "warning")}
+                  >
+                    {content}
+                  </button>
+                );
+              }
 
               return (
                 <Link
@@ -58,8 +85,7 @@ export function ShellSidebar() {
                   data-active={active ? "true" : "false"}
                   data-tour={`nav-${item.href.replace(/\//g, "") || "home"}`}
                 >
-                  <item.icon size={20} variant={active ? "Bold" : "Linear"} />
-                  <span>{t(item.label)}</span>
+                  {content}
                 </Link>
               );
             })}
@@ -75,10 +101,23 @@ export function ShellSidebar() {
           {t(CREATE_NAV_ITEM.label)}
         </Link>
 
-        <Link href={BANK_IMPORT_NAV_ITEM.href} className="pb-sidebar-secondary-cta mt-2">
-          <BANK_IMPORT_NAV_ITEM.icon size={18} variant="Bold" />
-          {t(BANK_IMPORT_NAV_ITEM.label)}
-        </Link>
+        {BANK_IMPORT_NAV_ITEM.featureKey && !subscriptionLoading && !isFeatureEnabled(BANK_IMPORT_NAV_ITEM.featureKey) ? (
+          <button
+            type="button"
+            className="pb-sidebar-secondary-cta mt-2 !cursor-not-allowed opacity-55"
+            aria-disabled="true"
+            title={t("common.subscription.notForYourPlan")}
+            onClick={() => showToast(t("common.subscription.notForYourPlan"), "warning")}
+          >
+            <Lock1 size={18} variant="Bold" />
+            {t(BANK_IMPORT_NAV_ITEM.label)}
+          </button>
+        ) : (
+          <Link href={BANK_IMPORT_NAV_ITEM.href} className="pb-sidebar-secondary-cta mt-2">
+            <BANK_IMPORT_NAV_ITEM.icon size={18} variant="Bold" />
+            {t(BANK_IMPORT_NAV_ITEM.label)}
+          </Link>
+        )}
 
         {PLANNING_NAV_GROUPS.map((group) => (
           <ShellNavGroup

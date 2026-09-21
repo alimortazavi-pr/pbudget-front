@@ -1,28 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { ArrowLeft2, Crown, TickCircle } from "iconsax-reactjs";
 
-import * as subscriptionApi from "@/common/api/subscriptions";
 import { PATHS } from "@/common/constants";
-import type { MySubscriptionResponse } from "@/common/interfaces/subscription.interface";
 import { formatPrice } from "@/common/utils";
 import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
 
 export function SubscriptionStatusCard({ compact = false }: { compact?: boolean }) {
   const { t } = useTranslation();
-  const [data, setData] = useState<MySubscriptionResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let cancelled = false;
-    void subscriptionApi.fetchMySubscription()
-      .then((next) => { if (!cancelled) setData(next); })
-      .catch(() => { if (!cancelled) setData(null); })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
-  }, []);
+  const { data, loading } = useSubscriptionAccess();
 
   if (loading) {
     return <div className={`${compact ? "pb-hmi-surface" : "glass"} h-24 animate-pulse rounded-2xl bg-surface-secondary`} aria-hidden="true" />;

@@ -3,9 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ComponentType, ReactNode } from "react";
+import { Lock1 } from "iconsax-reactjs";
 
 import type { ShellNavItem } from "./shell-nav";
 import { isShellNavActive } from "./shell-nav";
+import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
+import { showToast } from "@/common/utils/toast";
 
 type ShellNavGroupProps = {
   title: string;
@@ -71,11 +74,13 @@ import { useTranslation } from "@/components/providers/LanguageProvider";
 
 function ShellNavRow({ item, active, className, onNavigate, badge }: ShellNavRowProps) {
   const { t } = useTranslation();
+  const { loading: subscriptionLoading, isFeatureEnabled } = useSubscriptionAccess();
   const Icon = item.icon as IconComponent;
   const badgeLabel = badge && badge > 9 ? "9+" : badge;
+  const featureLocked = Boolean(item.featureKey && !subscriptionLoading && !isFeatureEnabled(item.featureKey));
   const content: ReactNode = (
     <>
-      <Icon size={20} variant={active ? "Bold" : "Linear"} />
+      {featureLocked ? <Lock1 size={18} variant="Bold" /> : <Icon size={20} variant={active ? "Bold" : "Linear"} />}
       <span className="flex flex-1 items-center justify-between gap-2">
         <span>{t(item.label)}</span>
         {badgeLabel ? (
@@ -86,6 +91,20 @@ function ShellNavRow({ item, active, className, onNavigate, badge }: ShellNavRow
       </span>
     </>
   );
+
+  if (featureLocked) {
+    return (
+      <button
+        type="button"
+        className={`${className} cursor-not-allowed opacity-55`}
+        aria-disabled="true"
+        title={t("common.subscription.notForYourPlan")}
+        onClick={() => showToast(t("common.subscription.notForYourPlan"), "warning")}
+      >
+        {content}
+      </button>
+    );
+  }
 
   if (item.external) {
     return (

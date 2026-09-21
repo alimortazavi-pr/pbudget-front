@@ -10,6 +10,7 @@ import { MobileAppShell } from "@/components/common/layout/MobileAppShell";
 import { SimpleModeGuard } from "@/components/common/layout/SimpleModeGuard";
 import { BalanceModalProvider } from "@/components/providers/BalanceModalProvider";
 import { VoiceAssistantProvider } from "@/components/voice/VoiceAssistantProvider";
+import { SubscriptionAccessProvider } from "@/components/providers/SubscriptionAccessProvider";
 
 const PAGE_TITLE_KEYS: Record<string, string> = {
   [PATHS.HOME]: "nav.dashboard",
@@ -111,12 +112,14 @@ export function AppShell({ children }: { children: ReactNode }) {
     <BalanceModalProvider>
       <VoiceAssistantProvider>
         <AuthBootstrap />
-        <MobileAppShell
-          {...shellProps}
-          showBack={pathname !== PATHS.HOME}
-        >
-          <SimpleModeGuard>{children}</SimpleModeGuard>
-        </MobileAppShell>
+        <SubscriptionAccessProvider>
+          <MobileAppShell
+            {...shellProps}
+            showBack={pathname !== PATHS.HOME}
+          >
+            <SimpleModeGuard>{children}</SimpleModeGuard>
+          </MobileAppShell>
+        </SubscriptionAccessProvider>
       </VoiceAssistantProvider>
     </BalanceModalProvider>
   );
