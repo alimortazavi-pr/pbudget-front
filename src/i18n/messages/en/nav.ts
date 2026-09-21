@@ -5,6 +5,7 @@ export const navMessages: MessageTree = {
   bankImport: "Bank Import",
   bankImportFull: "Bank Statement Import",
   financialAnalysis: "Financial Analysis",
+  customExports: "Custom exports",
   boxes: "Boxes",
   myCards: "My Cards",
   categories: "Categories",
@@ -54,5 +55,6 @@ export const navMessages: MessageTree = {
   adminAuthAudit: "Sign-in log",
   adminSystemLogs: "System log",
   adminVoiceLogs: "Voice log",
+  adminSubscriptions: "Subscriptions",
   adminMonitoring: "Monitoring",
 };

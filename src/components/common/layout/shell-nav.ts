@@ -10,6 +10,7 @@ import {
   Task,
   Clock,
   DocumentText,
+  DocumentDownload,
   Home2,
   Messages2,
   Mobile,
@@ -92,6 +93,7 @@ export const PLANNING_NAV_GROUPS = [
       { href: PATHS.TASKS, label: "nav.dailyPlanner", icon: Task },
       { href: PATHS.PROJECTS, label: "nav.projects", icon: Briefcase },
       { href: PATHS.NOTES, label: "nav.notes", icon: DocumentText },
+      { href: PATHS.EXPORTS, label: "nav.customExports", icon: DocumentDownload },
     ],
   },
   {

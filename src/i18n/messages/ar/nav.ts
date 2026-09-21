@@ -5,6 +5,7 @@ export const navMessages: MessageTree = {
   bankImport: "استيراد بنكي",
   bankImportFull: "استيراد كشف حساب بنكي",
   financialAnalysis: "تحليل مالي",
+  customExports: "التصدير المخصص",
   boxes: "الصناديق",
   myCards: "بطاقاتي",
   categories: "الفئات",
@@ -54,5 +55,6 @@ export const navMessages: MessageTree = {
   adminAuthAudit: "سجل تسجيل الدخول",
   adminSystemLogs: "سجل النظام",
   adminVoiceLogs: "سجل الصوت",
+  adminSubscriptions: "الاشتراكات",
   adminMonitoring: "المراقبة",
 };

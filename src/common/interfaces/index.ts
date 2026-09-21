@@ -6,6 +6,8 @@ export * from "./box.interface";
 export * from "./debt.interface";
 export * from "./check.interface";
 export * from "./payment-plan.interface";
+export * from "./subscription.interface";
+export * from "./export-template.interface";
 export * from "./period-note.interface";
 export * from "./project.interface";
 export * from "./task.interface";

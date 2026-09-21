@@ -3,6 +3,7 @@ export const PATHS = {
   HOME: "/app",
   PRICING: "/pricing",
   ANALYSIS: "/analysis",
+  EXPORTS: "/exports",
   GET_STARTED: "/get-started",
   DOWNLOAD: "/download",
   CREATE_BUDGET: "/create-budget",
@@ -44,5 +45,6 @@ export const PATHS = {
   ADMIN_APP: "/admin/app",
   ADMIN_BANKS: "/admin/banks",
   ADMIN_VOICE: "/admin/voice",
+  ADMIN_SUBSCRIPTIONS: "/admin/subscriptions",
   BANK_IMPORT: "/bank-import",
 } as const;

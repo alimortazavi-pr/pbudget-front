@@ -12,6 +12,7 @@ import {
   ShieldSearch,
   Bank,
   Activity,
+  Crown,
 } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
@@ -76,6 +77,11 @@ export const ADMIN_NAV = [
     href: PATHS.ADMIN_VOICE,
     label: "nav.adminVoiceLogs",
     icon: Microphone2,
+  },
+  {
+    href: PATHS.ADMIN_SUBSCRIPTIONS,
+    label: "nav.adminSubscriptions",
+    icon: Crown,
   },
 ] as const;
 

@@ -13,6 +13,9 @@ import { LandingPricingSection } from "./LandingPricingSection";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { useAppSelector } from "@/stores/hooks";
 import { isAuthSelector } from "@/stores/auth";
+import * as subscriptionApi from "@/common/api/subscriptions";
+import type { SubscriptionPlan } from "@/common/interfaces/subscription.interface";
+import { useEffect, useState } from "react";
 
 export function PricingPage({
   initialContent,
@@ -23,6 +26,27 @@ export function PricingPage({
   const { content } = useLandingContent(initialContent);
   const isAuth = useAppSelector(isAuthSelector);
   const primaryCta = isAuth ? PATHS.HOME : PATHS.GET_STARTED;
+  const [livePlans, setLivePlans] = useState<SubscriptionPlan[] | null>(null);
+
+  useEffect(() => {
+    void subscriptionApi.fetchPublicSubscriptionPlans().then(setLivePlans).catch(() => setLivePlans(null));
+  }, []);
+
+  const pricing = livePlans && livePlans.length > 0
+    ? {
+        ...content.pricing,
+        plans: livePlans.map((plan) => ({
+          id: `subscription-${plan.slug}`,
+          name: plan.name,
+          price: `${plan.price.toLocaleString("fa-IR")} ${plan.priceUnit}`,
+          period: plan.period === "lifetime" ? "یک‌بار" : plan.period === "yearly" ? "سالانه" : plan.period === "monthly" ? "ماهانه" : `${plan.periodDays ?? ""} روزه`,
+          description: plan.description,
+          features: plan.features.filter((feature) => feature.enabled).map((feature) => feature.limit ? `${feature.label} (${feature.limit})` : feature.label),
+          cta: "تماس با ادمین",
+          highlighted: plan.highlighted,
+        })),
+      }
+    : content.pricing;
 
   return (
     <div className="landing-page min-h-screen">
@@ -53,7 +77,7 @@ export function PricingPage({
         </Link>
 
         <LandingPricingSection
-          pricing={content.pricing}
+          pricing={pricing}
           primaryCta={primaryCta}
           headingLevel="h1"
           onContactPress={() => {

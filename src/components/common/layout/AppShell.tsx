@@ -14,6 +14,7 @@ import { VoiceAssistantProvider } from "@/components/voice/VoiceAssistantProvide
 const PAGE_TITLE_KEYS: Record<string, string> = {
   [PATHS.HOME]: "nav.dashboard",
   [PATHS.ANALYSIS]: "nav.financialAnalysis",
+  [PATHS.EXPORTS]: "nav.customExports",
   [PATHS.BOXES]: "nav.boxes",
   [PATHS.CREATE_BUDGET]: "nav.createTransaction",
   [PATHS.CATEGORIES]: "nav.categories",
@@ -90,6 +91,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       pathname === PATHS.CREATE_BUDGET ||
       pathname.startsWith("/budgets/") ||
       pathname === PATHS.ANALYSIS ||
+      pathname === PATHS.EXPORTS ||
       pathname === PATHS.DEBTS ||
       pathname === PATHS.INSTALLMENTS ||
       pathname === PATHS.CHECKS ||

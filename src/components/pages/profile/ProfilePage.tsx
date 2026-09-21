@@ -9,6 +9,8 @@ import { ShieldTick } from "iconsax-reactjs";
 
 import * as authApi from "@/common/api/auth";
 import * as profileApi from "@/common/api/profile";
+import * as subscriptionApi from "@/common/api/subscriptions";
+import type { MySubscriptionResponse } from "@/common/interfaces/subscription.interface";
 import { PATHS } from "@/common/constants";
 import { saveDataToLocal } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
@@ -37,6 +39,7 @@ export function ProfilePage() {
   const [code, setCode] = useState("");
   const { linked: telegramLinked } = useTelegramStatus();
   const [saving, setSaving] = useState(false);
+  const [subscription, setSubscription] = useState<MySubscriptionResponse | null>(null);
 
   useEffect(() => {
     void profileApi.fetchProfile().then((fresh) => {
@@ -55,6 +58,10 @@ export function ProfilePage() {
     // Refresh profile once on mount so verification flags match the server.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
+
+  useEffect(() => {
+    void subscriptionApi.fetchMySubscription().then(setSubscription).catch(() => setSubscription(null));
+  }, []);
 
   async function saveProfile(e?: FormEvent) {
     e?.preventDefault();
@@ -215,6 +222,33 @@ export function ProfilePage() {
           </div>
         </div>
       )}
+
+      <div className="glass rounded-2xl p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-bold">{t("common.currentSubscription")}</h2>
+            <p className="mt-1 text-sm text-muted">
+              {subscription?.subscription?.planSnapshot?.name ?? t("common.noActiveSubscription")}
+            </p>
+          </div>
+          <Link href={PATHS.PRICING} className="rounded-xl bg-accent px-3 py-2 text-sm text-accent-foreground">
+            {t("common.viewPlans")}
+          </Link>
+        </div>
+        {subscription?.subscription ? (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {Object.entries(subscription.entitlements).filter(([, value]) => value.enabled).map(([key, value]) => (
+              <span key={key} className="rounded-full bg-accent/10 px-3 py-1 text-xs text-accent">
+                {value.label}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-4 rounded-xl bg-surface-secondary px-3 py-2 text-sm text-muted">
+            {t("common.contactAdminForActivation")}
+          </p>
+        )}
+      </div>
 
       <ChangeMobileModal
         open={mobileOpen}
