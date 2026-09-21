@@ -149,7 +149,9 @@ export function AdminSubscriptionsPage() {
       if (editingId) await subscriptionApi.updateAdminSubscriptionPlan(editingId, payload);
       else await subscriptionApi.createAdminSubscriptionPlan({ ...payload, slug: form.slug.trim() } as Parameters<typeof subscriptionApi.createAdminSubscriptionPlan>[0]);
       showToast(t("admin.planSaved"), "success"); startNew(); await load();
-    } catch { showToast(t("common.saveFailed"), "danger"); } finally { setSaving(false); }
+    } catch (error) {
+      showToast(error instanceof Error && error.message ? error.message : t("common.saveFailed"), "danger");
+    } finally { setSaving(false); }
   }
 
   async function archivePlan(id: string) {
