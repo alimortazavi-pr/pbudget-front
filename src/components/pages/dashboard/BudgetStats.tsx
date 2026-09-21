@@ -13,7 +13,7 @@ type BudgetStatsProps = {
 export function BudgetStats({ count, periodBalance }: BudgetStatsProps) {
   const { t } = useTranslation();
   const { formatCount } = useLocalizedDate();
-  const { currencyLabel } = useCurrencyLabels();
+  const { displayCurrencyLabel } = useCurrencyLabels();
   const user = useAppSelector(userSelector);
   const preferredCurrency = user?.preferences?.currency ?? "toman";
 
@@ -25,7 +25,7 @@ export function BudgetStats({ count, periodBalance }: BudgetStatsProps) {
       <p className="mt-2 text-2xl font-bold text-foreground lg:text-3xl">
         {formatPrice(periodBalance ?? 0)}{" "}
         <span className="text-sm font-normal text-muted lg:text-base">
-          {currencyLabel(preferredCurrency)}
+          {displayCurrencyLabel(preferredCurrency)}
         </span>
       </p>
       <p className="mt-2 text-xs text-muted lg:text-sm">

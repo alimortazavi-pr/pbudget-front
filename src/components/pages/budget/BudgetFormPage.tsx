@@ -96,7 +96,7 @@ function buildMoreHint(parts: string[]) {
 export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   const { t } = useTranslation();
   const { isSimple } = useAppMode();
-  const { currencyLabel } = useCurrencyLabels();
+  const { currencyLabel, displayCurrencyLabel } = useCurrencyLabels();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const user = useAppSelector(userSelector);
@@ -614,7 +614,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
 
           <FormPriceInput
             label={t("budget.amountWithCurrency", {
-              currency: currencyLabel(formCurrency),
+              currency: displayCurrencyLabel(formCurrency),
             })}
             value={price}
             onChange={setPrice}

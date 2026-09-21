@@ -19,7 +19,7 @@ import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 
 export function BoxesPage() {
   const { t } = useTranslation();
-  const { currencyLabel } = useCurrencyLabels();
+  const { displayCurrencyLabel } = useCurrencyLabels();
   const dispatch = useAppDispatch();
   const boxes = useAppSelector(boxesSelector);
   const user = useAppSelector(userSelector);
@@ -138,7 +138,7 @@ export function BoxesPage() {
                   <h3 className="font-semibold">{box.title}</h3>
                   <p className="mt-1 text-2xl font-bold">
                     {formatPrice(box.budget)}{" "}
-                    <span className="text-sm font-normal text-muted">{currencyLabel(preferredCurrency)}</span>
+                    <span className="text-sm font-normal text-muted">{displayCurrencyLabel(preferredCurrency)}</span>
                   </p>
                 </div>
                 <div className="flex gap-1">

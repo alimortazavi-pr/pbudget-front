@@ -3,6 +3,7 @@
 import { useCallback } from "react";
 import { useTranslation } from "@/components/providers/LanguageProvider";
 import type { UserCurrency, UserDateCalendar } from "@/common/constants/user-preferences";
+import { moneyDisplayUnitLabel } from "@/common/utils/money-display";
 
 export function useCurrencyLabels() {
   const { t } = useTranslation();
@@ -14,6 +15,12 @@ export function useCurrencyLabels() {
       return t("common.toman");
     },
     [t],
+  );
+
+  const displayCurrencyLabel = useCallback(
+    (currency: UserCurrency) =>
+      currency === "toman" ? moneyDisplayUnitLabel() : currencyLabel(currency),
+    [currencyLabel],
   );
 
   const calendarLabel = useCallback(
@@ -34,5 +41,5 @@ export function useCurrencyLabels() {
     [t],
   );
 
-  return { currencyLabel, calendarLabel, calendarDescription };
+  return { currencyLabel, displayCurrencyLabel, calendarLabel, calendarDescription };
 }

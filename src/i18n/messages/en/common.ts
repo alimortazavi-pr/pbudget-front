@@ -134,6 +134,12 @@ export const commonMessages: MessageTree = {
   currencyAndCalendarDesc:
     "New transactions use these settings. Existing transactions keep their own currency and date.",
   defaultCurrencyType: "Default currency",
+  moneyDisplayUnit: "Amount display unit",
+  moneyDisplayUnitDesc: "Changes only how amounts are shown; stored balances and data never change.",
+  moneyDisplayToman: "Toman",
+  moneyDisplayTomanDesc: "Normal display; 1 toman remains 1 toman.",
+  moneyDisplayRial: "Rial",
+  moneyDisplayRialDesc: "The same amount with one extra zero; 1 toman equals 10 rials.",
   defaultDateType: "Default date calendar",
   saveSettings: "Save settings",
   initialSettings: "Initial setup",

@@ -17,6 +17,7 @@ import {
 
 import type { AdminActivitySeries } from "@/common/interfaces/admin";
 import { formatPrice, toPersianDigits } from "@/common/utils";
+import { moneyDisplayUnitLabel } from "@/common/utils/money-display";
 
 type AdminActivityChartsProps = {
   activity: AdminActivitySeries;
@@ -82,7 +83,7 @@ export function AdminActivityCharts({ activity }: AdminActivityChartsProps) {
               <YAxis tick={{ fontSize: 11 }} />
               <Tooltip
                 formatter={(value, name) => [
-                  `${formatPrice(Number(value))} ${t("common.toman")}`,
+                  `${formatPrice(Number(value))} ${moneyDisplayUnitLabel()}`,
                   name === "income" ? t("common.income") : t("common.expense"),
                 ]}
               />

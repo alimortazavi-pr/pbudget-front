@@ -9,6 +9,7 @@ import { Edit2, Lock, SearchNormal1, ShieldTick, Trash } from "iconsax-reactjs";
 import * as adminApi from "@/common/api/admin";
 import type { AdminUser } from "@/common/interfaces/admin";
 import { formatPrice, toPersianDigits } from "@/common/utils";
+import { moneyDisplayUnitLabel } from "@/common/utils/money-display";
 import { showToast } from "@/common/utils/toast";
 
 export function AdminUsersPage() {
@@ -210,7 +211,7 @@ export function AdminUsersPage() {
                     </td>
                     <td className="px-4 py-3">{toPersianDigits(user.mobile)}</td>
                     <td className="px-4 py-3">
-                      {formatPrice(user.budget)} {t("common.toman")}
+                      {formatPrice(user.budget)} {moneyDisplayUnitLabel()}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1.5">

@@ -32,7 +32,7 @@ export function CreatePaymentPlanModal({
   defaultProjectId,
 }: CreatePaymentPlanModalProps) {
   const { t } = useTranslation();
-  const { currencyLabel } = useCurrencyLabels();
+  const { displayCurrencyLabel } = useCurrencyLabels();
   const user = useAppSelector(userSelector);
   const preferredCurrency = user?.preferences?.currency ?? "toman";
   const categories = useAppSelector(categoriesSelector);
@@ -138,7 +138,7 @@ export function CreatePaymentPlanModal({
             options={persons}
           />
           <FormPriceInput
-            label={t("budget.amountWithCurrency", { currency: currencyLabel(preferredCurrency) })}
+            label={t("budget.amountWithCurrency", { currency: displayCurrencyLabel(preferredCurrency) })}
             value={amount}
             onChange={setAmount}
           />

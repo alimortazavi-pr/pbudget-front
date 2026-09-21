@@ -25,6 +25,7 @@ import type {
 } from "@/common/interfaces/admin";
 import { formatBytes, formatUptime } from "@/common/utils/admin-format";
 import { formatPrice, toPersianDigits } from "@/common/utils";
+import { moneyDisplayUnitLabel } from "@/common/utils/money-display";
 import { showToast } from "@/common/utils/toast";
 
 const AdminActivityCharts = dynamic(
@@ -290,7 +291,7 @@ export function AdminDashboardPage() {
                   {formatPrice(
                     activity?.income.reduce((sum, n) => sum + n, 0) ?? 0,
                   )}{" "}
-                  {t("auto.k9e29f60874")}
+                  {moneyDisplayUnitLabel()}
                 </dd>
               </div>
             </dl>

@@ -1,3 +1,5 @@
+import { tomanToDisplayAmount } from "./money-display";
+
 const PERSIAN_DIGITS = "۰۱۲۳۴۵۶۷۸۹";
 
 export function toPersianDigits(value: string | number): string {
@@ -14,7 +16,10 @@ export function formatCount(value: number | string): string {
 }
 
 export function formatPrice(amount: number | string): string {
-  const num = typeof amount === "string" ? parseInt(amount, 10) : amount;
+  const parsed = typeof amount === "string" ? Number(amount) : amount;
+  const num = tomanToDisplayAmount(parsed);
   if (Number.isNaN(num)) return toPersianDigits("0");
-  return toPersianDigits(num.toLocaleString("en-US"));
+  return toPersianDigits(
+    num.toLocaleString("en-US", { maximumFractionDigits: 2 }),
+  );
 }

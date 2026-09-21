@@ -308,7 +308,7 @@ export function FormPriceInput({
   }
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
-    onChange(parsePriceInput(event.target.value, allowNegative));
+    onChange(parsePriceInput(event.target.value, allowNegative, currency));
   }
 
   return (
@@ -320,7 +320,7 @@ export function FormPriceInput({
         dir="ltr"
         className="text-left"
         data-currency={currency}
-        value={formatPriceInput(value, allowNegative)}
+        value={formatPriceInput(value, allowNegative, currency)}
         onChange={handleChange}
         onFocus={handleFocus}
         {...props}

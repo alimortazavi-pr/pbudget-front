@@ -15,10 +15,12 @@ import { AppShell } from "@/components/common/layout/AppShell";
 import { PwaInstallPrompt } from "@/components/common/PwaInstallPrompt";
 import { LanguageProvider } from "./LanguageProvider";
 import { AppModeProvider } from "./AppModeProvider";
+import { MoneyDisplayBoundary } from "./MoneyDisplayBoundary";
 
 export const ClientProvider: FC<PropsWithChildren> = ({ children }) => {
   const app = (
     <ReduxProvider>
+      <MoneyDisplayBoundary>
         <ThemeProvider>
           <LanguageProvider>
             <AppModeProvider>
@@ -39,6 +41,7 @@ export const ClientProvider: FC<PropsWithChildren> = ({ children }) => {
             </AppModeProvider>
           </LanguageProvider>
         </ThemeProvider>
+      </MoneyDisplayBoundary>
     </ReduxProvider>
   );
 

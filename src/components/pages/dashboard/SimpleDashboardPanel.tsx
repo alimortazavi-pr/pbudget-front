@@ -38,7 +38,7 @@ export function SimpleDashboardPanel({
   onShiftPeriod,
 }: SimpleDashboardPanelProps) {
   const { t } = useTranslation();
-  const { currencyLabel } = useCurrencyLabels();
+  const { displayCurrencyLabel } = useCurrencyLabels();
   const { formatCount } = useLocalizedDate();
   const user = useAppSelector(userSelector);
   const preferred: UserCurrency =
@@ -104,7 +104,7 @@ export function SimpleDashboardPanel({
           <p className="mt-2 text-end text-2xl font-bold text-white tabular-nums">
             {formatPriceWithCurrency(balance, preferred)}
             <span className="ms-1.5 text-xs font-medium text-white/75">
-              {currencyLabel(preferred)}
+              {displayCurrencyLabel(preferred)}
             </span>
           </p>
         </div>

@@ -31,7 +31,7 @@ export function CreateCategoryModal({
   onCreated,
 }: CreateCategoryModalProps) {
   const { t } = useTranslation();
-  const { currencyLabel } = useCurrencyLabels();
+  const { displayCurrencyLabel } = useCurrencyLabels();
   const dispatch = useAppDispatch();
   const categories = useAppSelector(categoriesSelector);
   const user = useAppSelector(userSelector);
@@ -103,7 +103,7 @@ export function CreateCategoryModal({
             />
             <CategoryColorPicker value={color} onChange={setColor} />
             <FormPriceInput
-              label={`${t("common.monthlyLimit")} (${currencyLabel(preferredCurrency)})`}
+              label={`${t("common.monthlyLimit")} (${displayCurrencyLabel(preferredCurrency)})`}
               value={monthlyLimit}
               onChange={setMonthlyLimit}
               placeholder={t("auto.kf69c4f20a2")}

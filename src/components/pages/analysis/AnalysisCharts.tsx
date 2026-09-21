@@ -1,8 +1,5 @@
 "use client";
 
-import { getTranslator } from "@/i18n";
-const t = getTranslator();
-
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useMemo } from "react";
@@ -25,6 +22,7 @@ import {
 import type { AnalyticsReport } from "@/common/interfaces/analytics.interface";
 import { resolveCategoryColor } from "@/common/constants/category-colors";
 import { formatPrice, toPersianDigits } from "@/common/utils";
+import { moneyDisplayUnitLabel } from "@/common/utils/money-display";
 import {
   CHART_COLORS,
   formatChartPrice,
@@ -71,7 +69,7 @@ function CustomTooltip({
       <p className="mb-1 font-medium">{label}</p>
       {payload.map((entry) => (
         <p key={entry.name} style={{ color: entry.color }}>
-          {entry.name}: {formatPrice(entry.value)} {t("common.toman")}
+          {entry.name}: {formatPrice(entry.value)} {moneyDisplayUnitLabel()}
         </p>
       ))}
     </div>
@@ -216,7 +214,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
                   </Pie>
                   <Tooltip
                     formatter={(value) => [
-                      `${formatPrice(Number(value ?? 0))} ${t("common.toman")}`,
+                      `${formatPrice(Number(value ?? 0))} ${moneyDisplayUnitLabel()}`,
                       t("common.amount"),
                     ]}
                   />
@@ -340,7 +338,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
                   </Pie>
                   <Tooltip
                     formatter={(value) => [
-                      `${formatPrice(Number(value ?? 0))} ${t("common.toman")}`,
+                      `${formatPrice(Number(value ?? 0))} ${moneyDisplayUnitLabel()}`,
                       t("common.amount"),
                     ]}
                   />
@@ -374,7 +372,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
                   </Pie>
                   <Tooltip
                     formatter={(value) => [
-                      `${formatPrice(Number(value ?? 0))} ${t("common.toman")}`,
+                      `${formatPrice(Number(value ?? 0))} ${moneyDisplayUnitLabel()}`,
                       t("common.amount"),
                     ]}
                   />
@@ -458,7 +456,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
                   </Pie>
                   <Tooltip
                     formatter={(value) => [
-                      `${formatPrice(Number(value ?? 0))} ${t("common.toman")}`,
+                      `${formatPrice(Number(value ?? 0))} ${moneyDisplayUnitLabel()}`,
                       t("auto.k90c9e7cad5"),
                     ]}
                   />

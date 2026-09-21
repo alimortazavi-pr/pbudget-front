@@ -32,7 +32,7 @@ export function ClearCheckModal({
   onCleared,
 }: ClearCheckModalProps) {
   const { t } = useTranslation();
-  const { currencyLabel } = useCurrencyLabels();
+  const { displayCurrencyLabel } = useCurrencyLabels();
   const user = useAppSelector(userSelector);
   const preferredCurrency = user?.preferences?.currency ?? "toman";
   const categories = useAppSelector(categoriesSelector);
@@ -92,7 +92,7 @@ export function ClearCheckModal({
             {check.person} · {t("auto.k8b0f305f8a")}{check.dueYear}/{check.dueMonth}/{check.dueDay}
           </p>
 
-          <FormPriceInput label={t("budget.amountWithCurrency", { currency: currencyLabel(preferredCurrency) })} value={amount} onChange={setAmount} />
+          <FormPriceInput label={t("budget.amountWithCurrency", { currency: displayCurrencyLabel(preferredCurrency) })} value={amount} onChange={setAmount} />
 
           <FormCategoryComboBox
             label={t("auto.kb561a47a9b")}

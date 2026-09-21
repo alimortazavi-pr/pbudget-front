@@ -62,7 +62,7 @@ export function BankImportRowEditorModal({
   onSave,
 }: BankImportRowEditorModalProps) {
   const { t } = useTranslation();
-  const { currencyLabel } = useCurrencyLabels();
+  const { displayCurrencyLabel } = useCurrencyLabels();
   const categories = useAppSelector(categoriesSelector);
   const user = useAppSelector(userSelector);
   const preferredCurrency = user?.preferences?.currency ?? "toman";
@@ -297,7 +297,7 @@ export function BankImportRowEditorModal({
               ))}
             </div>
 
-            <FormPriceInput label={t("budget.amountWithCurrency", { currency: currencyLabel(preferredCurrency) })} value={form.price} onChange={(v) => patchForm({ price: v })} />
+            <FormPriceInput label={t("budget.amountWithCurrency", { currency: displayCurrencyLabel(preferredCurrency) })} value={form.price} onChange={(v) => patchForm({ price: v })} />
 
             <FormDatePicker
               label={t("auto.k349c7bedff")}

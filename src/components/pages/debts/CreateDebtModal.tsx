@@ -53,7 +53,7 @@ function optionClass(selected: boolean) {
 
 export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtModalProps) {
   const { t } = useTranslation();
-  const { currencyLabel } = useCurrencyLabels();
+  const { currencyLabel, displayCurrencyLabel } = useCurrencyLabels();
   const categories = useAppSelector(categoriesSelector);
   const user = useAppSelector(userSelector);
   const preferredCurrency = user?.preferences?.currency ?? "toman";
@@ -300,7 +300,7 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
           </div>
 
           <FormPriceInput
-            label={`${t("common.amount")} (${currencyLabel(currency)})`}
+            label={`${t("common.amount")} (${displayCurrencyLabel(currency)})`}
             value={amount}
             onChange={setAmount}
             currency={currency}

@@ -35,7 +35,7 @@ export function DebtSettleModal({
   onSettled,
 }: DebtSettleModalProps) {
   const { t } = useTranslation();
-  const { currencyLabel } = useCurrencyLabels();
+  const { displayCurrencyLabel } = useCurrencyLabels();
   const debtCurrency = resolveBudgetCurrency(debt?.currency);
   const [candidates, setCandidates] = useState<IBudget[]>([]);
   const [loading, setLoading] = useState(false);
@@ -123,7 +123,7 @@ export function DebtSettleModal({
 
           {selectedIds.size <= 1 ? (
             <FormPriceInput
-              label={`${t("debts.settle")} (${currencyLabel(debtCurrency)})`}
+              label={`${t("debts.settle")} (${displayCurrencyLabel(debtCurrency)})`}
               value={amount}
               onChange={setAmount}
               currency={debtCurrency}
@@ -143,7 +143,7 @@ export function DebtSettleModal({
                 ? t("debts.incomeDeposit")
                 : t("debts.costWithdraw")}{" "}
               {t("debts.registerFirst")}{" "}
-              ({currencyLabel(debtCurrency)})
+              ({displayCurrencyLabel(debtCurrency)})
             </p>
           ) : (
             <div className="max-h-56 space-y-2 overflow-y-auto">

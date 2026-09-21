@@ -18,6 +18,7 @@ export async function updateProfile(payload: {
 export async function updateUserPreferences(payload: {
   currency?: "toman" | "usd" | "dinar";
   dateCalendar?: "jalali" | "gregorian";
+  moneyDisplayUnit?: "toman" | "rial";
   configured?: boolean;
 }) {
   const { data } = await axiosInstance.put("/users/profile/preferences", payload);

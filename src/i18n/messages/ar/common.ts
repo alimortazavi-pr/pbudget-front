@@ -134,6 +134,12 @@ export const commonMessages: MessageTree = {
   currencyAndCalendarDesc:
     "المعاملات الجديدة تستخدم هذه الإعدادات. المعاملات السابقة تحتفظ بعملتها وتاريخها.",
   defaultCurrencyType: "العملة الافتراضية",
+  moneyDisplayUnit: "وحدة عرض المبلغ",
+  moneyDisplayUnitDesc: "يغيّر طريقة عرض المبلغ فقط؛ لا تتغير الأرصدة والبيانات المخزنة.",
+  moneyDisplayToman: "تومان",
+  moneyDisplayTomanDesc: "العرض المعتاد؛ يبقى التومان كما هو.",
+  moneyDisplayRial: "ريال",
+  moneyDisplayRialDesc: "نفس المبلغ مع صفر إضافي؛ كل تومان يساوي ١٠ ريالات.",
   defaultDateType: "التقويم الافتراضي",
   saveSettings: "حفظ الإعدادات",
   initialSettings: "الإعداد الأولي",

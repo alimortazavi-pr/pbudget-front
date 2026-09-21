@@ -31,7 +31,7 @@ export function PayOccurrenceModal({
   onPaid,
 }: PayOccurrenceModalProps) {
   const { t } = useTranslation();
-  const { currencyLabel } = useCurrencyLabels();
+  const { displayCurrencyLabel } = useCurrencyLabels();
   const user = useAppSelector(userSelector);
   const preferredCurrency = user?.preferences?.currency ?? "toman";
   const categories = useAppSelector(categoriesSelector);
@@ -89,7 +89,7 @@ export function PayOccurrenceModal({
             {occurrence.day}
           </p>
 
-          <FormPriceInput label={t("budget.amountWithCurrency", { currency: currencyLabel(preferredCurrency) })} value={amount} onChange={setAmount} />
+          <FormPriceInput label={t("budget.amountWithCurrency", { currency: displayCurrencyLabel(preferredCurrency) })} value={amount} onChange={setAmount} />
 
           <FormCategoryComboBox
             label={t("auto.kb561a47a9b")}

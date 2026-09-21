@@ -20,6 +20,11 @@ export function normalizeProfile(user: Record<string, unknown>): IProfile {
       rawPrefs.dateCalendar === "jalali"
         ? rawPrefs.dateCalendar
         : DEFAULT_USER_PREFERENCES.dateCalendar,
+    moneyDisplayUnit:
+      rawPrefs.moneyDisplayUnit === "rial" ||
+      rawPrefs.moneyDisplayUnit === "toman"
+        ? rawPrefs.moneyDisplayUnit
+        : DEFAULT_USER_PREFERENCES.moneyDisplayUnit,
     configured: Boolean(rawPrefs.configured),
   };
 

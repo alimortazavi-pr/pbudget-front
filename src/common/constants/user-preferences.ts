@@ -2,17 +2,20 @@ import { getTranslator } from "@/i18n";
 const t = getTranslator();
 export type UserCurrency = "toman" | "usd" | "dinar";
 export type UserDateCalendar = "jalali" | "gregorian";
+export type MoneyDisplayUnit = "toman" | "rial";
 export type WalletBalances = Record<UserCurrency, number>;
 
 export type UserPreferences = {
   currency: UserCurrency;
   dateCalendar: UserDateCalendar;
+  moneyDisplayUnit: MoneyDisplayUnit;
   configured: boolean;
 };
 
 export const DEFAULT_USER_PREFERENCES: UserPreferences = {
   currency: "toman",
   dateCalendar: "jalali",
+  moneyDisplayUnit: "toman",
   configured: false,
 };
 
@@ -43,6 +46,23 @@ export const CALENDAR_OPTIONS: Array<{
   },
 ];
 
+export const MONEY_DISPLAY_UNIT_OPTIONS: Array<{
+  id: MoneyDisplayUnit;
+  label: string;
+  description: string;
+}> = [
+  {
+    id: "toman",
+    label: "تومان",
+    description: "نمایش مبالغ با واحد معمول تومان",
+  },
+  {
+    id: "rial",
+    label: "ریال",
+    description: "نمایش همان مبالغ با یک صفر بیشتر؛ ۱ تومان = ۱۰ ریال",
+  },
+];
+
 export function resolveBudgetCurrency(
   value?: UserCurrency | null,
 ): UserCurrency {
@@ -55,6 +75,12 @@ export function resolveBudgetDateCalendar(
 ): UserDateCalendar {
   if (value === "gregorian" || value === "jalali") return value;
   return "jalali";
+}
+
+export function resolveMoneyDisplayUnit(
+  value?: MoneyDisplayUnit | null,
+): MoneyDisplayUnit {
+  return value === "rial" ? "rial" : "toman";
 }
 
 export function currencyLabel(currency: UserCurrency) {

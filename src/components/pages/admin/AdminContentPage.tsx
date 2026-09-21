@@ -13,6 +13,7 @@ import type {
   AdminProjectItem,
 } from "@/common/interfaces/admin";
 import { formatPrice, toPersianDigits } from "@/common/utils";
+import { moneyDisplayUnitLabel } from "@/common/utils/money-display";
 import { showToast } from "@/common/utils/toast";
 
 type ContentTab = "budgets" | "categories" | "projects";
@@ -164,7 +165,7 @@ export function AdminContentPage() {
                   ? `${item.user.firstName} ${item.user.lastName}`
                   : "—"}
               </td>
-              <td className="px-4 py-3">{formatPrice(item.price)} {t("common.toman")}</td>
+              <td className="px-4 py-3">{formatPrice(item.price)} {moneyDisplayUnitLabel()}</td>
               <td className="px-4 py-3">
                 {item.type === 0 ? t("common.income") : t("common.expense")}
               </td>
@@ -216,7 +217,7 @@ export function AdminContentPage() {
               </td>
               <td className="px-4 py-3">
                 {item.monthlyLimit
-                  ? `${formatPrice(item.monthlyLimit)} ${t("common.toman")}`
+                  ? `${formatPrice(item.monthlyLimit)} ${moneyDisplayUnitLabel()}`
                   : "—"}
               </td>
               <td className="px-4 py-3">
@@ -254,7 +255,7 @@ export function AdminContentPage() {
                 {item.description || "—"}
               </td>
               <td className="px-4 py-3">
-                {formatPrice(item.totalAmount)} {t("common.toman")}
+                {formatPrice(item.totalAmount)} {moneyDisplayUnitLabel()}
               </td>
               <td className="px-4 py-3">
                 <RowActions

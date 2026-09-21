@@ -134,6 +134,12 @@ export const commonMessages: MessageTree = {
   currencyAndCalendarDesc:
     "تراکنش‌های جدید با این تنظیمات ثبت می‌شوند. تراکنش‌های قبلی ارز و تاریخ خودشان را حفظ می‌کنند.",
   defaultCurrencyType: "نوع ارز پیش‌فرض",
+  moneyDisplayUnit: "واحد نمایش مبالغ",
+  moneyDisplayUnitDesc: "فقط شکل نمایش مبلغ را تغییر می‌دهد؛ موجودی و داده‌های ذخیره‌شده تغییر نمی‌کنند.",
+  moneyDisplayToman: "تومان",
+  moneyDisplayTomanDesc: "نمایش معمول؛ هر ۱ تومان برابر با ۱ تومان است.",
+  moneyDisplayRial: "ریال",
+  moneyDisplayRialDesc: "همان مبلغ با یک صفر بیشتر؛ هر ۱ تومان برابر با ۱۰ ریال است.",
   defaultDateType: "نوع تاریخ پیش‌فرض",
   saveSettings: "ذخیره تنظیمات",
   initialSettings: "تنظیمات اولیه",

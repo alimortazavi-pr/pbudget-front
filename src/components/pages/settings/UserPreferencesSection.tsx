@@ -10,8 +10,10 @@ import * as profileApi from "@/common/api/profile";
 import {
   CALENDAR_OPTIONS,
   CURRENCY_OPTIONS,
+  MONEY_DISPLAY_UNIT_OPTIONS,
   type UserDateCalendar,
   type UserCurrency,
+  type MoneyDisplayUnit,
 } from "@/common/constants/user-preferences";
 import { showToast } from "@/common/utils/toast";
 import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
@@ -38,12 +40,14 @@ export function UserPreferencesSettings({ compact }: UserPreferencesSettingsProp
   const user = useAppSelector(userSelector);
   const prefs = user?.preferences;
   const [currency, setCurrency] = useState<UserCurrency>("toman");
+  const [moneyDisplayUnit, setMoneyDisplayUnit] = useState<MoneyDisplayUnit>("toman");
   const [dateCalendar, setDateCalendar] = useState<UserDateCalendar>("jalali");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!prefs) return;
     setCurrency(prefs.currency);
+    setMoneyDisplayUnit(prefs.moneyDisplayUnit);
     setDateCalendar(prefs.dateCalendar);
   }, [prefs]);
 
@@ -52,6 +56,7 @@ export function UserPreferencesSettings({ compact }: UserPreferencesSettingsProp
     try {
       const updated = await profileApi.updateUserPreferences({
         currency,
+        moneyDisplayUnit,
         dateCalendar,
       });
       dispatch(setProfile(updated));
@@ -65,7 +70,9 @@ export function UserPreferencesSettings({ compact }: UserPreferencesSettingsProp
 
   const dirty =
     prefs &&
-    (currency !== prefs.currency || dateCalendar !== prefs.dateCalendar);
+    (currency !== prefs.currency ||
+      moneyDisplayUnit !== prefs.moneyDisplayUnit ||
+      dateCalendar !== prefs.dateCalendar);
 
   return (
     <div className={compact ? "space-y-4" : "glass rounded-2xl p-5 space-y-4"}>
@@ -90,6 +97,32 @@ export function UserPreferencesSettings({ compact }: UserPreferencesSettingsProp
                 onClick={() => setCurrency(option.id)}
               >
                 {currencyLabel(option.id)}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-sm font-medium">{t("common.moneyDisplayUnit")}</p>
+        <p className="text-xs leading-6 text-muted">{t("common.moneyDisplayUnitDesc")}</p>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {MONEY_DISPLAY_UNIT_OPTIONS.map((option) => {
+            const selected = moneyDisplayUnit === option.id;
+            const labelKey = option.id === "rial" ? "common.moneyDisplayRial" : "common.moneyDisplayToman";
+            const descriptionKey = option.id === "rial" ? "common.moneyDisplayRialDesc" : "common.moneyDisplayTomanDesc";
+            return (
+              <button
+                key={option.id}
+                type="button"
+                aria-pressed={selected}
+                className={`px-4 py-3 text-start ${preferenceOptionClass(selected)}`}
+                onClick={() => setMoneyDisplayUnit(option.id)}
+              >
+                <p className="text-sm font-semibold">{t(labelKey)}</p>
+                <p className={`mt-0.5 text-xs ${selected ? "text-accent/75" : "text-muted"}`}>
+                  {t(descriptionKey)}
+                </p>
               </button>
             );
           })}
@@ -155,6 +188,7 @@ export function UserPreferencesOnboardingModal({
   const { currencyLabel, calendarLabel, calendarDescription } = useCurrencyLabels();
   const dispatch = useAppDispatch();
   const [currency, setCurrency] = useState<UserCurrency>("toman");
+  const [moneyDisplayUnit, setMoneyDisplayUnit] = useState<MoneyDisplayUnit>("toman");
   const [dateCalendar, setDateCalendar] = useState<UserDateCalendar>("jalali");
   const [saving, setSaving] = useState(false);
 
@@ -163,6 +197,7 @@ export function UserPreferencesOnboardingModal({
     try {
       const user = await profileApi.updateUserPreferences({
         currency,
+        moneyDisplayUnit,
         dateCalendar,
         configured: true,
       });
@@ -200,6 +235,35 @@ export function UserPreferencesOnboardingModal({
                         onClick={() => setCurrency(option.id)}
                       >
                         {currencyLabel(option.id)}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm font-medium">{t("common.moneyDisplayUnit")}</p>
+                <p className="text-xs leading-6 text-muted">{t("common.moneyDisplayUnitDesc")}</p>
+                <div className="grid gap-2">
+                  {MONEY_DISPLAY_UNIT_OPTIONS.map((option) => {
+                    const selected = moneyDisplayUnit === option.id;
+                    const labelKey = option.id === "rial" ? "common.moneyDisplayRial" : "common.moneyDisplayToman";
+                    const descriptionKey = option.id === "rial" ? "common.moneyDisplayRialDesc" : "common.moneyDisplayTomanDesc";
+                    return (
+                      <button
+                        key={option.id}
+                        type="button"
+                        aria-pressed={selected}
+                        className={`flex items-start gap-3 px-4 py-3 text-start text-sm ${preferenceOptionClass(selected)}`}
+                        onClick={() => setMoneyDisplayUnit(option.id)}
+                      >
+                        <span className="min-w-0 flex-1">
+                          <p className="font-semibold">{t(labelKey)}</p>
+                          <p className={`mt-0.5 text-xs ${selected ? "text-accent/75" : "text-muted"}`}>
+                            {t(descriptionKey)}
+                          </p>
+                        </span>
+                        {selected ? <TickCircle size={18} variant="Bold" className="mt-0.5 shrink-0 text-accent" /> : null}
                       </button>
                     );
                   })}

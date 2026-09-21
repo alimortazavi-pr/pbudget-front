@@ -75,7 +75,9 @@ function BalanceModalDialog({
 
   async function submit(e?: FormEvent) {
     e?.preventDefault();
-    const delta = parseInt(parsePriceInput(price, true), 10);
+    // The input is rendered in the selected display unit, while the API
+    // always stores the canonical Toman amount. Keep non-Toman wallets raw.
+    const delta = Number(parsePriceInput(price, true, currency));
     if (!price.trim() || Number.isNaN(delta) || delta === 0) {
       showToast(t("dashboard.amountChangeRequired"));
       return;

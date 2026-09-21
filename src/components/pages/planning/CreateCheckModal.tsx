@@ -36,7 +36,7 @@ export function CreateCheckModal({
   onCreated,
 }: CreateCheckModalProps) {
   const { t } = useTranslation();
-  const { currencyLabel } = useCurrencyLabels();
+  const { displayCurrencyLabel } = useCurrencyLabels();
   const user = useAppSelector(userSelector);
   const preferredCurrency = user?.preferences?.currency ?? "toman";
   const formCalendar = user?.preferences?.dateCalendar ?? "jalali";
@@ -126,7 +126,7 @@ export function CreateCheckModal({
             ))}
           </div>
 
-          <FormPriceInput label={t("budget.amountWithCurrency", { currency: currencyLabel(preferredCurrency) })} value={amount} onChange={setAmount} />
+          <FormPriceInput label={t("budget.amountWithCurrency", { currency: displayCurrencyLabel(preferredCurrency) })} value={amount} onChange={setAmount} />
           <FormPersonComboBox
             label={t("auto.k4617f9a4f6")}
             value={person}
