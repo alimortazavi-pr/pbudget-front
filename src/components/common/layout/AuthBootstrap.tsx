@@ -71,6 +71,9 @@ export function AuthBootstrap() {
   useEffect(() => {
     if (!didTry || !isAuth) return;
     if (pathname !== PATHS.GET_STARTED && pathname !== PATHS.LANDING) return;
+    // Keep authenticated users on the public contact section when they arrive
+    // from a plan or feature CTA instead of sending them back to the dashboard.
+    if (pathname === PATHS.LANDING && window.location.hash === "#contact") return;
 
     void resolvePostAuthDestination().then((result) => {
       if (result.needsPicker) {
