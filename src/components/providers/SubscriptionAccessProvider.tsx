@@ -19,10 +19,15 @@ export function SubscriptionAccessProvider({ children }: { children: ReactNode }
   const isAuth = useAppSelector(isAuthSelector);
   const didTryAutoLogin = useAppSelector(didTryAutoLoginSelector);
   const [data, setData] = useState<MySubscriptionResponse | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!didTryAutoLogin || !isAuth) return;
+    if (!didTryAutoLogin) return;
+    if (!isAuth) {
+      setData(null);
+      setLoading(false);
+      return;
+    }
 
     let cancelled = false;
     setLoading(true);
