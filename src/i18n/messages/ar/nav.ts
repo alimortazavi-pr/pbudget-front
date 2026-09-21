@@ -6,6 +6,7 @@ export const navMessages: MessageTree = {
   bankImportFull: "استيراد كشف حساب بنكي",
   financialAnalysis: "تحليل مالي",
   customExports: "التصدير المخصص",
+  plans: "الخطط",
   boxes: "الصناديق",
   myCards: "بطاقاتي",
   categories: "الفئات",

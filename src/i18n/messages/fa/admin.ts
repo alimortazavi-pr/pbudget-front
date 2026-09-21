@@ -61,4 +61,5 @@ export const adminMessages: MessageTree = {
   planColumn: "پلن",
   statusColumn: "وضعیت",
   expiresColumn: "انقضا",
+  changePlan: "تغییر پلن",
 };

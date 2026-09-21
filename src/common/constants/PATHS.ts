@@ -2,6 +2,7 @@ export const PATHS = {
   LANDING: "/",
   HOME: "/app",
   PRICING: "/pricing",
+  PLANS: "/plans",
   ANALYSIS: "/analysis",
   EXPORTS: "/exports",
   GET_STARTED: "/get-started",

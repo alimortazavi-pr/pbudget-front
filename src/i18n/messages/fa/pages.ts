@@ -169,4 +169,7 @@ export const pagesMessages: MessageTree = {
     fieldAmount: "مبلغ",
     fieldDescription: "توضیحات",
   },
+  subscriptionPlans: {
+    title: "پلن‌ها",
+  },
 };

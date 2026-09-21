@@ -39,6 +39,7 @@ import { getJalaliNow } from "@/common/utils";
 import { toPersianDigits } from "@/common/utils/persian-digits";
 import { SimpleTransactionCard } from "./SimpleTransactionCard";
 import { TransactionListSkeleton } from "./TransactionListSkeleton";
+import { SubscriptionStatusCard } from "./SubscriptionStatusCard";
 
 type HmiMode = Exclude<AppMode, "advanced">;
 
@@ -457,6 +458,7 @@ export function HmiDashboardPage({
     return (
       <section className="pb-hmi-dashboard pb-hmi-command" aria-label={t("common.hmiCommandTitle")}>
         {greeting}
+        <SubscriptionStatusCard compact />
         <div className="pb-hmi-command-balance">
           <div><span>{t("common.walletBalance")}</span><strong>{formatPriceWithCurrency(balance, displayCurrency)}</strong></div>
           <Wallet3 size={42} aria-hidden="true" />
@@ -480,6 +482,7 @@ export function HmiDashboardPage({
     return (
       <section className="pb-hmi-dashboard pb-hmi-notebook" aria-label={t("common.hmiNotebookTitle")}>
         {greeting}
+        <SubscriptionStatusCard compact />
         <div className="pb-hmi-notebook-layout">
           <div className="pb-hmi-notebook-page pb-hmi-surface">
             <div className="flex items-center justify-between gap-3"><div><p className="text-xs font-semibold text-accent">{t("common.hmiYearLabel", { year: toPersianDigits(String(persianMonth.year)) })}</p><h3 className="mt-1 text-xl font-extrabold">{periodLabel}</h3></div><Book1 size={30} className="text-accent" /></div>
@@ -501,6 +504,7 @@ export function HmiDashboardPage({
   return (
     <section className="pb-hmi-dashboard pb-hmi-calendar-command" aria-label={t("common.hmiCalendarTitle")}>
       {greeting}
+      <SubscriptionStatusCard compact />
       <div className="pb-hmi-calendar-layout">
         <div className="pb-hmi-surface pb-hmi-calendar-main">
           <HmiPeriodControls periodLabel={periodLabel} duration={duration} onDurationChange={onDurationChange} onShift={(delta) => (duration === "daily" ? onShiftDay(delta) : onShiftMonth(delta))} />

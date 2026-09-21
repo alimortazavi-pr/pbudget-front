@@ -6,6 +6,7 @@ import {
   Card,
   Category,
   Chart,
+  Crown,
   DocumentUpload,
   Task,
   Clock,
@@ -94,6 +95,7 @@ export const PLANNING_NAV_GROUPS = [
       { href: PATHS.PROJECTS, label: "nav.projects", icon: Briefcase },
       { href: PATHS.NOTES, label: "nav.notes", icon: DocumentText },
       { href: PATHS.EXPORTS, label: "nav.customExports", icon: DocumentDownload },
+      { href: PATHS.PLANS, label: "nav.plans", icon: Crown },
     ],
   },
   {

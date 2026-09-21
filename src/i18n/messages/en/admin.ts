@@ -61,4 +61,5 @@ export const adminMessages: MessageTree = {
   planColumn: "Plan",
   statusColumn: "Status",
   expiresColumn: "Expires",
+  changePlan: "Change plan",
 };

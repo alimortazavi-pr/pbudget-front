@@ -6,6 +6,7 @@ export const navMessages: MessageTree = {
   bankImportFull: "Bank Statement Import",
   financialAnalysis: "Financial Analysis",
   customExports: "Custom exports",
+  plans: "Plans",
   boxes: "Boxes",
   myCards: "My Cards",
   categories: "Categories",
