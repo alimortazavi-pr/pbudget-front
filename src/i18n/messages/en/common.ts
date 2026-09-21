@@ -325,6 +325,7 @@ export const commonMessages: MessageTree = {
     notIncludedInPlan: "Not enabled in this plan",
     notForYourPlan: "Not available for your plan",
     enabledForYou: "Enabled for you",
+    availableInPlan: "Included in this plan",
     contactAdmin: "Contact admin to activate",
     loadError: "Failed to load plans",
   },

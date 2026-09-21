@@ -325,6 +325,7 @@ export const commonMessages: MessageTree = {
     notIncludedInPlan: "غير مفعلة في هذه الخطة",
     notForYourPlan: "غير متاحة لخطتك",
     enabledForYou: "مفعلة لك",
+    availableInPlan: "مفعلة في هذه الخطة",
     contactAdmin: "تواصل مع المسؤول للتفعيل",
     loadError: "فشل تحميل الخطط",
   },

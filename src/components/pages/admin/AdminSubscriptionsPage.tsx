@@ -6,6 +6,7 @@ import { Add, Crown, Edit2, Flash, Refresh2, Trash } from "iconsax-reactjs";
 
 import * as adminApi from "@/common/api/admin";
 import * as subscriptionApi from "@/common/api/subscriptions";
+import { SUBSCRIPTION_FEATURE_CATALOG } from "@/common/constants/subscription-features";
 import type { AdminUser } from "@/common/interfaces/admin";
 import type { SubscriptionFeature, SubscriptionPlan, SubscriptionPeriod, UserSubscription } from "@/common/interfaces/subscription.interface";
 import { formatPrice, toPersianDigits } from "@/common/utils";
@@ -94,6 +95,36 @@ export function AdminSubscriptionsPage() {
     const next = [...form.features]; next[index] = { ...next[index], ...patch }; updateForm("features", next);
   }
 
+  function setCatalogFeatureEnabled(key: string, enabled: boolean) {
+    const catalogFeature = SUBSCRIPTION_FEATURE_CATALOG.find((feature) => feature.key === key);
+    if (!catalogFeature) return;
+    const index = form.features.findIndex((feature) => feature.key === key);
+    if (index >= 0) {
+      updateFeature(index, { enabled, label: catalogFeature.label });
+      return;
+    }
+    updateForm("features", [...form.features, { key, label: catalogFeature.label, description: "", enabled, limit: null }]);
+  }
+
+  function setCatalogFeatureLimit(key: string, limit: number | null) {
+    const index = form.features.findIndex((feature) => feature.key === key);
+    if (index >= 0) {
+      updateFeature(index, { limit });
+      return;
+    }
+    const next = [...form.features, { key, label: SUBSCRIPTION_FEATURE_CATALOG.find((feature) => feature.key === key)?.label ?? key, description: "", enabled: true, limit }];
+    updateForm("features", next);
+  }
+
+  function planFeaturesForSave() {
+    const catalogFeatures = SUBSCRIPTION_FEATURE_CATALOG.map((catalogFeature) => {
+      const existing = form.features.find((feature) => feature.key === catalogFeature.key);
+      return existing ?? { key: catalogFeature.key, label: catalogFeature.label, description: "", enabled: false, limit: null };
+    });
+    const customFeatures = form.features.filter((feature) => !SUBSCRIPTION_FEATURE_CATALOG.some((catalogFeature) => catalogFeature.key === feature.key));
+    return [...catalogFeatures, ...customFeatures];
+  }
+
   async function savePlan() {
     if (!form.name.trim() || (!editingId && !form.slug.trim())) { showToast(t("admin.planRequired"), "warning"); return; }
     setSaving(true);
@@ -103,7 +134,7 @@ export function AdminSubscriptionsPage() {
         priceUnit: form.priceUnit.trim() || "تومان", period: form.period,
         periodDays: form.period === "custom" ? Number(form.periodDays) || null : undefined,
         highlighted: form.highlighted, active: form.active, sortOrder: Number(form.sortOrder) || 0,
-        contactMessage: form.contactMessage.trim(), features: form.features,
+        contactMessage: form.contactMessage.trim(), features: planFeaturesForSave(),
       };
       if (editingId) await subscriptionApi.updateAdminSubscriptionPlan(editingId, payload);
       else await subscriptionApi.createAdminSubscriptionPlan(payload as Parameters<typeof subscriptionApi.createAdminSubscriptionPlan>[0]);
@@ -146,7 +177,7 @@ export function AdminSubscriptionsPage() {
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3"><div className="flex items-center gap-2"><Flash size={19} className="text-accent" variant="Bold" /><div><h2 className="text-lg font-bold">{editingId ? t("admin.editPlan") : t("admin.newPlan")}</h2><p className="mt-1 text-xs text-muted">{t("admin.planEditorHint")}</p></div></div>{editingId && <Button size="sm" variant="ghost" onPress={startNew}>{t("admin.cancelEdit")}</Button>}</div>
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(360px,.9fr)]">
           <div className="grid gap-4 sm:grid-cols-2"><AdminTextInput label={t("admin.planSlug")} value={form.slug} disabled={Boolean(editingId)} onChange={(value) => updateForm("slug", value)} /><AdminTextInput label={t("admin.planName")} value={form.name} onChange={(value) => updateForm("name", value)} /><AdminTextInput label={t("admin.planPrice")} type="number" value={form.price} onChange={(value) => updateForm("price", value)} /><AdminTextInput label={t("admin.priceUnit")} value={form.priceUnit} onChange={(value) => updateForm("priceUnit", value)} /><FormSelect label={t("admin.planPeriod")} selectedKey={form.period} onSelectionChange={(key) => updateForm("period", key as SubscriptionPeriod)} options={[{ id: "monthly", label: t("admin.periodMonthly") }, { id: "yearly", label: t("admin.periodYearly") }, { id: "lifetime", label: t("admin.periodLifetime") }, { id: "custom", label: t("admin.periodCustom") }]} />{form.period === "custom" && <AdminTextInput label={t("admin.periodDays")} type="number" value={form.periodDays} onChange={(value) => updateForm("periodDays", value)} />}<div className="sm:col-span-2"><AdminTextArea label={t("admin.planDescription")} value={form.description} onChange={(value) => updateForm("description", value)} /></div><div className="sm:col-span-2"><AdminTextArea label={t("admin.contactMessage")} value={form.contactMessage} onChange={(value) => updateForm("contactMessage", value)} /></div><div className="flex flex-wrap gap-5 sm:col-span-2"><label className="flex items-center gap-2 text-sm"><Switch isSelected={form.highlighted} onChange={(selected) => updateForm("highlighted", selected)} size="sm"><Switch.Control><Switch.Thumb /></Switch.Control></Switch>{t("admin.highlighted")}</label><label className="flex items-center gap-2 text-sm"><Switch isSelected={form.active} onChange={(selected) => updateForm("active", selected)} size="sm"><Switch.Control><Switch.Thumb /></Switch.Control></Switch>{t("admin.activePlan")}</label></div></div>
-          <div className="rounded-2xl border border-border/70 bg-surface/40 p-4"><div className="mb-4 flex items-center justify-between gap-3"><div><h3 className="font-bold">{t("admin.planFeatures")}</h3><p className="mt-1 text-xs text-muted">{t("admin.featureEditorHint")}</p></div><Button size="sm" variant="secondary" onPress={() => updateForm("features", [...form.features, { key: `feature_${form.features.length + 1}`, label: "قابلیت جدید", description: "", enabled: true, limit: null }])}><Add size={16} />{t("admin.addFeature")}</Button></div><div className="space-y-3">{form.features.length === 0 ? <p className="rounded-xl border border-dashed border-border p-5 text-center text-sm text-muted">{t("admin.noFeatures")}</p> : form.features.map((feature, index) => <div key={`${feature.key}-${index}`} className="rounded-xl border border-border/60 bg-surface p-3"><div className="flex items-start gap-2"><div className="grid min-w-0 flex-1 gap-2 sm:grid-cols-2"><Input aria-label={t("admin.featureKey")} variant="secondary" value={feature.key} onChange={(event) => updateFeature(index, { key: event.target.value })} placeholder={t("admin.featureKey")} /><Input aria-label={t("admin.featureLabel")} variant="secondary" value={feature.label} onChange={(event) => updateFeature(index, { label: event.target.value })} placeholder={t("admin.featureLabel")} /></div><Button type="button" size="sm" variant="ghost" className="text-danger" onPress={() => updateForm("features", form.features.filter((_, itemIndex) => itemIndex !== index))}><Trash size={16} /></Button></div><div className="mt-2 flex flex-wrap items-center gap-3"><Input aria-label={t("admin.featureLimit")} variant="secondary" type="number" min="0" value={feature.limit ?? ""} onChange={(event) => updateFeature(index, { limit: event.target.value === "" ? null : Number(event.target.value) })} placeholder={t("admin.featureLimit")} className="w-40" /><label className="flex items-center gap-2 text-xs text-muted"><Switch isSelected={feature.enabled} onChange={(selected) => updateFeature(index, { enabled: selected })} size="sm"><Switch.Control><Switch.Thumb /></Switch.Control></Switch>{t("admin.featureEnabled")}</label><span className="font-mono text-[10px] text-muted" dir="ltr">{feature.key || "—"}</span></div></div>)}</div></div>
+          <div className="rounded-2xl border border-border/70 bg-surface/40 p-4"><div className="mb-4"><h3 className="font-bold">{t("admin.planFeatures")}</h3><p className="mt-1 text-xs text-muted">{t("admin.featureEditorHint")}</p></div><div className="grid gap-3 sm:grid-cols-2">{SUBSCRIPTION_FEATURE_CATALOG.map((catalogFeature) => { const configured = form.features.find((feature) => feature.key === catalogFeature.key); const enabled = configured?.enabled === true; return <div key={catalogFeature.key} className={`rounded-2xl border p-3 transition-colors ${enabled ? "border-accent/40 bg-accent/5" : "border-border/60 bg-surface"}`}><div className="flex items-start justify-between gap-3"><div className="flex min-w-0 items-start gap-2"><div className={`mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-xl ${enabled ? "bg-accent/15 text-accent" : "bg-surface-secondary text-muted"}`}>{enabled ? "✓" : "—"}</div><div className="min-w-0"><p className="font-semibold">{t(catalogFeature.labelKey)}</p><p className="mt-0.5 font-mono text-[10px] text-muted" dir="ltr">{catalogFeature.key}</p></div></div><Switch aria-label={t(catalogFeature.labelKey)} isSelected={enabled} onChange={(selected) => setCatalogFeatureEnabled(catalogFeature.key, selected)} size="sm"><Switch.Control><Switch.Thumb /></Switch.Control></Switch></div><Input aria-label={t("admin.featureLimit")} variant="secondary" type="number" min="0" value={configured?.limit == null ? "" : String(configured.limit)} onChange={(event) => setCatalogFeatureLimit(catalogFeature.key, event.target.value === "" ? null : Number(event.target.value))} placeholder={t("admin.featureLimit")} className="mt-3" disabled={!enabled} /></div>; })}</div></div>
         </div><div className="mt-6 flex flex-wrap justify-end gap-2 border-t border-border/70 pt-5"><Button variant="ghost" onPress={startNew}>{t("admin.cancelEdit")}</Button><Button className="min-w-40" isPending={saving} onPress={() => void savePlan()}>{saving ? t("common.save") : t("admin.savePlan")}</Button></div>
       </section>
 

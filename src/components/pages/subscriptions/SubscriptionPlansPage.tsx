@@ -36,11 +36,6 @@ export function SubscriptionPlansPage() {
   }, [plans]);
 
   const currentPlanId = mine?.subscription?.plan?._id;
-  const userHasPlan = Boolean(mine?.subscription);
-
-  function isAvailableForUser(key: string) {
-    return userHasPlan && Boolean(mine?.entitlements[key]?.enabled);
-  }
 
   return (
     <div className="mx-auto w-full max-w-7xl space-y-6">
@@ -58,9 +53,9 @@ export function SubscriptionPlansPage() {
           <div className="flex-1 space-y-2">{featureCatalog.map((catalogFeature) => {
             const planFeature = plan.features.find((feature) => feature.key === catalogFeature.key);
             const enabledInPlan = Boolean(planFeature?.enabled);
-            const enabledForUser = enabledInPlan && isAvailableForUser(catalogFeature.key);
-            const lockedBecauseOfUserPlan = enabledInPlan && !enabledForUser;
-            return <div key={catalogFeature.key} className={`flex items-start gap-2 rounded-xl px-3 py-2.5 text-sm ${enabledForUser ? "bg-success/8 text-foreground" : "bg-surface-secondary/60 text-muted"}`}><span className="mt-0.5 shrink-0">{enabledForUser ? <TickCircle size={18} className="text-success" /> : <Lock1 size={17} className="text-muted" />}</span><div className="min-w-0"><p className={enabledForUser ? "font-medium" : "font-medium text-muted"}>{catalogFeature.label}{planFeature?.limit != null ? <span className="ms-1 text-xs text-muted">({planFeature.limit})</span> : null}</p><p className="mt-0.5 text-xs text-muted">{!enabledInPlan ? t("common.subscription.notIncludedInPlan") : lockedBecauseOfUserPlan ? t("common.subscription.notForYourPlan") : t("common.subscription.enabledForYou")}</p></div></div>;
+            const locked = !enabledInPlan;
+            const status = !enabledInPlan ? t("common.subscription.notIncludedInPlan") : isCurrent ? t("common.subscription.enabledForYou") : t("common.subscription.availableInPlan");
+            return <div key={catalogFeature.key} className={`flex items-start gap-2 rounded-xl px-3 py-2.5 text-sm ${locked ? "bg-surface-secondary/60 text-muted" : "bg-success/8 text-foreground"}`}><span className="mt-0.5 shrink-0">{locked ? <Lock1 size={17} className="text-muted" /> : <TickCircle size={18} className="text-success" />}</span><div className="min-w-0"><p className={locked ? "font-medium text-muted" : "font-medium"}>{catalogFeature.label}{planFeature?.limit != null ? <span className="ms-1 text-xs text-muted">({planFeature.limit})</span> : null}</p><p className="mt-0.5 text-xs text-muted">{status}</p></div></div>;
           })}</div>
           <Button className="mt-6 w-full" variant={isCurrent ? "secondary" : "primary"} onPress={() => { window.location.href = `${PATHS.LANDING}#contact`; }}>{isCurrent ? t("common.subscription.currentPlan") : t("common.subscription.contactAdmin")}</Button>
         </article>;

@@ -326,6 +326,7 @@ export const commonMessages: MessageTree = {
     notIncludedInPlan: "در این پلن فعال نیست",
     notForYourPlan: "برای پلن شما مناسب نیست",
     enabledForYou: "برای شما فعال است",
+    availableInPlan: "در این پلن فعال است",
     contactAdmin: "تماس با ادمین برای فعال‌سازی",
     loadError: "بارگذاری پلن‌ها ناموفق بود",
   },
