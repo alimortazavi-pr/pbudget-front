@@ -21,7 +21,9 @@ export async function createAdminSubscriptionPlan(payload: Omit<SubscriptionPlan
   return data;
 }
 
-export async function updateAdminSubscriptionPlan(id: string, payload: Partial<SubscriptionPlan>) {
+// The plan slug is the immutable identifier used by the backend update DTO.
+// Keeping it out of this type prevents accidentally sending it in PATCH requests.
+export async function updateAdminSubscriptionPlan(id: string, payload: Partial<Omit<SubscriptionPlan, "_id" | "slug">>) {
   const { data } = await axiosInstance.patch<SubscriptionPlan>(`/admin/subscriptions/plans/${id}`, payload);
   return data;
 }

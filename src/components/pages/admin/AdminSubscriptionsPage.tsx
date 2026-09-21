@@ -140,14 +140,14 @@ export function AdminSubscriptionsPage() {
     setSaving(true);
     try {
       const payload = {
-        slug: form.slug.trim(), name: form.name.trim(), description: form.description.trim(), price: Number(form.price) || 0,
+        name: form.name.trim(), description: form.description.trim(), price: Number(form.price) || 0,
         priceUnit: form.priceUnit.trim() || "تومان", period: form.period,
         periodDays: form.period === "custom" ? Number(form.periodDays) || null : undefined,
         highlighted: form.highlighted, active: form.active, sortOrder: Number(form.sortOrder) || 0,
         contactMessage: form.contactMessage.trim(), features: planFeaturesForSave(),
       };
       if (editingId) await subscriptionApi.updateAdminSubscriptionPlan(editingId, payload);
-      else await subscriptionApi.createAdminSubscriptionPlan(payload as Parameters<typeof subscriptionApi.createAdminSubscriptionPlan>[0]);
+      else await subscriptionApi.createAdminSubscriptionPlan({ ...payload, slug: form.slug.trim() } as Parameters<typeof subscriptionApi.createAdminSubscriptionPlan>[0]);
       showToast(t("admin.planSaved"), "success"); startNew(); await load();
     } catch { showToast(t("common.saveFailed"), "danger"); } finally { setSaving(false); }
   }
