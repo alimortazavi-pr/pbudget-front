@@ -42,4 +42,11 @@ export const adminMessages: MessageTree = {
   planArchived: "Plan archived",
   archivePlanConfirm: "Archive plan «{{name}}»?",
   highlighted: "Featured plan",
+  periodMonthly: "Monthly",
+  periodYearly: "Yearly",
+  periodLifetime: "Lifetime",
+  periodCustom: "Custom",
+  periodDays: "Number of days",
+  contactMessage: "Activation message",
+  manualActivationHint: "Manual assignment, no payment gateway",
 };

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Button } from "@heroui/react";
+import { Button, Input, Label, Switch, TextArea, TextField } from "@heroui/react";
 import { Add, Crown, Edit2, Flash, Refresh2, Trash } from "iconsax-reactjs";
 
 import { useTranslation } from "@/components/providers/LanguageProvider";
@@ -11,6 +11,7 @@ import type { AdminUser } from "@/common/interfaces/admin";
 import type { SubscriptionFeature, SubscriptionPlan, SubscriptionPeriod, UserSubscription } from "@/common/interfaces/subscription.interface";
 import { formatPrice, toPersianDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
+import { FormSelect } from "@/components/common/form/FormFields";
 
 type PlanForm = {
   slug: string;
@@ -58,6 +59,14 @@ function toForm(plan?: SubscriptionPlan): PlanForm {
     contactMessage: plan.contactMessage,
     features: plan.features.map((feature) => ({ ...feature })),
   };
+}
+
+function AdminTextInput({ label, value, onChange, type = "text", disabled = false }: { label: string; value: string; onChange: (value: string) => void; type?: string; disabled?: boolean }) {
+  return <TextField className="gap-1.5"><Label className="text-sm font-medium">{label}</Label><Input variant="secondary" type={type} value={value} disabled={disabled} onChange={(event) => onChange(event.target.value)} /></TextField>;
+}
+
+function AdminTextArea({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
+  return <TextField className="gap-1.5"><Label className="text-sm font-medium">{label}</Label><TextArea variant="secondary" rows={2} value={value} onChange={(event) => onChange(event.target.value)} /></TextField>;
 }
 
 export function AdminSubscriptionsPage() {
@@ -188,22 +197,22 @@ export function AdminSubscriptionsPage() {
         <div className="glass rounded-2xl p-5">
           <div className="mb-4 flex items-center gap-2"><Flash size={19} className="text-accent" variant="Bold" /><h2 className="text-lg font-bold">{t("admin.newPlan")}</h2></div>
           <div className="space-y-3">
-            <input disabled={Boolean(editingId)} value={form.slug} onChange={(e) => updateForm("slug", e.target.value)} placeholder={t("admin.planSlug")} className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm" />
-            <input value={form.name} onChange={(e) => updateForm("name", e.target.value)} placeholder={t("admin.planName")} className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm" />
-            <textarea value={form.description} onChange={(e) => updateForm("description", e.target.value)} placeholder={t("admin.planDescription")} rows={2} className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm" />
-            <div className="grid grid-cols-2 gap-2"><input type="number" value={form.price} onChange={(e) => updateForm("price", e.target.value)} placeholder={t("admin.planPrice")} className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm" /><select value={form.period} onChange={(e) => updateForm("period", e.target.value as SubscriptionPeriod)} className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"><option value="monthly">monthly</option><option value="yearly">yearly</option><option value="lifetime">lifetime</option><option value="custom">custom</option></select></div>
-            {form.period === "custom" && <input type="number" value={form.periodDays} onChange={(e) => updateForm("periodDays", e.target.value)} placeholder="روز" className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm" />}
-            <textarea value={form.contactMessage} onChange={(e) => updateForm("contactMessage", e.target.value)} placeholder="پیام خرید" rows={2} className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm" />
+            <AdminTextInput label={t("admin.planSlug")} value={form.slug} disabled={Boolean(editingId)} onChange={(value) => updateForm("slug", value)} />
+            <AdminTextInput label={t("admin.planName")} value={form.name} onChange={(value) => updateForm("name", value)} />
+            <AdminTextArea label={t("admin.planDescription")} value={form.description} onChange={(value) => updateForm("description", value)} />
+            <div className="grid gap-3 sm:grid-cols-2"><AdminTextInput label={t("admin.planPrice")} type="number" value={form.price} onChange={(value) => updateForm("price", value)} /><FormSelect label={t("admin.planPeriod")} selectedKey={form.period} onSelectionChange={(key) => updateForm("period", key as SubscriptionPeriod)} options={[{ id: "monthly", label: t("admin.periodMonthly") }, { id: "yearly", label: t("admin.periodYearly") }, { id: "lifetime", label: t("admin.periodLifetime") }, { id: "custom", label: t("admin.periodCustom") }]} /></div>
+            {form.period === "custom" && <AdminTextInput label={t("admin.periodDays")} type="number" value={form.periodDays} onChange={(value) => updateForm("periodDays", value)} />}
+            <AdminTextArea label={t("admin.contactMessage")} value={form.contactMessage} onChange={(value) => updateForm("contactMessage", value)} />
             <div className="flex items-center justify-between"><span className="text-sm font-semibold">{t("admin.planFeatures")}</span><Button size="sm" variant="ghost" onPress={() => updateForm("features", [...form.features, { key: `feature_${form.features.length + 1}`, label: "قابلیت جدید", description: "", enabled: true, limit: null }])}><Add size={16} />{t("admin.addFeature")}</Button></div>
-            <div className="space-y-2">{form.features.map((feature, index) => <div key={`${feature.key}-${index}`} className="grid grid-cols-[1fr_1.2fr_100px_auto] gap-2"><input value={feature.key} onChange={(e) => { const next = [...form.features]; next[index] = { ...feature, key: e.target.value }; updateForm("features", next); }} placeholder={t("admin.featureKey")} className="min-w-0 rounded-lg border border-border bg-surface px-2 py-2 text-xs" /><input value={feature.label} onChange={(e) => { const next = [...form.features]; next[index] = { ...feature, label: e.target.value }; updateForm("features", next); }} placeholder={t("admin.featureLabel")} className="min-w-0 rounded-lg border border-border bg-surface px-2 py-2 text-xs" /><input type="number" min="0" value={feature.limit ?? ""} onChange={(e) => { const next = [...form.features]; next[index] = { ...feature, limit: e.target.value === "" ? null : Number(e.target.value) }; updateForm("features", next); }} placeholder={t("admin.featureLimit")} className="min-w-0 rounded-lg border border-border bg-surface px-2 py-2 text-xs" /><button type="button" className="text-danger" onClick={() => updateForm("features", form.features.filter((_, itemIndex) => itemIndex !== index))}>×</button></div>)}</div>
-            <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.highlighted} onChange={(e) => updateForm("highlighted", e.target.checked)} />{t("admin.highlighted")}</label>
+            <div className="space-y-2">{form.features.map((feature, index) => <div key={`${feature.key}-${index}`} className="grid gap-2 rounded-xl border border-border/60 p-2 sm:grid-cols-[1fr_1.2fr_100px_auto]"><Input aria-label={t("admin.featureKey")} variant="secondary" value={feature.key} onChange={(e) => { const next = [...form.features]; next[index] = { ...feature, key: e.target.value }; updateForm("features", next); }} placeholder={t("admin.featureKey")} /><Input aria-label={t("admin.featureLabel")} variant="secondary" value={feature.label} onChange={(e) => { const next = [...form.features]; next[index] = { ...feature, label: e.target.value }; updateForm("features", next); }} placeholder={t("admin.featureLabel")} /><Input aria-label={t("admin.featureLimit")} variant="secondary" type="number" min="0" value={feature.limit ?? ""} onChange={(e) => { const next = [...form.features]; next[index] = { ...feature, limit: e.target.value === "" ? null : Number(e.target.value) }; updateForm("features", next); }} placeholder={t("admin.featureLimit")} /><Button type="button" size="sm" variant="ghost" className="text-danger" onPress={() => updateForm("features", form.features.filter((_, itemIndex) => itemIndex !== index))}>×</Button></div>)}</div>
+            <label className="flex items-center gap-2 text-sm"><Switch isSelected={form.highlighted} onChange={(selected) => updateForm("highlighted", selected)} size="sm"><Switch.Control><Switch.Thumb /></Switch.Control></Switch>{t("admin.highlighted")}</label>
             <Button className="w-full" isPending={saving} onPress={() => void savePlan()}>{saving ? t("common.save") : t("admin.savePlan")}</Button>
           </div>
         </div>
       </section>
 
       <section className="glass rounded-2xl p-5">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-bold">{t("admin.subscribers")}</h2><p className="text-sm text-muted">تخصیص دستی، بدون درگاه پرداخت</p></div><div className="flex flex-wrap gap-2"><select value={selectedUser} onChange={(e) => setSelectedUser(e.target.value)} className="rounded-xl border border-border bg-surface px-3 py-2 text-sm"><option value="">{t("admin.selectUser")}</option>{users.map((user) => <option key={user._id} value={user._id}>{user.firstName} {user.lastName} — {user.mobile}</option>)}</select><select value={selectedPlan} onChange={(e) => setSelectedPlan(e.target.value)} className="rounded-xl border border-border bg-surface px-3 py-2 text-sm"><option value="">{t("admin.selectPlan")}</option>{activePlans.map((plan) => <option key={plan._id} value={plan._id}>{plan.name}</option>)}</select><Button onPress={() => void assign()} isDisabled={!selectedUser || !selectedPlan}>{t("admin.assign")}</Button></div></div>
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-3"><div><h2 className="text-lg font-bold">{t("admin.subscribers")}</h2><p className="text-sm text-muted">{t("admin.manualActivationHint")}</p></div><div className="grid w-full gap-2 sm:grid-cols-[minmax(220px,1fr)_minmax(180px,1fr)_auto] sm:items-end sm:w-auto"><FormSelect label={t("admin.selectUser")} selectedKey={selectedUser} onSelectionChange={setSelectedUser} options={users.map((user) => ({ id: user._id, label: `${user.firstName} ${user.lastName} — ${user.mobile}` }))} /><FormSelect label={t("admin.selectPlan")} selectedKey={selectedPlan} onSelectionChange={setSelectedPlan} options={activePlans.map((plan) => ({ id: plan._id, label: plan.name }))} /><Button onPress={() => void assign()} isDisabled={!selectedUser || !selectedPlan}>{t("admin.assign")}</Button></div></div>
         {subscriptions.length === 0 ? <p className="rounded-xl bg-surface-secondary p-5 text-sm text-muted">{t("admin.noSubscriptions")}</p> : <div className="overflow-x-auto"><table className="min-w-full text-sm"><thead className="text-muted"><tr><th className="px-3 py-2 text-start">کاربر</th><th className="px-3 py-2 text-start">پلن</th><th className="px-3 py-2 text-start">وضعیت</th><th className="px-3 py-2 text-start">انقضا</th><th /></tr></thead><tbody>{subscriptions.map((subscription) => <tr key={subscription._id} className="border-t border-border/50"><td className="px-3 py-3">{subscription.user?.firstName} {subscription.user?.lastName}<span className="block text-xs text-muted">{subscription.user?.mobile}</span></td><td className="px-3 py-3">{subscription.plan?.name ?? subscription.planSnapshot?.name}</td><td className="px-3 py-3">{subscription.status}</td><td className="px-3 py-3">{subscription.expiresAt ? new Date(subscription.expiresAt).toLocaleDateString("fa-IR") : "∞"}</td><td className="px-3 py-3 text-end">{subscription.status === "active" && <Button size="sm" variant="ghost" onPress={() => void revoke(subscription._id)}>{t("admin.revoke")}</Button>}</td></tr>)}</tbody></table></div>}
       </section>
     </div>

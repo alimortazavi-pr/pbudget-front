@@ -42,4 +42,11 @@ export const adminMessages: MessageTree = {
   planArchived: "تمت أرشفة الخطة",
   archivePlanConfirm: "أرشفة الخطة «{{name}}»؟",
   highlighted: "خطة مميزة",
+  periodMonthly: "شهري",
+  periodYearly: "سنوي",
+  periodLifetime: "دائم",
+  periodCustom: "مخصص",
+  periodDays: "عدد الأيام",
+  contactMessage: "رسالة التفعيل",
+  manualActivationHint: "تخصيص يدوي، بدون بوابة دفع",
 };

@@ -42,4 +42,11 @@ export const adminMessages: MessageTree = {
   planArchived: "پلن آرشیو شد",
   archivePlanConfirm: "پلن «{{name}}» آرشیو شود؟",
   highlighted: "پلن پیشنهادی",
+  periodMonthly: "ماهانه",
+  periodYearly: "سالانه",
+  periodLifetime: "دائمی",
+  periodCustom: "سفارشی",
+  periodDays: "تعداد روز",
+  contactMessage: "پیام فعال‌سازی",
+  manualActivationHint: "تخصیص دستی، بدون درگاه پرداخت",
 };
