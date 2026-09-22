@@ -6,7 +6,6 @@ import { dashboardMessages } from "./dashboard";
 import { projectsMessages } from "./projects";
 import { debtsMessages } from "./debts";
 import { adminMessages } from "./admin";
-import { voiceMessages } from "./voice";
 import { planningMessages } from "./planning";
 import { categoriesMessages } from "./categories";
 import { budgetMessages } from "./budget";
@@ -36,7 +35,6 @@ export const messages = {
     { projects: projectsMessages },
     { debts: debtsMessages },
     { admin: adminMessages },
-    { voice: voiceMessages },
     { planning: planningMessages },
     { categories: categoriesMessages },
     { budget: budgetMessages },

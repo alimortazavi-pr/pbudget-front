@@ -45,7 +45,6 @@ export const PATHS = {
   LANDING_PREVIEW: "/landing-preview",
   ADMIN_APP: "/admin/app",
   ADMIN_BANKS: "/admin/banks",
-  ADMIN_VOICE: "/admin/voice",
   ADMIN_SUBSCRIPTIONS: "/admin/subscriptions",
   BANK_IMPORT: "/bank-import",
 } as const;

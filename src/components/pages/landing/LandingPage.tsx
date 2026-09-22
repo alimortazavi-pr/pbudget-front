@@ -18,7 +18,6 @@ import {
   DocumentDownload,
   Menu,
   Messages2,
-  Microphone2,
   Profile2User,
   ShieldTick,
   Sms,
@@ -66,7 +65,6 @@ const FEATURE_ICONS: Record<string, typeof Wallet2> = {
   planning: Calendar,
   projects: Building,
   ventures: Profile2User,
-  voice: Microphone2,
   analysis: Chart,
 };
 
@@ -584,7 +582,7 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
 
       <section className="py-12">
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-2 px-4 sm:grid-cols-4 md:px-6">
-          {[{ icon: Calendar, label: t("auto.k0f46ab6712") }, { icon: Messages2, label: t("auto.kca3d2562e4") }, { icon: Microphone2, label: t("auto.k21575dae23") }, { icon: Chart, label: t("auto.k161f3de3c1") }, { icon: Building, label: t("auto.k7ef7c399e7") }, { icon: Clock, label: t("auto.k299c8c9aa7") }, { icon: DocumentDownload, label: t("auto.k34eb5f9ec7") }, { icon: Wallet2, label: t("auto.kc2b3e54546") }].map(({ icon: Icon, label }) => (
+          {[{ icon: Calendar, label: t("auto.k0f46ab6712") }, { icon: Messages2, label: t("auto.kca3d2562e4") }, { icon: Chart, label: t("auto.k161f3de3c1") }, { icon: Building, label: t("auto.k7ef7c399e7") }, { icon: Clock, label: t("auto.k299c8c9aa7") }, { icon: DocumentDownload, label: t("auto.k34eb5f9ec7") }, { icon: Wallet2, label: t("auto.kc2b3e54546") }].map(({ icon: Icon, label }) => (
             <div key={label} className="lp-card flex flex-col items-center gap-2 rounded-xl p-4 text-center text-sm">
               <Icon size={22} className="text-[var(--brand-rose)]" /><span>{label}</span>
             </div>

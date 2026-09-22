@@ -9,7 +9,6 @@ import { AuthBootstrap } from "@/components/common/layout/AuthBootstrap";
 import { MobileAppShell } from "@/components/common/layout/MobileAppShell";
 import { SimpleModeGuard } from "@/components/common/layout/SimpleModeGuard";
 import { BalanceModalProvider } from "@/components/providers/BalanceModalProvider";
-import { VoiceAssistantProvider } from "@/components/voice/VoiceAssistantProvider";
 import { SubscriptionAccessProvider } from "@/components/providers/SubscriptionAccessProvider";
 
 const PAGE_TITLE_KEYS: Record<string, string> = {
@@ -110,17 +109,15 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <BalanceModalProvider>
-      <VoiceAssistantProvider>
-        <AuthBootstrap />
-        <SubscriptionAccessProvider>
-          <MobileAppShell
-            {...shellProps}
-            showBack={pathname !== PATHS.HOME}
-          >
-            <SimpleModeGuard>{children}</SimpleModeGuard>
-          </MobileAppShell>
-        </SubscriptionAccessProvider>
-      </VoiceAssistantProvider>
+      <AuthBootstrap />
+      <SubscriptionAccessProvider>
+        <MobileAppShell
+          {...shellProps}
+          showBack={pathname !== PATHS.HOME}
+        >
+          <SimpleModeGuard>{children}</SimpleModeGuard>
+        </MobileAppShell>
+      </SubscriptionAccessProvider>
     </BalanceModalProvider>
   );
 }

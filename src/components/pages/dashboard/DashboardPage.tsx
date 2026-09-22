@@ -35,7 +35,6 @@ import {
 import { categoriesSelector } from "@/stores/category";
 import { useAppMode } from "@/components/providers/AppModeProvider";
 import { userSelector } from "@/stores/profile";
-import { SubscriptionStatusCard } from "@/components/pages/dashboard/SubscriptionStatusCard";
 
 type DashboardPageProps = {
   initialData?: IBudgetsSummary;
@@ -245,10 +244,6 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         expense={totalCost ?? 0}
         data-tour="dashboard-balance"
       />
-
-      <div className="px-4 pb-4">
-        <SubscriptionStatusCard />
-      </div>
 
       <div className="px-4 pb-4">
         <WorkTimeQuickWidget />

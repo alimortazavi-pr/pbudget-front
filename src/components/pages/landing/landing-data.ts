@@ -99,15 +99,6 @@ export const DEFAULT_LANDING_CONTENT: ILandingContent = {
       span: "sm",
     },
     {
-      id: "voice",
-      title: "دستیار صوتی و تلگرام",
-      description:
-        "ثبت تراکنش با صدا، اعلان تلگرام برای یادآوری اقساط و درخواست‌های مالی.",
-      tags: ["صدا", "بات"],
-      accent: "violet",
-      span: "sm",
-    },
-    {
       id: "analysis",
       title: "تحلیل و گزارش مالی",
       description:
@@ -215,7 +206,6 @@ export const DEFAULT_LANDING_CONTENT: ILandingContent = {
     "تقویم شمسی",
     "گزارش اکسل",
     "بات تلگرام",
-    "دستیار صوتی",
     "ورود از بانک",
     "تحلیل هزینه",
   ],
@@ -243,7 +233,6 @@ export const DEFAULT_LANDING_CONTENT: ILandingContent = {
           "طلب، بدهی، اقساط و چک",
           "پروژه، تسک و تقویم شمسی",
           "مشارکت با شریک و سرمایه‌گذاری",
-          "دستیار صوتی و بات تلگرام",
           "PWA — نصب روی موبایل",
         ],
         cta: "شروع رایگان",

@@ -5,7 +5,6 @@ import {
   DocumentText,
   Home2,
   LoginCurve,
-  Microphone2,
   Mobile,
   Monitor,
   People,
@@ -72,11 +71,6 @@ export const ADMIN_NAV = [
     href: PATHS.ADMIN_LOGS,
     label: "nav.adminSystemLogs",
     icon: Activity,
-  },
-  {
-    href: PATHS.ADMIN_VOICE,
-    label: "nav.adminVoiceLogs",
-    icon: Microphone2,
   },
   {
     href: PATHS.ADMIN_SUBSCRIPTIONS,

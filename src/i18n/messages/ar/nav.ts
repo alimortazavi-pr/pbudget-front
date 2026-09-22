@@ -55,7 +55,6 @@ export const navMessages: MessageTree = {
   adminAudit: "سجل العمليات",
   adminAuthAudit: "سجل تسجيل الدخول",
   adminSystemLogs: "سجل النظام",
-  adminVoiceLogs: "سجل الصوت",
   adminSubscriptions: "الاشتراكات",
   adminMonitoring: "المراقبة",
 };

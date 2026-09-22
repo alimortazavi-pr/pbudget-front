@@ -7,7 +7,6 @@ import { Button } from "@heroui/react";
 
 import { APP_VERSION } from "@/common/constants/app-version";
 import { SUPPORT_PHONE } from "@/components/common/layout/shell-nav";
-import { VoiceAssistantSection } from "@/components/pages/profile/VoiceAssistantSection";
 import { TelegramConnectSection } from "@/components/pages/profile/TelegramConnectSection";
 import { UserPreferencesSettings } from "@/components/pages/settings/UserPreferencesSection";
 import { AppModeSection } from "@/components/pages/settings/AppModeSection";
@@ -37,10 +36,6 @@ export function SettingsPage() {
       <AppModeSection />
 
       <UserPreferencesSettings />
-
-      <div data-tour="settings-voice">
-        <VoiceAssistantSection />
-      </div>
 
       <div data-tour="settings-telegram">
         <TelegramConnectSection />

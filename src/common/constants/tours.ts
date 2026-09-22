@@ -6,7 +6,7 @@ export type TourStep = {
   title: string;
   description: string;
   placement?: "top" | "bottom" | "start" | "end" | "center";
-  /** Skip step if target missing (e.g. voice FAB when disabled) */
+  /** Skip step if target is not present on the current page */
   optional?: boolean;
   /** Limit step to viewport type */
   when?: "mobile" | "desktop" | "all";
@@ -66,14 +66,6 @@ export const ONBOARDING_TOUR: TourDefinition = {
         "دسترسی به داشبورد، تحلیل مالی، صندوق‌ها، کارت‌ها، دسته‌بندی‌ها و بخش‌های برنامه‌ریزی.",
       placement: "end",
       when: "desktop",
-    },
-    {
-      target: '[data-tour="voice-fab"]',
-      title: "دستیار صوتی",
-      description:
-        "با میکروفون شناور، تراکنش، تسک، یادداشت، بدهی و بیشتر را با صدا ثبت کنید — در همه صفحات فعال است.",
-      placement: "top",
-      optional: true,
     },
     {
       target: '[data-tour="tour-button"]',
@@ -188,12 +180,6 @@ export const PAGE_TOURS: Record<string, TourDefinition> = {
         target: '[data-tour="settings-theme"]',
         title: "تم اپ",
         description: "بین حالت روشن و تاریک جابه‌جا شوید — روی همه صفحات اعمال می‌شود.",
-        placement: "bottom",
-      },
-      {
-        target: '[data-tour="settings-voice"]',
-        title: "دستیار صوتی",
-        description: "فعال/غیرفعال کردن دکمه میکروفون شناور در تمام صفحات.",
         placement: "bottom",
       },
       {

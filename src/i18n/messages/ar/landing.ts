@@ -104,14 +104,6 @@ export const landingMessages: MessageTree = {
         "1": "سرمایه"
       }
     },
-    "voice": {
-      "title": "دستیار صوتی و تلگرام",
-      "description": "إضافة معاملة با صدا، اعلان Telegram برای تذكير Installments و درخواست‌های financial.",
-      "tags": {
-        "0": "صدا",
-        "1": "بات"
-      }
-    },
     "analysis": {
       "title": "تحليل و تقرير مالي",
       "description": "نمودار روند دخل و expense، compare ماه‌ها، شناسایی الگوهای خرج و تصدير Excel.",
@@ -211,9 +203,8 @@ export const landingMessages: MessageTree = {
     "2": "تقویم شمسی",
     "3": "تقرير Excel",
     "4": "بات تلگرام",
-    "5": "دستیار صوتی",
-    "6": "دخول از بنك",
-    "7": "تحليل مصروف"
+    "5": "دخول از بنك",
+    "6": "تحليل مصروف"
   },
   "settings": {
     "downloadLabel": "تنزيل التطبيق"
@@ -235,24 +226,9 @@ export const landingMessages: MessageTree = {
           "3": "receivable، debt، Installments و شيك",
           "4": "project، مهمة و تقویم شمسی",
           "5": "مشارکت با شريك و سرمایه‌گذاری",
-          "6": "دستیار صوتی و بات تلگرام",
-          "7": "PWA — نصب روی جوال"
+          "6": "PWA — نصب روی جوال"
         },
         "cta": "شروع رایگان"
-      },
-      "business": {
-        "name": "میز أعمال",
-        "price": "محصول جدا",
-        "period": "پلن شهري",
-        "description": "حضور GPS، پرسنل، شیفت و مالي تیمی — روی دامنه و تطبيق جداگانه",
-        "features": {
-          "0": "إضافة حضور با Geofence",
-          "1": "إدارة پرسنل و دعوة QR",
-          "2": "مالي تیمی و تنخواه",
-          "3": "تقرير حضور و مرخصی",
-          "4": "اتصال SSO با account شخصی"
-        },
-        "cta": "رفتن به business.pdesk.ir"
       },
       "support": {
         "name": "سازمانی",
