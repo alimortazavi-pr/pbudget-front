@@ -100,6 +100,9 @@ export function AnalysisFeatureSummary({
             <Stat label={t("pages.analysis.activeProjects")}>
               {toPersianDigits(summary.projects.active)} / {toPersianDigits(summary.projects.total)}
             </Stat>
+            <Stat label={t("common.amount")}>
+              <Amount value={summary.projects.totalAmount} />
+            </Stat>
             <Stat label={t("pages.analysis.activePartners")}>
               {toPersianDigits(summary.partners.active)} / {toPersianDigits(summary.partners.total)}
             </Stat>
