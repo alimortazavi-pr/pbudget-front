@@ -33,6 +33,7 @@ import { AnalysisFilters } from "@/components/pages/analysis/AnalysisFilters";
 import { AnalysisInsightsPanel } from "@/components/pages/analysis/AnalysisInsightsPanel";
 import { AnalysisBudgetLimitsPanel } from "@/components/pages/analysis/AnalysisBudgetLimitsPanel";
 import { AnalysisPaymentCardsPanel } from "@/components/pages/analysis/AnalysisPaymentCardsPanel";
+import { AnalysisFeatureSummary } from "@/components/pages/analysis/AnalysisFeatureSummary";
 import { WorkTimeAnalysisSection } from "@/components/pages/projects/WorkTimeAnalysisSection";
 import { AnalysisKpiCards } from "@/components/pages/analysis/AnalysisKpiCards";
 import { useAppSelector } from "@/stores/hooks";
@@ -283,6 +284,8 @@ export function AnalysisPage() {
           <div data-tour="analysis-kpi">
             <AnalysisKpiCards report={report} />
           </div>
+
+          <AnalysisFeatureSummary summary={report.featureSummary} />
 
           <div data-tour="analysis-charts">
             <AnalysisCharts report={report} duration={duration} />

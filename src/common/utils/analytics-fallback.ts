@@ -299,6 +299,35 @@ export function buildClientAnalyticsReport({
     boxes: [],
     byCategory,
     byPaymentCard,
+    featureSummary: {
+      debts: {
+        total: 0,
+        remaining: 0,
+        receivableRemaining: 0,
+        payableRemaining: 0,
+        openCount: 0,
+        settledCount: 0,
+      },
+      installments: {
+        activePlans: 0,
+        totalPlans: 0,
+        dueCount: 0,
+        dueAmount: 0,
+        paidCount: 0,
+        paidAmount: 0,
+        remainingInstallments: 0,
+        remainingAmount: 0,
+      },
+      checks: {
+        pendingCount: 0,
+        pendingAmount: 0,
+        receivablePendingAmount: 0,
+        payablePendingAmount: 0,
+        clearedCount: 0,
+      },
+      projects: { total: 0, active: 0, completed: 0, onHold: 0, totalAmount: 0 },
+      partners: { total: 0, active: 0, pending: 0, sharePercentTotal: 0 },
+    },
     categoryBudgets,
     monthlyTrends: [
       {

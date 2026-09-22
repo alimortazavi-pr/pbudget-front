@@ -469,84 +469,52 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
 
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-2">
-        <CategoryTable
-          title={t("auto.k56dac9be10")}
-          rows={report.topExpenses.map((item, index) => ({
-            title: item.title,
-            amount: item.amount,
-            share: item.share,
-            count: item.count,
-            color: resolveCategoryColor(item.color, index),
-          }))}
-          amountLabel={t("common.expense")}
-        />
-        <CategoryTable
-          title={t("auto.k9e91112d6d")}
-          rows={report.topIncomes.map((item, index) => ({
-            title: item.title,
-            amount: item.amount,
-            share: item.share,
-            count: item.count,
-            color: resolveCategoryColor(item.color, index),
-          }))}
-          amountLabel={t("common.income")}
-        />
-      </div>
+      <CategoryBreakdown rows={report.byCategory} />
     </div>
   );
 }
 
-function CategoryTable({
-  title,
+function CategoryBreakdown({
   rows,
-  amountLabel,
 }: {
-  title: string;
-  rows: Array<{
-    title: string;
-    amount: number;
-    share: number;
-    count: number;
-    color?: string;
-  }>;
-  amountLabel: string;
-}) {  const { t } = useTranslation();
+  rows: AnalyticsReport["byCategory"];
+}) {
+  const { t } = useTranslation();
+  const usedRows = rows.filter((row) => row.income > 0 || row.cost > 0);
 
   return (
     <section className="glass rounded-2xl p-4 lg:p-5">
-      <h3 className="mb-4 font-bold">{title}</h3>
-      {rows.length === 0 ? (
+      <div className="mb-4">
+        <h3 className="font-bold">{t("pages.analysis.categoryBreakdownTitle")}</h3>
+        <p className="mt-1 text-sm text-muted">{t("pages.analysis.categoryBreakdownDescription")}</p>
+      </div>
+      {usedRows.length === 0 ? (
         <p className="text-sm text-muted">{t("auto.ke4966467bc")}</p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="min-w-[680px] w-full text-sm">
             <thead>
               <tr className="border-b border-border/60 text-muted">
-                <th className="pb-2 text-start font-medium">{t("auto.k32034c98af")}</th>
-                <th className="pb-2 text-start font-medium">{amountLabel}</th>
-                <th className="pb-2 text-start font-medium">{t("auto.k77e1e41b61")}</th>
-                <th className="pb-2 text-start font-medium">{t("auto.kff10995101")}</th>
+                <th className="pb-2 text-start font-medium">{t("pages.analysis.category")}</th>
+                <th className="pb-2 text-start font-medium">{t("pages.analysis.income")}</th>
+                <th className="pb-2 text-start font-medium">{t("pages.analysis.expense")}</th>
+                <th className="pb-2 text-start font-medium">{t("pages.analysis.net")}</th>
+                <th className="pb-2 text-start font-medium">{t("pages.analysis.transactions")}</th>
               </tr>
             </thead>
             <tbody>
-              {rows.map((row) => (
-                <tr key={row.title} className="border-b border-border/30">
+              {usedRows.map((row, index) => (
+                <tr key={row.categoryId || row.title} className="border-b border-border/30">
                   <td className="py-2.5 font-medium">
                     <span className="inline-flex items-center gap-2">
-                      {row.color ? (
-                        <span
-                          className="h-2.5 w-2.5 rounded-full"
-                          style={{ backgroundColor: row.color }}
-                        />
-                      ) : null}
+                      <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: resolveCategoryColor(row.color, index) }} />
                       {row.title}
                     </span>
                   </td>
-                  <td className="py-2.5">{formatPrice(row.amount)}</td>
-                  <td className="py-2.5">
-                    {toPersianDigits(row.share.toFixed(1))}
-                    {t("common.percentSign")}
+                  <td className="py-2.5">{formatPrice(row.income)} {moneyDisplayUnitLabel()}</td>
+                  <td className="py-2.5">{formatPrice(row.cost)} {moneyDisplayUnitLabel()}</td>
+                  <td className={`py-2.5 font-semibold ${row.net >= 0 ? "text-success-foreground" : "text-danger"}`}>
+                    {formatPrice(row.net)} {moneyDisplayUnitLabel()}
                   </td>
                   <td className="py-2.5">{toPersianDigits(row.count)}</td>
                 </tr>

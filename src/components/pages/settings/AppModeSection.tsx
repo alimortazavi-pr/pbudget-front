@@ -35,7 +35,7 @@ export function AppModeSection() {
         <p className="mt-1 text-sm text-muted">{t("common.appModeDesc")}</p>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-4">
         {APP_MODES.map((mode) => {
           const active = appMode === mode.id;
           const Icon =

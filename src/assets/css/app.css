@@ -684,7 +684,7 @@
   }
 
   .pb-experience-card {
-    @apply flex cursor-pointer items-start gap-3 rounded-2xl border border-border/50 bg-surface-secondary p-4 text-start transition-all;
+    @apply flex min-h-40 cursor-pointer items-start gap-4 rounded-2xl border border-border/50 bg-surface-secondary p-5 text-start transition-all;
   }
 
   .pb-experience-card[data-active="true"] {
@@ -692,7 +692,15 @@
   }
 
   .pb-experience-card-icon {
-    @apply flex size-11 shrink-0 items-center justify-center rounded-xl bg-surface text-accent;
+    @apply flex size-12 shrink-0 items-center justify-center rounded-xl bg-surface text-accent;
+  }
+
+  .pb-experience-card:hover {
+    @apply -translate-y-0.5 border-accent/60 bg-surface shadow-md;
+  }
+
+  .pb-experience-card:focus-visible {
+    @apply outline-none ring-2 ring-accent ring-offset-2 ring-offset-background;
   }
 
   .pb-app-simple .pb-main-shell {

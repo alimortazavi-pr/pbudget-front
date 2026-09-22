@@ -61,6 +61,47 @@ export type AnalyticsCategoryBudgetRow = {
   isRollup?: boolean;
 };
 
+export type AnalyticsFeatureSummary = {
+  debts: {
+    total: number;
+    remaining: number;
+    receivableRemaining: number;
+    payableRemaining: number;
+    openCount: number;
+    settledCount: number;
+  };
+  installments: {
+    activePlans: number;
+    totalPlans: number;
+    dueCount: number;
+    dueAmount: number;
+    paidCount: number;
+    paidAmount: number;
+    remainingInstallments: number;
+    remainingAmount: number;
+  };
+  checks: {
+    pendingCount: number;
+    pendingAmount: number;
+    receivablePendingAmount: number;
+    payablePendingAmount: number;
+    clearedCount: number;
+  };
+  projects: {
+    total: number;
+    active: number;
+    completed: number;
+    onHold: number;
+    totalAmount: number;
+  };
+  partners: {
+    total: number;
+    active: number;
+    pending: number;
+    sharePercentTotal: number;
+  };
+};
+
 export type AnalyticsReport = {
   filters: {
     duration: AnalyticsDuration;
@@ -106,6 +147,7 @@ export type AnalyticsReport = {
   }>;
   byCategory: AnalyticsCategoryRow[];
   byPaymentCard: AnalyticsPaymentCardRow[];
+  featureSummary: AnalyticsFeatureSummary;
   categoryBudgets: AnalyticsCategoryBudgetRow[];
   monthlyTrends: AnalyticsTrendPoint[];
   dailyTrends: AnalyticsTrendPoint[];
