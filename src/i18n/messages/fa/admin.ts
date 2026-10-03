@@ -62,4 +62,17 @@ export const adminMessages: MessageTree = {
   statusColumn: "وضعیت",
   expiresColumn: "انقضا",
   changePlan: "تغییر پلن",
+  softDeleteUser: "حذف نرم کاربر",
+  restoreUser: "بازیابی کاربر",
+  hardDeleteUser: "حذف دائمی کاربر",
+  hardDeleteTitle: "حذف دائمی کاربر",
+  hardDeleteWarning:
+    "این عملیات قابل بازگشت نیست. حساب کاربر و تمام داده‌های وابسته، از جمله تراکنش‌ها، دسته‌بندی‌ها، پروژه‌ها، یادداشت‌ها و عضویت‌ها برای همیشه حذف می‌شوند.",
+  hardDeleteTarget: "کاربر {{name}} با شماره {{mobile}} حذف خواهد شد.",
+  hardDeleteConfirmationLabel:
+    "برای تأیید، شماره موبایل کاربر را وارد کنید.",
+  hardDeleteAction: "حذف کامل و دائمی",
+  hardDeleteMobileMismatch: "شماره موبایل واردشده مطابقت ندارد.",
+  hardDeleteSuccess: "کاربر و {{count}} سند وابسته حذف شدند.",
+  hardDeleteFailed: "حذف دائمی کاربر ناموفق بود.",
 };

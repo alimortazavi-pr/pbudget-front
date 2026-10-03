@@ -8,6 +8,7 @@ import { isPublicPath } from "@/common/constants/public-routes";
 import * as authApi from "@/common/api/auth";
 import * as categoriesApi from "@/common/api/categories";
 import { saveDataToLocal, storage } from "@/common/utils";
+import { isAddAccountFlow } from "@/common/utils/auth-flow";
 import { resolvePostAuthDestination } from "@/common/utils/post-auth";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import {
@@ -71,6 +72,12 @@ export function AuthBootstrap() {
   useEffect(() => {
     if (!didTry || !isAuth) return;
     if (pathname !== PATHS.GET_STARTED && pathname !== PATHS.LANDING) return;
+    if (
+      pathname === PATHS.GET_STARTED &&
+      isAddAccountFlow(new URLSearchParams(window.location.search))
+    ) {
+      return;
+    }
     // Keep authenticated users on the public contact section when they arrive
     // from a plan or feature CTA instead of sending them back to the dashboard.
     if (pathname === PATHS.LANDING && window.location.hash === "#contact") return;

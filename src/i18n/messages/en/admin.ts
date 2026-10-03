@@ -62,4 +62,16 @@ export const adminMessages: MessageTree = {
   statusColumn: "Status",
   expiresColumn: "Expires",
   changePlan: "Change plan",
+  softDeleteUser: "Soft-delete user",
+  restoreUser: "Restore user",
+  hardDeleteUser: "Permanently delete user",
+  hardDeleteTitle: "Permanently delete user",
+  hardDeleteWarning:
+    "This cannot be undone. The account and all dependent data, including transactions, categories, projects, notes, and memberships, will be permanently deleted.",
+  hardDeleteTarget: "User {{name}} with mobile {{mobile}} will be deleted.",
+  hardDeleteConfirmationLabel: "Enter the user's mobile number to confirm.",
+  hardDeleteAction: "Delete permanently",
+  hardDeleteMobileMismatch: "The mobile number does not match.",
+  hardDeleteSuccess: "The user and {{count}} dependent documents were deleted.",
+  hardDeleteFailed: "Permanent user deletion failed.",
 };

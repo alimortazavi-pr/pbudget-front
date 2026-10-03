@@ -62,4 +62,16 @@ export const adminMessages: MessageTree = {
   statusColumn: "الحالة",
   expiresColumn: "الانتهاء",
   changePlan: "تغيير الخطة",
+  softDeleteUser: "حذف المستخدم مؤقتًا",
+  restoreUser: "استعادة المستخدم",
+  hardDeleteUser: "حذف المستخدم نهائيًا",
+  hardDeleteTitle: "حذف المستخدم نهائيًا",
+  hardDeleteWarning:
+    "لا يمكن التراجع عن هذه العملية. سيُحذف الحساب وجميع البيانات المرتبطة به، بما فيها المعاملات والفئات والمشاريع والملاحظات والعضويات، نهائيًا.",
+  hardDeleteTarget: "سيُحذف المستخدم {{name}} ذو الرقم {{mobile}}.",
+  hardDeleteConfirmationLabel: "أدخل رقم هاتف المستخدم للتأكيد.",
+  hardDeleteAction: "حذف نهائي",
+  hardDeleteMobileMismatch: "رقم الهاتف غير مطابق.",
+  hardDeleteSuccess: "تم حذف المستخدم و{{count}} مستندات مرتبطة.",
+  hardDeleteFailed: "تعذر حذف المستخدم نهائيًا.",
 };

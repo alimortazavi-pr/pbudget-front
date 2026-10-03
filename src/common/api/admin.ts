@@ -96,6 +96,17 @@ export async function setAdminUserPassword(id: string, password: string) {
   return data;
 }
 
+export async function hardDeleteAdminUser(id: string, confirmation: string) {
+  const { data } = await axiosInstance.delete<{
+    message: string;
+    deletedDocuments: number;
+    affectedCollections: number;
+  }>(`/admin/users/${id}/hard`, {
+    data: { confirmation },
+  });
+  return data;
+}
+
 export async function fetchAdminCollections() {
   const { data } = await axiosInstance.get<AdminCollectionMeta[]>(
     "/admin/database/collections",

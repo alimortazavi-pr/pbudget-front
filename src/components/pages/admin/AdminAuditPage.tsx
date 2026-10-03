@@ -23,6 +23,7 @@ const ACTION_LABELS: Record<string, string> = {
   "user.update": t("auto.k1f97b4acf6"),
   "user.set_admin": t("auto.kf20c777bea"),
   "user.delete": t("auto.k6dec7fba0c"),
+  "user.hard_delete": t("admin.hardDeleteUser"),
   "user.restore": t("auto.k9f3f9800ce"),
   "content.budget.update": t("nav.editTransaction"),
   "content.category.update": t("categories.editCategory"),

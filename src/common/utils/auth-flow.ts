@@ -10,6 +10,18 @@ const ALLOWED_PREFIXES = [
 ] as const;
 
 export const AUTH_RETURN_STORAGE_KEY = "pbudget-auth-return";
+const AUTH_MODE_QUERY_KEY = "mode";
+const ADD_ACCOUNT_MODE = "add-account";
+
+export function isAddAccountFlow(
+  searchParams: Pick<URLSearchParams, "get">,
+): boolean {
+  return searchParams.get(AUTH_MODE_QUERY_KEY) === ADD_ACCOUNT_MODE;
+}
+
+export function buildAddAccountUrl(): string {
+  return `${PATHS.GET_STARTED}?${AUTH_MODE_QUERY_KEY}=${ADD_ACCOUNT_MODE}`;
+}
 
 export function validateAuthReturnUrl(url: string | null | undefined): string | null {
   if (!url || !url.startsWith("/") || url.startsWith("//")) return null;

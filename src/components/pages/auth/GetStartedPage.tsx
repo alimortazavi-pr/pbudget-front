@@ -24,6 +24,7 @@ import { useBrandLabels } from "@/common/hooks/useBrandLabels";
 import type { IProfile } from "@/common/interfaces/profile.interface";
 import { saveDataToLocal, toEnglishDigits } from "@/common/utils";
 import {
+  isAddAccountFlow,
   saveAuthReturnUrl,
   validateAuthReturnUrl,
 } from "@/common/utils/auth-flow";
@@ -57,6 +58,7 @@ export function GetStartedPage() {
   const searchParams = useSearchParams();
   const users = useAppSelector(usersSelector);
   const isAuth = useAppSelector(isAuthSelector);
+  const isAddingAccount = isAddAccountFlow(searchParams);
 
   const [step, setStep] = useState<Step>("mobile");
   const [mobile, setMobile] = useState("");
@@ -123,7 +125,7 @@ export function GetStartedPage() {
   );
 
   useEffect(() => {
-    if (!isAuth) return;
+    if (!isAuth || isAddingAccount) return;
     void resolvePostAuthDestination({
       returnUrl: searchParams.get("return"),
     }).then((r) => {
@@ -133,7 +135,7 @@ export function GetStartedPage() {
       }
       router.replace(r.path ?? PATHS.HOME);
     });
-  }, [isAuth, router, searchParams]);
+  }, [isAddingAccount, isAuth, router, searchParams]);
 
   async function handleMobile(e?: FormEvent) {
     e?.preventDefault();

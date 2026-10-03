@@ -8,8 +8,8 @@ import { Button, Modal } from "@heroui/react";
 import { Add, Profile2User } from "iconsax-reactjs";
 
 import * as authApi from "@/common/api/auth";
-import { PATHS } from "@/common/constants";
 import { saveDataToLocal } from "@/common/utils";
+import { buildAddAccountUrl } from "@/common/utils/auth-flow";
 import { useMediaQuery } from "@/common/hooks/useMediaQuery";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
@@ -89,7 +89,7 @@ export function ChangeAccountPopover() {
               className="mt-1 flex cursor-pointer items-center gap-2 rounded-xl px-3 py-3 text-sm text-accent transition-colors hover:bg-accent/8"
               onClick={() => {
                 setOpen(false);
-                router.push(PATHS.GET_STARTED);
+                router.push(buildAddAccountUrl());
               }}
             >
               <Add size={18} />

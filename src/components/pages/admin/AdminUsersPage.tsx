@@ -8,7 +8,7 @@ import { Edit2, Lock, SearchNormal1, ShieldTick, Trash } from "iconsax-reactjs";
 
 import * as adminApi from "@/common/api/admin";
 import type { AdminUser } from "@/common/interfaces/admin";
-import { formatPrice, toPersianDigits } from "@/common/utils";
+import { formatPrice, toEnglishDigits, toPersianDigits } from "@/common/utils";
 import { moneyDisplayUnitLabel } from "@/common/utils/money-display";
 import { showToast } from "@/common/utils/toast";
 
@@ -24,6 +24,9 @@ export function AdminUsersPage() {
   const [editing, setEditing] = useState<AdminUser | null>(null);
   const [passwordUser, setPasswordUser] = useState<AdminUser | null>(null);
   const [newPassword, setNewPassword] = useState("");
+  const [hardDeleteUser, setHardDeleteUser] = useState<AdminUser | null>(null);
+  const [hardDeleteConfirmation, setHardDeleteConfirmation] = useState("");
+  const [hardDeleting, setHardDeleting] = useState(false);
   const [editForm, setEditForm] = useState({
     firstName: "",
     lastName: "",
@@ -114,6 +117,51 @@ export function AdminUsersPage() {
       void load();
     } catch {
       showToast(t("auto.kd67e39712d"), "danger");
+    }
+  };
+
+  const openHardDelete = (user: AdminUser) => {
+    setHardDeleteUser(user);
+    setHardDeleteConfirmation("");
+  };
+
+  const closeHardDelete = () => {
+    if (hardDeleting) return;
+    setHardDeleteUser(null);
+    setHardDeleteConfirmation("");
+  };
+
+  const confirmHardDelete = async () => {
+    if (!hardDeleteUser) return;
+    if (
+      toEnglishDigits(hardDeleteConfirmation.trim()) !== hardDeleteUser.mobile
+    ) {
+      showToast(t("admin.hardDeleteMobileMismatch"), "danger");
+      return;
+    }
+
+    setHardDeleting(true);
+    try {
+      const result = await adminApi.hardDeleteAdminUser(
+        hardDeleteUser._id,
+        toEnglishDigits(hardDeleteConfirmation.trim()),
+      );
+      showToast(
+        t("admin.hardDeleteSuccess", {
+          count: toPersianDigits(result.deletedDocuments),
+        }),
+        "success",
+      );
+      setHardDeleteUser(null);
+      setHardDeleteConfirmation("");
+      await load();
+    } catch (error) {
+      showToast(
+        error instanceof Error ? error.message : t("admin.hardDeleteFailed"),
+        "danger",
+      );
+    } finally {
+      setHardDeleting(false);
     }
   };
 
@@ -260,8 +308,23 @@ export function AdminUsersPage() {
                           size="sm"
                           variant="ghost"
                           onPress={() => void toggleDeleted(user)}
+                          aria-label={
+                            user.deleted
+                              ? t("admin.restoreUser")
+                              : t("admin.softDeleteUser")
+                          }
                         >
                           <Trash size={16} />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-danger hover:bg-danger/10"
+                          isDisabled={user.isAdmin}
+                          onPress={() => openHardDelete(user)}
+                          aria-label={t("admin.hardDeleteUser")}
+                        >
+                          <Trash size={16} variant="Bold" />
                         </Button>
                       </div>
                     </td>
@@ -390,6 +453,74 @@ export function AdminUsersPage() {
                   {t("common.cancel")}
                 </Button>
                 <Button onPress={() => void savePassword()}>{t("auto.k0b75de2011")}</Button>
+              </Modal.Footer>
+            </Modal.Dialog>
+          </Modal.Container>
+        </Modal.Backdrop>
+      </Modal>
+
+      <Modal
+        isOpen={Boolean(hardDeleteUser)}
+        onOpenChange={(open) => {
+          if (!open) closeHardDelete();
+        }}
+      >
+        <Modal.Backdrop>
+          <Modal.Container>
+            <Modal.Dialog className="max-w-md">
+              <Modal.CloseTrigger />
+              <Modal.Header>
+                <Modal.Heading>{t("admin.hardDeleteTitle")}</Modal.Heading>
+              </Modal.Header>
+              <Modal.Body className="space-y-4">
+                <div className="rounded-2xl border border-danger/30 bg-danger/10 p-4 text-sm leading-7 text-danger">
+                  {t("admin.hardDeleteWarning")}
+                </div>
+                {hardDeleteUser ? (
+                  <p className="text-sm leading-7 text-muted">
+                    {t("admin.hardDeleteTarget", {
+                      name: `${hardDeleteUser.firstName} ${hardDeleteUser.lastName}`.trim(),
+                      mobile: toPersianDigits(hardDeleteUser.mobile),
+                    })}
+                  </p>
+                ) : null}
+                <label className="block space-y-2 text-sm">
+                  <span className="text-muted">
+                    {t("admin.hardDeleteConfirmationLabel")}
+                  </span>
+                  <input
+                    dir="ltr"
+                    inputMode="numeric"
+                    value={hardDeleteConfirmation}
+                    onChange={(event) =>
+                      setHardDeleteConfirmation(event.target.value)
+                    }
+                    className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm outline-none focus:border-danger"
+                    placeholder={hardDeleteUser?.mobile ?? "09123456789"}
+                    autoComplete="off"
+                  />
+                </label>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button
+                  variant="secondary"
+                  isDisabled={hardDeleting}
+                  onPress={closeHardDelete}
+                >
+                  {t("common.cancel")}
+                </Button>
+                <Button
+                  className="bg-danger text-white"
+                  isPending={hardDeleting}
+                  isDisabled={
+                    !hardDeleteUser ||
+                    toEnglishDigits(hardDeleteConfirmation.trim()) !==
+                      hardDeleteUser.mobile
+                  }
+                  onPress={() => void confirmHardDelete()}
+                >
+                  {t("admin.hardDeleteAction")}
+                </Button>
               </Modal.Footer>
             </Modal.Dialog>
           </Modal.Container>
