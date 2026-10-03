@@ -30,6 +30,14 @@ const nextConfig: NextConfig = {
     "pdesk.ir",
     "www.pdesk.ir",
   ],
+  async redirects() {
+    return ["www.pdesk.ir", "pbudget.ir", "www.pbudget.ir"].map((host) => ({
+      source: "/:path*",
+      has: [{ type: "host" as const, value: host }],
+      destination: "https://pdesk.ir/:path*",
+      permanent: true,
+    }));
+  },
   async headers() {
     return [{ source: "/:path*", headers: [...securityHeaders] }];
   },

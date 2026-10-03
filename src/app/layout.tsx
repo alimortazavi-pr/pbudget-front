@@ -11,6 +11,7 @@ import {
   APP_SHORT_NAME_FA,
   LOGO_OG_IMAGE_SRC,
 } from "@/common/constants/brand";
+import { DEFAULT_KEYWORDS, SITE_URL } from "@/common/seo";
 import { ThemeScript } from "@/components/common/ThemeScript";
 import { ClientProvider } from "@/components/providers/ClientProvider";
 
@@ -36,15 +37,31 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:7711",
-  ),
+  metadataBase: new URL(SITE_URL),
   applicationName: APP_NAME_EN,
   title: {
     default: `${APP_NAME_FA} | ${APP_NAME_EN}`,
     template: `%s | ${APP_NAME_FA}`,
   },
   description: APP_DESCRIPTION_FA,
+  keywords: DEFAULT_KEYWORDS,
+  category: "finance",
+  creator: APP_NAME_FA,
+  publisher: APP_NAME_FA,
+  referrer: "origin-when-cross-origin",
+  robots: {
+    index: false,
+    follow: false,
+    noarchive: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+    },
+  },
+  verification: process.env.GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+    : undefined,
   openGraph: {
     images: [{ url: LOGO_OG_IMAGE_SRC, width: 1200, height: 630, alt: APP_NAME_FA }],
   },
@@ -111,7 +128,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
-      lang="fa"
+      lang="fa-IR"
       dir="rtl"
       className={`${yekanBakh.variable} ${poppins.variable} light overflow-x-clip`}
       suppressHydrationWarning
