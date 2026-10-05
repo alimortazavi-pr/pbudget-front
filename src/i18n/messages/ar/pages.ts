@@ -194,6 +194,10 @@ export const pagesMessages: MessageTree = {
     fieldAmount: "المبلغ",
     fieldDescription: "الوصف",
   },
+  bankImport: {
+    importedToast: "تم تسجيل {{count}} معاملة",
+    extrasWarning: "تم تسجيل {{count}} صف لكن فشل ربطه بالدين/المستحق أو النشاط التجاري — راجعه في صفحة المعاملة.",
+  },
   subscriptionPlans: {
     title: "الخطط",
   },

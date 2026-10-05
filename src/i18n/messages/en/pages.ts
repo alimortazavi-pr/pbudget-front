@@ -194,6 +194,10 @@ export const pagesMessages: MessageTree = {
     fieldAmount: "Amount",
     fieldDescription: "Description",
   },
+  bankImport: {
+    importedToast: "{{count}} transactions imported",
+    extrasWarning: "{{count}} rows were imported but their debt or business link failed — check them on the transaction page.",
+  },
   subscriptionPlans: {
     title: "Plans",
   },

@@ -199,7 +199,10 @@ export function BankImportWizardPage() {
         skippedDuplicates: result.skippedDuplicates,
       });
       setStep(4);
-      showToast(`${toPersianDigits(result.importedCount)} ${t("auto.keb7bb3e55b")} ${t("nav.create")} ${t("auto.k831c6609f1")}`, "success");
+      showToast(t("pages.bankImport.importedToast", { count: result.importedCount }), "success");
+      if (result.warnings?.length) {
+        showToast(t("pages.bankImport.extrasWarning", { count: result.warnings.length }), "warning");
+      }
     } catch (err) {
       showToast(err instanceof Error ? err.message : t("auto.k9ec8323799"), "danger");
     } finally {

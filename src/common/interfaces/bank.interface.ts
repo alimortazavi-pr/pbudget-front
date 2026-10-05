@@ -47,6 +47,8 @@ export interface IBankImportConfirmResult {
   createdBudgetIds: string[];
   userBudget: number;
   userWalletBalances?: WalletBalances;
+  /** Rows saved, but whose debt/business link failed. */
+  warnings?: { statementRef: string; message: string }[];
 }
 
 export interface IBankImportPendingBudget {

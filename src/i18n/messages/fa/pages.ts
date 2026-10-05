@@ -194,6 +194,10 @@ export const pagesMessages: MessageTree = {
     fieldAmount: "مبلغ",
     fieldDescription: "توضیحات",
   },
+  bankImport: {
+    importedToast: "{{count}} تراکنش ثبت شد",
+    extrasWarning: "{{count}} ردیف ثبت شد اما اتصال طلب/بدهی یا کسب‌وکار آن انجام نشد — از صفحه تراکنش بررسی کنید.",
+  },
   subscriptionPlans: {
     title: "پلن‌ها",
   },
