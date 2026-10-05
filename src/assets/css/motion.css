@@ -141,5 +141,4 @@
 .pb-card-grid > :nth-child(6) { animation-delay: 200ms; }
 .pb-card-grid > :nth-child(n + 7) { animation-delay: 240ms; }
 
-/* Modals: soft scale-in (HeroUI renders .modal__dialog). */
-.modal__dialog { animation: pb-pop var(--pb-dur) var(--pb-ease-out) both; }
+/* Modals keep HeroUI's own enter/exit animations (data-entering/exiting). */
