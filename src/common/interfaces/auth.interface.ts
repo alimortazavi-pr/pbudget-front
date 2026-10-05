@@ -12,9 +12,15 @@ export interface ISaveToLocal {
   users: ISaveToLocalUser[];
 }
 
-export interface ISaveToLocalUser extends IProfile {
+/**
+ * One signed-in account as kept in the auth cookie. Only what the account
+ * switcher needs: full profiles overflowed the 4KB cookie limit with 2-3
+ * accounts (Persian names are ~6 bytes per letter once encoded), and the
+ * browser then silently dropped the whole cookie.
+ */
+export type ISaveToLocalUser = Pick<IProfile, "_id" | "firstName" | "lastName" | "mobile"> & {
   token: string;
-}
+};
 
 export interface ICheckMobileExistResult {
   isMustRegister: boolean;

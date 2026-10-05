@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { BASE_API_URL, SERVER_BASE_API_URL } from "../constants";
 import { getApiErrorMessage } from "../utils/api-error";
-import { forceAuthLogout } from "../utils/force-auth-logout";
+import { dropAccountAndContinue, forceAuthLogout } from "../utils/force-auth-logout";
 import { toEnglishDigits } from "../utils/persian-digits";
 import { storage } from "../utils/storage";
 
@@ -56,8 +56,10 @@ axiosInstance.interceptors.request.use((config) => {
   }
 
   if (!isServer) {
+    // Respect an explicit token (account switcher checks another account's
+    // session); overwriting it made "switch" check the current account.
     const token = storage.getToken();
-    if (token && !isPublicAuthRequest(config.url)) {
+    if (token && !config.headers.Authorization && !isPublicAuthRequest(config.url)) {
       config.headers.Authorization = `Bearer ${token}`;
     }
   }
@@ -71,7 +73,12 @@ if (!isServer) {
     (response) => response,
     (error) => {
       if (error.response?.status === 401 && !isPublicAuthRequest(error.config?.url)) {
-        forceAuthLogout();
+        // Only the account whose token failed is affected; a late response for
+        // an account the user already switched away from must not sign out the
+        // new one.
+        const sent = String(error.config?.headers?.Authorization ?? "").replace(/^Bearer\s+/i, "");
+        if (sent) dropAccountAndContinue(sent);
+        else forceAuthLogout();
       }
 
       const friendlyMessage = getApiErrorMessage(error);

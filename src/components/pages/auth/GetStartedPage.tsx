@@ -115,12 +115,14 @@ export function GetStartedPage() {
         user,
       });
 
-      if (result.needsPicker) {
-        router.replace(PATHS.WORKSPACE);
+      const destination = result.needsPicker ? PATHS.WORKSPACE : (result.path ?? PATHS.HOME);
+      // Coming from another signed-in account: reload so none of its data
+      // (lists, subscription, caches) stays in memory under the new account.
+      if (users.some((u) => u._id !== user._id)) {
+        window.location.assign(destination);
         return;
       }
-
-      router.replace(result.path ?? PATHS.HOME);
+      router.replace(destination);
     },
     [dispatch, router, searchParams, users],
   );

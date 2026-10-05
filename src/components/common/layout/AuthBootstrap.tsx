@@ -52,10 +52,18 @@ export function AuthBootstrap() {
         dispatch(setUsers(nextUsers));
         saveDataToLocal({ token: authData.token, users: nextUsers });
         dispatch(setDidTryAutoLogin(true));
-      } catch {
-        storage.clearAuthData();
+      } catch (error) {
+        const status = (error as { response?: { status?: number } })?.response?.status;
+        if (status === 401 || status === 403) {
+          // The interceptor already dropped this account and moved to the
+          // next one (or to sign-in) — nothing else to do here.
+          return;
+        }
+        // Server unreachable / 5xx: keep every account signed in and let the
+        // user retry, instead of wiping all sessions because of an outage.
+        dispatch(authenticate({ token: authData.token }));
+        dispatch(setUsers(authData.users));
         dispatch(setDidTryAutoLogin(true));
-        if (!isPublic) router.replace(PATHS.GET_STARTED);
       }
     }
 

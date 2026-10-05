@@ -99,6 +99,7 @@ export const commonMessages: MessageTree = {
   gregorianCalendar: "Gregorian",
   jalaliCalendarDesc: "Iranian calendar — Farvardin to Esfand",
   gregorianCalendarDesc: "Gregorian calendar — January to December",
+  accountSessionExpired: "This account's session has expired — please sign in to it again.",
   changeAccount: "Switch account",
   addAccount: "Add account",
   walletBalance: "Wallet balance",

@@ -99,6 +99,7 @@ export const commonMessages: MessageTree = {
   gregorianCalendar: "ميلادي",
   jalaliCalendarDesc: "التقويم الإيراني — من فروردين إلى اسفند",
   gregorianCalendarDesc: "التقويم الميلادي — من يناير إلى ديسمبر",
+  accountSessionExpired: "انتهت جلسة هذا الحساب — يرجى تسجيل الدخول إليه مجدداً.",
   changeAccount: "تغيير الحساب",
   addAccount: "إضافة حساب",
   walletBalance: "رصيد المحفظة",

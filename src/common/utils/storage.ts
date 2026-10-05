@@ -1,9 +1,22 @@
 import jsCookies from "js-cookie";
 
-import type { ISaveToLocal } from "@/common/interfaces";
+import type { ISaveToLocal, ISaveToLocalUser } from "@/common/interfaces";
 import { getCookieOptions } from "@/common/utils/cookie-options";
 
 const AUTH_COOKIE = "pdesk-personal-auth";
+
+/** Strip a profile down to what the account list stores. */
+export function toStoredAccount(
+  user: { _id: string; firstName?: string; lastName?: string; mobile?: string; token: string },
+): ISaveToLocalUser {
+  return {
+    _id: user._id,
+    firstName: user.firstName ?? "",
+    lastName: user.lastName ?? "",
+    mobile: user.mobile ?? "",
+    token: user.token,
+  } as ISaveToLocalUser;
+}
 const LEGACY_SHARED_AUTH_COOKIE = "userAuthorization";
 const THEME_COOKIE = "pbudget-theme";
 
@@ -23,7 +36,11 @@ export const storage = {
 
   setAuthData(data: ISaveToLocal) {
     jsCookies.remove(LEGACY_SHARED_AUTH_COOKIE, { path: "/", domain: ".pdesk.ir" });
-    jsCookies.set(AUTH_COOKIE, JSON.stringify(data), cookieOpts());
+    const seen = new Set<string>();
+    const users = data.users
+      .filter((user) => user?.token && !seen.has(user._id) && seen.add(user._id))
+      .map(toStoredAccount);
+    jsCookies.set(AUTH_COOKIE, JSON.stringify({ token: data.token, users }), cookieOpts());
   },
 
   clearAuthData() {

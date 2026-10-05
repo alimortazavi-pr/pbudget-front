@@ -8,13 +8,13 @@ import { Button, Modal } from "@heroui/react";
 import { Add, Profile2User } from "iconsax-reactjs";
 
 import * as authApi from "@/common/api/auth";
-import { saveDataToLocal } from "@/common/utils";
+import { activateAccount, showErrorToast, showToast } from "@/common/utils";
 import { buildAddAccountUrl } from "@/common/utils/auth-flow";
 import { useMediaQuery } from "@/common/hooks/useMediaQuery";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
-import { authenticate, setUsers, usersSelector } from "@/stores/auth";
-import { setProfile, userSelector } from "@/stores/profile";
+import { setUsers, usersSelector } from "@/stores/auth";
+import { userSelector } from "@/stores/profile";
 
 export function ChangeAccountPopover() {
   const { t } = useTranslation();
@@ -23,24 +23,35 @@ export function ChangeAccountPopover() {
   const users = useAppSelector(usersSelector);
   const currentUser = useAppSelector(userSelector);
   const [open, setOpen] = useState(false);
+  const [switching, setSwitching] = useState<string | null>(null);
   const isDesktop = useMediaQuery("(min-width: 1024px)");
 
   if (!users.length) return null;
 
-  async function switchAccount(token: string) {
-    try {
-      const { user } = await authApi.checkAuth(token);
-      dispatch(authenticate({ token }));
-      dispatch(setProfile(user));
-      const nextUsers = users.map((u) =>
-        u._id === user._id ? { ...user, token } : u,
-      );
-      dispatch(setUsers(nextUsers));
-      saveDataToLocal({ token, users: nextUsers });
+  async function switchAccount(account: { _id: string; token: string }) {
+    if (account._id === currentUser?._id) {
       setOpen(false);
-      window.location.reload();
-    } catch {
-      /* handled by interceptor */
+      return;
+    }
+    setSwitching(account._id);
+    try {
+      // Verify that account's own session before switching to it.
+      await authApi.checkAuth(account.token);
+      setOpen(false);
+      activateAccount(account.token);
+    } catch (error) {
+      setSwitching(null);
+      const status = (error as { response?: { status?: number } })?.response?.status;
+      if (status === 401 || status === 403) {
+        // Its session expired; the interceptor already removed it from the list.
+        const remaining = users.filter((u) => u._id !== account._id);
+        dispatch(setUsers(remaining));
+        showToast(t("common.accountSessionExpired"), "warning");
+        router.push(buildAddAccountUrl());
+        setOpen(false);
+      } else {
+        showErrorToast(error);
+      }
     }
   }
 
@@ -75,9 +86,11 @@ export function ChangeAccountPopover() {
                     ? "bg-accent/12 text-accent"
                     : "hover:bg-surface-secondary"
                 }`}
-                onClick={() => void switchAccount(user.token)}
+                disabled={Boolean(switching)}
+                onClick={() => void switchAccount(user)}
               >
                 {user.firstName} {user.lastName}
+                {switching === user._id ? <span className="ms-2 text-xs text-muted">{t("common.loading")}</span> : null}
                 <span className="mt-0.5 block text-xs text-muted">
                   {user.mobile}
                 </span>

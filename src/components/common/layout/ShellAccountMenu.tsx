@@ -29,8 +29,8 @@ import {
 import { useTelegramStatus } from "@/common/hooks/useTelegramStatus";
 import { usePendingInvitesCount } from "@/common/hooks/usePendingInvitesCount";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
-import { logOut, resetAuth } from "@/stores/auth";
-import { setProfile, userSelector } from "@/stores/profile";
+import { resetAuth } from "@/stores/auth";
+import { userSelector } from "@/stores/profile";
 
 type ShellAccountMenuProps = {
   onNavigate?: () => void;
@@ -72,11 +72,11 @@ export function ShellAccountMenu({
     const next = remaining[0] ?? null;
 
     if (next) {
-      dispatch(logOut({ user: next, users: remaining }));
-      dispatch(setProfile(next));
+      // Full reload into the next account so no data of the signed-out one
+      // stays in memory (lists, subscription, caches).
       storage.setAuthData({ token: next.token, users: remaining });
       onNavigate?.();
-      router.refresh();
+      window.location.assign(PATHS.HOME);
       return;
     }
 
