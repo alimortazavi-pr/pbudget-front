@@ -114,6 +114,7 @@ export const commonMessages: MessageTree = {
   commandNavigate: "جابه‌جایی",
   commandOpen: "باز کردن",
   commandSearch: "جستجو…",
+  commandUsers: "کاربران",
   changeAccount: "تغییر حساب",
   addAccount: "افزودن اکانت",
   walletBalance: "موجودی کیف پول",

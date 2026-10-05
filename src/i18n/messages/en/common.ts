@@ -114,6 +114,7 @@ export const commonMessages: MessageTree = {
   commandNavigate: "Navigate",
   commandOpen: "Open",
   commandSearch: "Search…",
+  commandUsers: "Users",
   changeAccount: "Switch account",
   addAccount: "Add account",
   walletBalance: "Wallet balance",

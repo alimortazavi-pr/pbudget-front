@@ -11,18 +11,23 @@ import type { ILandingContent } from "@/common/interfaces/landing.interface";
 import { DEFAULT_LANDING_CONTENT } from "@/components/pages/landing/landing-data";
 import { LandingPage } from "@/components/pages/landing/LandingPage";
 import { useAppSelector } from "@/stores/hooks";
-import { isAuthSelector } from "@/stores/auth";
+import { didTryAutoLoginSelector, isAuthSelector } from "@/stores/auth";
 import { userSelector } from "@/stores/profile";
 
-export function LandingPreviewPage() {  const { t } = useTranslation();
+export function LandingPreviewPage() {
+  const { t } = useTranslation();
 
   const router = useRouter();
   const isAuth = useAppSelector(isAuthSelector);
+  // Wait for the session check; before it finishes isAuth is always false and
+  // the preview used to bounce to sign-in (→ workspace picker) in the iframe.
+  const didTryAutoLogin = useAppSelector(didTryAutoLoginSelector);
   const user = useAppSelector(userSelector);
   const [content, setContent] = useState<ILandingContent | null>(null);
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    if (!didTryAutoLogin) return;
     if (!isAuth) {
       router.replace(PATHS.GET_STARTED);
       return;
@@ -39,7 +44,7 @@ export function LandingPreviewPage() {  const { t } = useTranslation();
         setError(true);
         setContent(DEFAULT_LANDING_CONTENT);
       });
-  }, [isAuth, user?.isAdmin, router]);
+  }, [didTryAutoLogin, isAuth, user?.isAdmin, router]);
 
   if (!content) {
     return (

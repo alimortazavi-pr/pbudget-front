@@ -10,14 +10,14 @@ import {
   CloseCircle,
   HamburgerMenu,
   LogoutCurve,
-  ShieldTick,
-} from "iconsax-reactjs";
+  ShieldTick, SearchNormal1 } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 import { APP_NAME_FA } from "@/common/constants/brand";
 import { AuthBootstrap } from "@/components/common/layout/AuthBootstrap";
 import { ADMIN_NAV, ADMIN_NAV_GROUPS, type AdminNavItem } from "@/components/common/layout/admin-nav";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
+import { CommandPalette, openCommandPalette } from "@/components/common/command/CommandPalette";
 import { AppLogo } from "@/components/common/brand/AppLogo";
 import { useAppSelector } from "@/stores/hooks";
 import { didTryAutoLoginSelector, isAuthSelector } from "@/stores/auth";
@@ -220,11 +220,30 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
                     <h2 className="truncate text-base font-bold sm:text-lg">{pageTitle}</h2>
                   </div>
                 </div>
-                <ThemeToggle />
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={openCommandPalette}
+                    aria-label={t("common.commandTitle")}
+                    className="pb-press flex h-9 items-center gap-2 rounded-xl border border-border/60 bg-surface-secondary/60 px-3 text-sm text-muted transition-colors hover:border-accent/40 hover:text-foreground sm:min-w-56"
+                  >
+                    <SearchNormal1 size={16} />
+                    <span className="hidden flex-1 text-start sm:inline">{t("common.commandSearch")}</span>
+                    <kbd className="hidden rounded-md border border-border/70 bg-surface px-1.5 text-[10px] sm:inline" dir="ltr">
+                      Ctrl K
+                    </kbd>
+                  </button>
+                  <ThemeToggle />
+                </div>
               </div>
             </header>
 
-            <main className="mx-auto w-full max-w-[1400px] flex-1 p-4 pb-10 lg:p-8">{children}</main>
+            <main className="mx-auto w-full max-w-[1400px] flex-1 p-4 pb-10 lg:p-8">
+              <div key={pathname} className="pb-route">
+                {children}
+              </div>
+            </main>
+            <CommandPalette />
           </div>
         </div>
       </div>

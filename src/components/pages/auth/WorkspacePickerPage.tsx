@@ -27,7 +27,7 @@ import {
 } from "@/common/utils/workspace-choice";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { useAppSelector } from "@/stores/hooks";
-import { isAuthSelector } from "@/stores/auth";
+import { didTryAutoLoginSelector, isAuthSelector } from "@/stores/auth";
 import { userSelector } from "@/stores/profile";
 
 const GROUP_STYLES: Record<
@@ -56,6 +56,7 @@ export function WorkspacePickerPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const isAuth = useAppSelector(isAuthSelector);
+  const didTryAutoLogin = useAppSelector(didTryAutoLoginSelector);
   const user = useAppSelector(userSelector);
   const [choices, setChoices] = useState<PostLoginChoice[]>([]);
   const [loading, setLoading] = useState(true);
@@ -82,12 +83,15 @@ export function WorkspacePickerPage() {
   }, [router]);
 
   useEffect(() => {
+    // Before the session check finishes isAuth is false; wait instead of
+    // bouncing a signed-in user through the sign-in page.
+    if (!didTryAutoLogin) return;
     if (!isAuth) {
       router.replace(PATHS.GET_STARTED);
       return;
     }
     void load();
-  }, [isAuth, load, router]);
+  }, [didTryAutoLogin, isAuth, load, router]);
 
   const groups = useMemo(
     () => sortWorkspaceGroups(groupWorkspaceChoices(choices)),

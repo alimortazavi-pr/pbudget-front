@@ -82,6 +82,11 @@ export function SubscriptionAccessProvider({ children }: { children: ReactNode }
   return <SubscriptionAccessContext.Provider value={value}>{children}</SubscriptionAccessContext.Provider>;
 }
 
+/** Same as useSubscriptionAccess, but null outside the provider (e.g. admin). */
+export function useOptionalSubscriptionAccess() {
+  return useContext(SubscriptionAccessContext);
+}
+
 export function useSubscriptionAccess() {
   const context = useContext(SubscriptionAccessContext);
   if (!context) {

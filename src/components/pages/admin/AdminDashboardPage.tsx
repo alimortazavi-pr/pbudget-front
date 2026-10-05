@@ -111,37 +111,37 @@ export function AdminDashboardPage() {
       />
 
       {loading ? (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="pb-stagger grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {Array.from({ length: 8 }).map((_, index) => (
             <div key={index} className="h-28 animate-pulse rounded-2xl bg-surface-secondary" />
           ))}
         </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="pb-stagger grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <StatTile
             label="کل کاربران"
-            value={formatNumberFa(users?.total ?? overview?.users.total ?? 0)}
+            value={users?.total ?? overview?.users.total ?? 0}
             hint={`${formatNumberFa(overview?.users.newToday ?? 0)} امروز · ${formatNumberFa(overview?.users.newThisWeek ?? 0)} این هفته`}
             icon={<People size={20} variant="Bold" />}
             href={PATHS.ADMIN_USERS}
           />
           <StatTile
             label="فعال امروز"
-            value={formatNumberFa(users?.dau ?? 0)}
+            value={users?.dau ?? 0}
             hint={`هفته ${formatNumberFa(users?.wau ?? 0)} · ماه ${formatNumberFa(users?.mau ?? 0)}`}
             icon={<Flash size={20} variant="Bold" />}
             tone="success"
           />
           <StatTile
             label="تراکنش‌های امروز"
-            value={formatNumberFa(overview?.transactions.today ?? 0)}
+            value={overview?.transactions.today ?? 0}
             hint={`${formatNumberFa(overview?.transactions.thisWeek ?? 0)} این هفته · ${formatNumberFa(overview?.transactions.total ?? 0)} کل`}
             icon={<ReceiptText size={20} variant="Bold" />}
             tone="info"
           />
           <StatTile
             label="مشترکین پولی"
-            value={formatNumberFa(subs?.paidActive ?? 0)}
+            value={subs?.paidActive ?? 0}
             hint={
               subs?.pending ? (
                 <span className="font-semibold text-warning-foreground">{formatNumberFa(subs.pending)} درخواست در انتظار</span>
@@ -155,7 +155,7 @@ export function AdminDashboardPage() {
           />
           <StatTile
             label="هرگز استفاده نکرده‌اند"
-            value={formatNumberFa(users?.neverSeen ?? 0)}
+            value={users?.neverSeen ?? 0}
             hint="ثبت‌نام کرده ولی وارد اپ نشده‌اند"
             icon={<UserAdd size={20} />}
             tone="neutral"
@@ -163,7 +163,7 @@ export function AdminDashboardPage() {
           />
           <StatTile
             label="غیرفعال بیش از ۳۰ روز"
-            value={formatNumberFa(users?.dormant ?? 0)}
+            value={users?.dormant ?? 0}
             hint="فرصت پیگیری و بازگرداندن"
             icon={<Profile2User size={20} />}
             tone="neutral"
@@ -171,14 +171,14 @@ export function AdminDashboardPage() {
           />
           <StatTile
             label="تلگرام متصل"
-            value={formatNumberFa(users?.telegram ?? 0)}
+            value={users?.telegram ?? 0}
             hint={users?.total ? `${formatPercentFa(((users.telegram ?? 0) / users.total) * 100)} کاربران` : undefined}
             icon={<Activity size={20} />}
             tone="accent"
           />
           <StatTile
             label="خطاهای سرور (۲۴ ساعت)"
-            value={formatNumberFa(engagement?.health.errors24h ?? 0)}
+            value={engagement?.health.errors24h ?? 0}
             hint={`از ${formatNumberFa(engagement?.health.requests24h ?? 0)} درخواست`}
             icon={<Danger size={20} variant="Bold" />}
             tone={(engagement?.health.errors24h ?? 0) > 0 ? "danger" : "success"}

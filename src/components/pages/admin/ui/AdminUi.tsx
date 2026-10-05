@@ -9,6 +9,7 @@ import { createPortal } from "react-dom";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import type { Pagination } from "@/common/interfaces/admin";
 import { formatNumberFa, presenceOf } from "./admin-format";
+import { AnimatedNumber } from "@/components/common/motion/AnimatedNumber";
 
 export type Tone = "neutral" | "accent" | "success" | "warning" | "danger" | "info";
 
@@ -99,7 +100,7 @@ export function StatTile({
   href?: string;
 }) {
   const body = (
-    <div className="flex h-full items-start justify-between gap-3 rounded-2xl border border-border/60 bg-surface p-4 transition hover:border-accent/30">
+    <div className="pb-lift flex h-full items-start justify-between gap-3 rounded-2xl border border-border/60 bg-surface p-4 hover:border-accent/30">
       <div className="min-w-0">
         <p className="text-xs font-medium text-muted">{label}</p>
         <p
@@ -107,7 +108,7 @@ export function StatTile({
             typeof value === "string" && value.length > 11 ? "text-lg sm:text-xl" : "text-2xl"
           }`}
         >
-          {value}
+          {typeof value === "number" ? <AnimatedNumber value={value} format={formatNumberFa} /> : value}
         </p>
         {hint ? <p className="mt-1 text-xs text-muted">{hint}</p> : null}
       </div>

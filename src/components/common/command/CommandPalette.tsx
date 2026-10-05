@@ -10,10 +10,12 @@ import {
   Moon,
   MoneyRecive,
   MoneySend,
+  Profile,
   SearchNormal1,
   Sun1,
 } from "iconsax-reactjs";
 
+import * as adminApi from "@/common/api/admin-insights";
 import { PATHS } from "@/common/constants";
 import { AppModal } from "@/components/common/ui/AppModal";
 import {
@@ -22,8 +24,9 @@ import {
   PLANNING_NAV_GROUPS,
   PRIMARY_NAV_ITEMS,
 } from "@/components/common/layout/shell-nav";
+import { ADMIN_NAV_GROUPS } from "@/components/common/layout/admin-nav";
 import { useTranslation } from "@/components/providers/LanguageProvider";
-import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
+import { useOptionalSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { useAppSelector } from "@/stores/hooks";
 import { userSelector } from "@/stores/profile";
@@ -37,6 +40,8 @@ type Command = {
   icon: IconType;
   keywords?: string;
   locked?: boolean;
+  /** Secondary text shown at the end of the row (e.g. a mobile number). */
+  hint?: string;
   run: () => void;
 };
 
@@ -76,7 +81,10 @@ export function CommandPalette() {
   const { t } = useTranslation();
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
-  const { loading, isFeatureEnabled } = useSubscriptionAccess();
+  // Optional: the admin layout has no subscription provider.
+  const access = useOptionalSubscriptionAccess();
+  const loading = access?.loading ?? true;
+  const isFeatureEnabled = access?.isFeatureEnabled;
   const user = useAppSelector(userSelector);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -125,7 +133,8 @@ export function CommandPalette() {
   const commands = useMemo<Command[]>(() => {
     const actions = t("common.commandActions");
     const pages = t("common.commandPages");
-    const locked = (featureKey?: string) => Boolean(featureKey && !loading && isFeatureEnabled(featureKey) === false);
+    const locked = (featureKey?: string) =>
+      Boolean(featureKey && !loading && isFeatureEnabled && isFeatureEnabled(featureKey) === false);
     const list: Command[] = [
       {
         id: "new-expense",
@@ -181,26 +190,71 @@ export function CommandPalette() {
     PLANNING_NAV_GROUPS.forEach((group) => group.items.forEach((item) => addPage(item as never)));
     ACCOUNT_NAV_ITEMS.forEach((item) => addPage(item as never));
     if (user?.isAdmin) {
-      list.push({
-        id: "admin",
-        label: t("common.adminPanel"),
-        group: pages,
-        icon: SearchNormal1,
-        keywords: "admin مدیریت ادمین",
-        run: () => go(PATHS.ADMIN),
-      });
+      // Admins get every admin page too (searchable as "ادمین …").
+      const adminGroup = t("common.adminPanel");
+      ADMIN_NAV_GROUPS.forEach((group) =>
+        group.items.forEach((item) => {
+          if (seen.has(item.href)) return;
+          seen.add(item.href);
+          list.push({
+            id: item.href,
+            label: t(item.label),
+            group: adminGroup,
+            icon: item.icon as IconType,
+            keywords: `admin ادمین مدیریت ${t(group.title)}`,
+            run: () => go(item.href),
+          });
+        }),
+      );
     }
     return list;
   }, [go, isFeatureEnabled, loading, t, theme, toggleTheme, user?.isAdmin]);
 
+  // Admins: typing a name or mobile also finds users (debounced, server-side).
+  const [userHits, setUserHits] = useState<Command[]>([]);
+  useEffect(() => {
+    const q = query.trim();
+    if (!open || !user?.isAdmin || q.length < 3) {
+      setUserHits([]);
+      return;
+    }
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      void adminApi
+        .fetchUsers({ search: q, limit: 5 })
+        .then((res) => {
+          if (cancelled) return;
+          setUserHits(
+            res.items.map((row) => ({
+              id: `user-${row._id}`,
+              label: `${row.firstName} ${row.lastName}`.trim() || row.mobile,
+              keywords: row.mobile,
+              hint: row.mobile,
+              group: t("common.commandUsers"),
+              icon: Profile,
+              run: () => go(PATHS.ADMIN_USER(row._id)),
+            })),
+          );
+        })
+        .catch(() => !cancelled && setUserHits([]));
+    }, 250);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [go, open, query, t, user?.isAdmin]);
+
   const results = useMemo(() => {
     const q = normalize(query);
-    return commands
-      .map((command) => ({ command, rank: score(command, q) }))
-      .filter((row) => row.rank > 0)
-      .sort((a, b) => b.rank - a.rank)
-      .map((row) => row.command);
-  }, [commands, query]);
+    return [
+      ...commands
+        .map((command) => ({ command, rank: score(command, q) }))
+        .filter((row) => row.rank > 0)
+        .sort((a, b) => b.rank - a.rank)
+        .map((row) => row.command),
+      ...userHits,
+    ];
+  }, [commands, query, userHits]);
 
   useEffect(() => setActive(0), [query]);
   useEffect(() => {
@@ -278,6 +332,7 @@ export function CommandPalette() {
                       <Icon size={17} variant={selected ? "Bold" : "Linear"} />
                     </span>
                     <span className="min-w-0 flex-1 truncate font-medium">{command.label}</span>
+                    {command.hint ? <span className="text-xs text-muted" dir="ltr">{command.hint}</span> : null}
                     {command.locked ? <Lock1 size={15} className="text-muted" /> : null}
                     {selected ? <span className="text-[11px] text-muted">↵</span> : null}
                   </button>
