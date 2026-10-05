@@ -26,6 +26,7 @@ import { BudgetMoreToggle } from "@/components/pages/budget/BudgetMoreToggle";
 import {
   DebtLedgerSection,
   type DebtLedgerValue,
+  type PendingDebtOption,
 } from "@/components/pages/budget/DebtLedgerSection";
 import {
   ProjectLedgerSection,
@@ -49,6 +50,8 @@ type BankImportRowEditorModalProps = {
   draft: ImportRowDraft | null;
   onOpenChange: (open: boolean) => void;
   onSave: (draft: ImportRowDraft) => void;
+  /** Debts other rows of this import will create, so this row can settle them. */
+  pendingDebts?: PendingDebtOption[];
 };
 
 function buildMoreHint(parts: string[]) {
@@ -60,6 +63,7 @@ export function BankImportRowEditorModal({
   draft,
   onOpenChange,
   onSave,
+  pendingDebts = [],
 }: BankImportRowEditorModalProps) {
   const { t } = useTranslation();
   const { displayCurrencyLabel } = useCurrencyLabels();
@@ -369,6 +373,7 @@ export function BankImportRowEditorModal({
 
                 <DebtLedgerSection
                   amount={form.price}
+                  pendingDebts={pendingDebts}
                   value={form.debtLedger}
                   onChange={updateDebtLedger}
                   formCurrency={preferredCurrency}

@@ -36,6 +36,8 @@ import {
   isImportRowConfigured,
   validateImportRowDraft,
   validateImportRowDraftAsync,
+  collectPendingDebts,
+  hasDanglingPendingDebt,
 } from "@/components/pages/bank-import/import-row.util";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { bumpBudgetRevision } from "@/stores/budget";
@@ -108,6 +110,12 @@ export function BankImportWizardPage() {
     () => rows.find((row) => row.tempId === editingRowId) ?? null,
     [rows, editingRowId],
   );
+  // A debt created by one row isn't in the database yet, so other rows of the
+  // same import need it offered explicitly to settle against it.
+  const editingPendingDebts = useMemo(
+    () => collectPendingDebts(selectedRows, editingRowId ?? undefined),
+    [selectedRows, editingRowId],
+  );
 
   const loadBanks = useCallback(async () => {
     setLoadingBanks(true);
@@ -173,6 +181,11 @@ export function BankImportWizardPage() {
     }
 
     for (const row of selectedRows) {
+      if (hasDanglingPendingDebt(row, selectedRows)) {
+        showToast(t("budget.pendingDebtGone"), "danger");
+        setEditingRowId(row.tempId);
+        return;
+      }
       const error = await validateImportRowDraftAsync(row);
       if (error) {
         showToast(error, "danger");
@@ -552,6 +565,7 @@ export function BankImportWizardPage() {
           if (!open) setEditingRowId(null);
         }}
         onSave={saveRowDraft}
+        pendingDebts={editingPendingDebts}
       />
     </div>
   );

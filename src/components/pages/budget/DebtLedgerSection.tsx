@@ -29,8 +29,21 @@ export type DebtLedgerValue = {
   forceCreateNew: boolean;
 };
 
+/** Prefix for a debt that another row of the same bank import will create. */
+export const PENDING_DEBT_PREFIX = "pending:";
+
+/** A debt another row of this import will create (it doesn't exist yet). */
+export type PendingDebtOption = {
+  tempId: string;
+  person: string;
+  debtType: string;
+  amount: string;
+};
+
 type DebtLedgerSectionProps = {
   amount: string;
+  /** Bank import: debts that other rows of the same import will create. */
+  pendingDebts?: PendingDebtOption[];
   value: DebtLedgerValue;
   onChange: (patch: Partial<DebtLedgerValue>) => void;
   /** Currency of the transaction being created/edited — used to isolate debt matches */
@@ -96,13 +109,19 @@ function optionClass(selected: boolean) {
 
 export function DebtLedgerSection({
   amount,
+  pendingDebts = [],
   value,
   onChange,
   formCurrency = "toman",
 }: DebtLedgerSectionProps) {
   const { t } = useTranslation();
 
-  const persons = useMergedPersons(value.enabled);
+  const mergedPersons = useMergedPersons(value.enabled);
+  const persons = useMemo(() => {
+    const names = new Set(mergedPersons);
+    pendingDebts.forEach((debt) => names.add(debt.person));
+    return [...names];
+  }, [mergedPersons, pendingDebts]);
   const [openDebts, setOpenDebts] = useState<IDebt[]>([]);
   const [personMatches, setPersonMatches] = useState<IDebt[]>([]);
   const [checkingPerson, setCheckingPerson] = useState(false);
@@ -167,9 +186,30 @@ export function DebtLedgerSection({
     formCurrency,
   ]);
 
+  const pendingForMode = useMemo(
+    () => pendingDebts.filter((debt) => Number(debt.debtType) === settleDebtType),
+    [pendingDebts, settleDebtType],
+  );
+  const pendingSameName = useMemo(() => {
+    const person = value.person.trim();
+    return person
+      ? pendingDebts.filter(
+          (debt) => debt.person.trim() === person && debt.debtType === value.debtType,
+        )
+      : [];
+  }, [pendingDebts, value.person, value.debtType]);
+
   const settleOptions = useMemo(
-    () =>
-      openDebts.map((debt) => ({
+    () => [
+      ...pendingForMode.map((debt) => ({
+        id: `${PENDING_DEBT_PREFIX}${debt.tempId}`,
+        label: t("budget.pendingDebtOptionLabel", {
+          person: debt.person,
+          type: debtTypeLabel(Number(debt.debtType)),
+          amount: formatPriceWithCurrency(Number(debt.amount) || 0, formCurrency),
+        }),
+      })),
+      ...openDebts.map((debt) => ({
         id: debt._id,
         label: t("budget.settleDebtOptionLabel", {
           person: debt.person,
@@ -180,7 +220,8 @@ export function DebtLedgerSection({
           ),
         }),
       })),
-    [openDebts, t],
+    ],
+    [openDebts, pendingForMode, formCurrency, t],
   );
 
   const selectedSettleDebt = openDebts.find((debt) => debt._id === value.settleDebtId);
@@ -193,6 +234,16 @@ export function DebtLedgerSection({
 
   function handlePersonChange(person: string) {
     onChange({ person, forceCreateNew: false });
+  }
+
+  function linkToPending(debt: PendingDebtOption) {
+    onChange({
+      mode: Number(debt.debtType) === DebtType.RECEIVABLE ? "settle-receivable" : "settle-payable",
+      settleDebtId: `${PENDING_DEBT_PREFIX}${debt.tempId}`,
+      person: debt.person,
+      debtType: debt.debtType,
+      forceCreateNew: false,
+    });
   }
 
   function linkToExisting(debt: IDebt) {
@@ -283,6 +334,26 @@ export function DebtLedgerSection({
 
               {checkingPerson ? (
                 <p className="text-xs text-muted">{t("common.loading")}</p>
+              ) : null}
+
+              {pendingSameName.length > 0 && !value.forceCreateNew ? (
+                <div className="space-y-2 rounded-xl border border-accent/40 bg-accent/5 p-3">
+                  <p className="text-sm font-semibold text-accent">
+                    {t("budget.pendingDebtSamePerson", { person: value.person.trim() })}
+                  </p>
+                  {pendingSameName.map((debt) => (
+                    <button
+                      key={debt.tempId}
+                      type="button"
+                      onClick={() => linkToPending(debt)}
+                      className="w-full cursor-pointer rounded-xl border border-border bg-surface px-3 py-2.5 text-start text-sm transition hover:border-accent/50"
+                    >
+                      {debtTypeLabel(Number(debt.debtType))} ·{" "}
+                      {formatPriceWithCurrency(Number(debt.amount) || 0, formCurrency)}
+                      <span className="mt-0.5 block text-xs text-muted">{t("debts.linkToExisting")}</span>
+                    </button>
+                  ))}
+                </div>
               ) : null}
 
               {personMatches.length > 0 && !value.forceCreateNew ? (

@@ -44,6 +44,9 @@ export const budgetMessages: MessageTree = {
     "سقف {{limit}} · خرج این ماه {{spent}} · {{over}} بیش از سقف",
   debtLedgerSourceHint:
     "این تراکنش منبع ثبت این {{type}} است. برای تسویه یا ویرایش جزئیات به صفحه طلب و بدهی بروید.",
+  pendingDebtOptionLabel: "{{person}} · {{type}} · {{amount}} (در همین ایمپورت)",
+  pendingDebtSamePerson: "برای «{{person}}» در همین ایمپورت یک طلب/بدهی جدید ساخته می‌شود — همین تراکنش را به آن وصل کنید؟",
+  pendingDebtGone: "این ردیف به طلب/بدهی ردیف دیگری از همین ایمپورت وصل شده بود که دیگر ساخته نمی‌شود — دوباره انتخاب کنید.",
   settleDebtOptionLabel: "{{person}} · {{type}} · مانده {{amount}}",
   duplicateRowsRemoved:
     "{{count}} تراکنش تکراری — از لیست حذف شده‌اند",

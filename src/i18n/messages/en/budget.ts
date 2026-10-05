@@ -44,6 +44,9 @@ export const budgetMessages: MessageTree = {
     "Limit {{limit}} · spent this month {{spent}} · {{over}} over limit",
   debtLedgerSourceHint:
     "This transaction is the source record for this {{type}}. Go to Debts to settle or edit details.",
+  pendingDebtOptionLabel: "{{person}} · {{type}} · {{amount}} (in this import)",
+  pendingDebtSamePerson: "A new debt for “{{person}}” is created in this import — link this transaction to it?",
+  pendingDebtGone: "This row was linked to a debt from another row of this import that is no longer created — choose again.",
   settleDebtOptionLabel: "{{person}} · {{type}} · remaining {{amount}}",
   duplicateRowsRemoved:
     "{{count}} duplicate transactions removed from the list",

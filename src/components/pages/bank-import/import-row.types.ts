@@ -31,5 +31,6 @@ export type ImportRowExtras = {
     debtType?: string;
     person?: string;
     settleDebtId?: string;
+    settleTempId?: string;
   };
 };

@@ -3,7 +3,12 @@ import type { ICategory } from "@/common/interfaces/category.interface";
 import type { IParsedBankRow } from "@/common/interfaces/bank.interface";
 import { resolveDefaultPaymentCardId } from "@/common/utils/default-payment-card";
 import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
-import type { DebtLedgerMode } from "@/components/pages/budget/DebtLedgerSection";
+import {
+  PENDING_DEBT_PREFIX,
+  type DebtLedgerMode,
+  type PendingDebtOption,
+} from "@/components/pages/budget/DebtLedgerSection";
+import { toEnglishDigits } from "@/common/utils/persian-digits";
 import { DebtType, BudgetType } from "@/types/enums";
 import type { ImportRowDraft, ImportRowExtras } from "./import-row.types";
 import * as debtsApi from "@/common/api/debts";
@@ -137,6 +142,32 @@ export async function validateImportRowDraftAsync(
   return null;
 }
 
+/** Debts that the given rows will create (bank import, same batch). */
+export function collectPendingDebts(rows: ImportRowDraft[], exceptTempId?: string): PendingDebtOption[] {
+  return rows
+    .filter(
+      (row) =>
+        row.tempId !== exceptTempId &&
+        row.debtLedger.enabled &&
+        row.debtLedger.mode === "create" &&
+        row.debtLedger.person.trim(),
+    )
+    .map((row) => ({
+      tempId: row.tempId,
+      person: row.debtLedger.person.trim(),
+      debtType: row.debtLedger.debtType,
+      amount: toEnglishDigits(row.price),
+    }));
+}
+
+/** A row pointing at an in-import debt whose creating row no longer creates it. */
+export function hasDanglingPendingDebt(row: ImportRowDraft, selectedRows: ImportRowDraft[]) {
+  const ref = row.debtLedger.enabled ? row.debtLedger.settleDebtId : "";
+  if (!ref.startsWith(PENDING_DEBT_PREFIX)) return false;
+  const tempId = ref.slice(PENDING_DEBT_PREFIX.length);
+  return !collectPendingDebts(selectedRows, row.tempId).some((debt) => debt.tempId === tempId);
+}
+
 export function buildImportRowExtras(row: ImportRowDraft): ImportRowExtras {
   const extras: ImportRowExtras = {};
 
@@ -153,7 +184,9 @@ export function buildImportRowExtras(row: ImportRowDraft): ImportRowExtras {
       mode: row.debtLedger.mode,
       debtType: row.debtLedger.debtType,
       person: row.debtLedger.person.trim() || undefined,
-      settleDebtId: row.debtLedger.settleDebtId || undefined,
+      ...(row.debtLedger.settleDebtId.startsWith(PENDING_DEBT_PREFIX)
+        ? { settleTempId: row.debtLedger.settleDebtId.slice(PENDING_DEBT_PREFIX.length) }
+        : { settleDebtId: row.debtLedger.settleDebtId || undefined }),
     };
   }
 

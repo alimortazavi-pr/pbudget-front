@@ -44,6 +44,9 @@ export const budgetMessages: MessageTree = {
     "السقف {{limit}} · مصروف هذا الشهر {{spent}} · {{over}} فوق السقف",
   debtLedgerSourceHint:
     "هذه المعاملة هي سجل مصدر هذا {{type}}. انتقل إلى الديون للتسوية أو التعديل.",
+  pendingDebtOptionLabel: "{{person}} · {{type}} · {{amount}} (في هذا الاستيراد)",
+  pendingDebtSamePerson: "يُنشأ في هذا الاستيراد دين/مستحق جديد لـ«{{person}}» — هل تربط هذه المعاملة به؟",
+  pendingDebtGone: "كان هذا الصف مرتبطاً بدين من صف آخر في هذا الاستيراد لم يعد يُنشأ — اختر من جديد.",
   settleDebtOptionLabel: "{{person}} · {{type}} · المتبقي {{amount}}",
   duplicateRowsRemoved: "تمت إزالة {{count}} معاملات مكررة من القائمة",
   dateRangeTitle: "نطاق الأيام",
