@@ -27,8 +27,9 @@ export function SplashHider() {
       // two frames: let the first real paint happen under the splash
       requestAnimationFrame(() =>
         requestAnimationFrame(() => {
+          // Hide, never remove: React owns this node, and deleting it behind
+          // React's back breaks every later client-side navigation.
           root.dataset.ready = "true";
-          window.setTimeout(() => document.getElementById("pb-splash")?.remove(), 700);
         }),
       );
     };

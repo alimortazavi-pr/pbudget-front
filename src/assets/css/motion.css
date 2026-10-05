@@ -173,6 +173,7 @@ a.glass, button.glass, .glass.pb-lift { transition: transform var(--pb-dur) var(
   animation: pb-splash-auto 0.5s ease 3.2s forwards;
 }
 html[data-ready="true"] #pb-splash { opacity: 0; visibility: hidden; transform: scale(1.04); pointer-events: none; }
+html[data-ready="true"] #pb-splash * { animation: none !important; }
 @keyframes pb-splash-auto { to { opacity: 0; visibility: hidden; pointer-events: none; } }
 .pb-splash-orb { position: absolute; border-radius: 9999px; filter: blur(70px); opacity: 0.5; }
 .pb-splash-orb-a { width: 26rem; height: 26rem; inset-block-start: -8rem; inset-inline-end: -6rem; background: var(--brand-rose, #fb7185); animation: pb-splash-float 6s ease-in-out infinite alternate; }

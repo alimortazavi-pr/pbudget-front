@@ -147,3 +147,25 @@ test.describe("Account switching", () => {
     await expect(page).toHaveURL(/\/installments$/);
   });
 });
+
+test.describe("Client-side navigation", () => {
+  test("clicking sidebar links never hits the error boundary", async ({ page, context }) => {
+    // Regression: the splash node was removed behind React's back, so every
+    // later client-side navigation threw "removeChild/insertBefore" errors.
+    await mockApi(context);
+    await setAccounts(context, "token-a", ["token-a"]);
+    const pageErrors: string[] = [];
+    page.on("pageerror", (error) => pageErrors.push(error.message));
+    page.on("console", (message) => {
+      if (message.type() === "error" && /insertBefore|removeChild/.test(message.text())) pageErrors.push(message.text());
+    });
+    await page.goto("/app");
+    await page.waitForTimeout(1500);
+    for (const href of ["/boxes", "/analysis", "/debts", "/app"]) {
+      await page.locator(`aside a[href="${href}"]`).first().click();
+      await expect(page).toHaveURL(new RegExp(`${href}$`));
+      await expect(page.getByText("مشکلی پیش آمد")).toHaveCount(0);
+    }
+    expect(pageErrors).toEqual([]);
+  });
+});
