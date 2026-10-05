@@ -17,6 +17,8 @@ import {
 
 import * as adminApi from "@/common/api/admin-insights";
 import { PATHS } from "@/common/constants";
+import { formatPriceForUser } from "@/common/utils/format-currency";
+import { parseQuickEntry } from "@/common/utils/quick-entry";
 import { AppModal } from "@/components/common/ui/AppModal";
 import {
   ACCOUNT_NAV_ITEMS,
@@ -29,6 +31,7 @@ import { useTranslation } from "@/components/providers/LanguageProvider";
 import { useOptionalSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { useAppSelector } from "@/stores/hooks";
+import { categoriesSelector } from "@/stores/category";
 import { userSelector } from "@/stores/profile";
 
 type IconType = ComponentType<{ size?: number; variant?: "Bold" | "Linear" | "Bulk"; className?: string }>;
@@ -86,6 +89,7 @@ export function CommandPalette() {
   const loading = access?.loading ?? true;
   const isFeatureEnabled = access?.isFeatureEnabled;
   const user = useAppSelector(userSelector);
+  const categories = useAppSelector(categoriesSelector);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
@@ -244,9 +248,29 @@ export function CommandPalette() {
     };
   }, [go, open, query, t, user?.isAdmin]);
 
+  // "۲۵۰ هزار خوراک ناهار" → pre-filled expense form (nothing is saved here).
+  const quickEntry = useMemo<Command | null>(() => {
+    const parsed = parseQuickEntry(query, (categories ?? []).filter((item) => !item.deleted));
+    if (!parsed) return null;
+    const amount = formatPriceForUser(parsed.amount, user?.preferences?.currency);
+    const details = [parsed.categoryTitle, parsed.description].filter(Boolean).join(" · ");
+    const params = new URLSearchParams({ type: parsed.type, price: String(parsed.amount) });
+    if (parsed.categoryId) params.set("category", parsed.categoryId);
+    if (parsed.description) params.set("description", parsed.description);
+    return {
+      id: "quick-entry",
+      label: t(parsed.type === "0" ? "common.commandQuickIncome" : "common.commandQuickExpense", { amount }),
+      group: t("common.commandQuickEntry"),
+      icon: parsed.type === "0" ? MoneyRecive : MoneySend,
+      hint: details || undefined,
+      run: () => go(`${PATHS.CREATE_BUDGET}?${params.toString()}`),
+    };
+  }, [categories, go, query, t, user?.preferences?.currency]);
+
   const results = useMemo(() => {
     const q = normalize(query);
     return [
+      ...(quickEntry ? [quickEntry] : []),
       ...commands
         .map((command) => ({ command, rank: score(command, q) }))
         .filter((row) => row.rank > 0)
@@ -254,7 +278,7 @@ export function CommandPalette() {
         .map((row) => row.command),
       ...userHits,
     ];
-  }, [commands, query, userHits]);
+  }, [commands, query, quickEntry, userHits]);
 
   useEffect(() => setActive(0), [query]);
   useEffect(() => {
@@ -300,7 +324,10 @@ export function CommandPalette() {
           className="max-h-[min(60dvh,420px)] overflow-y-auto overscroll-contain p-2"
         >
           {results.length === 0 ? (
-            <li className="px-3 py-10 text-center text-sm text-muted">{t("common.commandEmpty")}</li>
+            <li className="px-3 py-10 text-center text-sm text-muted">
+              {t("common.commandEmpty")}
+              <span className="mt-1.5 block text-xs opacity-80">{t("common.commandQuickHint")}</span>
+            </li>
           ) : (
             results.map((command, index) => {
               const header = command.group !== lastGroup ? command.group : null;
@@ -332,7 +359,7 @@ export function CommandPalette() {
                       <Icon size={17} variant={selected ? "Bold" : "Linear"} />
                     </span>
                     <span className="min-w-0 flex-1 truncate font-medium">{command.label}</span>
-                    {command.hint ? <span className="text-xs text-muted" dir="ltr">{command.hint}</span> : null}
+                    {command.hint ? <span className="max-w-[45%] truncate text-xs text-muted" dir="auto">{command.hint}</span> : null}
                     {command.locked ? <Lock1 size={15} className="text-muted" /> : null}
                     {selected ? <span className="text-[11px] text-muted">↵</span> : null}
                   </button>

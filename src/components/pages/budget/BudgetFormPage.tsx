@@ -178,6 +178,13 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
       setMoreOpen(true);
     }
     if (presetType === "0" || presetType === "1") setType(presetType);
+    // Quick entry from the command palette ("۲۵۰ هزار خوراک ناهار").
+    const presetPrice = params.get("price");
+    if (presetPrice && /^\d+$/.test(presetPrice)) setPrice(presetPrice);
+    const presetCategory = params.get("category");
+    if (presetCategory) setCategory(presetCategory);
+    const presetDescription = params.get("description");
+    if (presetDescription) setDescription(presetDescription.slice(0, 500));
   }, [budget]);
 
   useEffect(() => {

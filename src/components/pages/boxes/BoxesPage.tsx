@@ -80,7 +80,12 @@ export function BoxesPage() {
     if (!title.trim()) return;
     setSaving(true);
     try {
-      const payload = { title: title.trim(), goal: goal ? parsePriceInput(goal, true) : "0" };
+      // Only send `goal` when it is set or being cleared, so boxes keep
+      // working against a backend that does not know the field yet.
+      const goalValue = goal ? parsePriceInput(goal, true) : "";
+      const payload: { title: string; goal?: string } = { title: title.trim() };
+      if (goalValue && goalValue !== "0") payload.goal = goalValue;
+      else if (editor.box?.goal) payload.goal = "0";
       if (editor.box) {
         const updated = await boxesApi.updateBox(editor.box._id, payload);
         dispatch(setBoxes((boxes ?? []).map((b) => (b._id === updated._id ? updated : b))));
