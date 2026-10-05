@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button, Modal } from "@heroui/react";
+import { Button, Modal, Radio, RadioGroup } from "@heroui/react";
 
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useTranslation } from "@/components/providers/LanguageProvider";
@@ -43,30 +43,34 @@ export function DebtDeleteDialog({
         </AppModalHeader>
         <Modal.Body className="space-y-3">
           {hasTransactions ? (
-            options.map((option) => (
-              <label
-                key={String(option.value)}
-                className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${
-                  withTransactions === option.value
-                    ? option.value
-                      ? "border-danger/50 bg-danger/5"
-                      : "border-accent/50 bg-accent/5"
-                    : "border-border/60"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="debt-delete-mode"
-                  className="mt-1 accent-[var(--accent)]"
-                  checked={withTransactions === option.value}
-                  onChange={() => setWithTransactions(option.value)}
-                />
-                <span>
-                  <span className="block text-sm font-semibold">{option.title}</span>
-                  <span className="mt-0.5 block text-xs leading-6 text-muted">{option.hint}</span>
-                </span>
-              </label>
-            ))
+            <RadioGroup
+              aria-label={t("debts.deleteTitle")}
+              value={String(withTransactions)}
+              onChange={(value) => setWithTransactions(value === "true")}
+              className="space-y-3"
+            >
+              {options.map((option) => (
+                <Radio
+                  key={String(option.value)}
+                  value={String(option.value)}
+                  className={`flex w-full items-start gap-3 rounded-xl border p-3 transition ${
+                    withTransactions === option.value
+                      ? option.value
+                        ? "border-danger/50 bg-danger/5"
+                        : "border-accent/50 bg-accent/5"
+                      : "border-border/60"
+                  }`}
+                >
+                  <Radio.Control>
+                    <Radio.Indicator />
+                  </Radio.Control>
+                  <Radio.Content>
+                    <span className="block text-sm font-semibold">{option.title}</span>
+                    <span className="mt-0.5 block text-xs leading-6 text-muted">{option.hint}</span>
+                  </Radio.Content>
+                </Radio>
+              ))}
+            </RadioGroup>
           ) : (
             <p className="text-sm leading-7 text-muted">{t("debts.deleteKeepHint")}</p>
           )}

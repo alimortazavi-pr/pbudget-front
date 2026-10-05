@@ -3,7 +3,7 @@
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useEffect, useRef, useState } from "react";
-import { Button } from "@heroui/react";
+import { Button, Input } from "@heroui/react";
 import DateObject from "react-date-object";
 import persianCalendar from "react-date-object/calendars/persian";
 import persianLocale from "react-date-object/locales/persian_fa";
@@ -113,6 +113,7 @@ export function ReminderDateTimePicker({
         calendarPosition="top-center"
         containerClassName="w-full"
         inputClass="pb-form-date-input"
+        render={<Input variant="secondary" readOnly className="pb-form-date-input" />}
         placeholder={t("auto.k803a9efb66")}
       />
       <div className="flex justify-end">

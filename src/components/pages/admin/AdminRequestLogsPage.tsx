@@ -7,13 +7,13 @@ import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { Button } from "@heroui/react";
-import { SearchNormal1 } from "iconsax-reactjs";
 
 import * as adminApi from "@/common/api/admin";
 import type { AdminRequestLog } from "@/common/interfaces/admin";
 import { toPersianDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { AdminPagination } from "@/components/pages/admin/AdminPagination";
+import { AppSearch, AppSelect } from "@/components/common/form/AppControls";
 
 const METHOD_OPTIONS = [
   { value: "", label: t("auto.k067ea83147") },
@@ -132,18 +132,7 @@ export function AdminRequestLogsPage() {
             setSearch(searchInput.trim());
           }}
         >
-          <div className="relative min-w-0 flex-1">
-            <SearchNormal1
-              size={18}
-              className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-muted"
-            />
-            <input
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              placeholder={t("auto.ka34ffb4aeb")}
-              className="w-full rounded-xl border border-border bg-surface px-10 py-2.5 text-sm outline-none focus:border-accent"
-            />
-          </div>
+          <AppSearch className="min-w-0 flex-1" value={searchInput} onChange={setSearchInput} placeholder={t("auto.ka34ffb4aeb")} ariaLabel={t("auto.ka34ffb4aeb")} />
           <Button type="submit" variant="secondary">
             {t("common.search")}
           </Button>
@@ -151,35 +140,9 @@ export function AdminRequestLogsPage() {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <select
-          value={method}
-          onChange={(e) => {
-            setPage(1);
-            setMethod(e.target.value);
-          }}
-          className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm outline-none focus:border-accent"
-        >
-          {METHOD_OPTIONS.map((opt) => (
-            <option key={opt.value || "all"} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+        <AppSelect className="w-40" ariaLabel="method" value={method} onChange={(v) => { setPage(1); setMethod(v); }} options={METHOD_OPTIONS} />
 
-        <select
-          value={statusCode}
-          onChange={(e) => {
-            setPage(1);
-            setStatusCode(e.target.value);
-          }}
-          className="rounded-xl border border-border bg-surface px-3 py-2.5 text-sm outline-none focus:border-accent"
-        >
-          {STATUS_OPTIONS.map((opt) => (
-            <option key={opt.value || "all"} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+        <AppSelect className="w-44" ariaLabel="status" value={statusCode} onChange={(v) => { setPage(1); setStatusCode(v); }} options={STATUS_OPTIONS} />
       </div>
 
       <div className="glass overflow-hidden rounded-2xl">

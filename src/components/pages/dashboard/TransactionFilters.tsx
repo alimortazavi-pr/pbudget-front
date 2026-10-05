@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Button, Modal } from "@heroui/react";
-import { CloseCircle, Filter, SearchNormal1 } from "iconsax-reactjs";
+import { CloseCircle, Filter } from "iconsax-reactjs";
 
 import * as cardsApi from "@/common/api/payment-cards";
 import * as projectsApi from "@/common/api/projects";
@@ -16,6 +16,7 @@ import {
   type FilterFlag,
   type TransactionFilters,
 } from "@/common/utils/transaction-filters";
+import { AppSearch } from "@/components/common/form/AppControls";
 import { FormCategoryComboBox, FormPriceInput, FormSelect } from "@/components/common/form/FormFields";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
@@ -83,21 +84,13 @@ export function TransactionSearchBar({
 
   return (
     <div className="flex items-center gap-2">
-      <label className="pb-search">
-        <SearchNormal1 size={18} className="shrink-0 text-muted" />
-        <input
-          value={text}
-          onChange={(event) => setText(event.target.value)}
-          placeholder={t("dashboard.searchPlaceholder")}
-          aria-label={t("dashboard.searchPlaceholder")}
-          className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted"
-        />
-        {text ? (
-          <button type="button" className="text-muted hover:text-foreground" aria-label={t("common.clear")} onClick={() => setText("")}>
-            <CloseCircle size={18} variant="Bold" />
-          </button>
-        ) : null}
-      </label>
+      <AppSearch
+        className="min-w-0 flex-1"
+        value={text}
+        onChange={setText}
+        placeholder={t("dashboard.searchPlaceholder")}
+        ariaLabel={t("dashboard.searchPlaceholder")}
+      />
       <button
         type="button"
         onClick={onOpenAdvanced}

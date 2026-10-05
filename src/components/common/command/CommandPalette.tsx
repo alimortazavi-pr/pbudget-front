@@ -11,7 +11,6 @@ import {
   MoneyRecive,
   MoneySend,
   Profile,
-  SearchNormal1,
   Sun1,
 } from "iconsax-reactjs";
 
@@ -19,6 +18,7 @@ import * as adminApi from "@/common/api/admin-insights";
 import { PATHS } from "@/common/constants";
 import { formatPriceForUser } from "@/common/utils/format-currency";
 import { parseQuickEntry } from "@/common/utils/quick-entry";
+import { AppSearch } from "@/components/common/form/AppControls";
 import { AppModal } from "@/components/common/ui/AppModal";
 import {
   ACCOUNT_NAV_ITEMS,
@@ -303,17 +303,14 @@ export function CommandPalette() {
     <AppModal open={open} onOpenChange={setOpen} placement="top" size="md">
       <Modal.Dialog className="pb-command overflow-hidden p-0 sm:max-w-xl" aria-label={t("common.commandTitle")}>
         <div className="flex items-center gap-3 border-b border-border/60 px-4 py-3">
-          <SearchNormal1 size={20} className="shrink-0 text-muted" />
-          <input
-            ref={inputRef}
+          <AppSearch
+            className="min-w-0 flex-1"
+            inputRef={inputRef}
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            onChange={setQuery}
             onKeyDown={onInputKey}
             placeholder={t("common.commandPlaceholder")}
-            aria-label={t("common.commandPlaceholder")}
-            aria-controls="pb-command-list"
-            aria-activedescendant={results[active] ? `pb-cmd-${results[active].id}` : undefined}
-            className="min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-muted"
+            ariaLabel={t("common.commandPlaceholder")}
           />
           <kbd className="hidden rounded-md border border-border/70 px-1.5 py-0.5 text-[10px] text-muted sm:inline">Esc</kbd>
         </div>

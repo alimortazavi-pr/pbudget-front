@@ -16,6 +16,7 @@ import { DEFAULT_KEYWORDS, SITE_URL } from "@/common/seo";
 import { ThemeScript } from "@/components/common/ThemeScript";
 import { Splash } from "@/components/common/splash/Splash";
 import { ClientProvider } from "@/components/providers/ClientProvider";
+import { GoogleAnalytics } from "@/components/common/analytics/GoogleAnalytics";
 
 const yekanBakh = localFont({
   src: [
@@ -147,6 +148,7 @@ export default function RootLayout({
       <body>
         <Splash />
         <ClientProvider>{children}</ClientProvider>
+        <GoogleAnalytics />
       </body>
     </html>
   );

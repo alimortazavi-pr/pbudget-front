@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowLeft2, ArrowRight2 } from "iconsax-reactjs";
+import { Input, Pagination } from "@heroui/react";
+
+import { AppSelect } from "@/components/common/form/AppControls";
 
 import { useTranslation } from "@/components/providers/LanguageProvider";
 import { useLocalizedDate } from "@/i18n/hooks/useLocalizedDate";
@@ -47,45 +49,48 @@ export function TransactionPagination({
   const go = (next: number) => onPage(Math.min(pages, Math.max(1, next)));
 
   return (
-    <nav className="pb-pager" aria-label={t("dashboard.pagination")} aria-busy={busy}>
+    <div className="pb-pager" aria-busy={busy}>
       <p className="pb-pager-info">
         {t("dashboard.pageRange", { from: formatCount(from), to: formatCount(to), total: formatCount(total) })}
       </p>
 
-      <div className="pb-pager-pages">
-        <button type="button" className="pb-pager-btn" disabled={page <= 1} onClick={() => go(page - 1)} aria-label={t("dashboard.previousPage")}>
-          <ArrowRight2 size={16} />
-        </button>
-        <span className="pb-pager-compact">
-          {t("dashboard.pageOf", { page: formatCount(page), pages: formatCount(pages) })}
-        </span>
-        {windowedPages(page, pages).map((entry, index) =>
-          entry === "gap" ? (
-            <span key={`gap-${index}`} className="pb-pager-gap" aria-hidden>
-              …
+      <Pagination aria-label={t("dashboard.pagination")} className="w-auto" size="md">
+        <Pagination.Content>
+          <Pagination.Item>
+            <Pagination.Previous isDisabled={page <= 1} onPress={() => go(page - 1)} aria-label={t("dashboard.previousPage")}>
+              <Pagination.PreviousIcon />
+            </Pagination.Previous>
+          </Pagination.Item>
+          <Pagination.Item className="sm:hidden">
+            <span className="px-3 text-sm font-semibold">
+              {t("dashboard.pageOf", { page: formatCount(page), pages: formatCount(pages) })}
             </span>
-          ) : (
-            <button
-              key={entry}
-              type="button"
-              className="pb-pager-btn pb-pager-num"
-              data-current={entry === page}
-              aria-current={entry === page ? "page" : undefined}
-              onClick={() => go(entry)}
-            >
-              {formatCount(entry)}
-            </button>
-          ),
-        )}
-        <button type="button" className="pb-pager-btn" disabled={page >= pages} onClick={() => go(page + 1)} aria-label={t("dashboard.nextPage")}>
-          <ArrowLeft2 size={16} />
-        </button>
-      </div>
+          </Pagination.Item>
+          {windowedPages(page, pages).map((entry, index) =>
+            entry === "gap" ? (
+              <Pagination.Item key={`gap-${index}`} className="hidden sm:list-item">
+                <Pagination.Ellipsis />
+              </Pagination.Item>
+            ) : (
+              <Pagination.Item key={entry} className="hidden sm:list-item">
+                <Pagination.Link isActive={entry === page} aria-label={String(entry)} onPress={() => go(entry)}>
+                  {formatCount(entry)}
+                </Pagination.Link>
+              </Pagination.Item>
+            ),
+          )}
+          <Pagination.Item>
+            <Pagination.Next isDisabled={page >= pages} onPress={() => go(page + 1)} aria-label={t("dashboard.nextPage")}>
+              <Pagination.NextIcon />
+            </Pagination.Next>
+          </Pagination.Item>
+        </Pagination.Content>
+      </Pagination>
 
       <div className="pb-pager-tools">
         {pages > 7 ? (
           <form
-            className="flex items-center gap-1.5"
+            className="w-28"
             onSubmit={(event) => {
               event.preventDefault();
               const n = parseInt(jump.replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d))), 10);
@@ -93,27 +98,28 @@ export function TransactionPagination({
               setJump("");
             }}
           >
-            <input
+            <Input
+              variant="secondary"
               value={jump}
               onChange={(event) => setJump(event.target.value)}
               inputMode="numeric"
               placeholder={t("dashboard.jumpToPage")}
               aria-label={t("dashboard.jumpToPage")}
-              className="pb-pager-input"
+              className="text-center"
             />
           </form>
         ) : null}
-        <label className="flex items-center gap-1.5 text-xs text-muted">
+        <div className="flex items-center gap-1.5 text-xs text-muted">
           <span className="hidden sm:inline">{t("dashboard.perPage")}</span>
-          <select value={limit} onChange={(event) => onLimit(Number(event.target.value))} className="pb-pager-input !w-auto" aria-label={t("dashboard.perPage")}>
-            {PAGE_SIZES.map((size) => (
-              <option key={size} value={size}>
-                {formatCount(size)}
-              </option>
-            ))}
-          </select>
-        </label>
+          <AppSelect
+            className="w-24"
+            ariaLabel={t("dashboard.perPage")}
+            value={String(limit)}
+            onChange={(value) => onLimit(Number(value))}
+            options={PAGE_SIZES.map((size) => ({ value: String(size), label: formatCount(size) }))}
+          />
+        </div>
       </div>
-    </nav>
+    </div>
   );
 }

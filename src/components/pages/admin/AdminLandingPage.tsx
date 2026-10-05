@@ -13,6 +13,7 @@ import type { ILandingContent } from "@/common/interfaces/landing.interface";
 import { DEFAULT_LANDING_CONTENT } from "@/components/pages/landing/landing-data";
 import { PATHS } from "@/common/constants";
 import { showToast } from "@/common/utils/toast";
+import { AppCheckbox } from "@/components/common/form/AppControls";
 
 type Tab =
   | "preview"
@@ -232,10 +233,7 @@ export function AdminLandingPage() {
                 <TextArea value={plan.description} onChange={(e) => { const plans = [...content.pricing.plans]; plans[i] = { ...plan, description: e.target.value }; setContent({ ...content, pricing: { ...content.pricing, plans } }); }} rows={2} />
                 <Field label={t("auto.k41e1acdd96")} value={plan.features.join(t("auto.k8715d7bc59"))} onChange={(v) => { const plans = [...content.pricing.plans]; plans[i] = { ...plan, features: v.split(listDelimiterPattern).map((s) => s.trim()).filter(Boolean) }; setContent({ ...content, pricing: { ...content.pricing, plans } }); }} />
                 <Field label={t("auto.ka870869a72")} value={plan.cta} onChange={(v) => { const plans = [...content.pricing.plans]; plans[i] = { ...plan, cta: v }; setContent({ ...content, pricing: { ...content.pricing, plans } }); }} />
-                <label className="flex items-center gap-2 text-sm">
-                  <input type="checkbox" checked={plan.highlighted} onChange={(e) => { const plans = [...content.pricing.plans]; plans[i] = { ...plan, highlighted: e.target.checked }; setContent({ ...content, pricing: { ...content.pricing, plans } }); }} />
-                  {t("auto.k9679b66fbf")}
-                </label>
+                <AppCheckbox isSelected={plan.highlighted} onChange={(checked) => { const plans = [...content.pricing.plans]; plans[i] = { ...plan, highlighted: checked }; setContent({ ...content, pricing: { ...content.pricing, plans } }); }}>{t("auto.k9679b66fbf")}</AppCheckbox>
               </div>
             ))}
           </div>
@@ -313,15 +311,9 @@ export function AdminLandingPage() {
 
         {tab === "settings" ? (
           <div className="grid gap-4 max-w-md">
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={content.settings.downloadComingSoon} onChange={(e) => setContent({ ...content, settings: { ...content.settings, downloadComingSoon: e.target.checked } })} />
-              {t("auto.k2e383e6b7d")}
-            </label>
+            <AppCheckbox isSelected={content.settings.downloadComingSoon} onChange={(checked) => setContent({ ...content, settings: { ...content.settings, downloadComingSoon: checked } })}>{t("auto.k2e383e6b7d")}</AppCheckbox>
             <Field label={t("auto.kf33100f2c7")} value={content.settings.downloadLabel} onChange={(v) => setContent({ ...content, settings: { ...content.settings, downloadLabel: v } })} />
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={content.settings.showAppDownloadInNav} onChange={(e) => setContent({ ...content, settings: { ...content.settings, showAppDownloadInNav: e.target.checked } })} />
-              {t("auto.kcef36aad20")}
-            </label>
+            <AppCheckbox isSelected={content.settings.showAppDownloadInNav} onChange={(checked) => setContent({ ...content, settings: { ...content.settings, showAppDownloadInNav: checked } })}>{t("auto.kcef36aad20")}</AppCheckbox>
           </div>
         ) : null}
 

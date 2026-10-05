@@ -18,6 +18,7 @@ import {
   TickCircle,
 } from "iconsax-reactjs";
 
+import { AppSlider } from "@/components/common/form/AppControls";
 import { AnimatedNumber } from "@/components/common/motion/AnimatedNumber";
 import { useTranslation } from "@/components/providers/LanguageProvider";
 import { formatLocalizedDigits } from "@/i18n/format-localized-digits";
@@ -253,14 +254,14 @@ export function SavingsSimulator({ href }: { href: string }) {
                 {t("landingUi.simMonthly")}
                 <b className="text-lg">{digits(String(monthly))} <small className="text-xs font-normal opacity-70">{t("landingUi.simUnit")}</small></b>
               </span>
-              <input type="range" min={1} max={100} step={1} value={monthly} onChange={(event) => setMonthly(Number(event.target.value))} className="l3-range mt-3" aria-label={t("landingUi.simMonthly")} />
+              <AppSlider className="mt-3" min={1} max={100} step={1} value={monthly} onChange={setMonthly} ariaLabel={t("landingUi.simMonthly")} />
             </label>
             <label className="block">
               <span className="flex items-baseline justify-between text-sm font-semibold">
                 {t("landingUi.simGoal")}
                 <b className="text-lg">{digits(String(goal))} <small className="text-xs font-normal opacity-70">{t("landingUi.simUnit")}</small></b>
               </span>
-              <input type="range" min={10} max={2000} step={10} value={goal} onChange={(event) => setGoal(Number(event.target.value))} className="l3-range mt-3" aria-label={t("landingUi.simGoal")} />
+              <AppSlider className="mt-3" min={10} max={2000} step={10} value={goal} onChange={setGoal} ariaLabel={t("landingUi.simGoal")} />
             </label>
           </div>
 

@@ -14,6 +14,7 @@ import type { IBank } from "@/common/interfaces/bank.interface";
 import { showToast } from "@/common/utils/toast";
 import { FormInput, FormSelect } from "@/components/common/form/FormFields";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
+import { AppCheckbox } from "@/components/common/form/AppControls";
 
 const PARSER_OPTIONS = [
   { id: "blubank", label: t("admin.bankParserBluBank") },
@@ -202,14 +203,7 @@ export function AdminBanksPage() {
               onChange={(e) => setSortOrder(e.target.value)}
               inputMode="numeric"
             />
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={active}
-                onChange={(e) => setActive(e.target.checked)}
-              />
-              {t("auto.k2b945b1870")}
-            </label>
+            <AppCheckbox isSelected={active} onChange={setActive}>{t("auto.k2b945b1870")}</AppCheckbox>
             <Button className="w-full" isPending={saving} onPress={() => void save()}>
               {t("common.save")}
             </Button>

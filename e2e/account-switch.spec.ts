@@ -137,7 +137,7 @@ test.describe("Account switching", () => {
     await page.goto("/profile");
     await expect(page.getByRole("button", { name: "تغییر حساب" }).first()).toBeVisible();
     await page.keyboard.press("Control+k");
-    const input = page.getByRole("dialog").getByRole("textbox");
+    const input = page.getByRole("dialog").getByRole("searchbox");
     await expect(input).toBeVisible();
     // Arabic "ي/ك" must still find Persian "ی/ک".
     await input.fill("چك");

@@ -3,8 +3,8 @@
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useState } from "react";
-import { Button, Modal, Switch } from "@heroui/react";
-import { Edit2, SearchNormal1, Trash } from "iconsax-reactjs";
+import { Button, Modal, Switch, Input, TextArea } from "@heroui/react";
+import { Edit2, Trash } from "iconsax-reactjs";
 
 import * as adminApi from "@/common/api/admin";
 import type {
@@ -15,6 +15,7 @@ import type {
 import { formatPrice, toPersianDigits } from "@/common/utils";
 import { moneyDisplayUnitLabel } from "@/common/utils/money-display";
 import { showToast } from "@/common/utils/toast";
+import { AppSearch, AppSelect } from "@/components/common/form/AppControls";
 
 type ContentTab = "budgets" | "categories" | "projects";
 
@@ -97,18 +98,7 @@ export function AdminContentPage() {
             setSearch(searchInput.trim());
           }}
         >
-          <div className="relative min-w-[220px]">
-            <SearchNormal1
-              size={18}
-              className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-muted"
-            />
-            <input
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              placeholder={t("common.searchEllipsis")}
-              className="w-full rounded-xl border border-border bg-surface px-10 py-2.5 text-sm outline-none focus:border-accent"
-            />
-          </div>
+          <AppSearch className="min-w-[220px]" value={searchInput} onChange={setSearchInput} placeholder={t("common.searchEllipsis")} ariaLabel={t("common.searchEllipsis")} />
           <Button type="submit" variant="secondary">
             {t("common.search")}
           </Button>
@@ -457,28 +447,9 @@ function BudgetEditModal({
               <Modal.Heading>{t("nav.editTransaction")}</Modal.Heading>
             </Modal.Header>
             <Modal.Body className="space-y-3">
-              <input
-                type="number"
-                value={price}
-                onChange={(e) => setPrice(Number(e.target.value))}
-                className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                placeholder={t("common.amount")}
-              />
-              <select
-                value={type}
-                onChange={(e) => setType(Number(e.target.value))}
-                className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-              >
-                <option value={0}>{t("common.income")}</option>
-                <option value={1}>{t("common.expense")}</option>
-              </select>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                placeholder={t("common.description")}
-                rows={3}
-              />
+              <Input variant="secondary" type="number" aria-label={t("common.amount")} value={String(price)} onChange={(e) => setPrice(Number(e.target.value))} placeholder={t("common.amount")} />
+              <AppSelect ariaLabel={t("common.type")} value={String(type)} onChange={(v) => setType(Number(v))} options={[{ value: "0", label: t("common.income") }, { value: "1", label: t("common.expense") }]} />
+              <TextArea variant="secondary" aria-label={t("common.description")} value={description} onChange={(e) => setDescription(e.target.value)} placeholder={t("common.description")} rows={3} />
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onPress={onClose}>
@@ -540,25 +511,9 @@ function CategoryEditModal({
               <Modal.Heading>{t("categories.editCategory")}</Modal.Heading>
             </Modal.Header>
             <Modal.Body className="space-y-3">
-              <input
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                placeholder={t("common.title")}
-              />
-              <input
-                value={color}
-                onChange={(e) => setColor(e.target.value)}
-                className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                placeholder={t("common.color")}
-              />
-              <input
-                type="number"
-                value={monthlyLimit}
-                onChange={(e) => setMonthlyLimit(Number(e.target.value))}
-                className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                placeholder={t("common.monthlyLimit")}
-              />
+              <Input variant="secondary" aria-label={t("common.title")} value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("common.title")} />
+              <Input variant="secondary" aria-label={t("common.color")} value={color} onChange={(e) => setColor(e.target.value)} placeholder={t("common.color")} />
+              <Input variant="secondary" type="number" aria-label={t("common.monthlyLimit")} value={String(monthlyLimit)} onChange={(e) => setMonthlyLimit(Number(e.target.value))} placeholder={t("common.monthlyLimit")} />
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onPress={onClose}>
@@ -617,20 +572,8 @@ function ProjectEditModal({
               <Modal.Heading>{t("projects.editProject")}</Modal.Heading>
             </Modal.Header>
             <Modal.Body className="space-y-3">
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                placeholder={t("common.description")}
-                rows={3}
-              />
-              <input
-                type="number"
-                value={totalAmount}
-                onChange={(e) => setTotalAmount(Number(e.target.value))}
-                className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                placeholder={t("common.totalAmount")}
-              />
+              <TextArea variant="secondary" aria-label={t("common.description")} value={description} onChange={(e) => setDescription(e.target.value)} placeholder={t("common.description")} rows={3} />
+              <Input variant="secondary" type="number" aria-label={t("common.totalAmount")} value={String(totalAmount)} onChange={(e) => setTotalAmount(Number(e.target.value))} placeholder={t("common.totalAmount")} />
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onPress={onClose}>

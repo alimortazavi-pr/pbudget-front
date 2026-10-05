@@ -3,7 +3,7 @@
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Button } from "@heroui/react";
+import { Button, Input } from "@heroui/react";
 import { buttonVariants } from "@heroui/styles";
 import { DocumentDownload, DocumentUpload, Mobile } from "iconsax-reactjs";
 
@@ -137,24 +137,11 @@ export function AdminAppPage() {
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-sm text-muted">{t("auto.kbd5bbe028f")}</label>
-              <input
-                value={versionName}
-                onChange={(e) => setVersionName(e.target.value)}
-                placeholder="1.0.1"
-                dir="ltr"
-                className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-              />
+              <Input variant="secondary" aria-label="versionName" value={versionName} onChange={(e) => setVersionName(e.target.value)} placeholder="1.0.1" dir="ltr" />
             </div>
             <div>
               <label className="mb-1 block text-sm text-muted">{t("auto.kc608e21a4b")}</label>
-              <input
-                value={versionCode}
-                onChange={(e) => setVersionCode(e.target.value)}
-                placeholder="2"
-                inputMode="numeric"
-                dir="ltr"
-                className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-              />
+              <Input variant="secondary" aria-label="versionCode" value={versionCode} onChange={(e) => setVersionCode(e.target.value)} placeholder="2" inputMode="numeric" dir="ltr" />
             </div>
           </div>
           <input

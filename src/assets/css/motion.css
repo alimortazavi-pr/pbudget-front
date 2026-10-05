@@ -153,6 +153,7 @@
 .modal__backdrop { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .modal__dialog { border-radius: 1.5rem; box-shadow: 0 30px 80px -30px rgb(0 0 0 / 0.45); }
 :focus-visible { outline: 2px solid color-mix(in oklch, var(--accent) 70%, transparent); outline-offset: 2px; border-radius: 0.5rem; }
+[data-slot="search-field-input"]:focus-visible, [data-slot="search-field-group"] input:focus-visible { outline: none; }
 ::selection { background: color-mix(in oklch, var(--accent) 28%, transparent); }
 html { scroll-behavior: smooth; }
 * { scrollbar-width: thin; scrollbar-color: color-mix(in oklch, var(--muted) 40%, transparent) transparent; }

@@ -7,12 +7,12 @@ import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@heroui/react";
-import { SearchNormal1 } from "iconsax-reactjs";
 
 import * as adminApi from "@/common/api/admin";
 import type { AdminAuditLog } from "@/common/interfaces/admin";
 import { toPersianDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
+import { AppSearch } from "@/components/common/form/AppControls";
 
 const ACTION_LABELS: Record<string, string> = {
   "backup.run": t("auto.k41e56adf45"),
@@ -78,18 +78,7 @@ export function AdminAuditPage() {
             setActionFilter(actionInput.trim());
           }}
         >
-          <div className="relative min-w-[220px]">
-            <SearchNormal1
-              size={18}
-              className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-muted"
-            />
-            <input
-              value={actionInput}
-              onChange={(e) => setActionInput(e.target.value)}
-              placeholder={t("auto.k132a1a1fb2")}
-              className="w-full rounded-xl border border-border bg-surface px-10 py-2.5 text-sm outline-none focus:border-accent"
-            />
-          </div>
+          <AppSearch className="min-w-[220px]" value={actionInput} onChange={setActionInput} placeholder={t("auto.k132a1a1fb2")} ariaLabel={t("auto.k132a1a1fb2")} />
           <Button type="submit" variant="secondary">
             {t("common.filter")}
           </Button>

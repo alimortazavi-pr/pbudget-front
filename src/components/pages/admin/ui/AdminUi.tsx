@@ -9,6 +9,7 @@ import { createPortal } from "react-dom";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import type { Pagination } from "@/common/interfaces/admin";
 import { formatNumberFa, presenceOf } from "./admin-format";
+import { AppSelect } from "@/components/common/form/AppControls";
 import { OverflowReveal } from "@/components/common/ui/OverflowReveal";
 import { AnimatedNumber } from "@/components/common/motion/AnimatedNumber";
 
@@ -460,18 +461,6 @@ export function NativeSelect({
   ariaLabel: string;
   className?: string;
 }) {
-  return (
-    <select
-      aria-label={ariaLabel}
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
-      className={`h-10 w-full cursor-pointer rounded-[var(--field-radius)] border border-border bg-[var(--field-background)] px-3 text-sm text-[var(--field-foreground)] outline-none transition focus:border-accent ${className}`}
-    >
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
-  );
+  // Kept under its old name so every admin filter now renders a HeroUI Select.
+  return <AppSelect value={value} onChange={onChange} options={options} ariaLabel={ariaLabel} className={className} />;
 }
