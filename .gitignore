@@ -56,3 +56,4 @@ public/workbox-*.js.map
 # Playwright
 /test-results/
 /playwright-report/
+dump.rdb
