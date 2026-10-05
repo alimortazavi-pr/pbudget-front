@@ -17,6 +17,12 @@ import { formatBytes } from "@/common/utils/admin-format";
 import { toPersianDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 
+const BACKUP_DESTINATIONS = [
+  { id: "telegram", label: "تلگرام" },
+  { id: "s3", label: "S3" },
+  { id: "disk", label: "دیسک سرور" },
+] as const;
+
 export function AdminBackupPage() {
   const { t } = useTranslation();
   const [info, setInfo] = useState<AdminBackupInfo | null>(null);
@@ -128,6 +134,29 @@ export function AdminBackupPage() {
               <dt className="text-muted">{t("auto.kf778c250f4")}</dt>
               <dd>{formatBytes(info?.telegram.maxFileSizeBytes ?? 0)}</dd>
             </div>
+            <div className="flex justify-between gap-4">
+              <dt className="text-muted">مقصدهای بکاپ</dt>
+              <dd className="flex flex-wrap justify-end gap-1">
+                {BACKUP_DESTINATIONS.map((dest) => (
+                  <span
+                    key={dest.id}
+                    className={`rounded-full px-2 py-0.5 text-xs ${
+                      info?.destinations?.[dest.id]
+                        ? "bg-success/10 text-success-foreground"
+                        : "bg-surface-secondary text-muted line-through"
+                    }`}
+                  >
+                    {dest.label}
+                  </span>
+                ))}
+              </dd>
+            </div>
+            {info && !info.destinations?.s3 && !info.destinations?.disk ? (
+              <p className="rounded-xl bg-warning/10 px-3 py-2 text-xs leading-6 text-warning-foreground">
+                بکاپ فقط به تلگرام می‌رود. برای اطمینان، یک فضای ذخیره‌سازی S3 (مثلاً آروان‌کلاد) با
+                متغیرهای BACKUP_S3_* یا یک پوشه با BACKUP_DIR در فایل env سرور تنظیم کنید.
+              </p>
+            ) : null}
           </dl>
         </div>
 
@@ -251,12 +280,13 @@ export function AdminBackupPage() {
                 <th className="px-4 py-3 text-start font-medium">{t("auto.k856205a73e")}</th>
                 <th className="px-4 py-3 text-start font-medium">{t("auto.k5b4218ff28")}</th>
                 <th className="px-4 py-3 text-start font-medium">{t("auto.k31414a116f")}</th>
+                <th className="px-4 py-3 text-start font-medium">مقصد</th>
               </tr>
             </thead>
             <tbody>
               {history.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-muted">
+                  <td colSpan={7} className="px-4 py-8 text-center text-muted">
                     {t("auto.ke6fdfdf2d9")}
                   </td>
                 </tr>
@@ -283,6 +313,14 @@ export function AdminBackupPage() {
                     <td className="px-4 py-3">{toPersianDigits(item.collections)}</td>
                     <td className="px-4 py-3">{toPersianDigits(item.documents)}</td>
                     <td className="px-4 py-3">{formatBytes(item.byteSize)}</td>
+                    <td className="px-4 py-3 text-xs" title={item.errorMessage ?? undefined}>
+                      {item.destinations?.length
+                        ? item.destinations
+                            .map((id) => BACKUP_DESTINATIONS.find((d) => d.id === id)?.label ?? id)
+                            .join("، ")
+                        : "—"}
+                      {item.errorMessage ? <span className="ms-1 text-danger">⚠</span> : null}
+                    </td>
                   </tr>
                 ))
               )}

@@ -108,6 +108,9 @@ export interface AdminBackupRun {
   byteSize: number;
   filename: string;
   createdAt: string;
+  /** telegram | s3 | disk */
+  destinations?: string[];
+  errorMessage?: string | null;
 }
 
 export interface AdminBackupInfo {
@@ -120,6 +123,7 @@ export interface AdminBackupInfo {
     enabled: boolean;
     maxFileSizeBytes: number;
   };
+  destinations?: { telegram: boolean; s3: boolean; disk: boolean };
   formats: string[];
   lastRun: AdminBackupRun | null;
   recentHistory?: AdminBackupRun[];
