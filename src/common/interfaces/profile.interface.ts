@@ -16,6 +16,8 @@ export interface IProfile {
   isAdmin?: boolean;
   preferences: UserPreferences;
   hasAnyBudget: boolean;
+  /** Monthly finance summary in Telegram. */
+  monthlySummaryEnabled?: boolean;
 }
 
 export interface IEditProfileForm {

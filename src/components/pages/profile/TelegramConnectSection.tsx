@@ -12,6 +12,7 @@ import {
   useTelegramStatus,
 } from "@/common/hooks/useTelegramStatus";
 import { showToast } from "@/common/utils/toast";
+import { MonthlySummaryToggle } from "./MonthlySummaryToggle";
 
 const FALLBACK_BOT_USERNAME =
   process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME?.replace(/^@/, "") ?? "";
@@ -75,6 +76,7 @@ export function TelegramConnectSection() {
           <p className="rounded-xl bg-success/15 px-3 py-2 text-sm text-success-foreground">
             {t("auto.kc85d9f42db")}
           </p>
+          <MonthlySummaryToggle />
           <div className="flex flex-col gap-2 sm:flex-row">
             {resolvedBotUsername && (
               <Button
@@ -106,7 +108,7 @@ export function TelegramConnectSection() {
       ) : (
         <div className="space-y-3">
           <p className="text-sm text-muted">
-            {t("auto.k8e7f4f0002")}{APP_NAME_EN} {t("auto.k0940628caf")}
+            {t("auto.k8e7f4f0002")} {APP_NAME_EN} {t("auto.k0940628caf")}{" "}
             {t("auto.k5e0e6f8797")}
           </p>
           <Button

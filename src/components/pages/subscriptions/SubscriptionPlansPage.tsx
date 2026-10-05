@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Button, Modal, TextArea } from "@heroui/react";
-import { Clock, Crown, Lock1, TickCircle, Timer1 } from "iconsax-reactjs";
+import { Card, Clock, Crown, Lock1, TickCircle, Timer1 } from "iconsax-reactjs";
 import { createPortal } from "react-dom";
 
 import * as subscriptionApi from "@/common/api/subscriptions";
@@ -211,6 +211,15 @@ export function SubscriptionPlansPage() {
                     {t("common.subscription.requestPlan")}
                   </Button>
                 )}
+                {!isCurrent && !isFree ? (
+                  <Button variant="ghost" isDisabled className="mt-2 w-full" aria-label={t("common.subscription.onlinePaymentSoon")}>
+                    <Card size={17} />
+                    {t("common.subscription.onlinePayment")}
+                    <span className="rounded-full bg-accent/12 px-2 py-0.5 text-[11px] font-semibold text-accent">
+                      {t("common.subscription.soon")}
+                    </span>
+                  </Button>
+                ) : null}
                 {!isCurrent && !isFree && plan.contactMessage ? (
                   <p className="mt-3 text-center text-xs leading-5 text-muted">{plan.contactMessage}</p>
                 ) : null}

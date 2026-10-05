@@ -20,6 +20,7 @@ export async function updateUserPreferences(payload: {
   dateCalendar?: "jalali" | "gregorian";
   moneyDisplayUnit?: "toman" | "rial";
   configured?: boolean;
+  monthlySummaryEnabled?: boolean;
 }) {
   const { data } = await axiosInstance.put("/users/profile/preferences", payload);
   return normalizeProfile(data.user as Record<string, unknown>);

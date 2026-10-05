@@ -47,5 +47,6 @@ export function normalizeProfile(user: Record<string, unknown>): IProfile {
     isAdmin: Boolean(user.isAdmin),
     preferences,
     hasAnyBudget: Boolean(user.hasAnyBudget),
+    monthlySummaryEnabled: user.monthlySummaryEnabled !== false,
   };
 }
