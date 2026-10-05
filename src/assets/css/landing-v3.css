@@ -353,7 +353,73 @@
   }
 }
 
+/* ---------- hero entrance (on load, staggered) ---------- */
+.lx-enter {
+  animation: lx-enter 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--d, 0) * 90ms + 60ms);
+}
+@keyframes lx-enter {
+  from { opacity: 0; transform: translateY(18px); filter: blur(6px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+.lx-enter-mock { animation: lx-enter-mock 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both; }
+@keyframes lx-enter-mock {
+  from { opacity: 0; transform: translateY(40px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Living gradient on the hero tagline */
+.lx-gradient-text {
+  background-size: 220% 100%;
+  animation: lx-gradient-pan 9s ease-in-out infinite alternate;
+}
+@keyframes lx-gradient-pan { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
+
+/* 3D tilt of the product mockup (variables set from JS on mouse move) */
+.lx-tilt {
+  perspective: 1400px;
+}
+.lx-tilt > .lx-device:first-child {
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-style: preserve-3d;
+  animation: none;
+}
+
+/* Cursor spotlight on feature cards */
+.lx-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(22rem circle at var(--mx, 50%) var(--my, 50%), color-mix(in oklch, var(--lx-rose) 13%, transparent), transparent 55%);
+}
+.lx-card:hover::after { opacity: 1; }
+
+/* Scroll progress under the navigation (scroll-driven where supported) */
+.lx-progress {
+  position: absolute;
+  inset-inline: 0;
+  bottom: -1px;
+  height: 2px;
+  transform-origin: right;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, var(--lx-teal), var(--lx-violet), var(--lx-rose));
+}
+[dir="ltr"] .lx-progress { transform-origin: left; }
+@supports (animation-timeline: scroll()) {
+  .lx-progress { animation: lx-progress linear both; animation-timeline: scroll(root); }
+}
+@keyframes lx-progress { to { transform: scaleX(1); } }
+
 @media (prefers-reduced-motion: reduce) {
+  .lx-enter,
+  .lx-enter-mock,
+  .lx-gradient-text,
+  .lx-progress,
   .lx-float,
   .lx-float-delayed,
   .lx-marquee-track,

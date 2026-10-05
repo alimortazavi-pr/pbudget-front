@@ -8,6 +8,8 @@ type AnimatedNumberProps = {
   format: (value: number) => string;
   durationMs?: number;
   className?: string;
+  /** Start value on mount (e.g. 0 to count up on first paint). Defaults to `value`. */
+  from?: number;
 };
 
 const easeOutExpo = (t: number) => (t >= 1 ? 1 : 1 - 2 ** (-10 * t));
@@ -17,9 +19,9 @@ const easeOutExpo = (t: number) => (t >= 1 ? 1 : 1 - 2 ** (-10 * t));
  * of jumping. Renders the final value immediately for reduced motion and on
  * the server (no hydration mismatch).
  */
-export function AnimatedNumber({ value, format, durationMs = 900, className }: AnimatedNumberProps) {
-  const [display, setDisplay] = useState(value);
-  const fromRef = useRef(value);
+export function AnimatedNumber({ value, format, durationMs = 900, className, from }: AnimatedNumberProps) {
+  const [display, setDisplay] = useState(from ?? value);
+  const fromRef = useRef(from ?? value);
   const frameRef = useRef<number | null>(null);
 
   useEffect(() => {

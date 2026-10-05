@@ -37,6 +37,7 @@ import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { LanguageSelector } from "@/components/common/layout/LanguageSelector";
 import { useTranslation } from "@/components/providers/LanguageProvider";
 import { formatLocalizedDigits } from "@/i18n/format-localized-digits";
+import { AnimatedNumber } from "@/components/common/motion/AnimatedNumber";
 import { landingContactLabels, landingWhyTitle } from "@/i18n/localize-landing-content";
 import { useAppSelector } from "@/stores/hooks";
 import { isAuthSelector } from "@/stores/auth";
@@ -105,6 +106,15 @@ function SectionHeading({ eyebrow, title, subtitle, id }: { eyebrow: string; tit
   );
 }
 
+/** Moves a soft light under the cursor on the card being hovered. */
+function spotlight(event: React.PointerEvent<HTMLElement>) {
+  const card = (event.target as HTMLElement).closest<HTMLElement>(".lx-card");
+  if (!card) return;
+  const rect = card.getBoundingClientRect();
+  card.style.setProperty("--mx", `${event.clientX - rect.left}px`);
+  card.style.setProperty("--my", `${event.clientY - rect.top}px`);
+}
+
 function HeroMockup() {
   const { t, language } = useTranslation();
   const digits = (value: string) => formatLocalizedDigits(value, language);
@@ -116,12 +126,28 @@ function HeroMockup() {
     { label: t("landingUi.mockTx4"), amount: "+10,000,000", income: true, tone: "teal" as const },
   ];
 
+  // Subtle 3D tilt toward the cursor (desktop pointers only).
+  function onTilt(event: React.PointerEvent<HTMLDivElement>) {
+    if (event.pointerType !== "mouse") return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+    event.currentTarget.style.setProperty("--ry", `${x * 10}deg`);
+    event.currentTarget.style.setProperty("--rx", `${-y * 8}deg`);
+  }
+  function resetTilt(event: React.PointerEvent<HTMLDivElement>) {
+    event.currentTarget.style.setProperty("--ry", "0deg");
+    event.currentTarget.style.setProperty("--rx", "0deg");
+  }
+
   return (
-    <div className="relative mx-auto w-full max-w-[34rem]" aria-hidden>
+    <div className="lx-tilt lx-enter-mock relative mx-auto w-full max-w-[34rem]" aria-hidden onPointerMove={onTilt} onPointerLeave={resetTilt}>
       <div className="lx-device lx-float relative p-4 sm:p-5">
         <div className="lx-balance p-5">
           <p className="text-xs opacity-80">{t("landingUi.mockBalance")}</p>
-          <p className="mt-1 text-3xl font-extrabold tracking-tight sm:text-4xl">{digits("53,140,000")}</p>
+          <p className="mt-1 text-3xl font-extrabold tracking-tight sm:text-4xl">
+            <AnimatedNumber from={0} value={53140000} durationMs={1800} format={(n) => digits(n.toLocaleString("en-US"))} />
+          </p>
           <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
             <div className="rounded-xl bg-white/15 px-3 py-2">
               <p className="opacity-80">{t("landingUi.mockIncome")}</p>
@@ -263,6 +289,7 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
     <div className="lx min-h-screen">
       {/* ------------------------------------------------ navigation */}
       <header className="lx-nav" data-scrolled={scrolled ? "true" : "false"}>
+        <span className="lx-progress" aria-hidden />
         <div className="lx-container flex h-16 items-center justify-between gap-4">
           <Link href={PATHS.LANDING} className="flex items-center gap-2.5" aria-label={content.hero.title}>
             <AppLogo size={34} showText={false} />
@@ -348,16 +375,16 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
           <div className="lx-grid-bg" />
           <div className="lx-container relative grid items-center gap-14 pb-20 pt-12 lg:grid-cols-[1.05fr_1fr] lg:gap-10 lg:pb-28 lg:pt-20">
             <div className="text-center lg:text-start">
-              <span className="lx-eyebrow">
+              <span className="lx-eyebrow lx-enter" style={{ ["--d" as string]: 0 }}>
                 <span className="size-2 rounded-full bg-[var(--lx-rose)]" />
                 {content.hero.badge || t("landingUi.heroEyebrow")}
               </span>
-              <h1 className="lx-h1 mt-6">
+              <h1 className="lx-h1 lx-enter mt-6" style={{ ["--d" as string]: 1 }}>
                 {content.hero.title}
                 <span className="lx-gradient-text mt-2 block pb-1">{content.hero.tagline}</span>
               </h1>
-              <p className="lx-muted mx-auto mt-6 max-w-xl text-base leading-8 md:text-lg lg:mx-0">{content.hero.description}</p>
-              <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start">
+              <p className="lx-muted lx-enter mx-auto mt-6 max-w-xl text-base leading-8 md:text-lg lg:mx-0" style={{ ["--d" as string]: 2 }}>{content.hero.description}</p>
+              <div className="lx-enter mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start" style={{ ["--d" as string]: 3 }}>
                 <Link href={primaryHref} className="lx-btn lx-btn-primary w-full sm:w-auto">
                   {primaryLabel}
                   <ArrowLeft size={18} />
@@ -366,11 +393,11 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
                   {content.hero.secondaryCta}
                 </a>
               </div>
-              <p className="lx-muted mt-4 text-xs">{t("landingUi.heroNote")}</p>
+              <p className="lx-muted lx-enter mt-4 text-xs" style={{ ["--d" as string]: 4 }}>{t("landingUi.heroNote")}</p>
 
               <dl className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                {content.stats.map((stat) => (
-                  <div key={stat.label} className="rounded-2xl border border-border/60 bg-surface/60 px-3 py-3 backdrop-blur">
+                {content.stats.map((stat, index) => (
+                  <div key={stat.label} className="lx-enter rounded-2xl border border-border/60 bg-surface/60 px-3 py-3 backdrop-blur" style={{ ["--d" as string]: 5 + index * 0.5 }}>
                     <dt className="lx-muted text-[11px]">{stat.label}</dt>
                     <dd className="mt-1 text-xl font-extrabold">{stat.value}</dd>
                   </div>
@@ -400,7 +427,7 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
         <section id="features" className="scroll-mt-20 py-20 md:py-28">
           <div className="lx-container">
             <SectionHeading eyebrow={t("landingUi.featuresEyebrow")} title={t("landingUi.featuresTitle")} subtitle={t("landingUi.featuresSubtitle")} />
-            <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" onPointerMove={spotlight}>
               {content.features.map((feature, index) => {
                 const Icon = FEATURE_ICONS[feature.id] ?? Wallet2;
                 const accent = feature.accent ?? ACCENTS[index % ACCENTS.length];

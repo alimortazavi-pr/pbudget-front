@@ -129,3 +129,17 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Card grids across the app enter one after another (no per-page code). */
+.pb-card-grid > * {
+  animation: pb-rise var(--pb-dur-slow) var(--pb-ease-out) both;
+}
+.pb-card-grid > :nth-child(2) { animation-delay: 40ms; }
+.pb-card-grid > :nth-child(3) { animation-delay: 80ms; }
+.pb-card-grid > :nth-child(4) { animation-delay: 120ms; }
+.pb-card-grid > :nth-child(5) { animation-delay: 160ms; }
+.pb-card-grid > :nth-child(6) { animation-delay: 200ms; }
+.pb-card-grid > :nth-child(n + 7) { animation-delay: 240ms; }
+
+/* Modals: soft scale-in (HeroUI renders .modal__dialog). */
+.modal__dialog { animation: pb-pop var(--pb-dur) var(--pb-ease-out) both; }
