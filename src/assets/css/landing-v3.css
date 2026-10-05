@@ -1,0 +1,363 @@
+/*
+ * Landing v3 — میز پردیس
+ * Content is always visible: animations only enhance (never hide) it, so a
+ * slow device, a crawler or a screenshot always sees the whole page.
+ */
+
+.lx {
+  --lx-bg: var(--background);
+  --lx-ink: var(--foreground);
+  --lx-muted: var(--muted);
+  --lx-line: color-mix(in oklch, var(--border) 80%, transparent);
+  --lx-card: color-mix(in oklch, var(--surface) 92%, transparent);
+  --lx-rose: var(--brand-rose, #fb7185);
+  --lx-violet: var(--brand-violet, #a78bfa);
+  --lx-teal: var(--brand-teal, #2dd4bf);
+  background: var(--lx-bg);
+  color: var(--lx-ink);
+  overflow-x: clip;
+}
+
+.lx-muted {
+  color: var(--lx-muted);
+}
+
+.lx-container {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 76rem;
+  padding-inline: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .lx-container {
+    padding-inline: 2rem;
+  }
+}
+
+/* ---------- background art ---------- */
+.lx-hero-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(60rem 30rem at 85% -10%, color-mix(in oklch, var(--lx-rose) 22%, transparent), transparent 70%),
+    radial-gradient(50rem 28rem at 0% 10%, color-mix(in oklch, var(--lx-violet) 20%, transparent), transparent 70%),
+    radial-gradient(40rem 24rem at 50% 100%, color-mix(in oklch, var(--lx-teal) 12%, transparent), transparent 70%);
+}
+
+.lx-grid-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--lx-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--lx-line) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 20%, black 30%, transparent 75%);
+  opacity: 0.55;
+}
+
+/* ---------- navigation ---------- */
+.lx-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  border-bottom: 1px solid transparent;
+}
+
+.lx-nav[data-scrolled="true"] {
+  background: color-mix(in oklch, var(--lx-bg) 82%, transparent);
+  backdrop-filter: blur(16px) saturate(1.4);
+  border-bottom-color: var(--lx-line);
+  box-shadow: 0 10px 30px -20px rgb(0 0 0 / 0.25);
+}
+
+.lx-nav-link {
+  border-radius: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--lx-muted);
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.lx-nav-link:hover {
+  color: var(--lx-ink);
+  background: color-mix(in oklch, var(--surface-secondary) 80%, transparent);
+}
+
+/* ---------- typography ---------- */
+.lx-gradient-text {
+  background: linear-gradient(110deg, var(--lx-rose) 0%, var(--lx-violet) 45%, var(--lx-teal) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.lx-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklch, var(--lx-rose) 30%, transparent);
+  background: color-mix(in oklch, var(--lx-rose) 9%, transparent);
+  padding: 0.35rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: color-mix(in oklch, var(--lx-rose) 75%, var(--lx-ink));
+}
+
+.lx-h1 {
+  font-size: clamp(2.25rem, 6vw, 4.25rem);
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.lx-h2 {
+  font-size: clamp(1.75rem, 3.6vw, 2.75rem);
+  line-height: 1.25;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+/* ---------- buttons ---------- */
+.lx-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.95rem;
+  padding: 0.85rem 1.4rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.lx-btn:active {
+  transform: scale(0.98);
+}
+
+.lx-btn-primary {
+  color: white;
+  background: linear-gradient(135deg, color-mix(in oklch, var(--lx-rose) 92%, #be123c), color-mix(in oklch, var(--lx-violet) 80%, #7c3aed));
+  box-shadow: 0 14px 30px -14px color-mix(in oklch, var(--lx-rose) 80%, transparent);
+}
+
+.lx-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 36px -14px color-mix(in oklch, var(--lx-rose) 90%, transparent);
+}
+
+.lx-btn-ghost {
+  border: 1px solid var(--lx-line);
+  background: var(--lx-card);
+  color: var(--lx-ink);
+}
+
+.lx-btn-ghost:hover {
+  background: var(--surface-secondary);
+}
+
+.lx-btn-sm {
+  padding: 0.55rem 1rem;
+  font-size: 0.85rem;
+  border-radius: 0.8rem;
+}
+
+/* ---------- cards ---------- */
+.lx-card {
+  position: relative;
+  border-radius: 1.5rem;
+  border: 1px solid var(--lx-line);
+  background: var(--lx-card);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.lx-card-hover:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in oklch, var(--lx-rose) 35%, var(--lx-line));
+  box-shadow: 0 24px 50px -30px rgb(15 23 42 / 0.35);
+}
+
+.lx-icon {
+  display: flex;
+  height: 2.75rem;
+  width: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.9rem;
+}
+
+.lx-icon[data-accent="rose"] {
+  background: color-mix(in oklch, var(--lx-rose) 15%, transparent);
+  color: color-mix(in oklch, var(--lx-rose) 85%, #881337);
+}
+
+.lx-icon[data-accent="violet"] {
+  background: color-mix(in oklch, var(--lx-violet) 18%, transparent);
+  color: color-mix(in oklch, var(--lx-violet) 80%, #4c1d95);
+}
+
+.lx-icon[data-accent="teal"] {
+  background: color-mix(in oklch, var(--lx-teal) 18%, transparent);
+  color: color-mix(in oklch, var(--lx-teal) 70%, #134e4a);
+}
+
+.dark .lx-icon[data-accent] {
+  color: color-mix(in oklch, currentColor 40%, white);
+}
+
+/* ---------- product mockups ---------- */
+.lx-device {
+  border-radius: 1.75rem;
+  border: 1px solid var(--lx-line);
+  background: var(--surface);
+  box-shadow:
+    0 50px 100px -40px rgb(15 23 42 / 0.45),
+    0 0 0 8px color-mix(in oklch, var(--surface) 55%, transparent);
+}
+
+.lx-balance {
+  border-radius: 1.25rem;
+  color: white;
+  background:
+    radial-gradient(ellipse 90% 70% at 100% 0%, rgb(255 255 255 / 0.18), transparent),
+    linear-gradient(150deg, color-mix(in oklch, var(--lx-rose) 95%, #be123c), color-mix(in oklch, var(--lx-violet) 75%, #6d28d9));
+}
+
+.lx-float {
+  animation: lx-float 7s ease-in-out infinite;
+}
+
+.lx-float-delayed {
+  animation: lx-float 8s ease-in-out 1.2s infinite;
+}
+
+@keyframes lx-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.lx-bar {
+  border-radius: 0.4rem 0.4rem 0.15rem 0.15rem;
+  background: linear-gradient(to top, color-mix(in oklch, var(--lx-violet) 75%, transparent), var(--lx-rose));
+  transform-origin: bottom;
+  animation: lx-grow 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes lx-grow {
+  from { transform: scaleY(0.15); }
+  to { transform: scaleY(1); }
+}
+
+/* ---------- marquee ---------- */
+.lx-marquee {
+  mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+}
+
+.lx-marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 0.75rem;
+  animation: lx-marquee 40s linear infinite;
+}
+
+.lx-marquee:hover .lx-marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes lx-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(50%); }
+}
+
+/* ---------- chat (Telegram) ---------- */
+.lx-chat {
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(circle at 20% 20%, color-mix(in oklch, var(--lx-teal) 10%, transparent), transparent 60%),
+    color-mix(in oklch, var(--surface-secondary) 85%, transparent);
+}
+
+.lx-bubble {
+  max-width: 85%;
+  border-radius: 1.1rem;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  box-shadow: 0 6px 16px -10px rgb(0 0 0 / 0.3);
+}
+
+.lx-bubble-me {
+  margin-inline-start: auto;
+  border-end-end-radius: 0.35rem;
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: white;
+}
+
+.lx-bubble-bot {
+  border-end-start-radius: 0.35rem;
+  background: var(--surface);
+  border: 1px solid var(--lx-line);
+}
+
+/* ---------- FAQ ---------- */
+.lx-faq summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.lx-faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.lx-faq[open] .lx-faq-icon {
+  transform: rotate(45deg);
+}
+
+.lx-faq-icon {
+  transition: transform 0.25s ease;
+}
+
+/* ---------- CTA band ---------- */
+.lx-cta {
+  border-radius: 2rem;
+  color: white;
+  background:
+    radial-gradient(ellipse 60% 80% at 100% 0%, rgb(255 255 255 / 0.18), transparent),
+    radial-gradient(ellipse 50% 70% at 0% 100%, color-mix(in oklch, var(--lx-teal) 45%, transparent), transparent),
+    linear-gradient(135deg, color-mix(in oklch, var(--lx-rose) 92%, #be123c), color-mix(in oklch, var(--lx-violet) 85%, #5b21b6));
+}
+
+/* ---------- progressive scroll reveal ---------- */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .lx-reveal {
+      animation: lx-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 22%;
+    }
+  }
+}
+
+@keyframes lx-reveal {
+  /* Motion only — never opacity, so content can't end up invisible. */
+  from {
+    transform: translateY(24px) scale(0.99);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lx-float,
+  .lx-float-delayed,
+  .lx-marquee-track,
+  .lx-bar {
+    animation: none !important;
+  }
+}

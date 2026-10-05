@@ -12,6 +12,7 @@ import { budgetMessages } from "./budget";
 import { pageHeroMessages } from "./pageHero";
 import { downloadMessages } from "./download";
 import { landingMessages } from "./landing";
+import { landingUiMessages } from "./landingUi";
 import { brandMessages } from "./brand";
 import { pagesMessages } from "./pages";
 import { authMessages } from "./auth";
@@ -41,6 +42,7 @@ export const messages = {
     { pageHero: pageHeroMessages },
     { download: downloadMessages },
     { landing: landingMessages },
+    { landingUi: landingUiMessages },
     { brand: brandMessages },
     { pages: pagesMessages },
     { auth: authMessages },

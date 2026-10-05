@@ -4,6 +4,7 @@
 @import "./themes/pbudget-theme.css" layer(theme);
 @import "./rtl-heroui.css";
 @import "./landing.css";
+@import "./landing-v3.css";
 
 @layer base {
   body {
