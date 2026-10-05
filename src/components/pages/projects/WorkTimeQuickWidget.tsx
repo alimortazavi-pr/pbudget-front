@@ -1,5 +1,6 @@
 "use client";
 
+import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -21,17 +22,29 @@ import { QuickManualWorkSessionModal } from "@/components/pages/projects/QuickMa
 
 export function WorkTimeQuickWidget() {
   const { t } = useTranslation();
-  const now = getJalaliNow();
+  // A fresh moment() on every render made `load` change every render, so
+  // the effect refetched forever. Pin the period to primitive values.
+  const [period] = useState(() => {
+    const now = getJalaliNow();
+    return { year: now.jYear(), month: now.jMonth() + 1, day: now.jDate() };
+  });
+  const { isFeatureEnabled, loading: subscriptionLoading } = useSubscriptionAccess();
+  const workTimeEnabled = isFeatureEnabled("work_time");
   const [data, setData] = useState<IWorkTimeDashboard | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionProjectId, setActionProjectId] = useState<string | null>(null);
   const [manualOpen, setManualOpen] = useState(false);
 
   const load = useCallback(async () => {
+    if (!workTimeEnabled) {
+      setData(null);
+      setLoading(false);
+      return;
+    }
     try {
       const dashboard = await workTimeApi.fetchWorkTimeDashboard(
-        now.jYear(),
-        now.jMonth() + 1,
+        period.year,
+        period.month,
         { dashboardOnly: true },
       );
       setData(dashboard);
@@ -40,11 +53,12 @@ export function WorkTimeQuickWidget() {
     } finally {
       setLoading(false);
     }
-  }, [now]);
+  }, [period, workTimeEnabled]);
 
   useEffect(() => {
+    if (subscriptionLoading) return;
     void load();
-  }, [load]);
+  }, [load, subscriptionLoading]);
 
   const dashboardProjects = useMemo(() => data?.projects ?? [], [data?.projects]);
 
@@ -181,9 +195,9 @@ export function WorkTimeQuickWidget() {
         open={manualOpen}
         onOpenChange={setManualOpen}
         projects={dashboardProjects.map((row) => row.project)}
-        defaultYear={now.jYear()}
-        defaultMonth={now.jMonth() + 1}
-        defaultDay={now.jDate()}
+        defaultYear={period.year}
+        defaultMonth={period.month}
+        defaultDay={period.day}
         onSaved={() => void load()}
       />
     </>

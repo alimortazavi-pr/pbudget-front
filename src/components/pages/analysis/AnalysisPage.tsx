@@ -3,6 +3,7 @@
 import { getTranslator } from "@/i18n";
 const t = getTranslator();
 
+import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -60,6 +61,8 @@ export function AnalysisPage() {
   const router = useRouter();
   const { hydrated, get } = useHydratedSearchParams();
   const categories = useAppSelector(categoriesSelector);
+  const { isFeatureEnabled } = useSubscriptionAccess();
+  const workTimeEnabled = isFeatureEnabled("work_time");
   const user = useAppSelector(userSelector);
 
   const [report, setReport] = useState<AnalyticsReport | null>(null);
@@ -163,7 +166,7 @@ export function AnalysisPage() {
           }),
         ];
 
-        if (duration === "monthly") {
+        if (duration === "monthly" && workTimeEnabled) {
           requests.push(
             workTimeApi.fetchWorkTimeReport(parseInt(year, 10), parseInt(month, 10)),
             workTimeApi.fetchWorkTimeAlerts(parseInt(year, 10), parseInt(month, 10)),
@@ -233,6 +236,7 @@ export function AnalysisPage() {
     user,
     user?.walletBalances,
     user?.preferences?.currency,
+    workTimeEnabled,
   ]);
 
   return (

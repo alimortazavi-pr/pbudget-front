@@ -3,6 +3,7 @@
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { buttonVariants } from "@heroui/styles";
 import { ArrowRight2 } from "iconsax-reactjs";
 
@@ -25,6 +26,7 @@ export function PricingPage({
   const { t } = useTranslation();
   const { content } = useLandingContent(initialContent);
   const isAuth = useAppSelector(isAuthSelector);
+  const router = useRouter();
   const primaryCta = isAuth ? PATHS.HOME : PATHS.GET_STARTED;
   const [livePlans, setLivePlans] = useState<SubscriptionPlan[] | null>(null);
 
@@ -80,9 +82,7 @@ export function PricingPage({
           pricing={pricing}
           primaryCta={primaryCta}
           headingLevel="h1"
-          onContactPress={() => {
-            window.location.href = `${PATHS.LANDING}#contact`;
-          }}
+          onContactPress={() => router.push(`${PATHS.LANDING}#contact`)}
         />
 
         <div className="mt-14 rounded-3xl border lp-border lp-card p-8 text-center">

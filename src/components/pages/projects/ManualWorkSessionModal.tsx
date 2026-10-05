@@ -47,11 +47,10 @@ export function ManualWorkSessionModal({
   onSaved,
 }: ManualWorkSessionModalProps) {
   const { t } = useTranslation();
-  const now = getJalaliNow();
   const [year, setYear] = useState(String(defaultYear));
   const [month, setMonth] = useState(String(defaultMonth));
-  const [day, setDay] = useState(
-    String(defaultDay ?? now.jDate()),
+  const [day, setDay] = useState(() =>
+    String(defaultDay ?? getJalaliNow().jDate()),
   );
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("17:00");
@@ -75,11 +74,13 @@ export function ManualWorkSessionModal({
     }
     setYear(String(defaultYear));
     setMonth(String(defaultMonth));
-    setDay(String(defaultDay ?? now.jDate()));
+    setDay(String(defaultDay ?? getJalaliNow().jDate()));
     setStartTime("09:00");
     setEndTime("17:00");
     setDescription("");
-  }, [open, session, defaultYear, defaultMonth, defaultDay, now]);
+    // `now` must not be a dependency: a new moment every render reset the
+    // form on each keystroke.
+  }, [open, session, defaultYear, defaultMonth, defaultDay]);
 
   async function save(e?: FormEvent) {
     e?.preventDefault();

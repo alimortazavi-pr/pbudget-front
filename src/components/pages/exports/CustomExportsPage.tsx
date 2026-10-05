@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Input, Label, TextField } from "@heroui/react";
-import { Add, ArrangeVertical, ArrowLeft2, Brush2, Crown, DocumentDownload, DocumentUpload, Edit2, Eye, GalleryAdd, Lock1, Save2, Trash } from "iconsax-reactjs";
+import { Add, ArrangeVertical, Brush2, Crown, DocumentDownload, DocumentUpload, Edit2, Eye, GalleryAdd, Lock1, Save2, Trash } from "iconsax-reactjs";
 import Image from "next/image";
 
 import { useTranslation } from "@/components/providers/LanguageProvider";
@@ -24,7 +26,7 @@ function HeroInput({ label, value, onChange, type = "text", placeholder, classNa
 
 function LockedExportsState({ hasSubscription }: { hasSubscription: boolean }) {
   const { t } = useTranslation();
-  return <section className="glass mx-auto flex min-h-[460px] w-full max-w-3xl items-center justify-center rounded-3xl border border-accent/20 p-8 text-center shadow-sm sm:p-12"><div className="max-w-xl"><div className="mx-auto flex size-16 items-center justify-center rounded-3xl bg-accent/12 text-accent"><Lock1 size={32} variant="Bold" /></div><p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-accent">{t("common.subscription.currentPlan")}</p><h1 className="mt-2 text-2xl font-bold tracking-tight">{t("pages.customExports.title")}</h1><p className="mx-auto mt-3 max-w-lg text-sm leading-7 text-muted">{hasSubscription ? t("common.subscription.notForYourPlan") : t("common.subscription.contactAdminToActivate")}</p><div className="mt-7 flex flex-wrap justify-center gap-3"><Button onPress={() => { window.location.href = PATHS.PLANS; }}><Crown size={18} variant="Bold" />{t("common.subscription.viewPlans")}</Button><Button variant="secondary" onPress={() => { window.location.href = `${PATHS.LANDING}#contact`; }}><ArrowLeft2 size={17} />{t("common.subscription.contactAdmin")}</Button></div></div></section>;
+  return <section className="glass mx-auto flex min-h-[460px] w-full max-w-3xl items-center justify-center rounded-3xl border border-accent/20 p-8 text-center shadow-sm sm:p-12"><div className="max-w-xl"><div className="mx-auto flex size-16 items-center justify-center rounded-3xl bg-accent/12 text-accent"><Lock1 size={32} variant="Bold" /></div><p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-accent">{t("common.subscription.currentPlan")}</p><h1 className="mt-2 text-2xl font-bold tracking-tight">{t("pages.customExports.title")}</h1><p className="mx-auto mt-3 max-w-lg text-sm leading-7 text-muted">{hasSubscription ? t("common.subscription.notForYourPlan") : t("common.subscription.contactAdminToActivate")}</p><div className="mt-7 flex flex-wrap justify-center gap-3"><Link href={PATHS.PLANS} className="inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground"><Crown size={18} variant="Bold" />{t("common.subscription.compareAndUpgrade")}</Link></div></div></section>;
 }
 
 function ExportLoadError({ onRetry }: { onRetry: () => void }) {
