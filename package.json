@@ -56,15 +56,15 @@
   "packageManager": "pnpm@10.28.1",
   "pnpm": {
     "overrides": {
-      "brace-expansion@<1.1.18": "1.1.18",
-      "brace-expansion@>=4.0.0 <5.0.12": "5.0.12",
-      "js-yaml@>=4.0.0 <4.3.1": "4.3.1",
       "nanoid@>=3.0.0 <3.3.18": "3.3.18",
       "postcss@<8.5.23": "8.5.23",
       "sharp@<0.35.0": "0.35.4",
       "browserslist@<4.28.7": "^4.28.7",
       "moment@>=2.29.2 <2.31.0": "^2.31.0",
-      "baseline-browser-mapping@<2.11.0": "^2.11.0"
+      "baseline-browser-mapping@<2.11.0": "^2.11.0",
+      "brace-expansion@<1.1.21": "1.1.21",
+      "js-yaml@>=4.0.0 <4.3.2": "4.3.2",
+      "brace-expansion@>=4.0.0 <5.0.12": "5.0.12"
     },
     "ignoredBuiltDependencies": [
       "sharp",
