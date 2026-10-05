@@ -15,6 +15,9 @@ import { PwaInstallPrompt } from "@/components/common/PwaInstallPrompt";
 import { LanguageProvider } from "./LanguageProvider";
 import { AppModeProvider } from "./AppModeProvider";
 import { MoneyDisplayBoundary } from "./MoneyDisplayBoundary";
+import { Suspense } from "react";
+import { NavProgress } from "@/components/common/splash/NavProgress";
+import { SplashHider } from "@/components/common/splash/SplashHider";
 
 export const ClientProvider: FC<PropsWithChildren> = ({ children }) => {
   const app = (
@@ -28,6 +31,10 @@ export const ClientProvider: FC<PropsWithChildren> = ({ children }) => {
                   <TourProvider>
                     <I18nProvider locale="fa-IR">
                       <RootProvider>
+                        <SplashHider />
+                        <Suspense fallback={null}>
+                          <NavProgress />
+                        </Suspense>
                         <AppShell>{children}</AppShell>
                         <PwaInstallPrompt />
                       </RootProvider>

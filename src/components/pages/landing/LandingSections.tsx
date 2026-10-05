@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import {
   ArrowLeft,
   Briefcase,
@@ -21,6 +21,8 @@ import {
 import { AnimatedNumber } from "@/components/common/motion/AnimatedNumber";
 import { useTranslation } from "@/components/providers/LanguageProvider";
 import { formatLocalizedDigits } from "@/i18n/format-localized-digits";
+import { LEARN_ARTICLES } from "@/content/learn";
+import { parseQuickEntry } from "@/common/utils/quick-entry";
 
 function Heading({ eyebrow, title, subtitle }: { eyebrow: string; title: string; subtitle?: string }) {
   return (
@@ -351,3 +353,230 @@ export function SecuritySection() {
   );
 }
 
+
+/* ----------------------------------------------------------------- guides */
+
+/** Internal links to the /learn guides — feeds readers and search engines. */
+export function GuidesSection() {
+  const { t } = useTranslation();
+  return (
+    <section id="guides" className="scroll-mt-20 py-20 md:py-28">
+      <div className="lx-container">
+        <Heading eyebrow={t("landingUi.guidesEyebrow")} title={t("landingUi.guidesTitle")} subtitle={t("landingUi.guidesSubtitle")} />
+        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {LEARN_ARTICLES.slice(0, 6).map((article) => (
+            <Link key={article.slug} href={`/learn/${article.slug}`} data-rise className="l3-card block" onPointerMove={glow}>
+              <h3 className="font-bold leading-8">{article.title.split("؛")[0]}</h3>
+              <p className="lx-muted mt-2 line-clamp-3 text-sm leading-7">{article.description}</p>
+            </Link>
+          ))}
+        </div>
+        <div className="mt-8 text-center">
+          <Link href="/learn" className="lx-btn lx-btn-ghost">
+            {t("landingUi.guidesAll")}
+            <ArrowLeft size={18} />
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------- announcement bar */
+
+export function AnnouncementBar({ href }: { href: string }) {
+  const { t } = useTranslation();
+  return (
+    <div className="l3-announce">
+      <span className="l3-announce-dot" aria-hidden />
+      <p>{t("landingUi.annText")}</p>
+      <a href={href}>{t("landingUi.annCta")} ←</a>
+    </div>
+  );
+}
+
+/* ----------------------------------------------------------- typing demo */
+
+const DEMOS: Record<string, { texts: string[]; categories: { _id: string; title: string }[] }> = {
+  fa: {
+    texts: ["۲۵۰ هزار خوراک ناهار", "حقوق ۴۵ میلیون", "اسنپ ۸۵ هزار حمل و نقل"],
+    categories: [{ _id: "1", title: "خوراک" }, { _id: "2", title: "حقوق" }, { _id: "3", title: "حمل و نقل" }],
+  },
+  en: {
+    texts: ["250k food lunch", "salary 45m", "taxi 85k transport"],
+    categories: [{ _id: "1", title: "food" }, { _id: "2", title: "salary" }, { _id: "3", title: "transport" }],
+  },
+  ar: {
+    texts: ["250 ألف طعام غداء", "راتب 45 مليون", "تاكسي 85 ألف نقل"],
+    categories: [{ _id: "1", title: "طعام" }, { _id: "2", title: "راتب" }, { _id: "3", title: "نقل" }],
+  },
+};
+
+/** Types example sentences and parses them with the real quick-entry parser. */
+export function TypingDemo() {
+  const { t, language } = useTranslation();
+  const demo = DEMOS[language] ?? DEMOS.fa;
+  const [index, setIndex] = useState(0);
+  const [typed, setTyped] = useState("");
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setTyped(demo.texts[0]);
+      return;
+    }
+    const full = demo.texts[index % demo.texts.length];
+    let cursor = 0;
+    let timer = 0;
+    const tick = () => {
+      cursor += 1;
+      setTyped(full.slice(0, cursor));
+      if (cursor < full.length) timer = window.setTimeout(tick, 70);
+      else timer = window.setTimeout(() => setIndex((value) => value + 1), 2600);
+    };
+    setTyped("");
+    timer = window.setTimeout(tick, 400);
+    return () => window.clearTimeout(timer);
+  }, [index, demo]);
+
+  const parsed = typed ? parseQuickEntry(typed, demo.categories) : null;
+  const digits = (value: string) => formatLocalizedDigits(value, language);
+
+  return (
+    <section id="quick-entry" className="l3-stage scroll-mt-20 py-20 md:py-28">
+      <div className="l3-aurora"><span className="l3-orb l3-orb-a" /><span className="l3-orb l3-orb-c" /></div>
+      <div className="lx-container">
+        <Heading eyebrow={t("landingUi.typingEyebrow")} title={t("landingUi.typingTitle")} subtitle={t("landingUi.typingSubtitle")} />
+        <div data-rise className="l3-g mx-auto mt-12 max-w-2xl p-5 md:p-7">
+          <div className="l3-typebox" aria-live="polite">
+            <span>{typed}</span>
+            <i className="l3-caret" aria-hidden />
+          </div>
+          <div className="mt-5 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+            {[
+              { k: t("landingUi.typingAmount"), v: parsed ? digits(parsed.amount.toLocaleString("en-US")) : "—" },
+              { k: t("landingUi.typingKind"), v: parsed ? (parsed.type === "1" ? t("landingUi.typingExpense") : t("landingUi.typingIncome")) : "—", tone: parsed?.type === "0" ? "l3-in" : "l3-out" },
+              { k: t("landingUi.typingCategory"), v: parsed?.categoryTitle ?? "—" },
+              { k: t("landingUi.typingNote"), v: parsed?.description || "—" },
+            ].map((cell) => (
+              <div key={cell.k} className="l3-chipcell">
+                <p className="text-[11px] opacity-60">{cell.k}</p>
+                <p className={`mt-1 truncate font-bold ${cell.tone ?? ""}`} dir="auto">{cell.v}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------ horizontal tour */
+
+/** A pinned scene: vertical scroll slides the app screens sideways. */
+export function AppTour() {
+  const { t, language } = useTranslation();
+  const digits = (value: string) => formatLocalizedDigits(value, language);
+  const bars = [42, 66, 38, 80, 54, 92, 70, 58, 84];
+  const panels = [
+    { id: "tourDash", accent: "#fb7185" },
+    { id: "tourAnalysis", accent: "#a78bfa" },
+    { id: "tourBoxes", accent: "#2dd4bf" },
+    { id: "tourPlan", accent: "#f59e0b" },
+    { id: "tourImport", accent: "#38bdf8" },
+    { id: "tourBot", accent: "#60a5fa" },
+  ];
+  const circumference = 2 * Math.PI * 40;
+
+  return (
+    <section id="tour" className="l3-tour" data-scene>
+      <div className="l3-sticky l3-tour-sticky">
+        <div className="lx-container w-full">
+          <Heading eyebrow={t("landingUi.tourEyebrow")} title={t("landingUi.tourTitle")} subtitle={t("landingUi.tourSubtitle")} />
+        </div>
+        <div className="l3-tour-viewport">
+          <div className="l3-tour-track">
+            {panels.map((panel, index) => (
+              <article key={panel.id} className="l3-tour-panel" style={{ ["--accent-c" as string]: panel.accent } as CSSProperties}>
+                <header>
+                  <span className="l3-tour-num">{digits(String(index + 1).padStart(2, "0"))}</span>
+                  <h3>{t(`landingUi.${panel.id}`)}</h3>
+                  <p>{t(`landingUi.${panel.id}Body`)}</p>
+                </header>
+                <div className="l3-tour-ui" aria-hidden>
+                  {index === 0 ? (
+                    <>
+                      <div className="l3-tour-balance">{digits("53,140,000")}</div>
+                      <div className="l3-tour-bars">{bars.map((h, i) => <i key={i} style={{ height: `${h}%` }} />)}</div>
+                    </>
+                  ) : null}
+                  {index === 1 ? (
+                    <div className="grid place-items-center">
+                      <div className="relative size-32">
+                        <svg viewBox="0 0 100 100" className="size-full -rotate-90">
+                          <circle cx="50" cy="50" r="40" fill="none" stroke="rgb(255 255 255 / 0.12)" strokeWidth="11" />
+                          <circle cx="50" cy="50" r="40" fill="none" stroke="var(--accent-c)" strokeWidth="11" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={circumference * 0.08} />
+                        </svg>
+                        <b className="absolute inset-0 grid place-items-center text-3xl">{digits("92")}</b>
+                      </div>
+                    </div>
+                  ) : null}
+                  {index === 2 ? (
+                    <ul className="space-y-3">
+                      {[38, 76, 100].map((v) => (
+                        <li key={v}>
+                          <div className="mb-1 flex justify-between text-xs"><span>{t("landingUi.tourBoxes")}</span><b>{digits(`${v}%`)}</b></div>
+                          <div className="l3-pbar"><i style={{ width: `${v}%` }} /></div>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                  {index === 3 ? (
+                    <ul className="space-y-2">
+                      {[digits("1405/07/20"), digits("1405/07/27"), digits("1405/08/05")].map((d) => (
+                        <li key={d} className="l3-row"><span>{t("landingUi.mockTx3")}</span><b dir="ltr">{d}</b></li>
+                      ))}
+                    </ul>
+                  ) : null}
+                  {index === 4 ? (
+                    <ul className="space-y-2">
+                      {["+45,000,000", "−1,240,000", "−4,200,000", "+10,000,000"].map((a) => (
+                        <li key={a} className="l3-row"><span>statement.xlsx</span><b dir="ltr" className={a.startsWith("+") ? "l3-in" : "l3-out"}>{digits(a)}</b></li>
+                      ))}
+                    </ul>
+                  ) : null}
+                  {index === 5 ? (
+                    <div className="space-y-2">
+                      <div className="l3-msg l3-msg-me !opacity-100 !transform-none">{t("landingUi.chatUser")}</div>
+                      <div className="l3-msg l3-msg-bot !opacity-100 !transform-none">{t("landingUi.chatBot")}</div>
+                    </div>
+                  ) : null}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------ sticky CTA */
+
+/** Slim conversion bar on phones once the visitor scrolled past the hero. */
+export function StickyCta({ href, label }: { href: string; label: string }) {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setShow(window.scrollY > window.innerHeight * 1.2);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  return (
+    <div className="l3-sticky-cta" data-show={show} aria-hidden={!show}>
+      <Link href={href} className="lx-btn lx-btn-primary w-full" tabIndex={show ? 0 : -1}>
+        {label}
+        <ArrowLeft size={18} />
+      </Link>
+    </div>
+  );
+}

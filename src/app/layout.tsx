@@ -14,6 +14,7 @@ import {
 } from "@/common/constants/brand";
 import { DEFAULT_KEYWORDS, SITE_URL } from "@/common/seo";
 import { ThemeScript } from "@/components/common/ThemeScript";
+import { Splash } from "@/components/common/splash/Splash";
 import { ClientProvider } from "@/components/providers/ClientProvider";
 
 const yekanBakh = localFont({
@@ -61,9 +62,11 @@ export const metadata: Metadata = {
       noimageindex: true,
     },
   },
-  verification: process.env.GOOGLE_SITE_VERIFICATION
-    ? { google: process.env.GOOGLE_SITE_VERIFICATION }
-    : undefined,
+  verification: {
+    ...(process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : {}),
+    ...(process.env.YANDEX_SITE_VERIFICATION ? { yandex: process.env.YANDEX_SITE_VERIFICATION } : {}),
+    ...(process.env.BING_SITE_VERIFICATION ? { other: { "msvalidate.01": process.env.BING_SITE_VERIFICATION } } : {}),
+  },
   openGraph: {
     images: [{ url: LOGO_OG_IMAGE_SRC, width: 1200, height: 630, alt: APP_NAME_FA }],
   },
@@ -137,8 +140,12 @@ export default function RootLayout({
     >
       <head>
         <ThemeScript />
+        <noscript>
+          <style>{"#pb-splash{display:none!important}"}</style>
+        </noscript>
       </head>
       <body>
+        <Splash />
         <ClientProvider>{children}</ClientProvider>
       </body>
     </html>

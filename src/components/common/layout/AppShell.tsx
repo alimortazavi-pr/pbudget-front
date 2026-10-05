@@ -35,8 +35,38 @@ const PAGE_TITLE_KEYS: Record<string, string> = {
   [PATHS.SETTINGS]: "nav.settings",
 };
 
+/** Pages that live inside the signed-in app chrome (sidebar, header, tab bar). */
+const APP_ROUTE_PREFIXES = [
+  PATHS.HOME,
+  PATHS.ANALYSIS,
+  PATHS.EXPORTS,
+  PATHS.PLANS,
+  PATHS.BOXES,
+  PATHS.PAYMENT_CARDS,
+  PATHS.BANK_IMPORT,
+  PATHS.VENTURES,
+  PATHS.INVITES,
+  PATHS.CREATE_BUDGET,
+  "/budgets",
+  PATHS.PROFILE,
+  PATHS.SETTINGS,
+  PATHS.DEBTS,
+  PATHS.INSTALLMENTS,
+  PATHS.CHECKS,
+  PATHS.NOTES,
+  PATHS.COMMITMENTS,
+  PATHS.PROJECTS,
+  PATHS.TASKS,
+  PATHS.PLANNING,
+];
+
+function isAppRoute(pathname: string) {
+  return APP_ROUTE_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
+  const rawPathname = usePathname();
+  const pathname = rawPathname ?? "";
   const isLandingPage = pathname === PATHS.LANDING;
   const isLandingPreview = pathname === PATHS.LANDING_PREVIEW;
   const isPricingPage = pathname === PATHS.PRICING;
@@ -45,7 +75,9 @@ export function AppShell({ children }: { children: ReactNode }) {
     pathname === PATHS.WORKSPACE ||
     pathname === PATHS.DOWNLOAD;
 
-  if (isLandingPage || isLandingPreview || isPricingPage) {
+  // Default to the bare public page: an unknown or not-yet-known path must
+  // never flash the signed-in chrome around the landing page.
+  if (isLandingPage || isLandingPreview || isPricingPage || !isAppRoute(pathname)) {
     return (
       <>
         <AuthBootstrap />

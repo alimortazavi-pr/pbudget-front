@@ -61,7 +61,10 @@ export function createPublicPageMetadata({
     title: { absolute: title },
     description,
     keywords: [...DEFAULT_KEYWORDS, ...keywords],
-    alternates: { canonical },
+    alternates: {
+      canonical,
+      languages: { "fa-IR": canonical, "x-default": canonical },
+    },
     robots: {
       index: true,
       follow: true,
@@ -109,4 +112,11 @@ export const ORGANIZATION_JSON_LD = {
   },
   email: CONTACT_EMAIL,
   description: APP_DESCRIPTION_FA,
+  sameAs: ["https://t.me/paradisebudget_bot"],
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer support",
+    email: CONTACT_EMAIL,
+    availableLanguage: ["fa", "en", "ar"],
+  },
 };

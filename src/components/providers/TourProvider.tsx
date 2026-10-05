@@ -15,6 +15,7 @@ import {
 } from "react";
 import { createContext, useContext } from "react";
 import { usePathname } from "next/navigation";
+import { isPublicPath } from "@/common/constants/public-routes";
 
 import {
   getTourForPath,
@@ -301,8 +302,8 @@ export function TourProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!mounted) return;
-    if (pathname === "/get-started" || pathname === "/download") return;
-    if (pathname === "/") return;
+    // Never greet visitors of public pages (landing, pricing, guides…) with the in-app tour.
+    if (isPublicPath(pathname) || pathname === "/landing-preview") return;
 
     const timer = window.setTimeout(() => {
       const pendingKind = consumePendingPersonaTour();

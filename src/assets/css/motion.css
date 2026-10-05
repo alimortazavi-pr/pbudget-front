@@ -162,3 +162,43 @@ a.glass, button.glass, .glass.pb-lift { transition: transform var(--pb-dur) var(
   html { scroll-behavior: auto; }
   .button { transition: none; }
 }
+
+
+/* ---- splash + navigation progress ---- */
+#pb-splash {
+  position: fixed; inset: 0; z-index: 2147483000; display: grid; place-items: center; overflow: hidden;
+  background: var(--background, #fff7f8); color: var(--foreground, #1c1020);
+  transition: opacity 0.55s var(--pb-ease-out), visibility 0.55s, transform 0.7s var(--pb-ease-out);
+  /* fallback for no-JS / crawlers: leave on its own after 3s */
+  animation: pb-splash-auto 0.5s ease 3.2s forwards;
+}
+html[data-ready="true"] #pb-splash { opacity: 0; visibility: hidden; transform: scale(1.04); pointer-events: none; }
+@keyframes pb-splash-auto { to { opacity: 0; visibility: hidden; pointer-events: none; } }
+.pb-splash-orb { position: absolute; border-radius: 9999px; filter: blur(70px); opacity: 0.5; }
+.pb-splash-orb-a { width: 26rem; height: 26rem; inset-block-start: -8rem; inset-inline-end: -6rem; background: var(--brand-rose, #fb7185); animation: pb-splash-float 6s ease-in-out infinite alternate; }
+.pb-splash-orb-b { width: 22rem; height: 22rem; inset-block-end: -8rem; inset-inline-start: -6rem; background: var(--brand-violet, #a78bfa); animation: pb-splash-float 7s ease-in-out infinite alternate-reverse; }
+@keyframes pb-splash-float { to { transform: translate3d(2rem, 1.5rem, 0) scale(1.15); } }
+.pb-splash-core { position: relative; display: flex; flex-direction: column; align-items: center; gap: 0.35rem; text-align: center; }
+.pb-splash-logo { position: relative; display: grid; place-items: center; width: 6.2rem; height: 6.2rem; border-radius: 1.8rem; background: color-mix(in oklch, var(--surface, #fff) 80%, transparent); box-shadow: 0 24px 50px -20px color-mix(in oklch, var(--brand-rose, #fb7185) 70%, transparent), inset 0 1px 0 rgb(255 255 255 / 0.5); animation: pb-splash-pop 0.9s var(--pb-ease-spring) both; }
+.pb-splash-logo::before { content: ""; position: absolute; inset: -0.35rem; border-radius: 2.1rem; border: 2px solid var(--brand-rose, #fb7185); opacity: 0; animation: pb-splash-ping 1.8s ease-out 0.5s infinite; }
+.pb-splash-logo img { border-radius: 1.2rem; }
+@keyframes pb-splash-pop { from { opacity: 0; transform: scale(0.6) rotate(-8deg); } to { opacity: 1; transform: none; } }
+@keyframes pb-splash-ping { 0% { opacity: 0.7; transform: scale(1); } 100% { opacity: 0; transform: scale(1.35); } }
+.pb-splash-name { margin-top: 1rem; font-size: 1.5rem; font-weight: 800; animation: pb-splash-rise 0.7s var(--pb-ease-out) 0.2s both; }
+.pb-splash-sub { font-size: 0.8rem; letter-spacing: 0.22em; text-transform: uppercase; opacity: 0.55; animation: pb-splash-rise 0.7s var(--pb-ease-out) 0.3s both; }
+.pb-splash-bar { margin-top: 1.4rem; width: 7.5rem; height: 3px; border-radius: 9999px; background: color-mix(in oklch, var(--foreground, #000) 12%, transparent); overflow: hidden; animation: pb-splash-rise 0.7s var(--pb-ease-out) 0.4s both; }
+.pb-splash-bar i { display: block; height: 100%; width: 45%; border-radius: inherit; background: linear-gradient(90deg, var(--brand-rose, #fb7185), var(--brand-violet, #a78bfa), var(--brand-teal, #2dd4bf)); animation: pb-splash-slide 1.1s ease-in-out infinite; }
+@keyframes pb-splash-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes pb-splash-slide { from { transform: translateX(-120%); } to { transform: translateX(260%); } }
+[dir="rtl"] .pb-splash-bar i { animation-name: pb-splash-slide-rtl; }
+@keyframes pb-splash-slide-rtl { from { transform: translateX(120%); } to { transform: translateX(-260%); } }
+/* landing hero words wait for the splash to lift */
+html:not([data-ready="true"]) .l3-word { animation-play-state: paused; }
+
+.pb-navbar { position: fixed; inset-block-start: 0; inset-inline: 0; height: 3px; z-index: 2147482000; pointer-events: none; opacity: 0; transform-origin: inline-start; transform: scaleX(0); background: linear-gradient(90deg, var(--brand-rose, #fb7185), var(--brand-violet, #a78bfa), var(--brand-teal, #2dd4bf)); box-shadow: 0 0 10px var(--brand-rose, #fb7185); }
+.pb-navbar[data-state="run"] { opacity: 1; transform: scaleX(0.82); transition: transform 7s cubic-bezier(0.1, 0.8, 0.2, 1), opacity 0.15s; }
+.pb-navbar[data-state="done"] { opacity: 0; transform: scaleX(1); transition: transform 0.25s ease-out, opacity 0.4s ease 0.25s; }
+@media (prefers-reduced-motion: reduce) {
+  .pb-splash-orb, .pb-splash-logo::before, .pb-splash-bar i { animation: none; }
+  #pb-splash { transition-duration: 0.01s; }
+}

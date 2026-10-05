@@ -41,7 +41,7 @@ import { landingContactLabels, landingWhyTitle } from "@/i18n/localize-landing-c
 import { useAppSelector } from "@/stores/hooks";
 import { isAuthSelector } from "@/stores/auth";
 import { LandingContactForm } from "./LandingContactForm";
-import { BentoShowcase, CompareSection, PersonaSection, SavingsSimulator, SecuritySection } from "./LandingSections";
+import { AnnouncementBar, AppTour, BentoShowcase, CompareSection, GuidesSection, PersonaSection, SavingsSimulator, SecuritySection, StickyCta, TypingDemo } from "./LandingSections";
 import { useLandingContent } from "./useLandingContent";
 
 const FEATURE_ICONS: Record<string, typeof Wallet2> = {
@@ -416,6 +416,7 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
 
   return (
     <div className="lx min-h-screen">
+      <AnnouncementBar href="#quick-entry" />
       {/* ------------------------------------------------ navigation */}
       <header className="lx-nav" data-scrolled={scrolled ? "true" : "false"}>
         <span className="lx-progress" aria-hidden />
@@ -576,6 +577,8 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
           </div>
         </section>
 
+        <AppTour />
+
         <BentoShowcase />
 
         {/* ------------------------------------------------ features: cards fly in from depth */}
@@ -642,6 +645,8 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
             </dl>
           </div>
         </section>
+
+        <TypingDemo />
 
         <PersonaSection />
 
@@ -779,6 +784,8 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
           </div>
         </section>
 
+        <GuidesSection />
+
         {/* ------------------------------------------------ CTA */}
         <section className="py-20 md:py-24">
           <div className="lx-container">
@@ -853,8 +860,11 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
         </section>
       </main>
 
+      <StickyCta href={primaryHref} label={primaryLabel} />
+
       {/* ------------------------------------------------ footer */}
-      <footer className="border-t border-border/60 bg-surface/60">
+      <footer className="relative overflow-hidden border-t border-border/60 bg-surface/60">
+        <div className="l3-footer-word" aria-hidden>{content.hero.title}</div>
         <div className="lx-container grid gap-10 py-12 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
             <div className="flex items-center gap-2.5">
@@ -873,6 +883,11 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
                   </a>
                 </li>
               ))}
+              <li>
+                <Link href="/learn" className="lx-muted hover:text-foreground">
+                  {t("landingUi.guidesEyebrow")}
+                </Link>
+              </li>
               <li>
                 <Link href={PATHS.PRICING} className="lx-muted hover:text-foreground">
                   {content.pricing.title || t("landingUi.pricingEyebrow")}

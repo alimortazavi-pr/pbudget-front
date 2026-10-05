@@ -7,6 +7,8 @@ export function isPublicPath(pathname: string): boolean {
     pathname === PATHS.PRICING ||
     pathname === PATHS.GET_STARTED ||
     pathname === PATHS.DOWNLOAD ||
+    pathname === "/learn" ||
+    pathname.startsWith("/learn/") ||
     pathname.startsWith("/partner-invite/")
   );
 }

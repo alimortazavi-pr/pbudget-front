@@ -7,7 +7,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: ["/", "/pricing", "/download"],
+        allow: ["/", "/pricing", "/download", "/learn", "/llms.txt", "/llms-full.txt"],
         disallow: [
           "/admin",
           "/api",
@@ -38,6 +38,26 @@ export default function robots(): MetadataRoute.Robots {
           "/workspace",
           "/~offline",
         ],
+      },
+      // AI assistants and answer engines are welcome: the public pages are
+      // written to be quoted (see /llms.txt).
+      {
+        userAgent: [
+          "GPTBot",
+          "OAI-SearchBot",
+          "ChatGPT-User",
+          "ClaudeBot",
+          "Claude-SearchBot",
+          "Claude-User",
+          "PerplexityBot",
+          "Perplexity-User",
+          "Google-Extended",
+          "Applebot-Extended",
+          "Bingbot",
+          "YandexBot",
+        ],
+        allow: ["/", "/pricing", "/download", "/learn", "/llms.txt", "/llms-full.txt"],
+        disallow: ["/admin", "/api", "/app", "/get-started", "/workspace", "/partner-invite"],
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,
