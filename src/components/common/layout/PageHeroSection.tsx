@@ -54,20 +54,22 @@ export function PageHeroSection({
       {description ? (
         <p className={descriptionClassName}>{description}</p>
       ) : null}
-      {footer}
     </>
   );
 
+  // The footer spans the full width (it used to sit in the title column next
+  // to `aside`, which squeezed stats on mobile).
   return (
     <section className={sectionClass}>
       {aside ? (
         <div className="flex items-start justify-between gap-3">
-          <div>{body}</div>
+          <div className="min-w-0">{body}</div>
           {aside}
         </div>
       ) : (
         body
       )}
+      {footer}
     </section>
   );
 }

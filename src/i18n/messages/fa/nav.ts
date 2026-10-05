@@ -40,6 +40,7 @@ export const navMessages: MessageTree = {
   modules: "ماژول‌ها",
   controlCenter: "مرکز کنترل",
   manageProject: "مدیریت پروژه",
+  invites: "دعوت‌های همکاری",
   paymentPlan: "برنامه پرداخت",
   downloadApp: "دانلود اپ اندروید",
   downloadAppReady: "نسخه {{version}} — دانلود مستقیم APK",

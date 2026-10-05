@@ -8,12 +8,12 @@ export async function fetchBoxes(token?: string) {
   return data.boxes;
 }
 
-export async function createBox(payload: { title: string }) {
+export async function createBox(payload: { title: string; goal?: string }) {
   const { data } = await axiosInstance.post("/boxes", payload);
   return data.box as IBox;
 }
 
-export async function updateBox(id: string, payload: { title: string }) {
+export async function updateBox(id: string, payload: { title: string; goal?: string }) {
   const { data } = await axiosInstance.put(`/boxes/${id}`, payload);
   return data.box as IBox;
 }

@@ -924,3 +924,24 @@
     box-shadow: 0 0 0 2px var(--surface);
   }
 }
+@layer components {
+  .pb-box {
+    @apply relative overflow-hidden rounded-3xl border border-border/50 bg-surface p-5;
+  }
+  .pb-box::before {
+    content: "";
+    position: absolute;
+    inset-inline-end: -3rem;
+    top: -3rem;
+    width: 9rem;
+    height: 9rem;
+    border-radius: 999px;
+    pointer-events: none;
+    background: radial-gradient(circle, color-mix(in oklch, var(--tone) 22%, transparent), transparent 70%);
+  }
+  .pb-box-icon {
+    @apply flex size-11 shrink-0 items-center justify-center rounded-2xl;
+    color: color-mix(in oklch, var(--tone) 85%, var(--foreground));
+    background: color-mix(in oklch, var(--tone) 15%, transparent);
+  }
+}

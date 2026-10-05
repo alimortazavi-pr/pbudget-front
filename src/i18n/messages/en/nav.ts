@@ -40,6 +40,7 @@ export const navMessages: MessageTree = {
   modules: "Modules",
   controlCenter: "Control Center",
   manageProject: "Manage project",
+  invites: "Collaboration invites",
   paymentPlan: "Payment plan",
   downloadApp: "Download Android app",
   downloadAppReady: "Version {{version}} — direct APK download",

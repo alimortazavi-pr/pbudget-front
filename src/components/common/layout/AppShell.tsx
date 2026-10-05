@@ -21,6 +21,7 @@ const PAGE_TITLE_KEYS: Record<string, string> = {
   [PATHS.BANK_IMPORT]: "nav.bankImport",
   [PATHS.VENTURES]: "nav.businessPartners",
   [PATHS.WORK_ATTENDANCE]: "nav.workAttendance",
+  [PATHS.INVITES]: "nav.invites",
   [PATHS.CREATE_BUDGET]: "nav.createTransaction",
   [PATHS.CATEGORIES]: "nav.categories",
   [PATHS.DEBTS]: "nav.debts",
