@@ -12,7 +12,6 @@ import {
   BANK_IMPORT_NAV_ITEM,
   PLANNING_NAV_GROUPS,
   PRIMARY_NAV_ITEMS,
-  DOWNLOAD_NAV_ITEM,
 } from "@/components/common/layout/shell-nav";
 import { PATHS } from "@/common/constants";
 import { usePendingInvitesCount } from "@/common/hooks/usePendingInvitesCount";
@@ -128,14 +127,10 @@ export function ShellSidebar() {
         <div className="min-h-4 shrink-0" aria-hidden />
 
         <div className="mt-auto border-t border-border/50 pt-5 flex flex-col gap-2">
-          <Link
-            href={DOWNLOAD_NAV_ITEM.href}
-            className="pb-sidebar-link !py-2 text-xs text-muted hover:text-foreground"
-          >
-            <DOWNLOAD_NAV_ITEM.icon size={20} />
-            <span>{t(DOWNLOAD_NAV_ITEM.label)}</span>
-          </Link>
-          <ShellAccountMenu variant="sidebar" showPlanning />
+          {/* The sidebar already lists the planning groups (and the account
+              menu has the download link), so the account menu must not draw
+              them a second time. */}
+          <ShellAccountMenu variant="sidebar" showPlanning={false} />
         </div>
       </div>
     </aside>

@@ -117,4 +117,16 @@ test.describe("Account switching", () => {
     await expect.poll(async () => (await activeToken(context))?.token).toBe("token-b");
     await expect.poll(async () => (await activeToken(context))?.users.length).toBe(1);
   });
+
+  test("the desktop sidebar lists every menu item once", async ({ page, context }) => {
+    await mockApi(context);
+    await setAccounts(context, "token-a", ["token-a"]);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/profile");
+    const aside = page.locator("aside").first();
+    await expect(aside.getByRole("link", { name: "تنظیمات" }).first()).toBeVisible();
+    const labels = (await aside.locator("a,button").allInnerTexts()).map((t) => t.trim()).filter(Boolean);
+    const duplicates = labels.filter((label, index) => labels.indexOf(label) !== index);
+    expect(duplicates).toEqual([]);
+  });
 });
