@@ -12,7 +12,10 @@ import { PATHS } from "@/common/constants";
 import { useHydratedSearchParams } from "@/common/hooks/useHydratedSearchParams";
 import { useLocalizedDate } from "@/i18n/hooks/useLocalizedDate";
 import { getJalaliNow } from "@/common/utils";
-import { getNowDateParts } from "@/common/utils/calendar-date";
+import { formatBudgetDate, getNowDateParts } from "@/common/utils/calendar-date";
+import { formatPriceWithCurrency } from "@/common/utils/format-currency";
+import { resolveBudgetCurrency, resolveBudgetDateCalendar, type UserCurrency } from "@/common/constants/user-preferences";
+import { BudgetType } from "@/types/enums";
 import moment from "moment-jalali";
 import { showToast } from "@/common/utils/toast";
 import { BudgetExportModal } from "@/components/pages/dashboard/BudgetExportModal";
@@ -56,6 +59,9 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
   const budgetRevision = useAppSelector(budgetRevisionSelector);
 
   const [loading, setLoading] = useState(!initialData);
+  const [otherCurrencyTotals, setOtherCurrencyTotals] = useState<
+    { currency: string; income: number; cost: number; count: number }[]
+  >([]);
   const [exportOpen, setExportOpen] = useState(false);
   const hasLoadedOnce = useRef(Boolean(initialData));
 
@@ -111,7 +117,14 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         const data = await budgetsApi.fetchBudgets(
           Object.fromEntries(new URLSearchParams(queryString)),
         );
-        if (!cancelled) dispatch(setBudgets(data));
+        if (!cancelled) {
+          dispatch(setBudgets(data));
+          setOtherCurrencyTotals(
+            Object.entries(data.totalsByCurrency ?? {})
+              .filter(([currency]) => currency !== (data.currency ?? "toman"))
+              .map(([currency, totals]) => ({ currency, ...totals })),
+          );
+        }
       } catch (err) {
         showToast(
           err instanceof Error
@@ -131,7 +144,27 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
     };
   }, [dispatch, queryString, budgetRevision, t]);
 
-  const filteredBudgets = budgets ?? [];
+  const filteredBudgets = useMemo(() => budgets ?? [], [budgets]);
+
+  // Group by transaction day so a month reads like a statement.
+  const dayGroups = useMemo(() => {
+    const groups: { key: string; budgets: IBudget[]; income: number; cost: number }[] = [];
+    for (const budget of filteredBudgets) {
+      const key = `${budget.year}-${budget.month}-${budget.day}`;
+      let group = groups[groups.length - 1];
+      if (!group || group.key !== key) {
+        group = { key, budgets: [], income: 0, cost: 0 };
+        groups.push(group);
+      }
+      group.budgets.push(budget);
+      const sameCurrency = resolveBudgetCurrency(budget.currency) === (user?.preferences?.currency ?? "toman");
+      if (sameCurrency) {
+        if (budget.type === BudgetType.INCOME) group.income += budget.price;
+        else group.cost += budget.price;
+      }
+    }
+    return groups;
+  }, [filteredBudgets, user?.preferences?.currency]);
 
   function shiftMonth(delta: number) {
     if (calendarType === "gregorian") {
@@ -361,10 +394,41 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
           </p>
         </div>
       ) : (
-        <div className="flex flex-col gap-3 lg:gap-4" data-tour="dashboard-transactions">
-          {filteredBudgets.map((budget: IBudget) => (
-            <TransactionCard key={budget._id} budget={budget} />
-          ))}
+        <div className="flex flex-col gap-5" data-tour="dashboard-transactions">
+          {otherCurrencyTotals.length ? (
+            <div className="flex flex-wrap gap-2 text-xs">
+              {otherCurrencyTotals.map((row) => (
+                <span key={row.currency} className="rounded-full bg-surface-secondary px-3 py-1 text-muted">
+                  {formatPriceWithCurrency(row.income, resolveBudgetCurrency(row.currency as UserCurrency))} ↓ ·{" "}
+                  {formatPriceWithCurrency(row.cost, resolveBudgetCurrency(row.currency as UserCurrency))} ↑
+                </span>
+              ))}
+            </div>
+          ) : null}
+          {dayGroups.map((group) => {
+            const first = group.budgets[0];
+            const net = group.income - group.cost;
+            return (
+              <section key={group.key} className="flex flex-col gap-2.5 lg:gap-3">
+                {duration !== "daily" ? (
+                  <div className="flex items-center justify-between px-1 text-xs text-muted">
+                    <span className="font-semibold text-foreground/80">
+                      {formatBudgetDate(first.year, first.month, first.day, resolveBudgetDateCalendar(first.dateCalendar))}
+                    </span>
+                    {net !== 0 ? (
+                      <span className={net > 0 ? "text-income" : "text-expense"} dir="ltr">
+                        {net > 0 ? "+" : "−"}
+                        {formatPriceWithCurrency(Math.abs(net), resolveBudgetCurrency(user?.preferences?.currency))}
+                      </span>
+                    ) : null}
+                  </div>
+                ) : null}
+                {group.budgets.map((budget: IBudget) => (
+                  <TransactionCard key={budget._id} budget={budget} />
+                ))}
+              </section>
+            );
+          })}
         </div>
       )}
     </div>

@@ -16,4 +16,7 @@ export const projectsMessages: MessageTree = {
     "Daily hours for «{{project}}» are done — record clock-out",
   dailyHoursPassedReminder:
     "30 minutes after daily hours for «{{project}}» — record clock-out",
+  detachTransaction: "Remove from project",
+  detachTransactionConfirm: "Remove this transaction from the project? The transaction and your wallet stay unchanged.",
+  transactionDetached: "Transaction removed from project",
 };

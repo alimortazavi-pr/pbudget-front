@@ -53,6 +53,9 @@ export async function createStandaloneDebt(payload: {
   month: string;
   day: string;
   description?: string;
+  dueYear?: string;
+  dueMonth?: string;
+  dueDay?: string;
 }) {
   const { data } = await axiosInstance.post<{ debt: IDebt }>("/debts/standalone", payload);
   return data.debt;
@@ -114,6 +117,28 @@ export async function fetchSettlementCandidates(debtId: string) {
   return data;
 }
 
-export async function deleteDebt(debtId: string) {
-  await axiosInstance.delete(`/debts/${debtId}`);
+/**
+ * Delete a debt record. Its linked transactions stay unless
+ * `withTransactions` is set, which also reverses them in the wallet.
+ */
+export async function deleteDebt(debtId: string, options: { withTransactions?: boolean } = {}) {
+  await axiosInstance.delete(`/debts/${debtId}`, {
+    params: options.withTransactions ? { withTransactions: "true" } : undefined,
+  });
+}
+
+export async function updateDebt(
+  debtId: string,
+  payload: {
+    person?: string;
+    description?: string;
+    amount?: string;
+    dueYear?: string;
+    dueMonth?: string;
+    dueDay?: string;
+    clearDueDate?: "true";
+  },
+) {
+  const { data } = await axiosInstance.patch<{ debt: IDebt }>(`/debts/${debtId}`, payload);
+  return data.debt;
 }

@@ -123,6 +123,9 @@ export function TransactionCard({ budget }: TransactionCardProps) {
                 ? ` · ${budget.sourceBank.title}`
                 : ""}
             </p>
+            {budget.description?.trim() ? (
+              <p className="mt-1 line-clamp-1 text-xs text-foreground/70">{budget.description}</p>
+            ) : null}
             {isPendingCategory && (
               <span className="mt-1 inline-flex rounded-md bg-warning/15 px-1.5 py-0.5 text-[10px] font-semibold text-warning-foreground">
                 {t("dashboard.bankImportBadge")}
@@ -173,9 +176,6 @@ export function TransactionCard({ budget }: TransactionCardProps) {
                 budgetCalendar
               )}
             </p>
-            {budget.description ? (
-              <p className="mb-3 text-sm text-muted">{budget.description}</p>
-            ) : null}
             <div className="flex gap-2">
               <LinkButton
                 href={PATHS.BUDGET(budget._id)}

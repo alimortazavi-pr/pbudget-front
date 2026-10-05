@@ -16,4 +16,7 @@ export const projectsMessages: MessageTree = {
     "انتهت ساعات اليوم لـ «{{project}}» — سجّل الخروج",
   dailyHoursPassedReminder:
     "مرّ ٣٠ دقيقة على نهاية ساعات اليوم لـ «{{project}}» — سجّل الخروج",
+  detachTransaction: "إزالة من المشروع",
+  detachTransactionConfirm: "إزالة هذه المعاملة من المشروع؟ تبقى المعاملة والمحفظة دون تغيير.",
+  transactionDetached: "أُزيلت المعاملة من المشروع",
 };

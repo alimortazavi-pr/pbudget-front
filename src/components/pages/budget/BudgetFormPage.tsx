@@ -167,6 +167,19 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
     !user?.preferences?.configured &&
     !user?.hasAnyBudget;
 
+  // Deep links such as /create-budget?projectId=…&type=0 prefill a new entry.
+  useEffect(() => {
+    if (budget || typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const presetProject = params.get("projectId");
+    const presetType = params.get("type");
+    if (presetProject) {
+      setProjectLedger({ enabled: true, projectId: presetProject });
+      setMoreOpen(true);
+    }
+    if (presetType === "0" || presetType === "1") setType(presetType);
+  }, [budget]);
+
   useEffect(() => {
     if (needsPreferencesOnboarding) {
       setPrefsModalOpen(true);

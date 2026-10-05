@@ -72,4 +72,8 @@ export interface IBudgetsSummary {
   budgets: IBudget[];
   totalCostPrice: number;
   totalIncomePrice: number;
+  /** Totals per currency; the two fields above are in `currency` only. */
+  totalsByCurrency?: Record<string, { income: number; cost: number; count: number }>;
+  currency?: string;
+  truncated?: boolean;
 }

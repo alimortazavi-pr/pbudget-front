@@ -9,7 +9,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
-import { ArrowDown, ArrowUp, Link1, Profile2User, Trash } from "iconsax-reactjs";
+import { ArrowDown, ArrowUp, Edit2, Link1, Profile2User, Trash } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 import * as debtsApi from "@/common/api/debts";
@@ -25,6 +25,9 @@ import { showErrorToast, showToast } from "@/common/utils/toast";
 import { AttachBudgetButton } from "@/components/common/budget/AttachBudgetModal";
 import { SettlementProgressBar } from "@/components/common/ui/SettlementProgressBar";
 import { DebtSettleModal } from "@/components/pages/debts/DebtSettleModal";
+import { DebtDueBadge } from "@/components/pages/debts/DebtDueBadge";
+import { DebtEditModal } from "@/components/pages/debts/DebtEditModal";
+import { DebtDeleteDialog } from "@/components/pages/debts/DebtDeleteDialog";
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
 import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
@@ -84,6 +87,8 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
   const [tab, setTab] = useState<TabId>("overview");
   const [settleOpen, setSettleOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const [detachingId, setDetachingId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -115,13 +120,12 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
     return debt.totalAmount - debt.remainingAmount;
   }, [debt]);
 
-  async function removeDebt() {
-    if (!confirm(t("auto.k558f268793"))) return;
-
+  async function removeDebt(withTransactions: boolean) {
     setDeleting(true);
     try {
-      await debtsApi.deleteDebt(debtId);
+      await debtsApi.deleteDebt(debtId, { withTransactions });
       showToast(t("common.deleted"), "success");
+      setDeleteOpen(false);
       router.push(PATHS.DEBTS);
     } catch (err) {
       showErrorToast(err, t("auto.kcb7622491d"));
@@ -213,20 +217,33 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
               <Profile2User size={24} className="text-muted" />
               {debt.person}
             </h1>
-            <p className="mt-1 text-sm text-muted">
+            <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-muted">
               {formatBudgetDate(
                 String(debt.year),
                 String(debt.month),
                 String(debt.day),
                 debt.dateCalendar,
               )}
+              {debt.dueYear ? (
+                <span>
+                  · {t("debts.dueDate")}:{" "}
+                  {formatBudgetDate(String(debt.dueYear), String(debt.dueMonth), String(debt.dueDay), debt.dateCalendar)}
+                </span>
+              ) : null}
+              <DebtDueBadge debt={debt} />
             </p>
           </div>
-          {isReceivable ? (
-            <ArrowDown size={28} className="text-income" variant="Bold" />
-          ) : (
-            <ArrowUp size={28} className="text-expense" variant="Bold" />
-          )}
+          <div className="flex shrink-0 items-center gap-2">
+            <Button size="sm" variant="secondary" onPress={() => setEditOpen(true)} aria-label={t("debts.editDebt")}>
+              <Edit2 size={16} />
+              {t("common.edit")}
+            </Button>
+            {isReceivable ? (
+              <ArrowDown size={28} className="text-income" variant="Bold" />
+            ) : (
+              <ArrowUp size={28} className="text-expense" variant="Bold" />
+            )}
+          </div>
         </div>
 
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -362,8 +379,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
             <Button
               className="mt-3"
               variant="danger"
-              onPress={() => void removeDebt()}
-              isPending={deleting}
+              onPress={() => setDeleteOpen(true)}
             >
               <Trash size={18} />
               {t("auto.ked6c60e057")}
@@ -467,6 +483,15 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
           )}
         </div>
       )}
+
+      <DebtEditModal debt={debt} open={editOpen} onOpenChange={setEditOpen} onSaved={(next) => setDebt(next)} />
+      <DebtDeleteDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        hasTransactions={budgets.length > 0}
+        isPending={deleting}
+        onConfirm={(withTransactions) => void removeDebt(withTransactions)}
+      />
 
       <DebtSettleModal
         debt={debt}

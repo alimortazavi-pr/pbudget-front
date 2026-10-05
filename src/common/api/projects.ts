@@ -96,3 +96,8 @@ export async function attachProjectBudgets(projectId: string, budgetIds: string[
     await attachProjectBudget(projectId, budgetId);
   }
 }
+
+/** Unlink a transaction from a project; the transaction itself stays. */
+export async function detachProjectBudget(projectId: string, budgetId: string) {
+  await axiosInstance.delete(`/projects/${projectId}/budgets/${budgetId}`);
+}

@@ -493,7 +493,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
         <div className="space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-sm text-muted">
-              {formatCount(data.budgets.length)} {t("auto.k737a2f99b3")}
+              {formatCount(data.project.stats?.transactionCount ?? data.budgets.length)} {t("auto.k737a2f99b3")}
             </p>
             <div className="flex flex-wrap gap-2">
               {canEditContent ? (
@@ -512,7 +512,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
                   await load();
                 }}
               />
-              <LinkButton href={PATHS.CREATE_BUDGET} size="sm" variant="secondary">
+              <LinkButton href={`${PATHS.CREATE_BUDGET}?projectId=${projectId}`} size="sm" variant="secondary">
                 <Add size={16} />
                 {t("auto.kc26f42387e")}
               </LinkButton>
@@ -530,6 +530,21 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
                 key={budget._id}
                 budget={budget}
                 currentUserId={currentUser?._id}
+                detachLabel={t("projects.detachTransaction")}
+                onDetach={
+                  canEditContent
+                    ? async () => {
+                        if (!confirm(t("projects.detachTransactionConfirm"))) return;
+                        try {
+                          await projectsApi.detachProjectBudget(projectId, budget._id);
+                          showToast(t("projects.transactionDetached"), "success");
+                          await load();
+                        } catch (error) {
+                          showErrorToast(error);
+                        }
+                      }
+                    : undefined
+                }
               />
             ))
           )}

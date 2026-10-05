@@ -4,13 +4,20 @@ import Link from "next/link";
 
 import { PATHS } from "@/common/constants";
 import type { IBudget } from "@/common/interfaces/budget.interface";
-import { formatJalaliDate, formatPrice } from "@/common/utils";
+import { formatPrice } from "@/common/utils";
+import { formatBudgetDate } from "@/common/utils/calendar-date";
+import { formatPriceWithCurrency } from "@/common/utils/format-currency";
+import { resolveBudgetCurrency, resolveBudgetDateCalendar } from "@/common/constants/user-preferences";
+import { Link1 } from "iconsax-reactjs";
 import { useTranslation } from "@/components/providers/LanguageProvider";
 import { BudgetType } from "@/types/enums";
 
 type PartnerBudgetCardProps = {
   budget: IBudget;
   currentUserId?: string | null;
+  /** Show an "unlink" action (e.g. remove from a project). */
+  onDetach?: () => void;
+  detachLabel?: string;
 };
 
 function usePerformerLabel(
@@ -40,6 +47,8 @@ function usePerformerLabel(
 export function PartnerBudgetCard({
   budget,
   currentUserId,
+  onDetach,
+  detachLabel,
 }: PartnerBudgetCardProps) {
   const { t } = useTranslation();
   const isIncome = budget.type === BudgetType.INCOME;
@@ -57,7 +66,7 @@ export function PartnerBudgetCard({
             {budget.description ? ` · ${budget.description}` : ""}
           </p>
           <p className="mt-1 text-xs text-muted">
-            {formatJalaliDate(budget.year, budget.month, budget.day)}
+            {formatBudgetDate(budget.year, budget.month, budget.day, resolveBudgetDateCalendar(budget.dateCalendar))}
           </p>
           {attribution ? (
             <p className="mt-2 text-xs leading-6 text-muted">{attribution}</p>
@@ -67,9 +76,25 @@ export function PartnerBudgetCard({
           className={`shrink-0 font-bold ${isIncome ? "text-income" : "text-expense"}`}
         >
           {isIncome ? "+" : "-"}
-          {formatPrice(budget.price)}
+          {formatPriceWithCurrency(budget.price, resolveBudgetCurrency(budget.currency))}
         </p>
       </div>
+      {onDetach ? (
+        <div className="mt-3 flex justify-end border-t border-border/50 pt-2">
+          <button
+            type="button"
+            className="inline-flex cursor-pointer items-center gap-1 rounded-lg px-2 py-1 text-xs text-muted hover:bg-surface-secondary hover:text-danger"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              onDetach();
+            }}
+          >
+            <Link1 size={14} className="rotate-45" />
+            {detachLabel}
+          </button>
+        </div>
+      ) : null}
     </Link>
   );
 }

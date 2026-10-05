@@ -19,6 +19,7 @@ import {
 import { showToast } from "@/common/utils/toast";
 import { CreateDebtModal } from "@/components/pages/debts/CreateDebtModal";
 import { SettlementProgressBar } from "@/components/common/ui/SettlementProgressBar";
+import { DebtDueBadge } from "@/components/pages/debts/DebtDueBadge";
 import { PageHeroSection } from "@/components/common/layout/PageHeroSection";
 import { DebtType } from "@/types/enums";
 import { useAppSelector } from "@/stores/hooks";
@@ -208,6 +209,7 @@ export function DebtsPage() {
                       <span className="rounded-lg bg-surface-secondary px-2 py-0.5 text-xs text-muted">
                         {statusLabel(debt.status, t)}
                       </span>
+                      <DebtDueBadge debt={debt} />
                     </div>
                     <p className="mt-2 flex items-center gap-2 font-semibold">
                       <Profile2User size={18} className="text-muted" />

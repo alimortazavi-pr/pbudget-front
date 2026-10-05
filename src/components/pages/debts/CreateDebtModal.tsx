@@ -4,7 +4,7 @@ import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Button, Modal } from "@heroui/react";
+import { Button, Modal, Switch } from "@heroui/react";
 
 import * as debtsApi from "@/common/api/debts";
 import { PATHS } from "@/common/constants";
@@ -71,6 +71,8 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
   const [month, setMonth] = useState(nowParts.month);
   const [day, setDay] = useState(nowParts.day);
   const [description, setDescription] = useState("");
+  const [hasDue, setHasDue] = useState(false);
+  const [due, setDue] = useState({ year: nowParts.year, month: nowParts.month, day: nowParts.day });
   const [submitting, setSubmitting] = useState(false);
   const [forceCreateNew, setForceCreateNew] = useState(false);
   const [personMatches, setPersonMatches] = useState<IDebt[]>([]);
@@ -83,6 +85,8 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
     setYear(parts.year);
     setMonth(parts.month);
     setDay(parts.day);
+    setHasDue(false);
+    setDue({ year: parts.year, month: parts.month, day: parts.day });
     setForceCreateNew(false);
     setPersonMatches([]);
   }, [open, formCalendar, preferredCurrency]);
@@ -154,6 +158,9 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
         month: toEnglishDigits(month),
         day: toEnglishDigits(day),
         description: description.trim(),
+        ...(hasDue
+          ? { dueYear: toEnglishDigits(due.year), dueMonth: toEnglishDigits(due.month), dueDay: toEnglishDigits(due.day) }
+          : {}),
       });
       showToast(t("auto.k89c1a0f1f5"), "success");
       onCreated?.(debt._id);
@@ -333,6 +340,28 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
               setDay(value.day);
             }}
           />
+          <label className="flex items-center justify-between gap-3 rounded-xl bg-surface-secondary/60 px-3 py-2.5 text-sm">
+            <span>
+              <span className="block font-medium">{t("debts.setDueDate")}</span>
+              <span className="text-xs text-muted">{t("debts.dueDateHint")}</span>
+            </span>
+            <Switch size="sm" isSelected={hasDue} onChange={setHasDue}>
+              <Switch.Control>
+                <Switch.Thumb />
+              </Switch.Control>
+            </Switch>
+          </label>
+          {hasDue ? (
+            <FormDatePicker
+              label={t("debts.dueDate")}
+              year={due.year}
+              month={due.month}
+              day={due.day}
+              inModal
+              calendarType={formCalendar}
+              onChange={(value) => setDue({ year: value.year, month: value.month, day: value.day })}
+            />
+          ) : null}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="ghost" onPress={() => onOpenChange(false)}>

@@ -16,4 +16,7 @@ export const projectsMessages: MessageTree = {
     "ساعت روزانه «{{project}}» گذشت — خروج را ثبت کنید",
   dailyHoursPassedReminder:
     "۳۰ دقیقه از پایان ساعت روزانه «{{project}}» گذشت — خروج را ثبت کنید",
+  detachTransaction: "جدا کردن از پروژه",
+  detachTransactionConfirm: "این تراکنش از پروژه جدا شود؟ خود تراکنش و موجودی کیف پول تغییری نمی‌کنند.",
+  transactionDetached: "تراکنش از پروژه جدا شد",
 };

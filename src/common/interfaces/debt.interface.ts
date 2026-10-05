@@ -26,6 +26,10 @@ export interface IDebt {
   currency?: UserCurrency;
   dateCalendar?: UserDateCalendar;
   description?: string;
+  /** Optional agreed repayment date, in the debt's calendar. */
+  dueYear?: number | null;
+  dueMonth?: number | null;
+  dueDay?: number | null;
   settlements: DebtSettlement[];
   createdAt: string;
   updatedAt: string;
