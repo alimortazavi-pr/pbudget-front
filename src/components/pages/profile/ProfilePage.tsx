@@ -229,9 +229,24 @@ export function ProfilePage() {
             <h2 className="text-lg font-bold">{t("common.currentSubscription")}</h2>
             <p className="mt-1 text-sm text-muted">
               {subscription?.subscription?.planSnapshot?.name ?? t("common.noActiveSubscription")}
+              {subscription?.subscription ? (
+                <span className="ms-2 text-xs">
+                  ·{" "}
+                  {subscription.daysRemaining == null
+                    ? t("common.subscription.neverExpires")
+                    : t("common.subscription.daysLeft", { days: subscription.daysRemaining })}
+                </span>
+              ) : null}
             </p>
+            {subscription?.pendingRequest ? (
+              <p className="mt-1 text-xs text-warning-foreground">
+                {t("common.subscription.pendingRequest", {
+                  plan: subscription.pendingRequest.plan?.name ?? subscription.pendingRequest.planSnapshot?.name ?? "",
+                })}
+              </p>
+            ) : null}
           </div>
-          <Link href={PATHS.PRICING} className="rounded-xl bg-accent px-3 py-2 text-sm text-accent-foreground">
+          <Link href={PATHS.PLANS} className="shrink-0 rounded-xl bg-accent px-3 py-2 text-sm text-accent-foreground">
             {t("common.viewPlans")}
           </Link>
         </div>

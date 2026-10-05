@@ -35,4 +35,9 @@ export const authMessages: MessageTree = {
   heroAccent: "بسيطة ودقيقة وتقويمية",
   noPasswordContinueHint:
     "لم تُضبط كلمة مرور لهذا الرقم. أغلق النافذة واضغط «متابعة» مرة أخرى لإنشاء حساب.",
+  stepSetupTitle: "تعيين كلمة المرور",
+  stepSetupSub: "هذا الرقم لديه حساب مسبقًا. أكّد الملكية برمز تيليجرام لإنشاء كلمة مرور.",
+  setupSuccess: "تم إنشاء كلمة المرور. سجّل الدخول الآن.",
+  setupSendCode: "إرسال رمز التحقق عبر تيليجرام",
+  setupSubmit: "إنشاء كلمة المرور والمتابعة",
 };

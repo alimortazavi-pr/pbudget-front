@@ -23,7 +23,7 @@ export const ONBOARDING_TOUR: TourDefinition = {
   name: "راهنمای شروع",
   steps: [
     {
-      title: "به Paradise Budget خوش آمدید",
+      title: "به میز پردیس خوش آمدید",
       description:
         "در چند قدم کوتاه با مهم‌ترین بخش‌های اپ آشنا می‌شوید. هر وقت خواستید دوباره از دکمه راهنما در بالای صفحه شروع کنید.",
       placement: "center",

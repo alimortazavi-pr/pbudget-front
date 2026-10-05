@@ -321,10 +321,8 @@ export function TourProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      const pageTour = getTourForPath(pathname);
-      if (pageTour && !isTourDone(pageTour.id)) {
-        startTour(pageTour);
-      }
+      // Page tours are opt-in from the help button: popping a new tour on
+      // the first visit of every page interrupts people mid-task.
     }, 1400);
 
     return () => window.clearTimeout(timer);

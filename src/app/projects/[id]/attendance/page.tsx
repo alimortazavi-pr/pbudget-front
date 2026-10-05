@@ -1,3 +1,4 @@
+import { FeatureGate } from "@/components/common/subscription/FeatureGate";
 import { ProjectAttendancePage } from "@/components/pages/projects/ProjectAttendancePage";
 
 type PageProps = {
@@ -6,5 +7,7 @@ type PageProps = {
 
 export default async function Page({ params }: PageProps) {
   const { id } = await params;
-  return <ProjectAttendancePage projectId={id} />;
+  return <FeatureGate feature="work_time">
+      <ProjectAttendancePage projectId={id} />
+    </FeatureGate>;
 }

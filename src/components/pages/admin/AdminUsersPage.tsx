@@ -1,531 +1,303 @@
 "use client";
 
-import { useTranslation } from "@/components/providers/LanguageProvider";
-
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { Button, Modal, Switch } from "@heroui/react";
-import { Edit2, Lock, SearchNormal1, ShieldTick, Trash } from "iconsax-reactjs";
+import { Button, Input } from "@heroui/react";
+import { ArrowLeft2, Crown, People, Send2, ShieldTick, UserAdd } from "iconsax-reactjs";
 
-import * as adminApi from "@/common/api/admin";
-import type { AdminUser } from "@/common/interfaces/admin";
-import { formatPrice, toEnglishDigits, toPersianDigits } from "@/common/utils";
-import { moneyDisplayUnitLabel } from "@/common/utils/money-display";
-import { showToast } from "@/common/utils/toast";
+import * as insightsApi from "@/common/api/admin-insights";
+import type { AdminUserSegment, AdminUserSort } from "@/common/api/admin-insights";
+import { PATHS } from "@/common/constants";
+import type { AdminUserRowsResponse } from "@/common/interfaces/admin";
+import { showErrorToast, showToast } from "@/common/utils/toast";
+import {
+  AdminPageHeader,
+  AdminPanel,
+  EmptyState,
+  Field,
+  FormDialog,
+  NativeSelect,
+  PaginationBar,
+  Pill,
+  PresenceDot,
+  SearchField,
+  SegmentedTabs,
+  SkeletonRows,
+  UserAvatar,
+} from "./ui/AdminUi";
+import { formatDateFa, formatMoneyFa, formatNumberFa, formatRelativeFa } from "./ui/admin-format";
+
+const SEGMENTS: { id: AdminUserSegment; label: string }[] = [
+  { id: "active", label: "همه فعال‌ها" },
+  { id: "online", label: "فعال امروز" },
+  { id: "inactive", label: "غیرفعال +۳۰ روز" },
+  { id: "never", label: "هرگز وارد نشده" },
+  { id: "telegram", label: "تلگرام متصل" },
+  { id: "no_password", label: "بدون رمز" },
+  { id: "admins", label: "ادمین‌ها" },
+  { id: "deleted", label: "غیرفعال‌شده" },
+];
+
+const SORTS: { value: AdminUserSort; label: string }[] = [
+  { value: "newest", label: "جدیدترین ثبت‌نام" },
+  { value: "last_seen", label: "آخرین فعالیت" },
+  { value: "last_login", label: "آخرین ورود" },
+  { value: "oldest", label: "قدیمی‌ترین" },
+  { value: "name", label: "نام" },
+];
 
 export function AdminUsersPage() {
-  const { t } = useTranslation();
-  const [users, setUsers] = useState<AdminUser[]>([]);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialSegment = (searchParams.get("segment") as AdminUserSegment | null) ?? "active";
+  const [segment, setSegment] = useState<AdminUserSegment>(
+    SEGMENTS.some((item) => item.id === initialSegment) ? initialSegment : "active",
+  );
+  const [sort, setSort] = useState<AdminUserSort>("newest");
   const [search, setSearch] = useState("");
-  const [searchInput, setSearchInput] = useState("");
-  const [includeDeleted, setIncludeDeleted] = useState(false);
+  const [page, setPage] = useState(1);
+  const [data, setData] = useState<AdminUserRowsResponse | null>(null);
   const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState<AdminUser | null>(null);
-  const [passwordUser, setPasswordUser] = useState<AdminUser | null>(null);
-  const [newPassword, setNewPassword] = useState("");
-  const [hardDeleteUser, setHardDeleteUser] = useState<AdminUser | null>(null);
-  const [hardDeleteConfirmation, setHardDeleteConfirmation] = useState("");
-  const [hardDeleting, setHardDeleting] = useState(false);
-  const [editForm, setEditForm] = useState({
-    firstName: "",
-    lastName: "",
-    budget: 0,
-    isVerifiedMobile: false,
-  });
+  const [createOpen, setCreateOpen] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await adminApi.fetchAdminUsers({
-        page,
-        limit: 15,
-        search,
-        includeDeleted,
-      });
-      setUsers(data.items);
-      setTotalPages(data.pagination.totalPages);
-    } catch {
-      showToast(t("auto.k368a663ddc"), "danger");
+      setData(await insightsApi.fetchUsers({ page, limit: 20, search, segment, sort }));
+    } catch (error) {
+      showErrorToast(error, "دریافت کاربران ناموفق بود");
     } finally {
       setLoading(false);
     }
-  }, [page, search, includeDeleted, t]);
+  }, [page, search, segment, sort]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
-  const openEdit = (user: AdminUser) => {
-    setEditing(user);
-    setEditForm({
-      firstName: user.firstName,
-      lastName: user.lastName,
-      budget: user.budget,
-      isVerifiedMobile: user.isVerifiedMobile,
-    });
-  };
+  return (
+    <div className="space-y-5">
+      <AdminPageHeader
+        title="کاربران"
+        description="جستجو، فیلتر و ورود به پرونده کامل هر کاربر: فعالیت‌ها، داده‌ها، اشتراک و تنظیمات حساب."
+        icon={<People size={24} variant="Bold" />}
+        actions={
+          <Button size="sm" onPress={() => setCreateOpen(true)}>
+            <UserAdd size={17} />
+            کاربر جدید
+          </Button>
+        }
+      />
 
-  const saveEdit = async () => {
-    if (!editing) return;
-    try {
-      await adminApi.updateAdminUser(editing._id, editForm);
-      showToast(t("auto.k4cf4eb1e01"), "success");
-      setEditing(null);
-      void load();
-    } catch {
-      showToast(t("common.saveFailed"), "danger");
-    }
-  };
+      <AdminPanel bodyClassName="p-4 sm:p-5 space-y-4">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center">
+          <SearchField
+            className="md:max-w-md md:flex-1"
+            value={search}
+            placeholder="نام، موبایل یا شناسه کاربر…"
+            onChange={(value) => {
+              setSearch(value);
+              setPage(1);
+            }}
+          />
+          <NativeSelect
+            ariaLabel="مرتب‌سازی"
+            className="md:w-52"
+            value={sort}
+            options={SORTS}
+            onChange={(value) => {
+              setSort(value as AdminUserSort);
+              setPage(1);
+            }}
+          />
+          {data ? (
+            <span className="text-sm text-muted md:ms-auto">{formatNumberFa(data.pagination.total)} کاربر</span>
+          ) : null}
+        </div>
+        <SegmentedTabs
+          size="sm"
+          items={SEGMENTS}
+          value={segment}
+          onChange={(value) => {
+            setSegment(value);
+            setPage(1);
+            router.replace(`${PATHS.ADMIN_USERS}?segment=${value}`, { scroll: false });
+          }}
+        />
 
-  const toggleAdmin = async (user: AdminUser) => {
-    try {
-      await adminApi.setAdminRole(user._id, !user.isAdmin);
-      showToast(t("auto.kd3d0e0136a"), "success");
-      void load();
-    } catch {
-      showToast(t("auto.k3745393c8b"), "danger");
-    }
-  };
+        {loading && !data ? (
+          <SkeletonRows rows={8} height="h-16" />
+        ) : !data || data.items.length === 0 ? (
+          <EmptyState icon={<People size={36} />} title="کاربری پیدا نشد" description="فیلتر یا عبارت جستجو را تغییر دهید." />
+        ) : (
+          <div className={loading ? "opacity-60 transition-opacity" : "transition-opacity"}>
+            <div className="hidden overflow-x-auto rounded-xl border border-border/60 md:block">
+              <table className="w-full min-w-[880px] text-sm">
+                <thead className="bg-surface-secondary/60 text-xs text-muted">
+                  <tr>
+                    <th className="px-4 py-3 text-start font-medium">کاربر</th>
+                    <th className="px-4 py-3 text-start font-medium">آخرین فعالیت</th>
+                    <th className="px-4 py-3 text-start font-medium">اشتراک</th>
+                    <th className="px-4 py-3 text-start font-medium">تراکنش‌ها</th>
+                    <th className="px-4 py-3 text-start font-medium">موجودی</th>
+                    <th className="px-4 py-3 text-start font-medium">عضویت</th>
+                    <th className="px-2 py-3" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.items.map((user) => {
+                    const name = `${user.firstName} ${user.lastName}`.trim() || "بدون نام";
+                    return (
+                      <tr
+                        key={user._id}
+                        className="cursor-pointer border-t border-border/50 transition hover:bg-surface-secondary/40"
+                        onClick={() => router.push(PATHS.ADMIN_USER(user._id))}
+                      >
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-3">
+                            <UserAvatar name={name} size={36} />
+                            <div className="min-w-0">
+                              <p className="flex items-center gap-1.5 font-semibold">
+                                <span className="truncate">{name}</span>
+                                {user.isAdmin ? <ShieldTick size={15} className="text-violet-500" variant="Bold" /> : null}
+                                {user.telegramLinked ? <Send2 size={14} className="text-sky-500" variant="Bold" /> : null}
+                              </p>
+                              <p className="text-xs text-muted" dir="ltr">{user.mobile}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="flex items-center gap-2">
+                            <PresenceDot lastSeenAt={user.lastSeenAt} />
+                            <span className="text-xs">{formatRelativeFa(user.lastSeenAt)}</span>
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          {user.deleted ? (
+                            <Pill tone="danger">غیرفعال‌شده</Pill>
+                          ) : user.plan && user.plan.slug !== "free" ? (
+                            <Pill tone="warning">
+                              <Crown size={12} variant="Bold" />
+                              {user.plan.name}
+                            </Pill>
+                          ) : (
+                            <Pill>رایگان</Pill>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 tabular-nums">
+                          <p>{formatNumberFa(user.transactionCount ?? 0)}</p>
+                          {user.lastTransactionAt ? (
+                            <p className="text-[11px] text-muted">آخرین: {formatRelativeFa(user.lastTransactionAt)}</p>
+                          ) : null}
+                        </td>
+                        <td className="px-4 py-3 tabular-nums">{formatMoneyFa(user.walletBalances?.toman ?? user.budget ?? 0)}</td>
+                        <td className="px-4 py-3 text-xs text-muted">{formatDateFa(user.createdAt)}</td>
+                        <td className="px-2 py-3 text-muted">
+                          <ArrowLeft2 size={16} />
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
 
-  const toggleDeleted = async (user: AdminUser) => {
-    try {
-      await adminApi.setUserDeleted(user._id, !user.deleted);
-      showToast(user.deleted ? t("auto.k40d6d6c97a") : t("auto.kec199d2ba8"), "success");
-      void load();
-    } catch {
-      showToast(t("auto.k118692df91"), "danger");
-    }
-  };
+            <ul className="space-y-2 md:hidden">
+              {data.items.map((user) => {
+                const name = `${user.firstName} ${user.lastName}`.trim() || "بدون نام";
+                return (
+                  <li key={user._id}>
+                    <Link href={PATHS.ADMIN_USER(user._id)} className="flex items-center gap-3 rounded-xl border border-border/60 p-3">
+                      <UserAvatar name={name} size={42} />
+                      <div className="min-w-0 flex-1">
+                        <p className="flex items-center gap-1.5 font-semibold">
+                          <span className="truncate">{name}</span>
+                          {user.isAdmin ? <ShieldTick size={14} className="text-violet-500" variant="Bold" /> : null}
+                        </p>
+                        <p className="text-xs text-muted" dir="ltr">{user.mobile}</p>
+                        <p className="mt-1 flex items-center gap-2 text-[11px] text-muted">
+                          <PresenceDot lastSeenAt={user.lastSeenAt} />
+                          {formatRelativeFa(user.lastSeenAt)} · {formatNumberFa(user.transactionCount ?? 0)} تراکنش
+                        </p>
+                      </div>
+                      {user.plan && user.plan.slug !== "free" ? <Pill tone="warning">{user.plan.name}</Pill> : null}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+            <PaginationBar pagination={data.pagination} onPage={setPage} />
+          </div>
+        )}
+      </AdminPanel>
 
-  const openPassword = (user: AdminUser) => {
-    setPasswordUser(user);
-    setNewPassword("");
-  };
+      <CreateUserDialog
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        onCreated={(id) => {
+          setCreateOpen(false);
+          router.push(PATHS.ADMIN_USER(id));
+        }}
+      />
+    </div>
+  );
+}
 
-  const savePassword = async () => {
-    if (!passwordUser) return;
-    if (newPassword.trim().length < 6) {
-      showToast(t("auto.k19c70f8d7e"), "danger");
+function CreateUserDialog({
+  open,
+  onOpenChange,
+  onCreated,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onCreated: (id: string) => void;
+}) {
+  const [form, setForm] = useState({ firstName: "", lastName: "", mobile: "", password: "" });
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (open) setForm({ firstName: "", lastName: "", mobile: "", password: "" });
+  }, [open]);
+
+  async function submit() {
+    if (!form.firstName.trim() || !form.lastName.trim() || !form.mobile.trim()) {
+      showToast("نام، نام خانوادگی و موبایل الزامی است", "warning");
       return;
     }
+    setSaving(true);
     try {
-      await adminApi.setAdminUserPassword(passwordUser._id, newPassword.trim());
-      showToast(t("auto.kb272ae731c"), "success");
-      setPasswordUser(null);
-      setNewPassword("");
-      void load();
-    } catch {
-      showToast(t("auto.kd67e39712d"), "danger");
-    }
-  };
-
-  const openHardDelete = (user: AdminUser) => {
-    setHardDeleteUser(user);
-    setHardDeleteConfirmation("");
-  };
-
-  const closeHardDelete = () => {
-    if (hardDeleting) return;
-    setHardDeleteUser(null);
-    setHardDeleteConfirmation("");
-  };
-
-  const confirmHardDelete = async () => {
-    if (!hardDeleteUser) return;
-    if (
-      toEnglishDigits(hardDeleteConfirmation.trim()) !== hardDeleteUser.mobile
-    ) {
-      showToast(t("admin.hardDeleteMobileMismatch"), "danger");
-      return;
-    }
-
-    setHardDeleting(true);
-    try {
-      const result = await adminApi.hardDeleteAdminUser(
-        hardDeleteUser._id,
-        toEnglishDigits(hardDeleteConfirmation.trim()),
-      );
-      showToast(
-        t("admin.hardDeleteSuccess", {
-          count: toPersianDigits(result.deletedDocuments),
-        }),
-        "success",
-      );
-      setHardDeleteUser(null);
-      setHardDeleteConfirmation("");
-      await load();
+      const user = await insightsApi.createUser({
+        firstName: form.firstName,
+        lastName: form.lastName,
+        mobile: form.mobile,
+        password: form.password || undefined,
+      });
+      showToast("کاربر ساخته شد", "success");
+      onCreated(user._id);
     } catch (error) {
-      showToast(
-        error instanceof Error ? error.message : t("admin.hardDeleteFailed"),
-        "danger",
-      );
+      showErrorToast(error, "ساخت کاربر ناموفق بود");
     } finally {
-      setHardDeleting(false);
+      setSaving(false);
     }
-  };
+  }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <h3 className="text-lg font-bold">{t("auto.k7725d2e991")}</h3>
-          <p className="text-sm text-muted">
-            {t("auto.k334096443a")}
-          </p>
-        </div>
-
-        <form
-          className="flex flex-wrap items-center gap-2"
-          onSubmit={(e) => {
-            e.preventDefault();
-            setPage(1);
-            setSearch(searchInput.trim());
-          }}
-        >
-          <div className="relative min-w-[220px] flex-1">
-            <SearchNormal1
-              size={18}
-              className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-muted"
-            />
-            <input
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              placeholder={t("auto.k081ae81ffc")}
-              className="w-full rounded-xl border border-border bg-surface px-10 py-2.5 text-sm outline-none focus:border-accent"
-            />
-          </div>
-          <Button type="submit" variant="secondary">
-            {t("common.search")}
-          </Button>
-        </form>
+    <FormDialog open={open} onOpenChange={onOpenChange} title="ساخت کاربر جدید" description="کاربر می‌تواند با همین شماره و رمز وارد شود." isPending={saving} onSubmit={() => void submit()} submitLabel="ساخت کاربر">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="نام">
+          <Input variant="secondary" value={form.firstName} onChange={(event) => setForm({ ...form, firstName: event.target.value })} />
+        </Field>
+        <Field label="نام خانوادگی">
+          <Input variant="secondary" value={form.lastName} onChange={(event) => setForm({ ...form, lastName: event.target.value })} />
+        </Field>
       </div>
-
-      <label className="inline-flex items-center gap-2 text-sm text-muted">
-        <Switch
-          isSelected={includeDeleted}
-          onChange={(selected) => {
-            setIncludeDeleted(selected);
-            setPage(1);
-          }}
-          size="sm"
-        >
-          <Switch.Control>
-            <Switch.Thumb />
-          </Switch.Control>
-        </Switch>
-        {t("auto.k5df4a8193a")}
-      </label>
-
-      <div className="glass overflow-hidden rounded-2xl">
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-sm">
-            <thead className="bg-surface-secondary/70 text-muted">
-              <tr>
-                <th className="px-4 py-3 text-start font-medium">{t("auto.k883da9f030")}</th>
-                <th className="px-4 py-3 text-start font-medium">{t("common.mobile")}</th>
-                <th className="px-4 py-3 text-start font-medium">{t("auto.k90c9e7cad5")}</th>
-                <th className="px-4 py-3 text-start font-medium">{t("auto.k2f3c6cf127")}</th>
-                <th className="px-4 py-3 text-start font-medium">{t("auto.k0f0dff2dfc")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={5} className="px-4 py-10 text-center text-muted">
-                    {t("common.loading")}
-                  </td>
-                </tr>
-              ) : users.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="px-4 py-10 text-center text-muted">
-                    {t("auto.k241064b7a4")}
-                  </td>
-                </tr>
-              ) : (
-                users.map((user) => (
-                  <tr
-                    key={user._id}
-                    className="border-t border-border/50 hover:bg-surface-secondary/40"
-                  >
-                    <td className="px-4 py-3">
-                      <p className="font-medium">
-                        {user.firstName} {user.lastName}
-                      </p>
-                      <p className="text-xs text-muted">
-                        {user.telegramLinked ? t("auto.kc3fcf89f9c") : t("auto.ke8ab1e23e0")}
-                        {user.hasPassword ? t("auto.k1c2c468b4c") : t("auto.k6797ed39e2")}
-                      </p>
-                    </td>
-                    <td className="px-4 py-3">{toPersianDigits(user.mobile)}</td>
-                    <td className="px-4 py-3">
-                      {formatPrice(user.budget)} {moneyDisplayUnitLabel()}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex flex-wrap gap-1.5">
-                        {user.isAdmin && (
-                          <span className="rounded-full bg-violet-500/10 px-2 py-0.5 text-xs text-violet-600">
-                            {t("auto.k65497ce419")}
-                          </span>
-                        )}
-                        {user.isVerifiedMobile && (
-                          <span className="rounded-full bg-success/10 px-2 py-0.5 text-xs text-success-foreground">
-                            {t("auto.k2838d25139")}
-                          </span>
-                        )}
-                        {user.deleted && (
-                          <span className="rounded-full bg-danger/10 px-2 py-0.5 text-xs text-danger">
-                            {t("auto.k2df1553d76")}
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex flex-wrap gap-1">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onPress={() => openPassword(user)}
-                          aria-label={t("auto.k688910bf70")}
-                        >
-                          <Lock size={16} />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onPress={() => openEdit(user)}
-                        >
-                          <Edit2 size={16} />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onPress={() => void toggleAdmin(user)}
-                        >
-                          <ShieldTick size={16} />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onPress={() => void toggleDeleted(user)}
-                          aria-label={
-                            user.deleted
-                              ? t("admin.restoreUser")
-                              : t("admin.softDeleteUser")
-                          }
-                        >
-                          <Trash size={16} />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="text-danger hover:bg-danger/10"
-                          isDisabled={user.isAdmin}
-                          onPress={() => openHardDelete(user)}
-                          aria-label={t("admin.hardDeleteUser")}
-                        >
-                          <Trash size={16} variant="Bold" />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2">
-          <Button
-            variant="secondary"
-            isDisabled={page <= 1}
-            onPress={() => setPage((p) => p - 1)}
-          >
-            {t("auto.k1a592f6b2d")}
-          </Button>
-          <span className="text-sm text-muted">
-            {t("auto.k58210d64d8")}{toPersianDigits(page)} {t("common.of")} {toPersianDigits(totalPages)}
-          </span>
-          <Button
-            variant="secondary"
-            isDisabled={page >= totalPages}
-            onPress={() => setPage((p) => p + 1)}
-          >
-            {t("auto.k54ee927e96")}
-          </Button>
-        </div>
-      )}
-
-      <Modal isOpen={Boolean(editing)} onOpenChange={() => setEditing(null)}>
-        <Modal.Backdrop>
-          <Modal.Container>
-            <Modal.Dialog className="max-w-md">
-              <Modal.CloseTrigger />
-              <Modal.Header>
-                <Modal.Heading>{t("auto.k1f97b4acf6")}</Modal.Heading>
-              </Modal.Header>
-              <Modal.Body className="space-y-3">
-                <input
-                  value={editForm.firstName}
-                  onChange={(e) =>
-                    setEditForm((f) => ({ ...f, firstName: e.target.value }))
-                  }
-                  className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                  placeholder={t("common.name")}
-                />
-                <input
-                  value={editForm.lastName}
-                  onChange={(e) =>
-                    setEditForm((f) => ({ ...f, lastName: e.target.value }))
-                  }
-                  className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                  placeholder={t("auto.k342616c4fb")}
-                />
-                <input
-                  type="number"
-                  value={editForm.budget}
-                  onChange={(e) =>
-                    setEditForm((f) => ({
-                      ...f,
-                      budget: Number(e.target.value),
-                    }))
-                  }
-                  className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                  placeholder={t("auto.k90c9e7cad5")}
-                />
-                <label className="flex items-center gap-2 text-sm">
-                  <Switch
-                    isSelected={editForm.isVerifiedMobile}
-                    onChange={(selected) =>
-                      setEditForm((f) => ({ ...f, isVerifiedMobile: selected }))
-                    }
-                    size="sm"
-                  >
-                    <Switch.Control>
-                      <Switch.Thumb />
-                    </Switch.Control>
-                  </Switch>
-                  {t("auto.kf49c8cfb66")}
-                </label>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button variant="secondary" onPress={() => setEditing(null)}>
-                  {t("common.cancel")}
-                </Button>
-                <Button onPress={() => void saveEdit()}>{t("common.save")}</Button>
-              </Modal.Footer>
-            </Modal.Dialog>
-          </Modal.Container>
-        </Modal.Backdrop>
-      </Modal>
-
-      <Modal isOpen={Boolean(passwordUser)} onOpenChange={() => setPasswordUser(null)}>
-        <Modal.Backdrop>
-          <Modal.Container>
-            <Modal.Dialog className="max-w-md">
-              <Modal.CloseTrigger />
-              <Modal.Header>
-                <Modal.Heading>{t("auto.k688910bf70")}</Modal.Heading>
-              </Modal.Header>
-              <Modal.Body className="space-y-3">
-                {passwordUser ? (
-                  <p className="text-sm text-muted">
-                    {t("auto.k8f5e55540b")}{" "}
-                    <span className="font-medium text-foreground">
-                      {passwordUser.firstName} {passwordUser.lastName}
-                    </span>{" "}
-                    ({toPersianDigits(passwordUser.mobile)})
-                  </p>
-                ) : null}
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
-                  placeholder={t("auto.k14ba268c7c")}
-                  autoComplete="new-password"
-                />
-              </Modal.Body>
-              <Modal.Footer>
-                <Button variant="secondary" onPress={() => setPasswordUser(null)}>
-                  {t("common.cancel")}
-                </Button>
-                <Button onPress={() => void savePassword()}>{t("auto.k0b75de2011")}</Button>
-              </Modal.Footer>
-            </Modal.Dialog>
-          </Modal.Container>
-        </Modal.Backdrop>
-      </Modal>
-
-      <Modal
-        isOpen={Boolean(hardDeleteUser)}
-        onOpenChange={(open) => {
-          if (!open) closeHardDelete();
-        }}
-      >
-        <Modal.Backdrop>
-          <Modal.Container>
-            <Modal.Dialog className="max-w-md">
-              <Modal.CloseTrigger />
-              <Modal.Header>
-                <Modal.Heading>{t("admin.hardDeleteTitle")}</Modal.Heading>
-              </Modal.Header>
-              <Modal.Body className="space-y-4">
-                <div className="rounded-2xl border border-danger/30 bg-danger/10 p-4 text-sm leading-7 text-danger">
-                  {t("admin.hardDeleteWarning")}
-                </div>
-                {hardDeleteUser ? (
-                  <p className="text-sm leading-7 text-muted">
-                    {t("admin.hardDeleteTarget", {
-                      name: `${hardDeleteUser.firstName} ${hardDeleteUser.lastName}`.trim(),
-                      mobile: toPersianDigits(hardDeleteUser.mobile),
-                    })}
-                  </p>
-                ) : null}
-                <label className="block space-y-2 text-sm">
-                  <span className="text-muted">
-                    {t("admin.hardDeleteConfirmationLabel")}
-                  </span>
-                  <input
-                    dir="ltr"
-                    inputMode="numeric"
-                    value={hardDeleteConfirmation}
-                    onChange={(event) =>
-                      setHardDeleteConfirmation(event.target.value)
-                    }
-                    className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm outline-none focus:border-danger"
-                    placeholder={hardDeleteUser?.mobile ?? "09123456789"}
-                    autoComplete="off"
-                  />
-                </label>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button
-                  variant="secondary"
-                  isDisabled={hardDeleting}
-                  onPress={closeHardDelete}
-                >
-                  {t("common.cancel")}
-                </Button>
-                <Button
-                  className="bg-danger text-white"
-                  isPending={hardDeleting}
-                  isDisabled={
-                    !hardDeleteUser ||
-                    toEnglishDigits(hardDeleteConfirmation.trim()) !==
-                      hardDeleteUser.mobile
-                  }
-                  onPress={() => void confirmHardDelete()}
-                >
-                  {t("admin.hardDeleteAction")}
-                </Button>
-              </Modal.Footer>
-            </Modal.Dialog>
-          </Modal.Container>
-        </Modal.Backdrop>
-      </Modal>
-    </div>
+      <Field label="موبایل">
+        <Input variant="secondary" dir="ltr" inputMode="tel" placeholder="09123456789" value={form.mobile} onChange={(event) => setForm({ ...form, mobile: event.target.value })} />
+      </Field>
+      <Field label="رمز عبور (اختیاری)" hint="حداقل ۶ کاراکتر. اگر خالی بماند، کاربر باید با تأیید تلگرام رمز بسازد.">
+        <Input variant="secondary" dir="ltr" type="text" value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} />
+      </Field>
+    </FormDialog>
   );
 }

@@ -1,303 +1,334 @@
 "use client";
 
-import { getTranslator } from "@/i18n";
-const t = getTranslator();
-
-import { useTranslation } from "@/components/providers/LanguageProvider";
-
-import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import dynamic from "next/dynamic";
+import { useCallback, useEffect, useState } from "react";
+import { Button } from "@heroui/react";
 import {
   Activity,
-  Chart,
-  Cpu,
+  ArrowLeft2,
+  Crown,
+  Danger,
   Data,
+  Flash,
   People,
-  SecuritySafe,
-  Wallet2,
+  Profile2User,
+  Radar,
+  Refresh2,
+  ReceiptText,
+  UserAdd,
 } from "iconsax-reactjs";
 
 import * as adminApi from "@/common/api/admin";
+import * as insightsApi from "@/common/api/admin-insights";
+import * as subscriptionApi from "@/common/api/subscriptions";
+import { PATHS } from "@/common/constants";
 import type {
+  AdminActivityItem,
   AdminActivitySeries,
+  AdminEngagement,
   AdminHealth,
   AdminOverview,
 } from "@/common/interfaces/admin";
 import { formatBytes, formatUptime } from "@/common/utils/admin-format";
-import { formatPrice, toPersianDigits } from "@/common/utils";
-import { moneyDisplayUnitLabel } from "@/common/utils/money-display";
-import { showToast } from "@/common/utils/toast";
+import { showErrorToast } from "@/common/utils/toast";
+import { ActivityList } from "./AdminActivityFeed";
+import {
+  AdminPageHeader,
+  AdminPanel,
+  EmptyState,
+  KeyValue,
+  Pill,
+  PresenceDot,
+  SkeletonRows,
+  StatTile,
+  UserAvatar,
+} from "./ui/AdminUi";
+import { formatNumberFa, formatPercentFa, formatRelativeFa } from "./ui/admin-format";
 
-const AdminActivityCharts = dynamic(
-  () =>
-    import("@/components/pages/admin/AdminActivityCharts").then(
-      (mod) => mod.AdminActivityCharts,
-    ),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="glass h-72 animate-pulse rounded-2xl" />
-    ),
-  },
-);
+const AdminTrendChart = dynamic(() => import("./AdminTrendChart").then((mod) => mod.AdminTrendChart), {
+  ssr: false,
+  loading: () => <div className="h-64 animate-pulse rounded-xl bg-surface-secondary" />,
+});
 
-function KpiCard({
-  title,
-  value,
-  subtitle,
-  icon,
-  tone = "default",
-}: {
-  title: string;
-  value: string;
-  subtitle?: string;
-  icon: React.ReactNode;
-  tone?: "default" | "success" | "warning" | "accent";
-}) {
-  const toneClass =
-    tone === "success"
-      ? "text-success"
-      : tone === "warning"
-        ? "text-warning"
-        : tone === "accent"
-          ? "text-accent"
-          : "text-accent";
-
-  return (
-    <div className="glass rounded-2xl p-5">
-      <div className="mb-4 flex items-start justify-between">
-        <div className={`rounded-xl bg-surface-secondary p-2.5 ${toneClass}`}>
-          {icon}
-        </div>
-      </div>
-      <p className="text-sm text-muted">{title}</p>
-      <p className="mt-1 text-2xl font-bold tracking-tight">{value}</p>
-      {subtitle && <p className="mt-1 text-xs text-muted">{subtitle}</p>}
-    </div>
-  );
-}
-
-function HealthBadge({ health }: { health: AdminHealth | null }) {
-  if (!health) return null;
-
-  const ok = health.status === "healthy";
-  return (
-    <span className={`pb-status-badge ${ok ? "pb-status-badge-success" : "pb-status-badge-warning"}`}>
-      <SecuritySafe size={14} variant="Bold" />
-      {ok ? t("auto.k3204ba7a05") : t("auto.k9de9ddc810")}
-    </span>
-  );
-}
+type SubscriptionSummary = { paidActive: number; pending: number; expiringSoon: number; expiredThisMonth: number };
 
 export function AdminDashboardPage() {
-  const { t } = useTranslation();
   const [overview, setOverview] = useState<AdminOverview | null>(null);
+  const [engagement, setEngagement] = useState<AdminEngagement | null>(null);
   const [activity, setActivity] = useState<AdminActivitySeries | null>(null);
+  const [feed, setFeed] = useState<AdminActivityItem[] | null>(null);
   const [health, setHealth] = useState<AdminHealth | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [subs, setSubs] = useState<SubscriptionSummary | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const load = useCallback(async (options?: { silent?: boolean }) => {
-    if (!options?.silent) {
-      setLoading(true);
-    }
-    setLoadError(null);
-    try {
-      const [overviewResult, activityResult, healthResult] =
-        await Promise.allSettled([
-          adminApi.fetchAdminOverview(),
-          adminApi.fetchAdminActivity(30),
-          adminApi.fetchAdminHealth(),
-        ]);
-
-      if (overviewResult.status === "fulfilled") {
-        setOverview(overviewResult.value);
-      }
-      if (activityResult.status === "fulfilled") {
-        setActivity(activityResult.value);
-      }
-      if (healthResult.status === "fulfilled") {
-        setHealth(healthResult.value);
-      }
-
-      const failures = [overviewResult, activityResult, healthResult].filter(
-        (result) => result.status === "rejected",
-      );
-
-      if (failures.length === 3) {
-        const message = t("auto.kd654c7d39e");
-        setLoadError(message);
-        showToast(message, "danger");
-      } else if (overviewResult.status === "rejected") {
-        const message = t("auto.k3c6d526b1b");
-        setLoadError(message);
-        showToast(message, "danger");
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, [t]);
+  const load = useCallback(async () => {
+    setRefreshing(true);
+    const results = await Promise.allSettled([
+      adminApi.fetchAdminOverview(),
+      insightsApi.fetchEngagement(),
+      adminApi.fetchAdminActivity(30),
+      insightsApi.fetchGlobalActivity({ limit: 12 }),
+      adminApi.fetchAdminHealth(),
+      subscriptionApi.fetchAdminSubscriptionsFiltered({ limit: 1 }),
+    ]);
+    const [o, e, a, f, h, s] = results;
+    if (o.status === "fulfilled") setOverview(o.value);
+    if (e.status === "fulfilled") setEngagement(e.value);
+    if (a.status === "fulfilled") setActivity(a.value);
+    if (f.status === "fulfilled") setFeed(f.value.items);
+    if (h.status === "fulfilled") setHealth(h.value);
+    if (s.status === "fulfilled") setSubs(s.value.summary);
+    const failed = results.find((item) => item.status === "rejected");
+    if (failed && failed.status === "rejected") showErrorToast(failed.reason, "بخشی از داشبورد بارگذاری نشد");
+    setRefreshing(false);
+  }, []);
 
   useEffect(() => {
     void load();
-    const interval = setInterval(() => void load({ silent: true }), 60_000);
-    return () => clearInterval(interval);
+    // Keep the live numbers fresh while the dashboard stays open.
+    const timer = window.setInterval(() => {
+      void insightsApi.fetchGlobalActivity({ limit: 12 }).then((res) => setFeed(res.items)).catch(() => undefined);
+    }, 30_000);
+    return () => window.clearInterval(timer);
   }, [load]);
 
-  if (loading && !overview) {
-    return (
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="glass h-36 animate-pulse rounded-2xl" />
-        ))}
-      </div>
-    );
-  }
-
-  if (!overview) {
-    return (
-      <div className="glass space-y-4 rounded-2xl p-8 text-center">
-        <p className="text-muted">
-          {loadError ?? t("auto.k5703facb58")}
-        </p>
-        <button
-          type="button"
-          className="text-sm font-medium text-accent hover:underline"
-          onClick={() => void load()}
-        >
-          {t("common.tryAgain")}
-        </button>
-      </div>
-    );
-  }
+  const users = engagement?.users;
+  const loading = !overview && !engagement;
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h3 className="text-lg font-bold">{t("auto.k3a7b1b4d58")}</h3>
-          <p className="text-sm text-muted">
-            {t("auto.k2aaada114f")}
-          </p>
+      <AdminPageHeader
+        title="نمای کلی"
+        description="هر آنچه در میز پردیس می‌گذرد: کاربران فعال، اشتراک‌ها، رفتار کاربران و سلامت سیستم."
+        icon={<Radar size={24} variant="Bold" />}
+        actions={
+          <Button variant="secondary" size="sm" isPending={refreshing} onPress={() => void load()}>
+            <Refresh2 size={16} />
+            به‌روزرسانی
+          </Button>
+        }
+      />
+
+      {loading ? (
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <div key={index} className="h-28 animate-pulse rounded-2xl bg-surface-secondary" />
+          ))}
         </div>
-        <HealthBadge health={health} />
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <StatTile
+            label="کل کاربران"
+            value={formatNumberFa(users?.total ?? overview?.users.total ?? 0)}
+            hint={`${formatNumberFa(overview?.users.newToday ?? 0)} امروز · ${formatNumberFa(overview?.users.newThisWeek ?? 0)} این هفته`}
+            icon={<People size={20} variant="Bold" />}
+            href={PATHS.ADMIN_USERS}
+          />
+          <StatTile
+            label="فعال امروز"
+            value={formatNumberFa(users?.dau ?? 0)}
+            hint={`هفته ${formatNumberFa(users?.wau ?? 0)} · ماه ${formatNumberFa(users?.mau ?? 0)}`}
+            icon={<Flash size={20} variant="Bold" />}
+            tone="success"
+          />
+          <StatTile
+            label="تراکنش‌های امروز"
+            value={formatNumberFa(overview?.transactions.today ?? 0)}
+            hint={`${formatNumberFa(overview?.transactions.thisWeek ?? 0)} این هفته · ${formatNumberFa(overview?.transactions.total ?? 0)} کل`}
+            icon={<ReceiptText size={20} variant="Bold" />}
+            tone="info"
+          />
+          <StatTile
+            label="مشترکین پولی"
+            value={formatNumberFa(subs?.paidActive ?? 0)}
+            hint={
+              subs?.pending ? (
+                <span className="font-semibold text-warning-foreground">{formatNumberFa(subs.pending)} درخواست در انتظار</span>
+              ) : (
+                `${formatNumberFa(subs?.expiringSoon ?? 0)} در ۷ روز آینده منقضی می‌شوند`
+              )
+            }
+            icon={<Crown size={20} variant="Bold" />}
+            tone="warning"
+            href={PATHS.ADMIN_SUBSCRIPTIONS}
+          />
+          <StatTile
+            label="هرگز استفاده نکرده‌اند"
+            value={formatNumberFa(users?.neverSeen ?? 0)}
+            hint="ثبت‌نام کرده ولی وارد اپ نشده‌اند"
+            icon={<UserAdd size={20} />}
+            tone="neutral"
+            href={`${PATHS.ADMIN_USERS}?segment=never`}
+          />
+          <StatTile
+            label="غیرفعال بیش از ۳۰ روز"
+            value={formatNumberFa(users?.dormant ?? 0)}
+            hint="فرصت پیگیری و بازگرداندن"
+            icon={<Profile2User size={20} />}
+            tone="neutral"
+            href={`${PATHS.ADMIN_USERS}?segment=inactive`}
+          />
+          <StatTile
+            label="تلگرام متصل"
+            value={formatNumberFa(users?.telegram ?? 0)}
+            hint={users?.total ? `${formatPercentFa(((users.telegram ?? 0) / users.total) * 100)} کاربران` : undefined}
+            icon={<Activity size={20} />}
+            tone="accent"
+          />
+          <StatTile
+            label="خطاهای سرور (۲۴ ساعت)"
+            value={formatNumberFa(engagement?.health.errors24h ?? 0)}
+            hint={`از ${formatNumberFa(engagement?.health.requests24h ?? 0)} درخواست`}
+            icon={<Danger size={20} variant="Bold" />}
+            tone={(engagement?.health.errors24h ?? 0) > 0 ? "danger" : "success"}
+            href={`${PATHS.ADMIN_ACTIVITY}?errors=1`}
+          />
+        </div>
+      )}
+
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+        <AdminPanel
+          title="روند ۳۰ روز گذشته"
+          description="کاربران جدید و تراکنش‌های ثبت‌شده در هر روز"
+          actions={
+            <div className="flex items-center gap-3 text-xs text-muted">
+              <span className="flex items-center gap-1.5"><span className="size-2.5 rounded-full bg-accent" />تراکنش</span>
+              <span className="flex items-center gap-1.5"><span className="size-2.5 rounded-full bg-violet-500" />کاربر جدید</span>
+            </div>
+          }
+        >
+          {activity ? <AdminTrendChart activity={activity} /> : <div className="h-64 animate-pulse rounded-xl bg-surface-secondary" />}
+        </AdminPanel>
+
+        <AdminPanel
+          title="فعالیت زنده"
+          description="آخرین کارهایی که کاربران انجام داده‌اند"
+          actions={
+            <Link href={PATHS.ADMIN_ACTIVITY} className="flex items-center gap-1 text-xs font-semibold text-accent">
+              همه
+              <ArrowLeft2 size={14} />
+            </Link>
+          }
+          bodyClassName="px-4 sm:px-5"
+        >
+          {!feed ? (
+            <div className="py-4"><SkeletonRows rows={6} height="h-11" /></div>
+          ) : feed.length === 0 ? (
+            <div className="py-6"><EmptyState title="هنوز فعالیتی ثبت نشده" /></div>
+          ) : (
+            <div className="max-h-[22rem] overflow-y-auto"><ActivityList items={feed} /></div>
+          )}
+        </AdminPanel>
       </div>
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <KpiCard
-          title={t("auto.k81289a2cf6")}
-          value={toPersianDigits(overview.users.total)}
-          subtitle={`${toPersianDigits(overview.users.newThisMonth)} ${t("auto.k883da9f030")} ${t("auto.k64dfbb8da9")} ${t("auto.k3b9e49d3a6")} ${t("auto.k1c9e87a670")}`}
-          icon={<People size={22} variant="Bold" />}
-        />
-        <KpiCard
-          title={t("auto.k6baa9cfb85")}
-          value={toPersianDigits(overview.users.active)}
-          subtitle={`${toPersianDigits(overview.users.admins)} ${t("auto.k65497ce419")}`}
-          icon={<Activity size={22} variant="Bold" />}
-          tone="success"
-        />
-        <KpiCard
-          title={t("auto.k4868be73ce")}
-          value={toPersianDigits(overview.transactions.total)}
-          subtitle={`${toPersianDigits(overview.transactions.thisWeek)} ${t("auto.keb7bb3e55b")} ${t("auto.k3b9e49d3a6")} ${t("auto.k400cd4c1c1")}`}
-          icon={<Wallet2 size={22} variant="Bold" />}
-          tone="accent"
-        />
-        <KpiCard
-          title={t("auto.k1410347753")}
-          value={formatBytes(overview.database.totalSizeBytes)}
-          subtitle={`${toPersianDigits(overview.database.collections)} ${t("auto.k856205a73e")}`}
-          icon={<Data size={22} variant="Bold" />}
-        />
-      </section>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <AdminPanel title="استفاده از امکانات" description="چند درصد کاربران از هر بخش استفاده کرده‌اند">
+          {!engagement ? (
+            <SkeletonRows rows={6} height="h-8" />
+          ) : (
+            <ul className="space-y-3">
+              {engagement.adoption.map((item) => (
+                <li key={item.key}>
+                  <div className="mb-1 flex items-center justify-between text-sm">
+                    <span>{item.label}</span>
+                    <span className="text-xs text-muted tabular-nums">
+                      {formatNumberFa(item.users)} کاربر · {formatPercentFa(item.share)}
+                    </span>
+                  </div>
+                  <div className="h-2 overflow-hidden rounded-full bg-surface-secondary">
+                    <div className="h-full rounded-full bg-gradient-to-l from-accent to-violet-400" style={{ width: `${Math.min(100, item.share)}%` }} />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </AdminPanel>
 
-      {activity && <AdminActivityCharts activity={activity} />}
+        <AdminPanel title="پرتکرارترین کارها" description="عملیات کاربران در ۷ روز گذشته">
+          {!engagement ? (
+            <SkeletonRows rows={6} height="h-8" />
+          ) : engagement.topActions.length === 0 ? (
+            <EmptyState title="در این هفته عملیاتی ثبت نشده" />
+          ) : (
+            <ol className="space-y-2">
+              {engagement.topActions.map((action, index) => (
+                <li key={action.label} className="flex items-center gap-3 rounded-xl bg-surface-secondary/50 px-3 py-2">
+                  <span className="w-5 text-center text-xs font-bold text-muted tabular-nums">{formatNumberFa(index + 1)}</span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{action.label}</p>
+                    <p className="text-[11px] text-muted">{action.featureLabel}</p>
+                  </div>
+                  <div className="text-end text-xs tabular-nums">
+                    <p className="font-bold">{formatNumberFa(action.count)} بار</p>
+                    <p className="text-muted">{formatNumberFa(action.users)} کاربر</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          )}
+        </AdminPanel>
+      </div>
 
-      <section className="grid gap-4 lg:grid-cols-2">
-        <div className="glass rounded-2xl p-5">
-          <div className="mb-4 flex items-center gap-2">
-            <Chart size={20} className="text-accent" variant="Bold" />
-            <h4 className="font-bold">{t("auto.kee0303975f")}</h4>
-          </div>
-          <div className="space-y-3">
-            {overview.topCollections.map((collection) => (
-              <div
-                key={collection.name}
-                className="flex items-center justify-between rounded-xl bg-surface-secondary/60 px-4 py-3"
-              >
-                <div>
-                  <p className="font-medium">{collection.name}</p>
-                  <p className="text-xs text-muted">
-                    {formatBytes(collection.estimatedSizeBytes)}
-                  </p>
-                </div>
-                <p className="text-sm font-bold">
-                  {toPersianDigits(collection.documentCount)} {t("auto.k598f6819da")}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+        <AdminPanel title="فعال‌ترین کاربران" description="بیشترین تراکنش در ۳۰ روز گذشته">
+          {!engagement ? (
+            <SkeletonRows rows={5} />
+          ) : engagement.topUsers.length === 0 ? (
+            <EmptyState title="هنوز تراکنشی ثبت نشده" />
+          ) : (
+            <ul className="divide-y divide-border/50">
+              {engagement.topUsers.map((user) => (
+                <li key={user._id}>
+                  <Link href={PATHS.ADMIN_USER(user._id)} className="flex items-center gap-3 py-2.5 hover:text-accent">
+                    <UserAvatar name={user.name} size={36} />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold">{user.name}</p>
+                      <p className="flex items-center gap-2 text-xs text-muted">
+                        <span dir="ltr">{user.mobile}</span>
+                        <PresenceDot lastSeenAt={user.lastSeenAt} />
+                        {formatRelativeFa(user.lastSeenAt)}
+                      </p>
+                    </div>
+                    <Pill tone="accent">{formatNumberFa(user.transactions30d)} تراکنش</Pill>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </AdminPanel>
 
-        {health && (
-          <div className="glass rounded-2xl p-5">
-            <div className="mb-4 flex items-center gap-2">
-              <Cpu size={20} className="text-accent" variant="Bold" />
-              <h4 className="font-bold">{t("auto.ka8b50ffe7e")}</h4>
+        <AdminPanel
+          title="سلامت سیستم"
+          actions={
+            health ? (
+              <Pill tone={health.status === "healthy" ? "success" : "warning"}>
+                {health.status === "healthy" ? "سالم" : "نیازمند بررسی"}
+              </Pill>
+            ) : null
+          }
+        >
+          {!health || !overview ? (
+            <SkeletonRows rows={5} height="h-8" />
+          ) : (
+            <div>
+              <KeyValue label="مدت روشن بودن">{formatUptime(health.uptimeSeconds)}</KeyValue>
+              <KeyValue label="پایگاه داده">
+                {health.mongodb.status === "connected" ? "متصل" : "قطع"}
+                {health.mongodb.latencyMs != null ? ` · ${formatNumberFa(health.mongodb.latencyMs)}ms` : ""}
+              </KeyValue>
+              <KeyValue label="حجم داده">{formatBytes(overview.database.totalSizeBytes)}</KeyValue>
+              <KeyValue label="تعداد اسناد">{formatNumberFa(overview.database.documents)}</KeyValue>
+              <KeyValue label="حافظه سرور">{formatBytes(health.memory.rssBytes)}</KeyValue>
+              <KeyValue label="بکاپ تلگرام">{health.backup.telegramEnabled ? "فعال" : "غیرفعال"}</KeyValue>
+              <Link href={PATHS.ADMIN_DATABASE} className="mt-3 flex items-center gap-2 text-sm font-semibold text-accent">
+                <Data size={16} />
+                مدیریت دیتابیس
+              </Link>
             </div>
-            <dl className="space-y-3 text-sm">
-              <div className="flex justify-between gap-4">
-                <dt className="text-muted">{t("auto.ke66493bb3d")}</dt>
-                <dd className="font-medium">
-                  {formatUptime(health.uptimeSeconds)}
-                </dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-muted">MongoDB</dt>
-                <dd className="font-medium">
-                  {health.mongodb.status === "connected"
-                    ? t("admin.connectedLatency", {
-                        ms: toPersianDigits(health.mongodb.latencyMs ?? 0),
-                      })
-                    : t("auto.k3b3debf3ff")}
-                </dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-muted">{t("auto.kaaee936d10")}</dt>
-                <dd className="font-medium">
-                  {formatBytes(health.memory.heapUsedBytes)}
-                </dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-muted">{t("auto.ke820e30a5b")}</dt>
-                <dd className="font-medium">{health.environment}</dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-muted">{t("auto.kfb3c0b0e11")}</dt>
-                <dd className="font-medium">
-                  {health.backup.telegramEnabled ? t("auto.k25c499f433") : t("auto.k7fdadc73ac")}
-                </dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-muted">{t("auto.k031675aa41")}</dt>
-                <dd className="font-medium">
-                  {toPersianDigits(overview.database.documents)}
-                </dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-muted">{t("auto.k1c97d0b9a0")}</dt>
-                <dd className="font-medium text-emerald-600">
-                  {formatPrice(
-                    activity?.income.reduce((sum, n) => sum + n, 0) ?? 0,
-                  )}{" "}
-                  {moneyDisplayUnitLabel()}
-                </dd>
-              </div>
-            </dl>
-          </div>
-        )}
-      </section>
+          )}
+        </AdminPanel>
+      </div>
     </div>
   );
 }

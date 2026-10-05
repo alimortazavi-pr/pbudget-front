@@ -48,7 +48,7 @@ import {
 } from "@/stores/auth";
 import { setProfile } from "@/stores/profile";
 
-type Step = "mobile" | "register" | "signin" | "reset";
+type Step = "mobile" | "register" | "signin" | "reset" | "setup";
 
 export function GetStartedPage() {
   const { t } = useTranslation();
@@ -81,6 +81,7 @@ export function GetStartedPage() {
     register: { title: t("auth.stepRegisterTitle"), sub: t("auth.stepRegisterSub") },
     signin: { title: t("auth.stepSigninTitle"), sub: t("auth.stepSigninSub") },
     reset: { title: t("auth.stepResetTitle"), sub: t("auth.stepResetSub") },
+    setup: { title: t("auth.stepSetupTitle"), sub: t("auth.stepSetupSub") },
   };
 
   const brandFeatures = [
@@ -152,8 +153,12 @@ export function GetStartedPage() {
       setHasPassword(res.hasPassword);
       setHasTelegram(res.hasTelegram);
       setNeedsPasswordSetup(Boolean(res.needsPasswordSetup));
-      if (res.isMustRegister || !res.hasPassword) {
+      if (res.isMustRegister) {
         setStep("register");
+      } else if (!res.hasPassword) {
+        // Existing password-less (legacy) account: ownership must be proven
+        // with a Telegram code before a password can be created.
+        setStep("setup");
       } else {
         setUsePassword(true);
         setStep("signin");
@@ -253,7 +258,7 @@ export function GetStartedPage() {
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
                   >
-                    {step !== "mobile" && step !== "reset" ? (
+                    {step !== "mobile" && step !== "reset" && step !== "setup" ? (
                       <button
                         type="button"
                         className="mb-8 flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-foreground"
@@ -346,15 +351,20 @@ export function GetStartedPage() {
                       </form>
                     ) : null}
 
-                    {step === "reset" ? (
+                    {step === "reset" || step === "setup" ? (
                       <ForgotPasswordStep
                         mobile={mobile}
+                        mode={step === "setup" ? "setup" : "reset"}
                         onBack={() => {
-                          setStep("signin");
+                          setStep(step === "setup" ? "mobile" : "signin");
                           setError("");
                         }}
                         onSuccess={() => {
                           setPassword("");
+                          setHasPassword(true);
+                          setNeedsPasswordSetup(false);
+                          setUsePassword(true);
+                          if (step === "setup") showToast(t("auth.setupSuccess"), "success");
                           setStep("signin");
                         }}
                       />

@@ -4,52 +4,107 @@ import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowRight2,
-  Chart,
+  CloseCircle,
+  HamburgerMenu,
   LogoutCurve,
   ShieldTick,
 } from "iconsax-reactjs";
-import type { Icon } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 import { APP_NAME_FA } from "@/common/constants/brand";
 import { AuthBootstrap } from "@/components/common/layout/AuthBootstrap";
-import { ADMIN_NAV } from "@/components/common/layout/admin-nav";
+import { ADMIN_NAV, ADMIN_NAV_GROUPS, type AdminNavItem } from "@/components/common/layout/admin-nav";
+import { ThemeToggle } from "@/components/common/ThemeToggle";
+import { AppLogo } from "@/components/common/brand/AppLogo";
 import { useAppSelector } from "@/stores/hooks";
 import { didTryAutoLoginSelector, isAuthSelector } from "@/stores/auth";
 import { userSelector } from "@/stores/profile";
 import { forceAuthLogout } from "@/common/utils/force-auth-logout";
 
-function NavLink({
-  href,
-  label,
-  icon: IconComponent,
-}: {
-  href: string;
-  label: string;
-  icon: Icon;
-}) {
+function isActive(pathname: string, href: string) {
+  return href === PATHS.ADMIN ? pathname === PATHS.ADMIN : pathname === href || pathname.startsWith(`${href}/`);
+}
+
+function NavLink({ item, onNavigate }: { item: AdminNavItem; onNavigate?: () => void }) {
   const pathname = usePathname();
   const { t } = useTranslation();
-  const active =
-    href === PATHS.ADMIN
-      ? pathname === PATHS.ADMIN
-      : pathname.startsWith(href);
+  const active = isActive(pathname, item.href);
+  const IconComponent = item.icon;
 
   return (
     <Link
-      href={href}
-      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-        active
-          ? "bg-accent/15 text-accent"
-          : "text-muted hover:bg-surface-secondary hover:text-foreground"
+      href={item.href}
+      onClick={onNavigate}
+      aria-current={active ? "page" : undefined}
+      className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
+        active ? "bg-accent/12 text-accent" : "text-muted hover:bg-surface-secondary hover:text-foreground"
       }`}
     >
-      <IconComponent size={20} variant={active ? "Bold" : "Linear"} />
-      {t(label)}
+      <IconComponent size={19} variant={active ? "Bold" : "Linear"} />
+      {t(item.label)}
     </Link>
+  );
+}
+
+function AdminNavigation({ onNavigate }: { onNavigate?: () => void }) {
+  const { t } = useTranslation();
+  const user = useAppSelector(userSelector);
+
+  return (
+    <div className="flex h-full flex-col">
+      <Link href={PATHS.ADMIN} onClick={onNavigate} className="mb-6 flex items-center gap-3 px-2">
+        <AppLogo size={36} showText={false} />
+        <div>
+          <p className="text-sm font-bold">{APP_NAME_FA}</p>
+          <p className="text-[11px] text-muted">{t("common.adminPanel")}</p>
+        </div>
+      </Link>
+
+      <nav className="flex-1 space-y-5 overflow-y-auto">
+        {ADMIN_NAV_GROUPS.map((group) => (
+          <div key={group.title}>
+            <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wide text-muted/80">{t(group.title)}</p>
+            <div className="space-y-0.5">
+              {group.items.map((item) => (
+                <NavLink key={item.href} item={item} onNavigate={onNavigate} />
+              ))}
+            </div>
+          </div>
+        ))}
+      </nav>
+
+      <div className="mt-4 space-y-1 border-t border-border/50 pt-4">
+        {user ? (
+          <div className="mb-2 rounded-xl bg-surface-secondary/60 px-3 py-2.5">
+            <p className="truncate text-sm font-semibold">
+              {user.firstName} {user.lastName}
+            </p>
+            <p className="text-xs text-muted" dir="ltr">
+              {user.mobile}
+            </p>
+          </div>
+        ) : null}
+        <Link
+          href={PATHS.HOME}
+          onClick={onNavigate}
+          className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-muted hover:bg-surface-secondary hover:text-foreground"
+        >
+          <ArrowRight2 size={19} />
+          {t("common.backToApp")}
+        </Link>
+        <button
+          type="button"
+          onClick={() => forceAuthLogout()}
+          className="flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2 text-sm text-danger hover:bg-danger/10"
+        >
+          <LogoutCurve size={19} />
+          {t("common.logoutShort")}
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -60,24 +115,43 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
   const isAuth = useAppSelector(isAuthSelector);
   const didTryAutoLogin = useAppSelector(didTryAutoLoginSelector);
   const user = useAppSelector(userSelector);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
-    if (!didTryAutoLogin || !isAuth) return;
+    if (!didTryAutoLogin) return;
+    if (!isAuth) {
+      router.replace(`${PATHS.GET_STARTED}?return=${encodeURIComponent(pathname)}`);
+      return;
+    }
     if (user && !user.isAdmin) {
       router.replace(PATHS.HOME);
     }
-  }, [didTryAutoLogin, isAuth, user, router]);
+  }, [didTryAutoLogin, isAuth, user, router, pathname]);
 
-  const pageTitleKey =
-    ADMIN_NAV.find((item) =>
-      item.href === PATHS.ADMIN
-        ? pathname === PATHS.ADMIN
-        : pathname.startsWith(item.href),
-    )?.label ?? "common.adminPanel";
-  const pageTitle = t(pageTitleKey);
+  useEffect(() => {
+    setDrawerOpen(false);
+  }, [pathname]);
 
-  const isCheckingAccess =
-    !didTryAutoLogin || !isAuth || (isAuth && !user);
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setDrawerOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = previous;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [drawerOpen]);
+
+  const current = ADMIN_NAV.find((item) => isActive(pathname, item.href));
+  const pageTitle = pathname.startsWith(`${PATHS.ADMIN_USERS}/`)
+    ? t("nav.adminUserDetail")
+    : t(current?.label ?? "common.adminPanel");
+
+  const isCheckingAccess = !didTryAutoLogin || !isAuth || (isAuth && !user);
 
   if (isCheckingAccess || !user?.isAdmin) {
     if (didTryAutoLogin && isAuth && user && !user.isAdmin) {
@@ -91,9 +165,7 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
           <div className="glass max-w-md rounded-3xl p-8 text-center">
             <ShieldTick size={48} className="mx-auto text-accent" variant="Bold" />
             <h1 className="mt-4 text-xl font-bold">{t("common.adminAccess")}</h1>
-            <p className="mt-2 text-sm text-muted">
-              {t("common.checkingAccess")}
-            </p>
+            <p className="mt-2 text-sm text-muted">{t("common.checkingAccess")}</p>
           </div>
         </div>
       </>
@@ -103,66 +175,56 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <AuthBootstrap />
-      <div className="min-h-screen bg-background">
-        <div className="mx-auto flex min-h-screen max-w-[1600px]">
-          <aside className="hidden w-64 shrink-0 border-e border-border/60 bg-surface/50 p-4 lg:block">
-            <div className="mb-8 px-2">
-              <p className="text-xs font-medium text-muted">{t("common.systemManagement")}</p>
-              <h1 className="mt-1 text-lg font-bold">{APP_NAME_FA}</h1>
-              <p className="mt-1 text-xs text-muted">{t("common.adminPanel")}</p>
-            </div>
-
-            <nav className="space-y-1">
-              {ADMIN_NAV.map((item) => (
-                <NavLink key={item.href} {...item} />
-              ))}
-            </nav>
-
-            <div className="mt-8 rounded-2xl border border-border/50 bg-surface-secondary/50 p-4">
-              <div className="flex items-center gap-2 text-xs text-muted">
-                <Chart size={16} />
-                {t("common.monitoringActive")}
-              </div>
-              <p className="mt-2 text-sm font-medium">
-                {user.firstName} {user.lastName}
-              </p>
-              <p className="text-xs text-muted">{user.mobile}</p>
-            </div>
-
-            <div className="mt-4 space-y-1">
-              <Link
-                href={PATHS.HOME}
-                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted hover:bg-surface-secondary hover:text-foreground"
-              >
-                <ArrowRight2 size={20} />
-                {t("common.backToApp")}
-              </Link>
-              <button
-                type="button"
-                onClick={() => forceAuthLogout()}
-                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-danger hover:bg-danger/10"
-              >
-                <LogoutCurve size={20} />
-                {t("common.logoutShort")}
-              </button>
-            </div>
+      <div className="min-h-dvh bg-background">
+        <div className="flex min-h-dvh">
+          <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 border-e border-border/60 bg-surface/70 p-4 backdrop-blur-xl lg:block">
+            <AdminNavigation />
           </aside>
 
+          {drawerOpen ? (
+            <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label={t("common.adminPanel")}>
+              <button
+                type="button"
+                aria-label={t("common.close")}
+                className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+                onClick={() => setDrawerOpen(false)}
+              />
+              <div className="absolute inset-y-0 start-0 flex w-[82%] max-w-xs flex-col bg-surface p-4 shadow-2xl">
+                <button
+                  type="button"
+                  className="absolute end-3 top-3 cursor-pointer rounded-full p-1.5 text-muted hover:bg-surface-secondary"
+                  onClick={() => setDrawerOpen(false)}
+                  aria-label={t("common.close")}
+                >
+                  <CloseCircle size={22} />
+                </button>
+                <AdminNavigation onNavigate={() => setDrawerOpen(false)} />
+              </div>
+            </div>
+          ) : null}
+
           <div className="flex min-w-0 flex-1 flex-col">
-            <header className="sticky top-0 z-20 border-b border-border/60 bg-background/80 px-4 py-4 backdrop-blur-xl lg:px-8">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-xs text-muted">{t("common.adminPanel")}</p>
-                  <h2 className="text-xl font-bold">{pageTitle}</h2>
+            <header className="sticky top-0 z-30 border-b border-border/60 bg-background/85 px-4 py-3 backdrop-blur-xl lg:px-8">
+              <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-2">
+                  <button
+                    type="button"
+                    className="-ms-1 cursor-pointer rounded-xl p-2 text-foreground hover:bg-surface-secondary lg:hidden"
+                    onClick={() => setDrawerOpen(true)}
+                    aria-label={t("common.menu")}
+                  >
+                    <HamburgerMenu size={22} />
+                  </button>
+                  <div className="min-w-0">
+                    <p className="text-[11px] text-muted">{t("common.adminPanel")}</p>
+                    <h2 className="truncate text-base font-bold sm:text-lg">{pageTitle}</h2>
+                  </div>
                 </div>
-                <div className="pb-status-badge pb-status-badge-success">
-                  <span className="h-2 w-2 rounded-full bg-success" />
-                  {t("common.online")}
-                </div>
+                <ThemeToggle />
               </div>
             </header>
 
-            <main className="flex-1 p-4 lg:p-8">{children}</main>
+            <main className="mx-auto w-full max-w-[1400px] flex-1 p-4 pb-10 lg:p-8">{children}</main>
           </div>
         </div>
       </div>

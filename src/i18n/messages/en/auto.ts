@@ -1028,7 +1028,7 @@ export const autoMessages: Record<string, string> = {
   "k7ef7c399e7": "تیمی",
   "k7f10976cd3": "connect transaction مبدأ disconnect شود؟",
   "k7f620f4208": "شما اینجا: مالی شخصی",
-  "k7f62418837": "به Paradise Budget خوش آمدید",
+  "k7f62418837": "Welcome to Paradise Desk",
   "k7f6e5a620c": "نمودار روند income و expense، compare ماه‌ها، شناسایی الگوهای خرج و Export Excel.",
   "k7f7784dd48": "Add income و expense با جزئیات کامل، Dashboard Daily و Monthly، نمودارهای تحلیلی و Export Excel برای گزارش‌گیری.",
   "k7f93d014de": "هم به تلگرام می‌آید.",

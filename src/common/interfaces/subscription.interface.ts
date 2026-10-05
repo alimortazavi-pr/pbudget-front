@@ -22,6 +22,8 @@ export interface SubscriptionPlan {
   active: boolean;
   sortOrder: number;
   contactMessage: string;
+  activeSubscribers?: number;
+  isFallback?: boolean;
 }
 
 export interface UserSubscription {
@@ -30,12 +32,24 @@ export interface UserSubscription {
   startsAt: string;
   expiresAt?: string | null;
   note?: string;
-  user?: { _id: string; firstName: string; lastName: string; mobile: string };
+  user?: { _id: string; firstName: string; lastName: string; mobile: string; deleted?: boolean };
   plan?: SubscriptionPlan;
+  assignedBy?: { _id: string; firstName: string; lastName: string } | string | null;
+  canceledBy?: { _id: string; firstName: string; lastName: string } | string | null;
+  canceledAt?: string | null;
+  requestedByUser?: boolean;
+  requestNote?: string;
+  createdAt?: string;
   planSnapshot?: { slug: string; name: string; price: number; priceUnit: string; features: Record<string, unknown> };
 }
 
 export interface MySubscriptionResponse {
   subscription: UserSubscription | null;
   entitlements: Record<string, { enabled: boolean; limit?: number | null; label: string }>;
+  /** Days until expiry; null for plans that never expire. */
+  daysRemaining?: number | null;
+  /** A plan the user asked for that waits for an administrator. */
+  pendingRequest?: UserSubscription | null;
+  /** A plan scheduled to start in the future. */
+  upcoming?: UserSubscription | null;
 }

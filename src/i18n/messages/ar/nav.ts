@@ -57,4 +57,9 @@ export const navMessages: MessageTree = {
   adminSystemLogs: "سجل النظام",
   adminSubscriptions: "الاشتراكات",
   adminMonitoring: "المراقبة",
+  adminActivity: "النشاط المباشر",
+  adminGroupMonitor: "المراقبة",
+  adminGroupContent: "المحتوى والإعدادات",
+  adminGroupSystem: "النظام",
+  adminUserDetail: "تفاصيل المستخدم",
 };

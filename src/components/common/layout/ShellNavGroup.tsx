@@ -8,7 +8,6 @@ import { Lock1 } from "iconsax-reactjs";
 import type { ShellNavItem } from "./shell-nav";
 import { isShellNavActive } from "./shell-nav";
 import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
-import { showToast } from "@/common/utils/toast";
 
 type ShellNavGroupProps = {
   title: string;
@@ -93,16 +92,17 @@ function ShellNavRow({ item, active, className, onNavigate, badge }: ShellNavRow
   );
 
   if (featureLocked) {
+    // Open the page anyway: it explains the plan and offers an upgrade.
     return (
-      <button
-        type="button"
-        className={`${className} cursor-not-allowed opacity-55`}
-        aria-disabled="true"
+      <Link
+        href={item.href}
+        className={`${className} opacity-70`}
+        data-active={active ? "true" : "false"}
         title={t("common.subscription.notForYourPlan")}
-        onClick={() => showToast(t("common.subscription.notForYourPlan"), "warning")}
+        onClick={onNavigate}
       >
         {content}
-      </button>
+      </Link>
     );
   }
 

@@ -35,4 +35,9 @@ export const authMessages: MessageTree = {
   heroAccent: "Simple, precise & calendar-aware",
   noPasswordContinueHint:
     "No password is set for this number. Close this modal and tap Continue again to create an account.",
+  stepSetupTitle: "Set your password",
+  stepSetupSub: "This number already has an account. Verify ownership with a Telegram code to create a password.",
+  setupSuccess: "Password created. You can sign in now.",
+  setupSendCode: "Send verification code via Telegram",
+  setupSubmit: "Create password and continue",
 };

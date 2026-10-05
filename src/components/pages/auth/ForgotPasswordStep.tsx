@@ -26,12 +26,15 @@ function buildTelegramRecoverUrl(
 
 type ForgotPasswordStepProps = {
   mobile: string;
+  /** "setup" creates the first password of an existing password-less account. */
+  mode?: "reset" | "setup";
   onBack: () => void;
   onSuccess: () => void;
 };
 
 export function ForgotPasswordStep({
   mobile,
+  mode = "reset",
   onBack,
   onSuccess,
 }: ForgotPasswordStepProps) {
@@ -158,7 +161,7 @@ export function ForgotPasswordStep({
           onPress={() => void handleRequestCode()}
         >
           <Sms size={18} />
-          {t("auto.k1166c6bb60")}
+          {mode === "setup" ? t("auth.setupSendCode") : t("auto.k1166c6bb60")}
         </Button>
       ) : (
         <>
@@ -188,7 +191,7 @@ export function ForgotPasswordStep({
             isPending={loading}
             onPress={() => void handleReset()}
           >
-            {t("auto.k424960f0ab")}
+            {mode === "setup" ? t("auth.setupSubmit") : t("auto.k424960f0ab")}
           </Button>
         </>
       )}

@@ -35,4 +35,9 @@ export const authMessages: MessageTree = {
   heroAccent: "ساده، دقیق و شمسی",
   noPasswordContinueHint:
     "برای این شماره رمز عبور تنظیم نشده است. مودال را ببندید و دوباره «ادامه» را بزنید تا حساب بسازید.",
+  stepSetupTitle: "تنظیم رمز عبور",
+  stepSetupSub: "این شماره از قبل حساب دارد. برای امنیت، با کد تلگرام مالکیت حساب را تأیید و رمز بسازید.",
+  setupSuccess: "رمز عبور ساخته شد. اکنون وارد شوید.",
+  setupSendCode: "ارسال کد تأیید به تلگرام",
+  setupSubmit: "ساخت رمز و ادامه",
 };

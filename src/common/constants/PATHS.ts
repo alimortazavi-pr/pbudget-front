@@ -35,6 +35,8 @@ export const PATHS = {
   PLANNING: "/planning",
   ADMIN: "/admin",
   ADMIN_USERS: "/admin/users",
+  ADMIN_USER: (id: string) => `/admin/users/${id}`,
+  ADMIN_ACTIVITY: "/admin/activity",
   ADMIN_DATABASE: "/admin/database",
   ADMIN_BACKUP: "/admin/backup",
   ADMIN_AUDIT: "/admin/audit",

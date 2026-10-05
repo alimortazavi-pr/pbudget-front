@@ -47,3 +47,52 @@ export async function revokeAdminSubscription(id: string) {
   const { data } = await axiosInstance.patch<UserSubscription>(`/admin/subscriptions/${id}/revoke`);
   return data;
 }
+
+export async function requestSubscription(planId: string, note?: string) {
+  const { data } = await axiosInstance.post<UserSubscription>("/subscriptions/requests", { planId, note });
+  return data;
+}
+
+export async function cancelSubscriptionRequest() {
+  await axiosInstance.delete("/subscriptions/requests/me");
+}
+
+export async function updateAdminSubscription(id: string, payload: { expiresAt?: string | null; extendDays?: number; note?: string }) {
+  const { data } = await axiosInstance.patch<UserSubscription>(`/admin/subscriptions/${id}`, payload);
+  return data;
+}
+
+export async function approveSubscriptionRequest(id: string, payload: { note?: string; expiresAt?: string | null } = {}) {
+  const { data } = await axiosInstance.patch<UserSubscription>(`/admin/subscriptions/${id}/approve`, payload);
+  return data;
+}
+
+export async function rejectSubscriptionRequest(id: string, payload: { note?: string } = {}) {
+  const { data } = await axiosInstance.patch<UserSubscription>(`/admin/subscriptions/${id}/reject`, payload);
+  return data;
+}
+
+export type AdminSubscriptionStatusFilter = "" | "current" | "expiring" | "scheduled" | "pending" | "active" | "expired" | "canceled";
+
+export async function fetchAdminSubscriptionsFiltered(params: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: AdminSubscriptionStatusFilter;
+  planId?: string;
+}) {
+  const { data } = await axiosInstance.get<{
+    items: UserSubscription[];
+    summary: { paidActive: number; pending: number; expiringSoon: number; expiredThisMonth: number };
+    pagination: { page: number; limit: number; total: number; totalPages: number };
+  }>("/admin/subscriptions", {
+    params: {
+      page: params.page ?? 1,
+      limit: params.limit ?? 20,
+      search: params.search || undefined,
+      status: params.status || undefined,
+      planId: params.planId || undefined,
+    },
+  });
+  return data;
+}

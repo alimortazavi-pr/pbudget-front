@@ -3,13 +3,13 @@
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Button, Modal } from "@heroui/react";
+import { Button } from "@heroui/react";
 import { DocumentDownload, DocumentUpload, Eye } from "iconsax-reactjs";
 
 import * as adminApi from "@/common/api/admin";
+import { AdminDocumentsBrowser } from "./AdminDocumentsBrowser";
 import type {
   AdminCollectionMeta,
-  AdminCollectionPreview,
   AdminExportFormat,
   AdminImportMode,
 } from "@/common/interfaces/admin";
@@ -35,8 +35,7 @@ export function AdminDatabasePage() {
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState<string | null>(null);
   const [format, setFormat] = useState<AdminExportFormat>("ejson");
-  const [preview, setPreview] = useState<AdminCollectionPreview | null>(null);
-  const [previewLoading, setPreviewLoading] = useState(false);
+  const [browsing, setBrowsing] = useState<string | null>(null);
   const [importMode, setImportMode] = useState<AdminImportMode>("merge");
   const [importTarget, setImportTarget] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -106,18 +105,6 @@ export function AdminDatabasePage() {
       setExporting(null);
       setImportTarget(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
-    }
-  };
-
-  const openPreview = async (name: string) => {
-    setPreviewLoading(true);
-    try {
-      const data = await adminApi.fetchCollectionPreview(name, 15);
-      setPreview(data);
-    } catch {
-      showToast(t("auto.k6ef0a02955"), "danger");
-    } finally {
-      setPreviewLoading(false);
     }
   };
 
@@ -243,7 +230,11 @@ export function AdminDatabasePage() {
                         <Button
                           size="sm"
                           variant="ghost"
-                          onPress={() => void openPreview(collection.name)}
+                          aria-label="مرور و ویرایش اسناد"
+                          onPress={() => {
+                            setBrowsing(collection.name);
+                            window.setTimeout(() => document.getElementById("documents-browser")?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+                          }}
                         >
                           <Eye size={16} />
                         </Button>
@@ -272,40 +263,14 @@ export function AdminDatabasePage() {
             </tbody>
           </table>
         </div>
+
+      {browsing ? (
+        <div id="documents-browser" className="scroll-mt-24">
+          <AdminDocumentsBrowser collection={browsing} onClose={() => setBrowsing(null)} />
+        </div>
+      ) : null}
       </div>
 
-      <Modal
-        isOpen={Boolean(preview) || previewLoading}
-        onOpenChange={() => setPreview(null)}
-      >
-        <Modal.Backdrop>
-          <Modal.Container>
-            <Modal.Dialog className="max-w-3xl">
-              <Modal.CloseTrigger />
-              <Modal.Header>
-                <Modal.Heading>
-                  {t("auto.kf07d7cd0f1")}{preview?.name ?? "…"}
-                </Modal.Heading>
-              </Modal.Header>
-              <Modal.Body>
-                {previewLoading ? (
-                  <div className="h-40 animate-pulse rounded-xl bg-surface-secondary" />
-                ) : preview ? (
-                  <div className="space-y-3">
-                    <p className="text-sm text-muted">
-                      {t("auto.kcf5a6721b9")}{toPersianDigits(preview.preview.length)} {t("common.of")}{" "}
-                      {toPersianDigits(preview.total)} {t("auto.k598f6819da")}
-                    </p>
-                    <pre className="max-h-[50vh] overflow-auto rounded-xl bg-surface-secondary p-4 text-xs leading-relaxed">
-                      {JSON.stringify(preview.preview, null, 2)}
-                    </pre>
-                  </div>
-                ) : null}
-              </Modal.Body>
-            </Modal.Dialog>
-          </Modal.Container>
-        </Modal.Backdrop>
-      </Modal>
     </div>
   );
 }

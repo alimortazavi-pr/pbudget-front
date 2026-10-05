@@ -19,7 +19,6 @@ import { usePendingInvitesCount } from "@/common/hooks/usePendingInvitesCount";
 import { AppLogo } from "@/components/common/brand/AppLogo";
 import { useTranslation } from "@/components/providers/LanguageProvider";
 import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
-import { showToast } from "@/common/utils/toast";
 
 export function ShellSidebar() {
   const pathname = usePathname();
@@ -63,17 +62,16 @@ export function ShellSidebar() {
 
               if (featureLocked) {
                 return (
-                  <button
+                  <Link
                     key={item.href}
-                    type="button"
-                    className="pb-sidebar-link !cursor-not-allowed opacity-55"
-                    aria-disabled="true"
+                    href={item.href}
+                    className="pb-sidebar-link opacity-70"
+                    data-active={active ? "true" : "false"}
                     title={t("common.subscription.notForYourPlan")}
                     data-tour={`nav-${item.href.replace(/\//g, "") || "home"}`}
-                    onClick={() => showToast(t("common.subscription.notForYourPlan"), "warning")}
                   >
                     {content}
-                  </button>
+                  </Link>
                 );
               }
 
@@ -102,16 +100,14 @@ export function ShellSidebar() {
         </Link>
 
         {BANK_IMPORT_NAV_ITEM.featureKey && !subscriptionLoading && !isFeatureEnabled(BANK_IMPORT_NAV_ITEM.featureKey) ? (
-          <button
-            type="button"
-            className="pb-sidebar-secondary-cta mt-2 !cursor-not-allowed opacity-55"
-            aria-disabled="true"
+          <Link
+            href={BANK_IMPORT_NAV_ITEM.href}
+            className="pb-sidebar-secondary-cta mt-2 opacity-70"
             title={t("common.subscription.notForYourPlan")}
-            onClick={() => showToast(t("common.subscription.notForYourPlan"), "warning")}
           >
             <Lock1 size={18} variant="Bold" />
             {t(BANK_IMPORT_NAV_ITEM.label)}
-          </button>
+          </Link>
         ) : (
           <Link href={BANK_IMPORT_NAV_ITEM.href} className="pb-sidebar-secondary-cta mt-2">
             <BANK_IMPORT_NAV_ITEM.icon size={18} variant="Bold" />
