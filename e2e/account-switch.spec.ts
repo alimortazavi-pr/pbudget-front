@@ -129,4 +129,21 @@ test.describe("Account switching", () => {
     const duplicates = labels.filter((label, index) => labels.indexOf(label) !== index);
     expect(duplicates).toEqual([]);
   });
+
+  test("command palette jumps to a page by typing (Persian-aware)", async ({ page, context }) => {
+    await mockApi(context);
+    await setAccounts(context, "token-a", ["token-a"]);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/profile");
+    await expect(page.getByRole("button", { name: "تغییر حساب" }).first()).toBeVisible();
+    await page.keyboard.press("Control+k");
+    const input = page.getByRole("dialog").getByRole("textbox");
+    await expect(input).toBeVisible();
+    // Arabic "ي/ك" must still find Persian "ی/ک".
+    await input.fill("چك");
+    await expect(page.getByRole("option").first()).toContainText("چک");
+    await input.fill("اقساط");
+    await page.keyboard.press("Enter");
+    await expect(page).toHaveURL(/\/installments$/);
+  });
 });
