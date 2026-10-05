@@ -16,8 +16,8 @@ export const APP_DESCRIPTION_FA = allMessages.fa[APP_DESCRIPTION_KEY];
 
 export const APP_SHORT_NAME_EN = "P Desk";
 
-export const DEVELOPER_SITE_URL = "https://alimor.ir";
-export const DEVELOPER_SITE_LABEL = "alimor.ir";
+export const DEVELOPER_SITE_URL = "https://paradisecode.ir";
+export const DEVELOPER_SITE_LABEL = "paradisecode.ir";
 export const CONTACT_EMAIL = "alimortazavi.pr@gmail.com";
 
 /** Official app icon — single PNG used everywhere */

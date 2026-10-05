@@ -5,14 +5,13 @@ import { useTranslation } from "@/components/providers/LanguageProvider";
 import { useState } from "react";
 import { Button } from "@heroui/react";
 import { LinkButton } from "@/components/common/ui/LinkButton";
-import { Edit2, Trash } from "iconsax-reactjs";
+import { ArrowDown, ArrowUp, Edit2, Trash } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 import * as budgetsApi from "@/common/api/budgets";
 import type { IBudget } from "@/common/interfaces/budget.interface";
 import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
 import { resolveCategoryColor } from "@/common/constants/category-colors";
-import { categoryAccentStyle } from "@/common/utils/category-accent";
 import { paymentCardSubtitle } from "@/common/utils/payment-card";
 import {
   formatBudgetDate,
@@ -56,10 +55,8 @@ export function TransactionCard({ budget }: TransactionCardProps) {
   const isPendingCategory = Boolean(budget.pendingCategory);
   const categoryColor = isPendingCategory
     ? "#f59e0b"
-    : resolveCategoryColor(budget.category?.color);
-  const categoryStyle = isPendingCategory
-    ? { borderInlineStartColor: "#f59e0b", borderInlineStartWidth: "3px" }
-    : categoryAccentStyle(budget.category?.color);
+    : resolveCategoryColor(budget.category?.color, budget.category?._id);
+  const categoryTitle = isPendingCategory ? t("dashboard.needsCategory") : budget.category?.title ?? "";
   const paymentCardLabel = resolvePaymentCardLabel(budget.paymentCard);
   const budgetCurrency = resolveBudgetCurrency(budget.currency);
   const budgetCalendar = resolveBudgetDateCalendar(budget.dateCalendar);
@@ -89,82 +86,71 @@ export function TransactionCard({ budget }: TransactionCardProps) {
   return (
     <>
       <article
-        className={`pb-transaction-row cursor-pointer ${
-          isPendingCategory ? "border border-warning/30 bg-warning/5" : ""
-        }`}
-        style={categoryStyle}
+        className={`pb-tx group ${isPendingCategory ? "pb-tx-pending" : ""}`}
+        style={{ ["--cat" as string]: categoryColor }}
+        data-expanded={expanded ? "true" : "false"}
         onClick={() => setExpanded((v) => !v)}
       >
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <span
-                className="h-2.5 w-2.5 shrink-0 rounded-full"
-                style={{ backgroundColor: categoryColor }}
-                aria-hidden
-              />
-              <p className="truncate font-medium">
-                {isPendingCategory
-                  ? t("dashboard.needsCategory")
-                  : budget.category?.title}
-              </p>
-            </div>
-            <p className="mt-0.5 text-xs text-muted">
-              {formatBudgetDate(
-                budget.year,
-                budget.month,
-                budget.day,
-                budgetCalendar
-              )}
-              {paymentCardLabel ? ` · ${paymentCardLabel}` : ""}
-              {isPendingCategory &&
-              typeof budget.sourceBank === "object" &&
-              budget.sourceBank?.title
-                ? ` · ${budget.sourceBank.title}`
-                : ""}
+        <div className="flex items-center gap-3">
+          <span className="pb-tx-icon" aria-hidden>
+            {isPendingCategory ? "؟" : (categoryTitle.trim().charAt(0) || (isIncome ? "+" : "−"))}
+            <span className={`pb-tx-dir ${isIncome ? "bg-[var(--brand-teal)]" : "bg-[var(--brand-rose)]"}`}>
+              {isIncome ? <ArrowDown size={9} /> : <ArrowUp size={9} />}
+            </span>
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-semibold lg:text-[0.95rem]">
+              {budget.description?.trim() || categoryTitle}
             </p>
-            {budget.description?.trim() ? (
-              <p className="mt-1 line-clamp-1 text-xs text-foreground/70">{budget.description}</p>
-            ) : null}
-            {isPendingCategory && (
-              <span className="mt-1 inline-flex rounded-md bg-warning/15 px-1.5 py-0.5 text-[10px] font-semibold text-warning-foreground">
-                {t("dashboard.bankImportBadge")}
-              </span>
-            )}
-            {debt && (
-              <span
-                className={`mt-1 inline-flex rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${
-                  debt.type === DebtType.RECEIVABLE
-                    ? "bg-income-soft text-income"
-                    : "bg-expense-soft text-expense"
-                }`}
-              >
-                {debt.type === DebtType.RECEIVABLE
-                  ? t("dashboard.receivableLabel")
-                  : t("dashboard.debtLabel")}{" "}
-                · {debt.person}
-                {debt.status !== "settled"
-                  ? ` · ${formatPriceWithCurrency(
-                      debt.remainingAmount,
-                      budgetCurrency
-                    )}`
+            <p className="mt-0.5 flex min-w-0 items-center gap-1.5 truncate text-xs text-muted">
+              {budget.description?.trim() ? (
+                <span className="inline-flex shrink-0 items-center gap-1 font-medium" style={{ color: categoryColor }}>
+                  <span className="size-1.5 rounded-full" style={{ background: categoryColor }} />
+                  {categoryTitle}
+                </span>
+              ) : null}
+              <span className="truncate">
+                {formatBudgetDate(budget.year, budget.month, budget.day, budgetCalendar)}
+                {paymentCardLabel ? ` · ${paymentCardLabel}` : ""}
+                {isPendingCategory && typeof budget.sourceBank === "object" && budget.sourceBank?.title
+                  ? ` · ${budget.sourceBank.title}`
                   : ""}
               </span>
-            )}
+            </p>
+            {isPendingCategory || debt ? (
+              <div className="mt-1.5 flex flex-wrap gap-1">
+                {isPendingCategory ? (
+                  <span className="inline-flex rounded-md bg-warning/15 px-1.5 py-0.5 text-[10px] font-semibold text-warning-foreground">
+                    {t("dashboard.bankImportBadge")}
+                  </span>
+                ) : null}
+                {debt ? (
+                  <span
+                    className={`inline-flex rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${
+                      debt.type === DebtType.RECEIVABLE ? "bg-income-soft text-income" : "bg-expense-soft text-expense"
+                    }`}
+                  >
+                    {debt.type === DebtType.RECEIVABLE ? t("dashboard.receivableLabel") : t("dashboard.debtLabel")} ·{" "}
+                    {debt.person}
+                    {debt.status !== "settled"
+                      ? ` · ${formatPriceWithCurrency(debt.remainingAmount, budgetCurrency)}`
+                      : ""}
+                  </span>
+                ) : null}
+              </div>
+            ) : null}
           </div>
           <p
-            className={`shrink-0 text-base font-bold ${
-              isIncome ? "text-income" : "text-expense"
-            }`}
+            className={`shrink-0 text-sm font-bold tabular-nums lg:text-base ${isIncome ? "text-income" : "text-expense"}`}
           >
-            {isIncome ? "+" : "-"}
+            {isIncome ? "+" : "−"}
             {formatPriceWithCurrency(budget.price, budgetCurrency)}
           </p>
         </div>
 
         {expanded && (
           <div
-            className="mt-4 border-t border-border/50 pt-4"
+            className="pb-rise-in mt-3 border-t border-border/50 pt-3"
             onClick={(e) => e.stopPropagation()}
           >
             <p className="mb-3 text-sm text-muted">

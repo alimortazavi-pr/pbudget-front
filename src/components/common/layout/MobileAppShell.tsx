@@ -8,6 +8,7 @@ import {
   ArrowRight2,
   InfoCircle,
   Menu,
+  SearchNormal1,
 } from "iconsax-reactjs";
 import { useState, type ReactNode } from "react";
 
@@ -17,6 +18,7 @@ import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { useTour } from "@/components/providers/TourProvider";
 import { AppDrawer } from "./AppDrawer";
 import { ChangeAccountPopover } from "./ChangeAccountPopover";
+import { CommandPalette, openCommandPalette } from "@/components/common/command/CommandPalette";
 import { ShellSidebar } from "./ShellSidebar";
 import {
   CREATE_NAV_ITEM,
@@ -88,6 +90,28 @@ export function MobileAppShell({
               </div>
             </div>
             <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={openCommandPalette}
+                aria-label={t("common.commandTitle")}
+                className="pb-press me-1 hidden h-9 min-w-56 items-center gap-2 rounded-xl border border-border/60 bg-surface-secondary/60 px-3 text-sm text-muted transition-colors hover:border-accent/40 hover:text-foreground lg:flex"
+              >
+                <SearchNormal1 size={16} />
+                <span className="flex-1 text-start">{t("common.commandSearch")}</span>
+                <kbd className="rounded-md border border-border/70 bg-surface px-1.5 text-[10px]" dir="ltr">
+                  Ctrl K
+                </kbd>
+              </button>
+              <Button
+                isIconOnly
+                variant="ghost"
+                size="sm"
+                className="lg:hidden"
+                aria-label={t("common.commandTitle")}
+                onPress={openCommandPalette}
+              >
+                <SearchNormal1 size={20} />
+              </Button>
               <Button
                 isIconOnly
                 variant="ghost"
@@ -117,10 +141,14 @@ export function MobileAppShell({
           <main
             className={`pb-main-content px-4 pt-14 ${
               hideTabBar ? "pb-8" : "pb-page-with-tabbar"
-            } pb-page-enter lg:px-10 lg:pb-10 lg:pt-8`}
+            } lg:px-10 lg:pb-10 lg:pt-8`}
             data-tour="page-content"
           >
-            {children}
+            {/* Keyed by route so the entry animation plays on every navigation,
+                not only on the first load (the shell itself never remounts). */}
+            <div key={pathname} className="pb-route">
+              {children}
+            </div>
           </main>
         </div>
 
@@ -190,6 +218,7 @@ export function MobileAppShell({
       </div>
 
       <AppDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
+      <CommandPalette />
     </div>
   );
 }

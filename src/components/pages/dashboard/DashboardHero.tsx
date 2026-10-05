@@ -1,6 +1,10 @@
 "use client";
 
-import { ArrowDown, ArrowUp, Wallet2 } from "iconsax-reactjs";
+import Link from "next/link";
+import { ArrowDown, ArrowUp, DocumentUpload, MoneyRecive, MoneySend, Wallet2 } from "iconsax-reactjs";
+
+import { PATHS } from "@/common/constants";
+import { AnimatedNumber } from "@/components/common/motion/AnimatedNumber";
 
 import { formatAmountOnly, formatPriceWithCurrency } from "@/common/utils/format-currency";
 import {
@@ -54,7 +58,7 @@ export function DashboardHero({
       <div className="pointer-events-none absolute -end-8 -top-10 size-40 rounded-full bg-white/10 blur-2xl" />
       <div className="pointer-events-none absolute -bottom-6 start-0 size-32 rounded-full bg-white/8 blur-xl" />
 
-      <div className="relative z-10 pt-3 lg:pt-0">
+      <div className="relative z-10 pt-5 lg:pt-0">
         <div className="mb-5 flex items-start justify-between gap-3 lg:mb-0">
           <div>
             <p className="text-sm font-medium text-white/85 lg:text-base">
@@ -112,7 +116,10 @@ export function DashboardHero({
                               : "text-lg font-bold text-white"
                           }
                         >
-                          {formatAmountOnly(amount, walletCurrency)}
+                          <AnimatedNumber
+                            value={amount}
+                            format={(n) => formatAmountOnly(n, walletCurrency)}
+                          />
                         </p>
                         <span className="mb-1 shrink-0 text-sm font-medium text-white/80 lg:text-base">
                           {currencyLabel(walletCurrency)}
@@ -125,6 +132,7 @@ export function DashboardHero({
             </div>
           </div>
 
+          {simple ? (
           <div className="pb-dashboard-hero-stats mt-3 grid grid-cols-2 gap-2 lg:mt-0 lg:gap-4">
             <div className="rounded-xl border border-white/15 bg-black/10 px-3 py-2.5 backdrop-blur-sm lg:px-4 lg:py-4">
               <div className="flex items-center gap-1 text-xs text-white/75 lg:text-sm">
@@ -145,6 +153,28 @@ export function DashboardHero({
               </p>
             </div>
           </div>
+          ) : (
+            // Period income/expense live in the KPI cards below; the hero
+            // offers the three things people do most from here instead.
+            <div className="pb-dashboard-hero-stats mt-3 grid grid-cols-3 gap-2 lg:mt-0 lg:grid-cols-1 lg:gap-2.5">
+              {[
+                { href: `${PATHS.CREATE_BUDGET}?type=1`, label: t("dashboard.quickExpense"), icon: MoneySend },
+                { href: `${PATHS.CREATE_BUDGET}?type=0`, label: t("dashboard.quickIncome"), icon: MoneyRecive },
+                { href: PATHS.BANK_IMPORT, label: t("nav.bankImport"), icon: DocumentUpload },
+              ].map((action) => (
+                <Link
+                  key={action.href}
+                  href={action.href}
+                  className="pb-press flex flex-col items-center gap-1.5 rounded-xl border border-white/20 bg-white/10 px-2 py-3 text-xs font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/20 lg:flex-row lg:gap-3 lg:px-4 lg:text-sm"
+                >
+                  <span className="flex size-8 items-center justify-center rounded-lg bg-white/20">
+                    <action.icon size={18} variant="Bold" color="#fff" />
+                  </span>
+                  {action.label}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>

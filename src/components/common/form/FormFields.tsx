@@ -112,6 +112,8 @@ type FormCategoryComboBoxProps = {
   isDisabled?: boolean;
   /** Inline create when typed title is missing. Off for filter/export selects. */
   allowCreate?: boolean;
+  /** Keep the label for screen readers only (compact toolbars). */
+  hideLabel?: boolean;
 };
 
 export function FormCategoryComboBox({
@@ -123,6 +125,7 @@ export function FormCategoryComboBox({
   emptyMessage,
   isDisabled,
   allowCreate = true,
+  hideLabel = false,
 }: FormCategoryComboBoxProps) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
@@ -246,7 +249,7 @@ export function FormCategoryComboBox({
         }}
         items={filteredItems}
       >
-        <Label className="mb-1.5 text-sm font-medium">{label}</Label>
+        <Label className={hideLabel ? "sr-only" : "mb-1.5 text-sm font-medium"}>{label}</Label>
         <ComboBox.InputGroup>
           <Input
             placeholder={resolvedPlaceholder}

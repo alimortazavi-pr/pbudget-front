@@ -1,6 +1,6 @@
 import { resolveCategoryColor } from "@/common/constants/category-colors";
 
-export function categoryAccentStyle(color?: string | null, index = 0) {
+export function categoryAccentStyle(color?: string | null, index: number | string = 0) {
   const resolved = resolveCategoryColor(color, index);
 
   return {

@@ -1,0 +1,131 @@
+/*
+ * Motion system — one place for every app animation.
+ * Principles: short (150–450ms), ease-out "expo" curves, transform/opacity only
+ * (GPU friendly), never hide content permanently, and everything collapses to
+ * instant under prefers-reduced-motion.
+ */
+:root {
+  --pb-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --pb-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --pb-dur-fast: 160ms;
+  --pb-dur: 280ms;
+  --pb-dur-slow: 480ms;
+}
+
+/* ---- page entry (re-triggered on every navigation via a keyed wrapper) ---- */
+.pb-route {
+  animation: pb-route-in var(--pb-dur-slow) var(--pb-ease-out) both;
+}
+@keyframes pb-route-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.995); filter: blur(2px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+/* ---- staggered children: style="--i: n" on each child ---- */
+.pb-stagger > * {
+  animation: pb-rise var(--pb-dur-slow) var(--pb-ease-out) both;
+  animation-delay: calc(min(var(--i, 0), 12) * 45ms);
+}
+@keyframes pb-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+.pb-pop {
+  animation: pb-pop var(--pb-dur) var(--pb-ease-spring) both;
+}
+@keyframes pb-pop {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---- tactile feedback ---- */
+.pb-press {
+  transition: transform var(--pb-dur-fast) var(--pb-ease-out), box-shadow var(--pb-dur) var(--pb-ease-out), background-color var(--pb-dur-fast);
+}
+.pb-press:active { transform: scale(0.97); }
+
+.pb-lift {
+  transition: transform var(--pb-dur) var(--pb-ease-out), box-shadow var(--pb-dur) var(--pb-ease-out), border-color var(--pb-dur);
+}
+@media (hover: hover) {
+  .pb-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 40px -24px color-mix(in oklch, var(--foreground) 35%, transparent);
+  }
+}
+
+/* Sidebar / tab bar: animated active pill */
+.pb-sidebar-link,
+.pb-nav-item {
+  position: relative;
+  transition: color var(--pb-dur-fast), background-color var(--pb-dur) var(--pb-ease-out), transform var(--pb-dur-fast) var(--pb-ease-out);
+}
+.pb-sidebar-link:active,
+.pb-nav-item:active { transform: scale(0.97); }
+.pb-sidebar-link[data-active="true"]::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: -0.75rem;
+  top: 22%;
+  bottom: 22%;
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(to bottom, var(--brand-rose, #fb7185), var(--brand-violet, #a78bfa));
+  animation: pb-indicator var(--pb-dur) var(--pb-ease-spring) both;
+}
+@keyframes pb-indicator {
+  from { transform: scaleY(0); opacity: 0; }
+  to { transform: scaleY(1); opacity: 1; }
+}
+.pb-nav-item[data-active="true"] svg { animation: pb-pop var(--pb-dur) var(--pb-ease-spring) both; }
+
+.pb-fab { transition: transform var(--pb-dur) var(--pb-ease-spring), box-shadow var(--pb-dur); }
+.pb-fab:active { transform: scale(0.92) rotate(-8deg); }
+@media (hover: hover) { .pb-fab:hover { transform: translateY(-2px) rotate(90deg); } }
+
+/* ---- loading ---- */
+.pb-shimmer {
+  position: relative;
+  overflow: hidden;
+  background: color-mix(in oklch, var(--surface-secondary) 85%, transparent);
+}
+.pb-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, color-mix(in oklch, var(--surface) 70%, transparent), transparent);
+  animation: pb-shimmer 1.4s ease-in-out infinite;
+}
+[dir="rtl"] .pb-shimmer::after { animation-name: pb-shimmer-rtl; transform: translateX(100%); }
+@keyframes pb-shimmer { to { transform: translateX(100%); } }
+@keyframes pb-shimmer-rtl { to { transform: translateX(-100%); } }
+
+/* ---- charts ---- */
+.pb-bar-grow {
+  transform-origin: bottom;
+  animation: pb-bar-grow var(--pb-dur-slow) var(--pb-ease-out) both;
+  animation-delay: calc(min(var(--i, 0), 31) * 18ms);
+}
+@keyframes pb-bar-grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+.pb-meter-fill {
+  transform-origin: inline-start;
+  animation: pb-meter var(--pb-dur-slow) var(--pb-ease-out) both;
+}
+[dir="rtl"] .pb-meter-fill { transform-origin: right; }
+@keyframes pb-meter { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* Hero: slow living gradient */
+.pb-dashboard-hero { background-size: 140% 140%; animation: pb-hero-drift 18s ease-in-out infinite alternate; }
+@keyframes pb-hero-drift { from { background-position: 0% 0%; } to { background-position: 100% 100%; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}

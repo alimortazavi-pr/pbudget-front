@@ -9,6 +9,7 @@ import {
   APP_NAME_EN,
   APP_NAME_FA,
   APP_SHORT_NAME_FA,
+  DEVELOPER_SITE_URL,
   LOGO_OG_IMAGE_SRC,
 } from "@/common/constants/brand";
 import { DEFAULT_KEYWORDS, SITE_URL } from "@/common/seo";
@@ -48,6 +49,7 @@ export const metadata: Metadata = {
   category: "finance",
   creator: APP_NAME_FA,
   publisher: APP_NAME_FA,
+  authors: [{ name: "Paradise Code", url: DEVELOPER_SITE_URL }],
   referrer: "origin-when-cross-origin",
   robots: {
     index: false,

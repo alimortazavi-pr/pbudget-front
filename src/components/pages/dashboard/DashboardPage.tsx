@@ -2,10 +2,10 @@
 
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Button } from "@heroui/react";
-import { ArrowLeft2, ArrowRight2, Export, Filter } from "iconsax-reactjs";
+import { Filter } from "iconsax-reactjs";
 
 import * as budgetsApi from "@/common/api/budgets";
 import { PATHS } from "@/common/constants";
@@ -19,7 +19,7 @@ import { BudgetType } from "@/types/enums";
 import moment from "moment-jalali";
 import { showToast } from "@/common/utils/toast";
 import { BudgetExportModal } from "@/components/pages/dashboard/BudgetExportModal";
-import { BudgetStats } from "@/components/pages/dashboard/BudgetStats";
+import { DashboardInsights, DashboardKpis, DashboardPeriodBar } from "@/components/pages/dashboard/DashboardOverview";
 import { DashboardFilterSection } from "@/components/pages/dashboard/DashboardFilterSection";
 import { DashboardHero } from "@/components/pages/dashboard/DashboardHero";
 import { WorkTimeQuickWidget } from "@/components/pages/projects/WorkTimeQuickWidget";
@@ -46,7 +46,7 @@ type DashboardPageProps = {
 export function DashboardPage({ initialData }: DashboardPageProps) {
   const { t } = useTranslation();
   const { appMode } = useAppMode();
-  const { formatMonthYear, formatDayMonthYear } = useLocalizedDate();
+  const { formatMonthYear, formatDayMonthYear, formatCount } = useLocalizedDate();
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { hydrated, get } = useHydratedSearchParams();
@@ -166,55 +166,61 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
     return groups;
   }, [filteredBudgets, user?.preferences?.currency]);
 
-  function shiftMonth(delta: number) {
-    if (calendarType === "gregorian") {
-      const m = moment()
-        .year(parseInt(year, 10))
-        .month(parseInt(month, 10) - 1)
-        .add(delta, "month");
-      updateQuery({
-        year: String(m.year()),
-        month: String(m.month() + 1),
-        day: String(m.date()),
-      });
-    } else {
+  /** Year/month/day of the period `delta` steps away (month or day). */
+  const shiftedParts = useCallback(
+    (delta: number, unit: "month" | "day") => {
+      if (calendarType === "gregorian") {
+        const m = moment()
+          .year(parseInt(year, 10))
+          .month(parseInt(month, 10) - 1)
+          .date(unit === "day" ? parseInt(day, 10) : 1)
+          .add(delta, unit);
+        return { year: String(m.year()), month: String(m.month() + 1), day: String(m.date()) };
+      }
       const m = getJalaliNow()
         .jYear(parseInt(year, 10))
         .jMonth(parseInt(month, 10) - 1)
-        .add(delta, "jMonth");
-      updateQuery({
-        year: String(m.jYear()),
-        month: String(m.jMonth() + 1),
-        day: String(m.jDate()),
-      });
-    }
+        .jDate(unit === "day" ? parseInt(day, 10) : 1)
+        .add(delta, unit === "day" ? "day" : "jMonth");
+      return { year: String(m.jYear()), month: String(m.jMonth() + 1), day: String(m.jDate()) };
+    },
+    [calendarType, year, month, day],
+  );
+
+  function shiftMonth(delta: number) {
+    updateQuery(shiftedParts(delta, "month"));
   }
 
   function shiftDay(delta: number) {
-    if (calendarType === "gregorian") {
-      const m = moment()
-        .year(parseInt(year, 10))
-        .month(parseInt(month, 10) - 1)
-        .date(parseInt(day, 10))
-        .add(delta, "day");
-      updateQuery({
-        year: String(m.year()),
-        month: String(m.month() + 1),
-        day: String(m.date()),
-      });
-    } else {
-      const m = getJalaliNow()
-        .jYear(parseInt(year, 10))
-        .jMonth(parseInt(month, 10) - 1)
-        .jDate(parseInt(day, 10))
-        .add(delta, "day");
-      updateQuery({
-        year: String(m.jYear()),
-        month: String(m.jMonth() + 1),
-        day: String(m.jDate()),
-      });
-    }
+    updateQuery(shiftedParts(delta, "day"));
   }
+
+  // Same-length previous period, for the "vs last period" deltas on the KPIs.
+  const [previousTotals, setPreviousTotals] = useState<{ income: number; cost: number } | null>(null);
+  useEffect(() => {
+    if (!hydrated || appMode !== "advanced") return;
+    let cancelled = false;
+    const prev = shiftedParts(-1, duration === "daily" ? "day" : "month");
+    const params: Record<string, string> = { duration, year: prev.year, month: prev.month };
+    if (duration === "daily") params.day = prev.day;
+    if (category) params.category = category;
+    budgetsApi
+      .fetchBudgets(params)
+      .then((data) => {
+        if (!cancelled) setPreviousTotals({ income: data.totalIncomePrice ?? 0, cost: data.totalCostPrice ?? 0 });
+      })
+      .catch(() => {
+        if (!cancelled) setPreviousTotals(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [hydrated, appMode, duration, category, shiftedParts, budgetRevision]);
+
+  const isCurrentPeriod =
+    String(year) === String(nowParts.year) &&
+    String(month) === String(nowParts.month) &&
+    (duration !== "daily" || String(day) === String(nowParts.day));
 
   function setDuration(nextDuration: "monthly" | "daily") {
     if (nextDuration === duration) return;
@@ -269,6 +275,8 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
     );
   }
 
+  const preferredCurrency = resolveBudgetCurrency(user?.preferences?.currency);
+
   return (
     <div className="pb-dashboard-page">
       <DashboardHero
@@ -278,99 +286,39 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         data-tour="dashboard-balance"
       />
 
-      <div className="px-4 pb-4">
-        <WorkTimeQuickWidget />
-      </div>
-
-      <BudgetStats
-        count={filteredBudgets.length}
-        periodBalance={(totalIncome ?? 0) - (totalCost ?? 0)}
+      <DashboardPeriodBar
+        duration={duration}
+        periodLabel={periodLabel}
+        onDuration={setDuration}
+        onPrev={() => (duration === "daily" ? shiftDay(-1) : shiftMonth(-1))}
+        onNext={() => (duration === "daily" ? shiftDay(1) : shiftMonth(1))}
+        onToday={() => updateQuery({ ...getNowDateParts(calendarType) })}
+        isCurrentPeriod={isCurrentPeriod}
+        onExport={() => setExportOpen(true)}
+        filter={
+          <DashboardFilterSection
+            inline
+            categories={categories ?? []}
+            category={category}
+            year={year}
+            month={month}
+            day={day}
+            onCategoryChange={(nextCategory) => updateQuery({ category: nextCategory })}
+            onApplyFilter={(patch) =>
+              updateQuery({ category: patch.category, year: patch.year, month: patch.month, day: patch.day })
+            }
+          />
+        }
       />
 
-      <div className="pb-dashboard-toolbar" data-tour="dashboard-period">
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => updateQuery({ duration: "monthly" })}
-            className={`cursor-pointer rounded-full px-4 py-1.5 text-sm font-medium transition-colors lg:px-5 lg:py-2 ${
-              duration === "monthly"
-                ? "bg-accent text-accent-foreground"
-                : "bg-surface-secondary text-muted"
-            }`}
-          >
-            {t("common.monthly")}
-          </button>
-          <button
-            type="button"
-            onClick={() => updateQuery({ duration: "daily" })}
-            className={`cursor-pointer rounded-full px-4 py-1.5 text-sm font-medium transition-colors lg:px-5 lg:py-2 ${
-              duration === "daily"
-                ? "bg-accent text-accent-foreground"
-                : "bg-surface-secondary text-muted"
-            }`}
-          >
-            {t("common.daily")}
-          </button>
-        </div>
+      <DashboardKpis
+        current={{ income: totalIncome ?? 0, cost: totalCost ?? 0 }}
+        previous={previousTotals}
+        count={filteredBudgets.length}
+        currency={preferredCurrency}
+      />
 
-        <div className="pb-dashboard-toolbar-nav">
-          <Button
-            isIconOnly
-            variant="ghost"
-            size="sm"
-            onPress={() => (duration === "daily" ? shiftDay(-1) : shiftMonth(-1))}
-          >
-            <ArrowRight2 size={18} />
-          </Button>
-          <p className="text-sm font-medium lg:text-base">
-            {periodLabel}
-          </p>
-          <Button
-            isIconOnly
-            variant="ghost"
-            size="sm"
-            onPress={() => (duration === "daily" ? shiftDay(1) : shiftMonth(1))}
-          >
-            <ArrowLeft2 size={18} />
-          </Button>
-        </div>
-      </div>
-
-      <div data-tour="dashboard-filter">
-        <DashboardFilterSection
-          categories={categories ?? []}
-          category={category}
-          year={year}
-          month={month}
-          day={day}
-          onCategoryChange={(nextCategory) =>
-            updateQuery({ category: nextCategory })
-          }
-          onApplyFilter={(patch) =>
-            updateQuery({
-              category: patch.category,
-              year: patch.year,
-              month: patch.month,
-              day: patch.day,
-            })
-          }
-        />
-      </div>
-
-      <div className="flex items-center justify-between pt-1 lg:pt-2">
-        <h3 className="text-base font-semibold lg:text-lg">
-          {t("dashboard.transactions")}
-        </h3>
-        <Button
-          size="sm"
-          variant="ghost"
-          className="text-muted"
-          onPress={() => setExportOpen(true)}
-        >
-          <Export size={16} />
-          {t("common.export")}
-        </Button>
-      </div>
+      <WorkTimeQuickWidget />
 
       <BudgetExportModal
         open={exportOpen}
@@ -383,54 +331,88 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         initialDuration={duration === "daily" ? "daily" : "monthly"}
       />
 
-      {loading ? (
-        <TransactionListSkeleton />
-      ) : filteredBudgets.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border p-8 text-center lg:p-12">
-          <Filter size={32} className="mx-auto mb-3 text-muted" />
-          <p className="font-medium">{t("dashboard.noTransactionsFound")}</p>
-          <p className="mt-1 text-sm text-muted">
-            {t("dashboard.noTransactionsInRange")}
-          </p>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-5" data-tour="dashboard-transactions">
-          {otherCurrencyTotals.length ? (
-            <div className="flex flex-wrap gap-2 text-xs">
-              {otherCurrencyTotals.map((row) => (
-                <span key={row.currency} className="rounded-full bg-surface-secondary px-3 py-1 text-muted">
-                  {formatPriceWithCurrency(row.income, resolveBudgetCurrency(row.currency as UserCurrency))} ↓ ·{" "}
-                  {formatPriceWithCurrency(row.cost, resolveBudgetCurrency(row.currency as UserCurrency))} ↑
-                </span>
-              ))}
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] xl:grid-cols-[minmax(0,1fr)_22rem]">
+        <section className="min-w-0">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-base font-bold lg:text-lg">{t("dashboard.transactions")}</h3>
+            {filteredBudgets.length ? (
+              <span className="rounded-full bg-surface-secondary px-2.5 py-0.5 text-xs text-muted">
+                {t("dashboard.transactionCountInRange", { count: formatCount(filteredBudgets.length) })}
+              </span>
+            ) : null}
+          </div>
+
+          {loading ? (
+            <TransactionListSkeleton />
+          ) : filteredBudgets.length === 0 ? (
+            <div className="pb-pop flex flex-col items-center rounded-3xl border border-dashed border-border px-6 py-12 text-center">
+              <span className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-accent/10 text-accent">
+                <Filter size={26} variant="Bulk" />
+              </span>
+              <p className="font-bold">{t("dashboard.noTransactionsFound")}</p>
+              <p className="mt-1 max-w-xs text-sm text-muted">{t("dashboard.noTransactionsInRange")}</p>
+              <div className="mt-5 flex gap-2">
+                <Link href={`${PATHS.CREATE_BUDGET}?type=1`} className="pb-press pb-ghost-btn">
+                  {t("dashboard.quickExpense")}
+                </Link>
+                <Link href={`${PATHS.CREATE_BUDGET}?type=0`} className="pb-press pb-ghost-btn">
+                  {t("dashboard.quickIncome")}
+                </Link>
+              </div>
             </div>
-          ) : null}
-          {dayGroups.map((group) => {
-            const first = group.budgets[0];
-            const net = group.income - group.cost;
-            return (
-              <section key={group.key} className="flex flex-col gap-2.5 lg:gap-3">
-                {duration !== "daily" ? (
-                  <div className="flex items-center justify-between px-1 text-xs text-muted">
-                    <span className="font-semibold text-foreground/80">
-                      {formatBudgetDate(first.year, first.month, first.day, resolveBudgetDateCalendar(first.dateCalendar))}
+          ) : (
+            <div className="flex flex-col gap-5" data-tour="dashboard-transactions">
+              {otherCurrencyTotals.length ? (
+                <div className="flex flex-wrap gap-2 text-xs">
+                  {otherCurrencyTotals.map((row) => (
+                    <span key={row.currency} className="rounded-full bg-surface-secondary px-3 py-1 text-muted">
+                      {formatPriceWithCurrency(row.income, resolveBudgetCurrency(row.currency as UserCurrency))} ↓ ·{" "}
+                      {formatPriceWithCurrency(row.cost, resolveBudgetCurrency(row.currency as UserCurrency))} ↑
                     </span>
-                    {net !== 0 ? (
-                      <span className={net > 0 ? "text-income" : "text-expense"} dir="ltr">
-                        {net > 0 ? "+" : "−"}
-                        {formatPriceWithCurrency(Math.abs(net), resolveBudgetCurrency(user?.preferences?.currency))}
-                      </span>
+                  ))}
+                </div>
+              ) : null}
+              {dayGroups.map((group, groupIndex) => {
+                const first = group.budgets[0];
+                const net = group.income - group.cost;
+                return (
+                  <section key={group.key} className="flex flex-col gap-2.5 lg:gap-3">
+                    {duration !== "daily" ? (
+                      <div className="pb-day-header">
+                        <span className="text-foreground/80">
+                          {formatBudgetDate(first.year, first.month, first.day, resolveBudgetDateCalendar(first.dateCalendar))}
+                        </span>
+                        {net !== 0 ? (
+                          <span className={net > 0 ? "text-income" : "text-expense"}>
+                            {net > 0 ? "+" : "−"}
+                            {formatPriceWithCurrency(Math.abs(net), preferredCurrency)}
+                          </span>
+                        ) : null}
+                      </div>
                     ) : null}
-                  </div>
-                ) : null}
-                {group.budgets.map((budget: IBudget) => (
-                  <TransactionCard key={budget._id} budget={budget} />
-                ))}
-              </section>
-            );
-          })}
-        </div>
-      )}
+                    <div className="pb-stagger flex flex-col gap-2.5 lg:gap-3">
+                      {group.budgets.map((budget: IBudget, index) => (
+                        <div key={budget._id} style={{ ["--i" as string]: groupIndex < 3 ? index : 0 }}>
+                          <TransactionCard budget={budget} />
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        <DashboardInsights
+          budgets={filteredBudgets}
+          currency={preferredCurrency}
+          duration={duration}
+          year={parseInt(year, 10)}
+          month={parseInt(month, 10)}
+          calendar={calendarType}
+        />
+      </div>
     </div>
   );
 }

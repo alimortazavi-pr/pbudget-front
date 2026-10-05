@@ -17,6 +17,8 @@ type DashboardFilterSectionProps = {
   month: string;
   day: string;
   compact?: boolean;
+  /** No card and no visible label — sits inside the dashboard period bar. */
+  inline?: boolean;
   onCategoryChange: (category: string) => void;
   onApplyFilter: (patch: {
     category: string;
@@ -33,6 +35,7 @@ export function DashboardFilterSection({
   month,
   day,
   compact = false,
+  inline = false,
   onCategoryChange,
   onApplyFilter,
 }: DashboardFilterSectionProps) {
@@ -45,7 +48,7 @@ export function DashboardFilterSection({
 
   return (
     <>
-      <div className="glass flex items-end gap-2 rounded-2xl p-3 lg:gap-4 lg:p-5">
+      <div className={inline ? "flex items-end gap-2" : "glass flex items-end gap-2 rounded-2xl p-3 lg:gap-4 lg:p-5"}>
         <div className="min-w-0 flex-1">
           <FormCategoryComboBox
             label={t("dashboard.filterByCategory")}
@@ -55,6 +58,7 @@ export function DashboardFilterSection({
               onCategoryChange(key === "all" ? "" : key)
             }
             allowCreate={false}
+            hideLabel={inline}
             options={[
               { id: "all", label: t("dashboard.allCategories") },
               ...categoryOptions,
@@ -65,7 +69,7 @@ export function DashboardFilterSection({
         {!compact ? (
           <button
             type="button"
-            className="mb-0.5 flex h-11 shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border border-border bg-surface-secondary px-3 text-sm font-medium text-foreground transition-colors hover:border-accent/40"
+            className="pb-press mb-0.5 flex h-11 shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border border-border bg-surface-secondary px-3 text-sm font-medium text-foreground transition-colors hover:border-accent/40"
             onClick={() => setOpen(true)}
           >
             <span>{t("common.filter")}</span>
