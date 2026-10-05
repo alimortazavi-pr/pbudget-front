@@ -155,7 +155,7 @@ export function VentureOverviewSection({
             {formatPrice(stats?.profitAmount ?? 0)}
           </p>
           <p className="mt-1 text-xs text-muted">
-            {t("auto.k63397316b7")}{formatPrice(stats?.receivedAmount ?? 0)} · {t("common.expense")}{" "}
+            {t("auto.k63397316b7")}{" "}{formatPrice(stats?.receivedAmount ?? 0)} · {t("common.expense")}{" "}
             {formatPrice(stats?.spentAmount ?? 0)}
           </p>
         </div>

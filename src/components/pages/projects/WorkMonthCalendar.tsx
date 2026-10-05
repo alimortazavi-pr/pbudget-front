@@ -96,7 +96,7 @@ export function WorkMonthCalendar({
       </div>
       {selectedDay ? (
         <p className="rounded-xl bg-surface-secondary p-3 text-sm">
-          {t("auto.k6702edb75e")}{toPersianDigits(String(selectedDay))}:{" "}
+          {t("auto.k6702edb75e")}{" "}{toPersianDigits(String(selectedDay))}:{" "}
           <span className="font-semibold">
             {formatDurationMinutes(dailyMap.get(selectedDay) ?? 0)}
           </span>

@@ -22,165 +22,165 @@ export const landingMessages: MessageTree = {
   },
   "stats": {
     "s0": {
-      "value": "۱۵+",
-      "label": "ماژول مالی"
+      "value": "15+",
+      "label": "Finance modules"
     },
     "s1": {
-      "value": "۱۰۰٪",
-      "label": "تقویم شمسی"
+      "value": "100%",
+      "label": "Jalali calendar"
     },
     "s2": {
       "value": "PWA",
-      "label": "نصب روی موبایل"
+      "label": "Install on mobile"
     },
     "s3": {
-      "value": "۲۴/۷",
-      "label": "access cloud"
+      "value": "24/7",
+      "label": "Cloud access"
     }
   },
   "features": {
     "finance": {
-      "title": "management financial شخصی",
-      "description": "Add income و expense با جزئیات کامل، Dashboard Daily و Monthly، نمودارهای تحلیلی و Export Excel برای گزارش‌گیری.",
+      "title": "Personal finance",
+      "description": "Record income and expenses in full detail, with daily and monthly dashboards, analytical charts and Excel export for reports.",
       "tags": {
-        "0": "تراکنش",
-        "1": "تحلیل",
-        "2": "اکسل"
+        "0": "Transactions",
+        "1": "Analysis",
+        "2": "Excel"
       }
     },
     "boxes": {
-      "title": "صندوق‌ها و کارت‌های بانکی",
-      "description": "several box نقدی، کارت بانکی و wallet money مجازی با balance لحظه‌ای و انتقال بین Boxes.",
+      "title": "Boxes and bank cards",
+      "description": "Multiple cash boxes, bank cards and digital wallets with live balances and transfers between boxes.",
       "tags": {
-        "0": "صندوق",
-        "1": "کارت"
+        "0": "Boxes",
+        "1": "Cards"
       }
     },
     "bank": {
-      "title": "login automatic از bank",
-      "description": "وارد کردن تراکنش‌ها از صورتحساب بانک‌های ایرانی — بدون ثبت دستی تک‌تک ردیف‌ها.",
+      "title": "Automatic bank import",
+      "description": "Import transactions from Iranian bank statements — no typing rows one by one.",
       "tags": {
-        "0": "بانک",
-        "1": "ایمپورت"
+        "0": "Bank",
+        "1": "Import"
       }
     },
     "categories": {
-      "title": "category و budget",
-      "description": "دسته‌بندی هوشمند هزینه‌ها، سقف بودجه ماهانه و هشدار هنگام نزدیک شدن به حد مجاز.",
+      "title": "Categories and budgets",
+      "description": "Smart expense categories, monthly budget limits and alerts as you get close to the limit.",
       "tags": {
-        "0": "بودجه",
-        "1": "دسته"
+        "0": "Budget",
+        "1": "Categories"
       }
     },
     "debts": {
-      "title": "receivable، debt و Installments",
-      "description": "پیگیری receivable و debt، plan Installments با یادآور، management Checks و تعهدات running.",
+      "title": "Receivables, debts and installments",
+      "description": "Track what you owe and are owed, installment plans with reminders, checks and ongoing commitments.",
       "tags": {
         "0": "Installments",
-        "1": "چک"
+        "1": "Checks"
       }
     },
     "planning": {
-      "title": "plan Daily و note",
-      "description": "وظایف روزانه با اولویت‌بندی، یادداشت‌های سریع و تقویم شمسی یکپارچه.",
+      "title": "Daily plan and notes",
+      "description": "Prioritized daily tasks, quick notes and a built-in Jalali calendar.",
       "tags": {
-        "0": "تسک",
-        "1": "نوت"
+        "0": "Tasks",
+        "1": "Notes"
       }
     },
     "projects": {
-      "title": "پروژه و زمان فریلنسری",
-      "description": "management پروژه‌های working، Add hour کار، هدف Monthly و report زمان صرف‌شده.",
+      "title": "Projects and freelance time",
+      "description": "Manage work projects, log hours, set monthly goals and report time spent.",
       "tags": {
-        "0": "پروژه",
-        "1": "تایم‌لاین"
+        "0": "Projects",
+        "1": "Timeline"
       }
     },
     "ventures": {
-      "title": "مشارکت و سرمایه‌گذاری",
-      "description": "Add سرمایه‌گذاری مشترک با partner، settlement account و invite همکار به project مشترک.",
+      "title": "Partnerships and investments",
+      "description": "Record joint investments with partners, settle accounts and invite collaborators to shared projects.",
       "tags": {
-        "0": "شریک",
-        "1": "سرمایه"
+        "0": "Partners",
+        "1": "Capital"
       }
     },
     "analysis": {
-      "title": "analysis و report financial",
-      "description": "نمودار روند income و expense، compare ماه‌ها، شناسایی الگوهای خرج و Export Excel.",
+      "title": "Financial analysis and reports",
+      "description": "Income and expense trend charts, month-to-month comparisons, spending patterns and Excel export.",
       "tags": {
-        "0": "نمودار",
-        "1": "گزارش"
+        "0": "Charts",
+        "1": "Reports"
       }
     }
   },
   "whyUs": {
     "w0": {
-      "title": "همه‌چیز در یک میز",
-      "description": "به‌جای several app جدا برای budget، Installments و project — میز پردیس one اکوسیستم یکپارچه است."
+      "title": "Everything on one desk",
+      "description": "Instead of separate apps for budgets, installments and projects — Paradise Desk is one connected ecosystem."
     },
     "w1": {
-      "title": "ساخته‌شده برای ایران",
-      "description": "تقویم جلالی، تعطیلات رسمی، بانک‌های داخلی و اعداد فارسی."
+      "title": "Built for Iran",
+      "description": "Jalali calendar, official holidays, local banks and Persian numerals."
     },
     "w2": {
-      "title": "تحلیل هوشمند",
-      "description": "داشبورد زنده، نمودارهای تعاملی و هشدار بودجه برای کنترل بهتر هزینه‌ها."
+      "title": "Smart analysis",
+      "description": "Live dashboard, interactive charts and budget alerts for better spending control."
     },
     "w3": {
-      "title": "امنیت و حریم خصوصی",
-      "description": "داده‌های مالی شما فقط متعلق به شماست — رمزنگاری و احراز هویت امن."
+      "title": "Security and privacy",
+      "description": "Your financial data belongs only to you — encryption and secure authentication."
     },
     "w4": {
-      "title": "وب + PWA",
-      "description": "نصب روی موبایل از مرورگر بدون نیاز به اپ‌استور — همیشه در دسترس."
+      "title": "Web + PWA",
+      "description": "Install on your phone from the browser, no app store needed — always available."
     },
     "w5": {
-      "title": "رایگان شروع کنید",
-      "description": "login با Mobile — without پیچیدگی و without نیاز به کارت اعتباری."
+      "title": "Start for free",
+      "description": "Sign in with your mobile — no hassle and no credit card required."
     }
   },
   "howSteps": {
     "h0": {
-      "step": "۱",
-      "title": "ثبت‌نام با موبایل",
-      "description": "شماره موبایل خود را وارد کنید و کد تأیید را دریافت کنید."
+      "step": "1",
+      "title": "Sign up with your mobile",
+      "description": "Enter your mobile number and receive a verification code."
     },
     "h1": {
-      "step": "۲",
-      "title": "Configure Boxes",
-      "description": "صندوق‌های نقدی و کارت‌های بانکی خود را تعریف کنید."
+      "step": "2",
+      "title": "Set up your boxes",
+      "description": "Define your cash boxes and bank cards."
     },
     "h2": {
-      "step": "۳",
-      "title": "Add اولین transaction",
-      "description": "درآمد و هزینه‌ها را ثبت کنید یا از بانک وارد کنید."
+      "step": "3",
+      "title": "Record your first transaction",
+      "description": "Record income and expenses, or import them from your bank."
     },
     "h3": {
-      "step": "۴",
-      "title": "تحلیل و کنترل",
-      "description": "Dashboard و نمودارها را ببینید و budget Monthly Configure کنید."
+      "step": "4",
+      "title": "Analyze and control",
+      "description": "See the dashboard and charts, and set a monthly budget."
     }
   },
   "faq": {
     "f0": {
-      "q": "آیا رایگان است؟",
-      "a": "بله — تمام امکانات مالی شخصی به‌صورت رایگان در دسترس است."
+      "q": "Is it free?",
+      "a": "Yes — the core personal finance features are free. Advanced tools are available in paid plans."
     },
     "f1": {
-      "q": "آیا از بانک‌های ایرانی پشتیبانی می‌کند؟",
-      "a": "بله — می‌توانید صورتحساب بانک‌های داخلی را وارد کنید."
+      "q": "Does it support Iranian banks?",
+      "a": "Yes — you can import statements from local banks."
     },
     "f2": {
-      "q": "آیا داده‌های من امن است؟",
-      "a": "بله — احراز هویت امن و ذخیره‌سازی ابری با رمزنگاری."
+      "q": "Is my data safe?",
+      "a": "Yes — secure authentication and encrypted cloud storage."
     },
     "f3": {
-      "q": "آیا app Mobile دارید؟",
-      "a": "نسخه وب و PWA آماده است — نصب از مرورگر روی موبایل."
+      "q": "Is there a mobile app?",
+      "a": "The web version and PWA are ready — install it from your phone's browser."
     },
     "f4": {
-      "q": "آیا تقویم شمسی دارد؟",
-      "a": "بله — تمام تاریخ‌ها و گزارش‌ها بر اساس تقویم جلالی هستند."
+      "q": "Does it use the Jalali calendar?",
+      "a": "Yes — all dates and reports are based on the Jalali calendar."
     }
   },
   "contact": {
@@ -191,56 +191,56 @@ export const landingMessages: MessageTree = {
     "phoneLabel": "Phone"
   },
   "about": {
-    "title": "ساخته‌شده با عشق برای کاربران ایرانی",
+    "title": "Built with love for Iranian users",
     "paragraphs": {
-      "0": "میز پردیس حاصل نیاز واقعی کاربران ایرانی است: یک ابزار مالی شخصی بومی که همه‌چیز را در یک جا جمع کند.",
-      "1": "هر هفته بر اساس بازخورد شما بهتر می‌شویم."
+      "0": "Paradise Desk comes from a real need: a local personal finance tool that brings everything together in one place.",
+      "1": "We get better every week based on your feedback."
     }
   },
   "marquee": {
-    "0": "management financial",
-    "1": "بودجه‌بندی",
-    "2": "تقویم شمسی",
-    "3": "report Excel",
-    "4": "بات تلگرام",
-    "5": "login از bank",
-    "6": "analysis expense"
+    "0": "Financial management",
+    "1": "Budgeting",
+    "2": "Jalali calendar",
+    "3": "Excel reports",
+    "4": "Telegram bot",
+    "5": "Bank import",
+    "6": "Expense analysis"
   },
   "settings": {
     "downloadLabel": "Download app"
   },
   "pricing": {
     "eyebrow": "Transparent pricing",
-    "title": "Free forever",
-    "description": "All personal finance features are free. No transaction limits, no intrusive ads.",
+    "title": "Start free, upgrade when you need",
+    "description": "Core personal finance is free with no transaction limits and no ads. Advanced tools come with paid plans.",
     "plans": {
       "personal": {
-        "name": "شخصی",
-        "price": "رایگان",
-        "period": "برای همیشه",
-        "description": "میز financial شخصی کامل — budget، analysis، project و plan Daily",
+        "name": "Personal",
+        "price": "Free",
+        "period": "forever",
+        "description": "A complete personal finance desk — budgets, analysis, projects and daily planning",
         "features": {
-          "0": "transaction و category unlimited",
-          "1": "Dashboard و analysis financial پیشرفته",
-          "2": "Boxes، کارت‌ها و login از bank",
-          "3": "receivable، debt، Installments و check",
-          "4": "project، task و تقویم شمسی",
-          "5": "مشارکت با شریک و سرمایه‌گذاری",
-          "6": "PWA — نصب روی موبایل"
+          "0": "Unlimited transactions and categories",
+          "1": "Dashboard and advanced financial analysis",
+          "2": "Boxes, cards and bank import",
+          "3": "Receivables, debts, installments and checks",
+          "4": "Projects, tasks and Jalali calendar",
+          "5": "Partnerships and investments",
+          "6": "PWA — install on mobile"
         },
-        "cta": "شروع رایگان"
+        "cta": "Start free"
       },
       "support": {
-        "name": "سازمانی",
-        "price": "تماس",
-        "period": "قراردادی",
-        "description": "استقرار سازمانی، مهاجرت داده یا دمو زنده می‌خواهید؟",
+        "name": "Enterprise",
+        "price": "Contact us",
+        "period": "by contract",
+        "description": "Need an enterprise deployment, data migration or a live demo?",
         "features": {
-          "0": "دمو اختصاصی محصول",
-          "1": "راه‌اندازی برای تیم",
-          "2": "پشتیبانی و آموزش"
+          "0": "Dedicated product demo",
+          "1": "Team onboarding",
+          "2": "Support and training"
         },
-        "cta": "تماس با ما"
+        "cta": "Contact us"
       }
     }
   },

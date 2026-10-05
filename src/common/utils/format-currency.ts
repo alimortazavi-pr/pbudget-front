@@ -38,3 +38,15 @@ export function formatPriceForUser(
 ) {
   return formatPriceWithCurrency(amount, currency ?? "toman");
 }
+
+/** Localized number only (no unit) — for layouts that show the unit separately. */
+export function formatAmountOnly(
+  amount: number | string,
+  currency?: UserCurrency | null,
+) {
+  const resolved = resolveBudgetCurrency(currency);
+  const parsed = typeof amount === "string" ? Number(amount) : amount;
+  const num = shouldConvertToman(resolved) ? tomanToDisplayAmount(parsed) : parsed;
+  if (Number.isNaN(num)) return toPersianDigits("0");
+  return toPersianDigits(num.toLocaleString("en-US", { maximumFractionDigits: 2 }));
+}

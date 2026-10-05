@@ -52,9 +52,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     setI18nState(language, true);
   }, [language, mounted]);
 
-  useEffect(() => {
-    setI18nState(language, mounted);
-  }, [language, mounted]);
+  // Set during render so helpers used by children (module-level `t`, digit
+  // formatting) already see the right language in this same render pass.
+  setI18nState(language, mounted);
 
   const setLanguage = useCallback((lang: Language) => {
     setLanguageState(lang);
@@ -68,7 +68,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <LanguageContext.Provider value={value}>
-      {children}
+      {/* Persian (the SSR language) never remounts; other languages remount the
+          tree once so components with module-level translations re-render. */}
+      <React.Fragment key={mounted && language !== "fa" ? language : "fa"}>
+        {children}
+      </React.Fragment>
     </LanguageContext.Provider>
   );
 }

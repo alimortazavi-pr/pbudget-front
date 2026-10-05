@@ -110,10 +110,10 @@ function HeroMockup() {
   const digits = (value: string) => formatLocalizedDigits(value, language);
   const bars = [42, 66, 38, 80, 54, 92, 70];
   const rows = [
-    { label: t("landingUi.mockTx1"), amount: "+۴۵,۰۰۰,۰۰۰", income: true, tone: "teal" as const },
-    { label: t("landingUi.mockTx2"), amount: "−۱,۲۴۰,۰۰۰", income: false, tone: "rose" as const },
-    { label: t("landingUi.mockTx3"), amount: "−۴,۲۰۰,۰۰۰", income: false, tone: "violet" as const },
-    { label: t("landingUi.mockTx4"), amount: "+۱۰,۰۰۰,۰۰۰", income: true, tone: "teal" as const },
+    { label: t("landingUi.mockTx1"), amount: "+45,000,000", income: true, tone: "teal" as const },
+    { label: t("landingUi.mockTx2"), amount: "−1,240,000", income: false, tone: "rose" as const },
+    { label: t("landingUi.mockTx3"), amount: "−4,200,000", income: false, tone: "violet" as const },
+    { label: t("landingUi.mockTx4"), amount: "+10,000,000", income: true, tone: "teal" as const },
   ];
 
   return (
@@ -151,7 +151,7 @@ function HeroMockup() {
                 {row.label}
               </span>
               <span className={`font-bold tabular-nums ${row.income ? "text-income" : "text-expense"}`} dir="ltr">
-                {row.amount}
+                {digits(row.amount)}
               </span>
             </li>
           ))}
@@ -403,7 +403,11 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
               {content.features.map((feature, index) => {
                 const Icon = FEATURE_ICONS[feature.id] ?? Wallet2;
                 const accent = feature.accent ?? ACCENTS[index % ACCENTS.length];
-                const wide = index === 0 || (content.features.length % 3 === 1 && index === content.features.length - 1);
+                // Widen cards only as needed so the 3-column grid never leaves a gap.
+                const remainder = content.features.length % 3;
+                const wide =
+                  (remainder === 2 && index === 0) ||
+                  (remainder === 1 && (index === 0 || index === content.features.length - 1));
                 return (
                   <article key={feature.id} className={`lx-card lx-card-hover lx-reveal p-6 ${wide ? "lg:col-span-2" : ""}`}>
                     <span className="lx-icon" data-accent={accent}>

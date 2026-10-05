@@ -196,12 +196,12 @@ export function PartnerDebtBalancePanel({
                               <div className="text-left leading-5">
                                 {relation.owesAmount > 0 ? (
                                   <p className="text-expense">
-                                    {t("auto.k7146b67cab")}{formatPrice(relation.owesAmount)}
+                                    {t("auto.k7146b67cab")}{" "}{formatPrice(relation.owesAmount)}
                                   </p>
                                 ) : null}
                                 {relation.owedAmount > 0 ? (
                                   <p className="text-income">
-                                    {t("auto.k8c310e32b6")}{formatPrice(relation.owedAmount)}
+                                    {t("auto.k8c310e32b6")}{" "}{formatPrice(relation.owedAmount)}
                                   </p>
                                 ) : null}
                                 {relationNet < 0 ? (

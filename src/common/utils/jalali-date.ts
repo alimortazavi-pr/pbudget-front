@@ -78,23 +78,40 @@ export function formatBudgetDateTime(
   return `${time} - ${date}`;
 }
 
-export const JALALI_MONTHS = [
-  t("auto.kf214419676"),
-  t("auto.kdb22839210"),
-  t("auto.k1b739f54d3"),
-  t("auto.kc913f56088"),
-  t("auto.kcaaedae224"),
-  t("auto.kb7ab4dbb75"),
-  t("auto.k70e3ef0e41"),
-  t("auto.k6cc414841b"),
-  t("auto.k818ae17ddb"),
-  t("auto.k1f82cde611"),
-  t("auto.k10ac1e5f38"),
-  t("auto.kf1f5da017a"),
-];
+/** A read-only list whose items are translated when read, not at import time. */
+function translatedList(keys: readonly string[]): readonly string[] {
+  const list: string[] = [];
+  keys.forEach((key, index) => {
+    Object.defineProperty(list, index, { get: () => t(key), enumerable: true });
+  });
+  return Object.freeze(list);
+}
+
+export const JALALI_MONTHS = translatedList([
+  "auto.kf214419676",
+  "auto.kdb22839210",
+  "auto.k1b739f54d3",
+  "auto.kc913f56088",
+  "auto.kcaaedae224",
+  "auto.kb7ab4dbb75",
+  "auto.k70e3ef0e41",
+  "auto.k6cc414841b",
+  "auto.k818ae17ddb",
+  "auto.k1f82cde611",
+  "auto.k10ac1e5f38",
+  "auto.kf1f5da017a",
+]);
 
 /** Saturday = 0 … Friday = 6 */
-export const JALALI_WEEKDAYS_SHORT = [t("auto.kd42b280f42"), t("auto.ka5714dc80b"), t("auto.k5cff1093c4"), t("auto.k499cc95fd8"), t("auto.k80e867783f"), t("auto.k3f7feaa8d0"), t("auto.ke2f45e1615")] as const;
+export const JALALI_WEEKDAYS_SHORT = translatedList([
+  "auto.kd42b280f42",
+  "auto.ka5714dc80b",
+  "auto.k5cff1093c4",
+  "auto.k499cc95fd8",
+  "auto.k80e867783f",
+  "auto.k3f7feaa8d0",
+  "auto.ke2f45e1615",
+]);
 
 /** Jalali leap year (33-year cycle) */
 export function isJalaliLeapYear(year: number): boolean {

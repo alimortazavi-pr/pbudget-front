@@ -300,7 +300,7 @@ export const commonMessages: MessageTree = {
   periodMonth: "شهر",
   periodYear: "سنة",
   periodAll: "الكل",
-  businessProductName: "مكتب پردیس للأعمال",
+  businessProductName: "مكتب الجنة للأعمال",
   businessProductTagline: "حضور GPS والموظفون والمالية الجماعية",
   durationHourAbbr: "س",
   durationMinuteAbbr: "د",

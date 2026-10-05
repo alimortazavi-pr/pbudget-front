@@ -198,7 +198,7 @@ export function WorkTimeAnalysisSection({
               </p>
               {row.expectedEarnings ? (
                 <p className="mt-1 font-bold text-income">
-                  {t("auto.ka2ca848a0e")}{formatPrice(row.expectedEarnings)}
+                  {t("auto.ka2ca848a0e")}{" "}{formatPrice(row.expectedEarnings)}
                 </p>
               ) : row.incomePerHour ? (
                 <p className="mt-1 font-medium text-income">
@@ -237,7 +237,7 @@ export function WorkTimeAnalysisSection({
           ) : null}
           {report.projectAnalysis[0].expectedEarnings ? (
             <p className="mt-1 font-bold text-income">
-              {t("auto.k337158536f")}{formatPrice(report.projectAnalysis[0].expectedEarnings)}
+              {t("auto.k337158536f")}{" "}{formatPrice(report.projectAnalysis[0].expectedEarnings)}
             </p>
           ) : report.projectAnalysis[0].incomePerHour ? (
             <p className="mt-1 font-medium text-income">

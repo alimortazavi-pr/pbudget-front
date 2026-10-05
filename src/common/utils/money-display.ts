@@ -3,6 +3,7 @@ import {
   type MoneyDisplayUnit,
   type UserCurrency,
 } from "@/common/constants/user-preferences";
+import { getActiveLanguage } from "@/i18n/translate";
 
 const STORAGE_KEY = "pdesk.money-display-unit";
 const RIAL_MULTIPLIER = 10;
@@ -47,6 +48,9 @@ export function displayAmountToToman(
 export function moneyDisplayUnitLabel(
   unit: MoneyDisplayUnit = getMoneyDisplayUnit(),
 ) {
+  const language = getActiveLanguage();
+  if (language === "en") return unit === "rial" ? "Rial" : "Toman";
+  if (language === "ar") return unit === "rial" ? "ريال" : "تومان";
   return unit === "rial" ? "ریال" : "تومان";
 }
 

@@ -2,7 +2,7 @@
 
 import { ArrowDown, ArrowUp, Wallet2 } from "iconsax-reactjs";
 
-import { formatPriceWithCurrency } from "@/common/utils/format-currency";
+import { formatAmountOnly, formatPriceWithCurrency } from "@/common/utils/format-currency";
 import {
   CURRENCY_OPTIONS,
   DEFAULT_USER_PREFERENCES,
@@ -112,7 +112,7 @@ export function DashboardHero({
                               : "text-lg font-bold text-white"
                           }
                         >
-                          {formatPriceWithCurrency(amount, walletCurrency)}
+                          {formatAmountOnly(amount, walletCurrency)}
                         </p>
                         <span className="mb-1 shrink-0 text-sm font-medium text-white/80 lg:text-base">
                           {currencyLabel(walletCurrency)}

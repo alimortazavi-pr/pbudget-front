@@ -512,7 +512,7 @@ export function BankImportWizardPage() {
               isDisabled={!canFinish}
               onPress={() => void handleConfirm()}
             >
-              {t("auto.kb57cb1a33b")}{toPersianDigits(selectedRows.length)} {t("auto.keb7bb3e55b")}
+              {t("auto.kb57cb1a33b")}{" "}{toPersianDigits(selectedRows.length)} {t("auto.keb7bb3e55b")}
             </Button>
           </div>
         </section>

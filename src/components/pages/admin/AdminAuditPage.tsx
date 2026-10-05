@@ -163,7 +163,7 @@ export function AdminAuditPage() {
             {t("auto.k1a592f6b2d")}
           </Button>
           <span className="text-sm text-muted">
-            {t("auto.k58210d64d8")}{toPersianDigits(page)} {t("common.of")} {toPersianDigits(totalPages)}
+            {t("auto.k58210d64d8")}{" "}{toPersianDigits(page)} {t("common.of")} {toPersianDigits(totalPages)}
           </span>
           <Button
             variant="secondary"

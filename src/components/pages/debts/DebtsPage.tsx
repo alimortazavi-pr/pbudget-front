@@ -235,7 +235,7 @@ export function DebtsPage() {
                       )}
                     </p>
                     <p className="text-xs text-muted">
-                      {t("auto.k9aeccd708e")}
+                      {t("auto.k9aeccd708e")}{" "}
                       {formatPriceWithCurrency(
                         debt.totalAmount,
                         resolveBudgetCurrency(debt.currency),

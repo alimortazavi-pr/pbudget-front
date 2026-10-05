@@ -1,13 +1,20 @@
 import { tomanToDisplayAmount } from "./money-display";
+import { formatLocalizedDigits } from "@/i18n/format-localized-digits";
+import { getActiveLanguage } from "@/i18n/translate";
 
 const PERSIAN_DIGITS = "۰۱۲۳۴۵۶۷۸۹";
+const ARABIC_DIGITS = "٠١٢٣٤٥٦٧٨٩";
 
+/** Digits in the user's UI language (Persian, Arabic-Indic or Latin). */
 export function toPersianDigits(value: string | number): string {
-  return String(value).replace(/\d/g, (d) => PERSIAN_DIGITS[Number(d)] ?? d);
+  return formatLocalizedDigits(value, getActiveLanguage());
 }
 
+/** Normalizes Persian and Arabic-Indic digits to ASCII. */
 export function toEnglishDigits(value: string): string {
-  return value.replace(/[۰-۹]/g, (d) => String(PERSIAN_DIGITS.indexOf(d)));
+  return value
+    .replace(/[۰-۹]/g, (d) => String(PERSIAN_DIGITS.indexOf(d)))
+    .replace(/[٠-٩]/g, (d) => String(ARABIC_DIGITS.indexOf(d)));
 }
 
 /** Display-only: counts, stats, plain integers in the UI */

@@ -38,7 +38,7 @@ export function AnalysisBudgetLimitsPanel({ report }: AnalysisBudgetLimitsPanelP
                     ) : null}
                   </p>
                   <p className="text-xs text-muted">
-                    {t("auto.kab3e1ccf9b")}{formatPrice(row.monthlyLimit)} · {t("auto.kb0c4ca0499")}{formatPrice(row.spent)}
+                    {t("auto.kab3e1ccf9b")}{" "}{formatPrice(row.monthlyLimit)} · {t("auto.kb0c4ca0499")}{" "}{formatPrice(row.spent)}
                   </p>
                 </div>
               </div>

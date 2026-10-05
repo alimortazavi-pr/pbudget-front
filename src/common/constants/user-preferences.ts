@@ -24,9 +24,9 @@ export const CURRENCY_OPTIONS: Array<{
   label: string;
   shortLabel: string;
 }> = [
-  { id: "toman", label: t("auto.k9e29f60874"), shortLabel: t("auto.kee60710e11") },
-  { id: "usd", label: t("auto.k570ced5b71"), shortLabel: "$" },
-  { id: "dinar", label: t("auto.k9b7638de16"), shortLabel: t("auto.kcc8503a041") },
+  { id: "toman", get label() { return t("auto.k9e29f60874"); }, get shortLabel() { return t("auto.kee60710e11"); } },
+  { id: "usd", get label() { return t("auto.k570ced5b71"); }, shortLabel: "$" },
+  { id: "dinar", get label() { return t("auto.k9b7638de16"); }, get shortLabel() { return t("auto.kcc8503a041"); } },
 ];
 
 export const CALENDAR_OPTIONS: Array<{
@@ -36,13 +36,13 @@ export const CALENDAR_OPTIONS: Array<{
 }> = [
   {
     id: "jalali",
-    label: t("auto.ke7aa3ce433"),
-    description: t("auto.ka409df328f"),
+    get label() { return t("auto.ke7aa3ce433"); },
+    get description() { return t("auto.ka409df328f"); },
   },
   {
     id: "gregorian",
-    label: t("auto.k4494f5a6be"),
-    description: t("auto.kd921dc4506"),
+    get label() { return t("auto.k4494f5a6be"); },
+    get description() { return t("auto.kd921dc4506"); },
   },
 ];
 

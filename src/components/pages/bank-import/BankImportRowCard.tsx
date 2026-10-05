@@ -81,12 +81,12 @@ export function BankImportRowCard({
                 <p className="mt-1 text-[10px] text-muted/80">
                   {row.documentNumber ? (
                     <>
-                      {t("auto.k1ac3c3a359")}{toPersianDigits(row.documentNumber)}
+                      {t("auto.k1ac3c3a359")}{" "}{toPersianDigits(row.documentNumber)}
                       {row.rowNumber > 0 ? " · " : ""}
                     </>
                   ) : null}
                   {row.rowNumber > 0 ? (
-                    <>{t("auto.kf0c26bb7c0")}{toPersianDigits(row.rowNumber)}</>
+                    <>{t("auto.kf0c26bb7c0")}{" "}{toPersianDigits(row.rowNumber)}</>
                   ) : null}
                 </p>
               )}

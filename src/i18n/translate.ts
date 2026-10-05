@@ -77,6 +77,17 @@ export function setI18nState(language: Language, mounted: boolean) {
   globalMounted = mounted;
 }
 
+/** Language that non-React helpers (digits, currency labels) should render in. */
+export function getActiveLanguage(): Language {
+  return globalMounted ? globalLanguage : "fa";
+}
+
+/**
+ * Translator for code outside React components. It resolves the language on
+ * every call, so a module-level `const t = getTranslator()` still follows the
+ * user's language instead of freezing on the one active at import time.
+ */
 export function getTranslator() {
-  return createTranslator(globalLanguage, globalMounted);
+  return (key: string, params?: TranslationParams) =>
+    createTranslator(globalLanguage, globalMounted)(key, params);
 }

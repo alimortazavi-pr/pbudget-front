@@ -89,7 +89,7 @@ export function InstallmentsPage() {
       {monthlyData && (
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="glass rounded-2xl p-4">
-            <p className="text-sm text-muted">{t("debts.remaining")}{periodLabel}</p>
+            <p className="text-sm text-muted">{t("debts.remaining")}{" "}{periodLabel}</p>
             <p className="mt-2 text-2xl font-bold text-expense">
               {formatPrice(monthlyData.pendingAmount)}
             </p>
@@ -98,7 +98,7 @@ export function InstallmentsPage() {
             </p>
           </div>
           <div className="glass rounded-2xl p-4">
-            <p className="text-sm text-muted">{t("auto.k4db2de0c95")}{periodLabel}</p>
+            <p className="text-sm text-muted">{t("auto.k4db2de0c95")}{" "}{periodLabel}</p>
             <p className="mt-2 text-2xl font-bold text-income">
               {formatPrice(monthlyData.paidAmount)}
             </p>
@@ -174,7 +174,7 @@ export function InstallmentsPage() {
                       </span>
                     </div>
                     <p className="mt-1 text-xs leading-6 text-muted">
-                      {formatPrice(plan.amount)} · {t("auto.k6702edb75e")}{formatCount(plan.dueDayOfMonth)} {t("auto.k63c83a62df")}
+                      {formatPrice(plan.amount)} · {t("auto.k6702edb75e")}{" "}{formatCount(plan.dueDayOfMonth)} {t("auto.k63c83a62df")}
                       {plan.person ? ` · ${plan.person}` : ""}
                     </p>
                   </div>
@@ -224,7 +224,7 @@ export function InstallmentsPage() {
 
       {!loading && monthlyData && monthlyData.occurrences.length > 0 && (
         <section className="space-y-3">
-          <h2 className="text-sm font-semibold">{t("nav.installments")}{periodLabel}</h2>
+          <h2 className="text-sm font-semibold">{t("nav.installments")}{" "}{periodLabel}</h2>
           {monthlyData.occurrences.map((item) => {
             const planId =
               typeof item.plan === "object" && item.plan?._id
@@ -245,7 +245,7 @@ export function InstallmentsPage() {
                       {typeof item.plan === "object" ? item.plan.title : t("pages.planning.installmentDefaultTitle")}
                     </p>
                     <p className="mt-1 text-xs text-muted">
-                      {t("auto.kd673bbfe0f")}{formatCount(item.sequence)} · {t("auto.k6702edb75e")}{formatCount(item.day)} ·{" "}
+                      {t("auto.kd673bbfe0f")}{" "}{formatCount(item.sequence)} · {t("auto.k6702edb75e")}{" "}{formatCount(item.day)} ·{" "}
                       {item.status === "paid"
                         ? t("pages.planning.installmentPaid")
                         : item.status === "skipped"
