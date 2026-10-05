@@ -43,6 +43,7 @@ import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { bumpBudgetRevision } from "@/stores/budget";
 import { categoriesSelector } from "@/stores/category";
 import { setProfile, userSelector } from "@/stores/profile";
+import { PageHeader } from "@/components/common/layout/PageHeader";
 
 type WizardStep = 1 | 2 | 3 | 4;
 
@@ -309,13 +310,16 @@ export function BankImportWizardPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">{t("auto.k3785afd116")}</h1>
-        <p className="mt-1 text-sm text-muted">
-          {t("auto.k1b3560798e")}
-          {t("auto.kd484b5c2c5")}
-        </p>
-      </div>
+      <PageHeader
+        icon={<DocumentUpload size={24} variant="Bold" />}
+        title={t("auto.k3785afd116")}
+        description={
+          <>
+            {t("auto.k1b3560798e")}
+            {t("auto.kd484b5c2c5")}
+          </>
+        }
+      />
 
       <div className="grid grid-cols-4 gap-1.5 xs:gap-2">
         {STEPS.map((item) => {

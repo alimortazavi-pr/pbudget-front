@@ -54,4 +54,5 @@ export const landingUiMessages: MessageTree = {
   "rights": "جميع الحقوق محفوظة.",
   "product": "المنتج",
   "support": "الدعم",
+  scrollHint: "مرّر للأسفل",
 };

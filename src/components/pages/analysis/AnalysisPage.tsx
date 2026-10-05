@@ -29,8 +29,13 @@ import { getNowDateParts } from "@/common/utils/calendar-date";
 import { DEFAULT_USER_PREFERENCES } from "@/common/constants/user-preferences";
 import { getWalletBalance } from "@/common/utils/wallet-balances";
 import { showToast } from "@/common/utils/toast";
-import { PageHeroSection } from "@/components/common/layout/PageHeroSection";
-import { AnalysisFilters } from "@/components/pages/analysis/AnalysisFilters";
+import { shiftPeriod } from "@/common/utils/period-shift";
+import { DashboardPeriodBar } from "@/components/pages/dashboard/DashboardOverview";
+import { AnalysisFilterModal } from "@/components/pages/analysis/AnalysisFilterModal";
+import { AnalysisHealth } from "@/components/pages/analysis/AnalysisHealth";
+import { useLocalizedDate } from "@/i18n/hooks/useLocalizedDate";
+import { Chart21, CloseCircle, Filter } from "iconsax-reactjs";
+import type { AnalysisSection } from "@/components/pages/analysis/AnalysisCharts";
 import { AnalysisInsightsPanel } from "@/components/pages/analysis/AnalysisInsightsPanel";
 import { AnalysisBudgetLimitsPanel } from "@/components/pages/analysis/AnalysisBudgetLimitsPanel";
 import { AnalysisPaymentCardsPanel } from "@/components/pages/analysis/AnalysisPaymentCardsPanel";
@@ -40,6 +45,7 @@ import { AnalysisKpiCards } from "@/components/pages/analysis/AnalysisKpiCards";
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
 import { userSelector } from "@/stores/profile";
+import { PageHeader } from "@/components/common/layout/PageHeader";
 
 const AnalysisCharts = dynamic(
   () =>
@@ -70,6 +76,9 @@ export function AnalysisPage() {
   const [workAlerts, setWorkAlerts] = useState<IWorkTimeAlert[]>([]);
   const [loading, setLoading] = useState(true);
   const [usedFallback, setUsedFallback] = useState(false);
+  const [tab, setTab] = useState<"overview" | "expenses" | "income" | "assets" | "insights">("overview");
+  const [filterOpen, setFilterOpen] = useState(false);
+  const { formatMonthYear, formatDayMonthYear, formatCount } = useLocalizedDate();
 
   const calendarType = user?.preferences?.dateCalendar ?? "jalali";
   const nowParts = getNowDateParts(calendarType);
@@ -239,35 +248,110 @@ export function AnalysisPage() {
     workTimeEnabled,
   ]);
 
-  return (
-    <div className="space-y-4 pb-6 lg:space-y-6">
-      <PageHeroSection
-        className="pb-analysis-hero rounded-2xl p-5 lg:p-8"
-        eyebrow={t("pageHero.analysis.eyebrow")}
-        title={t("pageHero.analysis.title")}
-        titleClassName="mt-1 text-2xl font-bold text-white lg:text-3xl"
-        description={t("pageHero.analysis.description")}
-        descriptionClassName="mt-2 max-w-2xl text-sm leading-7 text-white/75 lg:text-base"
-      />
+  const parts = { year, month, day };
+  const unitOf = duration === "daily" ? "day" : duration === "yearly" ? "year" : "month";
+  const shift = (delta: number) => updateQuery(shiftPeriod(calendarType, parts, delta, unitOf));
+  const isCurrent =
+    duration === "all" ||
+    (String(year) === String(nowParts.year) &&
+      (duration === "yearly" || String(month) === String(nowParts.month)) &&
+      (duration !== "daily" || String(day) === String(nowParts.day)));
+  const calendarKind = calendarType === "gregorian" ? "gregorian" : "jalali";
+  const periodLabel =
+    duration === "all"
+      ? t("dashboard.allTimeLabel")
+      : duration === "yearly"
+        ? t("dashboard.yearLabel", { year: formatCount(parseInt(year, 10)).replace(/[,٬،]/g, "") })
+        : duration === "daily"
+          ? formatDayMonthYear(parseInt(day, 10), parseInt(month, 10), year, calendarKind)
+          : formatMonthYear(parseInt(month, 10), year, calendarKind);
+  const activeFilters = [category, paymentCard, type !== "all" ? type : ""].filter(Boolean).length;
 
-      <div data-tour="analysis-filters">
-        <AnalysisFilters
+  const tabs: { id: typeof tab; label: string }[] = [
+    { id: "overview", label: t("pages.analysis.tabOverview") },
+    { id: "expenses", label: t("pages.analysis.tabExpenses") },
+    { id: "income", label: t("pages.analysis.tabIncome") },
+    { id: "assets", label: t("pages.analysis.tabAssets") },
+    { id: "insights", label: t("pages.analysis.tabInsights") },
+  ];
+  const chartSection: AnalysisSection | null = tab === "insights" ? null : tab === "assets" ? "assets" : tab;
+
+  return (
+    <div className="space-y-4 pb-6 lg:space-y-5">
+      <PageHeader icon={<Chart21 size={24} variant="Bold" />} title={t("pages.analysis.title")} description={t("pages.analysis.subtitle")} />
+
+      <div data-tour="analysis-filters" className="space-y-3">
+        <DashboardPeriodBar
           duration={duration}
-          year={year}
-          month={month}
-          day={day}
-          category={category}
-          paymentCard={paymentCard}
-          type={type}
-          compare={compare}
-          categories={categories ?? []}
-          onChange={updateQuery}
+          periodLabel={periodLabel}
+          onDuration={(next) => updateQuery({ duration: next })}
+          hideNav={duration === "all"}
+          onPrev={() => shift(-1)}
+          onNext={() => shift(1)}
+          onToday={() => updateQuery({ ...getNowDateParts(calendarType) })}
+          isCurrentPeriod={isCurrent}
+          filter={
+            <button type="button" onClick={() => setFilterOpen(true)} className="pb-press pb-ghost-btn relative h-11 w-full justify-center" data-active={activeFilters > 0}>
+              <Filter size={18} variant={activeFilters ? "Bold" : "Linear"} />
+              <span>{t("dashboard.transactionFilters")}</span>
+              {activeFilters ? <span className="pb-badge">{activeFilters}</span> : null}
+            </button>
+          }
         />
+        {activeFilters || compare ? (
+          <div className="pb-pop flex flex-wrap items-center gap-2">
+            {type !== "all" ? (
+              <button type="button" className="pb-chip" onClick={() => updateQuery({ type: "" })}>
+                {t(type === "income" ? "dashboard.typeIncome" : "dashboard.typeExpense")}
+                <CloseCircle size={14} variant="Bold" />
+              </button>
+            ) : null}
+            {category ? (
+              <button type="button" className="pb-chip" onClick={() => updateQuery({ category: "" })}>
+                {(categories ?? []).find((c) => c._id === category)?.title ?? t("dashboard.filterByCategory")}
+                <CloseCircle size={14} variant="Bold" />
+              </button>
+            ) : null}
+            {paymentCard ? (
+              <button type="button" className="pb-chip" onClick={() => updateQuery({ paymentCard: "" })}>
+                {t("dashboard.filterCard")}
+                <CloseCircle size={14} variant="Bold" />
+              </button>
+            ) : null}
+            {compare ? (
+              <button type="button" className="pb-chip" onClick={() => updateQuery({ compare: false })}>
+                {t("pages.analysis.compareToPrevious")}
+                <CloseCircle size={14} variant="Bold" />
+              </button>
+            ) : null}
+          </div>
+        ) : null}
       </div>
 
+      <AnalysisFilterModal
+        open={filterOpen}
+        onOpenChange={setFilterOpen}
+        categories={categories ?? []}
+        value={{ category, paymentCard, type, compare }}
+        onApply={(value) =>
+          updateQuery({
+            category: value.category,
+            paymentCard: value.paymentCard,
+            type: value.type === "all" ? "" : value.type,
+            compare: value.compare,
+          })
+        }
+      />
+
       {loading && (
-        <div className="glass rounded-2xl p-10 text-center text-muted">
-          {t("pageHero.analysis.loading")}
+        <div className="space-y-3" aria-busy>
+          <div className="pb-shimmer h-48 rounded-3xl" />
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            {[0, 1, 2, 3].map((n) => (
+              <div key={n} className="pb-shimmer h-28 rounded-2xl" />
+            ))}
+          </div>
+          <div className="pb-shimmer h-72 rounded-3xl" />
         </div>
       )}
 
@@ -285,39 +369,47 @@ export function AnalysisPage() {
             </div>
           )}
 
+          <AnalysisHealth report={report} />
+
           <div data-tour="analysis-kpi">
             <AnalysisKpiCards report={report} />
           </div>
 
-          <AnalysisFeatureSummary summary={report.featureSummary} />
-
-          <div data-tour="analysis-charts">
-            <AnalysisCharts report={report} duration={duration} />
-          </div>
-
-          <div className="grid gap-4 xl:grid-cols-2">
-            <AnalysisBudgetLimitsPanel report={report} />
-            <AnalysisPaymentCardsPanel report={report} />
-          </div>
-
           {report.comparison && (
-            <section className="glass rounded-2xl border border-border/50 p-4 text-sm lg:p-5">
-              <p className="font-semibold">{t("auto.k4e36e299d7")}</p>
-              <p className="mt-1 text-muted">
-                {report.comparison.currentPeriodLabel} {t("auto.k8cb2f18759")}{" "}
-                {report.comparison.previousPeriodLabel}
-              </p>
-            </section>
+            <p className="rounded-2xl border border-border/50 bg-surface-secondary/50 px-4 py-2.5 text-sm text-muted">
+              {t("pages.analysis.comparedWith", { period: report.comparison.previousPeriodLabel })}
+            </p>
           )}
 
-          <AnalysisInsightsPanel
-            insights={report.insights}
-            periodLabel={report.filters.periodLabel}
-          />
+          <div className="pb-tabs" role="tablist">
+            {tabs.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                role="tab"
+                aria-selected={tab === item.id}
+                onClick={() => setTab(item.id)}
+                className="pb-tab"
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
 
-          {duration === "monthly" && workReport ? (
-            <WorkTimeAnalysisSection report={workReport} alerts={workAlerts} />
-          ) : null}
+          <div key={tab} className="pb-route space-y-4" data-tour="analysis-charts">
+            {chartSection ? <AnalysisCharts report={report} duration={duration} section={chartSection} /> : null}
+            {tab === "expenses" ? <AnalysisBudgetLimitsPanel report={report} /> : null}
+            {tab === "assets" ? (
+              <>
+                <AnalysisFeatureSummary summary={report.featureSummary} />
+                <AnalysisPaymentCardsPanel report={report} />
+                {duration === "monthly" && workReport ? <WorkTimeAnalysisSection report={workReport} alerts={workAlerts} /> : null}
+              </>
+            ) : null}
+            {tab === "insights" ? (
+              <AnalysisInsightsPanel insights={report.insights} periodLabel={report.filters.periodLabel} />
+            ) : null}
+          </div>
         </>
       )}
     </div>

@@ -47,7 +47,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
     ],
     [t],
   );
-  const { currencyLabel } = useCurrencyLabels();
+  const { displayCurrencyLabel } = useCurrencyLabels();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const categories = useAppSelector(categoriesSelector);
@@ -371,10 +371,10 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
             label={
               fixedIncome
                 ? t("projects.monthlySalaryLabel", {
-                    currency: currencyLabel(currentUser?.preferences?.currency ?? "toman"),
+                    currency: displayCurrencyLabel(currentUser?.preferences?.currency ?? "toman"),
                   })
                 : t("projects.contractTotalLabel", {
-                    currency: currencyLabel(currentUser?.preferences?.currency ?? "toman"),
+                    currency: displayCurrencyLabel(currentUser?.preferences?.currency ?? "toman"),
                   })
             }
             value={totalAmount}
@@ -443,7 +443,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
               {!fixedIncome ? (
                 <FormPriceInput
                   label={t("projects.hourlyRateLabel", {
-                    currency: currencyLabel(currentUser?.preferences?.currency ?? "toman"),
+                    currency: displayCurrencyLabel(currentUser?.preferences?.currency ?? "toman"),
                   })}
                   value={hourlyRate}
                   onChange={setHourlyRate}

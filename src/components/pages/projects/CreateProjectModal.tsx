@@ -47,7 +47,7 @@ export function CreateProjectModal({
   usedCategoryIds,
 }: CreateProjectModalProps) {
   const { t } = useTranslation();
-  const { currencyLabel } = useCurrencyLabels();
+  const { displayCurrencyLabel } = useCurrencyLabels();
   const dispatch = useAppDispatch();
   const categories = useAppSelector(categoriesSelector);
   const user = useAppSelector(userSelector);
@@ -209,10 +209,10 @@ export function CreateProjectModal({
               label={
                 fixedIncome
                   ? t("projects.monthlySalaryLabel", {
-                      currency: currencyLabel(preferredCurrency),
+                      currency: displayCurrencyLabel(preferredCurrency),
                     })
                   : t("projects.contractTotalLabel", {
-                      currency: currencyLabel(preferredCurrency),
+                      currency: displayCurrencyLabel(preferredCurrency),
                     })
               }
               value={totalAmount}
@@ -267,7 +267,7 @@ export function CreateProjectModal({
                 {!fixedIncome ? (
                   <FormPriceInput
                     label={t("projects.hourlyRateLabel", {
-                      currency: currencyLabel(preferredCurrency),
+                      currency: displayCurrencyLabel(preferredCurrency),
                     })}
                     value={hourlyRate}
                     onChange={setHourlyRate}

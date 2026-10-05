@@ -375,4 +375,5 @@ export const commonMessages: MessageTree = {
     currentPlanCta: "خطتك الحالية",
     requestedCta: "تم الطلب",
   },
+  clear: "مسح",
 };

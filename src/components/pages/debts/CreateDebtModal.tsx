@@ -53,7 +53,7 @@ function optionClass(selected: boolean) {
 
 export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtModalProps) {
   const { t } = useTranslation();
-  const { currencyLabel, displayCurrencyLabel } = useCurrencyLabels();
+  const { displayCurrencyLabel } = useCurrencyLabels();
   const categories = useAppSelector(categoriesSelector);
   const user = useAppSelector(userSelector);
   const preferredCurrency = user?.preferences?.currency ?? "toman";
@@ -299,7 +299,7 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
                     className={`cursor-pointer px-3 py-2.5 text-sm ${optionClass(selected)}`}
                     onClick={() => setCurrency(option.id)}
                   >
-                    {currencyLabel(option.id)}
+                    {displayCurrencyLabel(option.id)}
                   </button>
                 );
               })}

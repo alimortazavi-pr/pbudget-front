@@ -142,3 +142,23 @@
 .pb-card-grid > :nth-child(n + 7) { animation-delay: 240ms; }
 
 /* Modals keep HeroUI's own enter/exit animations (data-entering/exiting). */
+
+/* ---- global micro-interactions (apply to every HeroUI control) ---- */
+.button { transition: transform var(--pb-dur-fast) var(--pb-ease-out), box-shadow var(--pb-dur) var(--pb-ease-out), background-color var(--pb-dur-fast), opacity var(--pb-dur-fast); }
+.button:not(:disabled):not([aria-disabled="true"]):active { transform: scale(0.965); }
+@media (hover: hover) {
+  .button:not(:disabled):not([aria-disabled="true"]):hover { box-shadow: 0 8px 20px -10px color-mix(in oklch, var(--accent) 60%, transparent); }
+  .button--ghost:not(:disabled):hover, .button--tertiary:not(:disabled):hover { box-shadow: none; }
+}
+.modal__backdrop { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.modal__dialog { border-radius: 1.5rem; box-shadow: 0 30px 80px -30px rgb(0 0 0 / 0.45); }
+:focus-visible { outline: 2px solid color-mix(in oklch, var(--accent) 70%, transparent); outline-offset: 2px; border-radius: 0.5rem; }
+::selection { background: color-mix(in oklch, var(--accent) 28%, transparent); }
+html { scroll-behavior: smooth; }
+* { scrollbar-width: thin; scrollbar-color: color-mix(in oklch, var(--muted) 40%, transparent) transparent; }
+/* cards that are links / buttons react to the pointer */
+a.glass, button.glass, .glass.pb-lift { transition: transform var(--pb-dur) var(--pb-ease-out), box-shadow var(--pb-dur); }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .button { transition: none; }
+}

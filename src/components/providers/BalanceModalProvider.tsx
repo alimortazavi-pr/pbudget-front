@@ -53,7 +53,7 @@ function BalanceModalDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const { t } = useTranslation();
-  const { currencyLabel } = useCurrencyLabels();
+  const { displayCurrencyLabel } = useCurrencyLabels();
   const dispatch = useAppDispatch();
   const user = useAppSelector(userSelector);
   const [price, setPrice] = useState("");
@@ -90,7 +90,7 @@ function BalanceModalDialog({
       dispatch(bumpBudgetRevision());
       showToast(
         t("dashboard.balanceUpdated", {
-          currency: currencyLabel(currency),
+          currency: displayCurrencyLabel(currency),
           amount: formatPriceWithCurrency(
             getWalletBalance(updated, currency),
             currency,
@@ -120,7 +120,7 @@ function BalanceModalDialog({
           <Modal.Body>
             <p className="mb-3 text-sm text-muted">
               {t("dashboard.currentBalance", {
-                currency: currencyLabel(currency),
+                currency: displayCurrencyLabel(currency),
                 amount: formatPriceWithCurrency(currentBalance, currency),
               })}
             </p>
@@ -139,13 +139,13 @@ function BalanceModalDialog({
                       : "bg-surface-secondary text-muted"
                   }`}
                 >
-                  {currencyLabel(option.id)}
+                  {displayCurrencyLabel(option.id)}
                 </button>
               ))}
             </div>
             <FormPriceInput
               label={t("dashboard.amountChangeLabel", {
-                currency: currencyLabel(currency),
+                currency: displayCurrencyLabel(currency),
               })}
               value={price}
               onChange={setPrice}

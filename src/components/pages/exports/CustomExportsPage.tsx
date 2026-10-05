@@ -15,6 +15,7 @@ import { showToast } from "@/common/utils/toast";
 import { formatPrice } from "@/common/utils";
 import { PATHS } from "@/common/constants";
 import { FormSelect } from "@/components/common/form/FormFields";
+import { PageHeader } from "@/components/common/layout/PageHeader";
 
 type Draft = Omit<ExportTemplate, "_id" | "user">;
 
@@ -140,13 +141,12 @@ export function CustomExportsPage() {
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="flex items-center gap-2 text-2xl font-bold"><Brush2 size={24} className="text-accent" variant="Bold" />{t("pages.customExports.title")}</h1>
-          <p className="mt-2 max-w-2xl text-sm text-muted">{t("pages.customExports.description")}</p>
-        </div>
-        <Button onPress={startNew}><Add size={18} />{t("pages.customExports.newTemplate")}</Button>
-      </header>
+      <PageHeader
+        icon={<Brush2 size={24} variant="Bold" />}
+        title={t("pages.customExports.title")}
+        description={t("pages.customExports.description")}
+        actions={<Button onPress={startNew}><Add size={18} />{t("pages.customExports.newTemplate")}</Button>}
+      />
 
       {loading ? <div className="glass h-48 animate-pulse rounded-2xl" /> : (
         <div className="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">

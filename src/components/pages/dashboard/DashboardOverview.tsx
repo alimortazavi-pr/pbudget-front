@@ -10,6 +10,7 @@ import { getJalaliDaysInMonth } from "@/common/utils/jalali-date";
 import { resolveCategoryColor } from "@/common/constants/category-colors";
 import { formatAmountOnly, formatPriceWithCurrency } from "@/common/utils/format-currency";
 import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
+import { OverflowReveal } from "@/components/common/ui/OverflowReveal";
 import { AnimatedNumber } from "@/components/common/motion/AnimatedNumber";
 import { useTranslation } from "@/components/providers/LanguageProvider";
 import { useLocalizedDate } from "@/i18n/hooks/useLocalizedDate";
@@ -20,12 +21,14 @@ import { BudgetType } from "@/types/enums";
 type PeriodBarProps = {
   duration: string;
   periodLabel: string;
-  onDuration: (value: "monthly" | "daily") => void;
+  onDuration: (value: "monthly" | "daily" | "yearly" | "all") => void;
+  /** Hide the period arrows (e.g. "all time" or a custom date range). */
+  hideNav?: boolean;
   onPrev: () => void;
   onNext: () => void;
   onToday: () => void;
   isCurrentPeriod: boolean;
-  onExport: () => void;
+  onExport?: () => void;
   filter: ReactNode;
 };
 
@@ -35,14 +38,16 @@ export function DashboardPeriodBar(props: PeriodBarProps) {
   const options = [
     { id: "monthly" as const, label: t("common.monthly") },
     { id: "daily" as const, label: t("common.daily") },
+    { id: "yearly" as const, label: t("common.yearly") },
+    { id: "all" as const, label: t("dashboard.allTime") },
   ];
-  const activeIndex = props.duration === "daily" ? 1 : 0;
+  const activeIndex = Math.max(0, options.findIndex((option) => option.id === props.duration));
 
   return (
     <div className="pb-period-bar" data-tour="dashboard-period">
       <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-3">
-        <div className="flex items-center gap-2 lg:contents">
-        <div className="pb-segmented" data-active={activeIndex} role="tablist" aria-label={t("dashboard.periodType")}>
+        <div className="flex flex-col gap-2 lg:contents">
+        <div className="pb-segmented w-full lg:w-auto" style={{ ["--n" as string]: options.length, ["--a" as string]: activeIndex }} role="tablist" aria-label={t("dashboard.periodType")}>
           <span className="pb-segmented-thumb" aria-hidden />
           {options.map((option) => (
             <button
@@ -59,7 +64,7 @@ export function DashboardPeriodBar(props: PeriodBarProps) {
         </div>
 
         <div className="flex flex-1 items-center justify-between gap-1 rounded-xl bg-surface-secondary/70 px-1 py-1 lg:max-w-sm">
-          <button type="button" className="pb-icon-btn" onClick={props.onPrev} aria-label={t("dashboard.previousPeriod")}>
+          <button type="button" className="pb-icon-btn disabled:opacity-30" disabled={props.hideNav} onClick={props.onPrev} aria-label={t("dashboard.previousPeriod")}>
             <ArrowRight2 size={18} />
           </button>
           <div className="flex min-w-0 flex-col items-center leading-tight">
@@ -72,7 +77,7 @@ export function DashboardPeriodBar(props: PeriodBarProps) {
               </button>
             ) : null}
           </div>
-          <button type="button" className="pb-icon-btn" onClick={props.onNext} aria-label={t("dashboard.nextPeriod")}>
+          <button type="button" className="pb-icon-btn disabled:opacity-30" disabled={props.hideNav} onClick={props.onNext} aria-label={t("dashboard.nextPeriod")}>
             <ArrowLeft2 size={18} />
           </button>
         </div>
@@ -82,10 +87,12 @@ export function DashboardPeriodBar(props: PeriodBarProps) {
           <div className="min-w-0 flex-1 lg:w-72 lg:flex-none" data-tour="dashboard-filter">
             {props.filter}
           </div>
-          <button type="button" onClick={props.onExport} className="pb-press pb-ghost-btn mb-0.5 h-11" aria-label={t("common.export")}>
-            <Export size={17} />
-            <span className="hidden sm:inline">{t("common.export")}</span>
-          </button>
+          {props.onExport ? (
+            <button type="button" onClick={props.onExport} className="pb-press pb-ghost-btn mb-0.5 h-11" aria-label={t("common.export")}>
+              <Export size={17} />
+              <span className="hidden sm:inline">{t("common.export")}</span>
+            </button>
+          ) : null}
         </div>
       </div>
     </div>
@@ -212,11 +219,13 @@ export function DashboardKpis({
               </span>
             </div>
             <p className="mt-2 flex min-w-0 items-baseline gap-1">
-              <AnimatedNumber
-                value={card.value}
-                format={card.format}
-                className="truncate text-[1.05rem] font-extrabold tracking-tight sm:text-lg lg:text-2xl"
-              />
+              <OverflowReveal full={`${card.format(card.value)} ${card.unit}`.trim()} className="truncate">
+                <AnimatedNumber
+                  value={card.value}
+                  format={card.format}
+                  className="text-[1.05rem] font-extrabold tracking-tight sm:text-lg lg:text-2xl"
+                />
+              </OverflowReveal>
               {card.unit ? <span className="shrink-0 text-[11px] font-medium text-muted lg:text-xs">{card.unit}</span> : null}
             </p>
             <div className="mt-1.5 min-h-5">{card.delta}</div>

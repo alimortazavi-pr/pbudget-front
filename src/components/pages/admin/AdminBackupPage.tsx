@@ -111,7 +111,7 @@ export function AdminBackupPage() {
         </p>
       </div>
 
-      <section className="grid gap-4 lg:grid-cols-2">
+      <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div className="glass rounded-2xl p-6">
           <div className="mb-4 flex items-center gap-2">
             <Timer1 size={22} className="text-accent" variant="Bold" />
@@ -169,7 +169,7 @@ export function AdminBackupPage() {
             <dl className="space-y-3 text-sm">
               <div className="flex justify-between gap-4">
                 <dt className="text-muted">{t("auto.ka0bb13461f")}</dt>
-                <dd className="truncate font-mono text-xs">{info.lastRun.filename}</dd>
+                <dd className="min-w-0 truncate font-mono text-xs">{info.lastRun.filename}</dd>
               </div>
               <div className="flex justify-between gap-4">
                 <dt className="text-muted">{t("auto.k0ba84ad8e7")}</dt>

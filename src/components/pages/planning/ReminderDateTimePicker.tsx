@@ -62,7 +62,7 @@ export function ReminderDateTimePicker({
 }: ReminderDateTimePickerProps) {
   const { t } = useTranslation();
   const pickerRef = useRef<DatePickerRef>(null);
-  const { calendarOpen, setCalendarOpen } = useDatePickerOverlay(false);
+  const { calendarOpen, setCalendarOpen, wrapperRef, usePortal, resolvedPortalTarget } = useDatePickerOverlay(false);
   const [draft, setDraft] = useState<ReminderDateTimeValue>({
     year,
     month,
@@ -91,7 +91,7 @@ export function ReminderDateTimePicker({
   }
 
   return (
-    <div className="pb-filter-date space-y-3">
+    <div ref={wrapperRef} className="pb-filter-date space-y-3">
       <DatePicker
         ref={pickerRef}
         value={toDateObject(draft)}
@@ -99,7 +99,7 @@ export function ReminderDateTimePicker({
         onOpen={() => setCalendarOpen(true)}
         onClose={() => {
           setCalendarOpen(false);
-          return false;
+          return undefined;
         }}
         format="YYYY/MM/DD HH:mm"
         locale={persianLocale}
@@ -107,7 +107,8 @@ export function ReminderDateTimePicker({
         plugins={[
           <TimePicker key="time" position="bottom" hideSeconds mStep={5} />,
         ]}
-        portal
+        portal={usePortal}
+        portalTarget={resolvedPortalTarget}
         zIndex={DATE_PICKER_Z_INDEX}
         calendarPosition="top-center"
         containerClassName="w-full"

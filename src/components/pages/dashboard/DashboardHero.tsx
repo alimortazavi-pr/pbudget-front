@@ -43,7 +43,7 @@ export function DashboardHero({
   "data-tour": dataTour,
 }: DashboardHeroProps) {
   const { t } = useTranslation();
-  const { currencyLabel } = useCurrencyLabels();
+  const { displayCurrencyLabel } = useCurrencyLabels();
   const user = useAppSelector(userSelector);
   const preferred =
     user?.preferences?.currency ?? DEFAULT_USER_PREFERENCES.currency;
@@ -104,7 +104,7 @@ export function DashboardHero({
                       {isNegative ? (
                         <p className="text-xs font-medium text-rose-200">
                           {t("dashboard.insufficientFunds", {
-                            currency: currencyLabel(walletCurrency),
+                            currency: displayCurrencyLabel(walletCurrency),
                           })}
                         </p>
                       ) : null}
@@ -122,7 +122,7 @@ export function DashboardHero({
                           />
                         </p>
                         <span className="mb-1 shrink-0 text-sm font-medium text-white/80 lg:text-base">
-                          {currencyLabel(walletCurrency)}
+                          {displayCurrencyLabel(walletCurrency)}
                         </span>
                       </div>
                     </div>

@@ -12,6 +12,7 @@ import { showErrorToast, showToast } from "@/common/utils/toast";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useTranslation } from "@/components/providers/LanguageProvider";
 import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
+import { PageHeader } from "@/components/common/layout/PageHeader";
 
 function usePeriodLabel() {
   const { t } = useTranslation();
@@ -78,15 +79,11 @@ export function SubscriptionPlansPage() {
 
   return (
     <div className="mx-auto w-full max-w-6xl space-y-6">
-      <header className="flex items-start gap-3">
-        <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-accent/15 text-accent">
-          <Crown size={24} variant="Bold" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{t("common.subscription.plansTitle")}</h1>
-          <p className="mt-1 max-w-2xl text-sm leading-6 text-muted">{t("common.subscription.plansDescription")}</p>
-        </div>
-      </header>
+      <PageHeader
+        icon={<Crown size={24} variant="Bold" />}
+        title={t("common.subscription.plansTitle")}
+        description={t("common.subscription.plansDescription")}
+      />
 
       {current ? (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/60 bg-surface p-4">

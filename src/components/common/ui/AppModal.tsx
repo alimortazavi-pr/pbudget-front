@@ -115,7 +115,7 @@ type AppModalHeaderProps = {
 export function AppModalHeader({ children, className = "" }: AppModalHeaderProps) {
   return (
     <Modal.Header
-      className={`border-b border-border/40 px-5 py-4 pe-5 ps-14 ${className}`}
+      className={`border-b border-border/40 py-4 ps-5 pe-14 ${className}`}
     >
       <div className="min-w-0 text-start">{children}</div>
     </Modal.Header>

@@ -94,7 +94,7 @@ function buildMoreHint(parts: string[]) {
 
 export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   const { t } = useTranslation();
-  const { currencyLabel, displayCurrencyLabel } = useCurrencyLabels();
+  const { displayCurrencyLabel } = useCurrencyLabels();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const user = useAppSelector(userSelector);
@@ -623,7 +623,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
                         : "rounded-xl border border-border/50 bg-surface-secondary/60 text-muted hover:border-accent/40"
                     } ${locked ? "cursor-default opacity-80" : "cursor-pointer"}`}
                   >
-                    {currencyLabel(option.id)}
+                    {displayCurrencyLabel(option.id)}
                   </button>
                 );
               })}

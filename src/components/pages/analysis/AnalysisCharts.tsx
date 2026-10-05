@@ -28,9 +28,12 @@ import {
   formatChartPrice,
 } from "@/components/pages/analysis/chart-colors";
 
+export type AnalysisSection = "overview" | "expenses" | "income" | "assets";
+
 type AnalysisChartsProps = {
   report: AnalyticsReport;
   duration: string;
+  section: AnalysisSection;
 };
 
 function ChartCard({
@@ -76,7 +79,7 @@ function CustomTooltip({
   );
 }
 
-export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
+export function AnalysisCharts({ report, duration, section }: AnalysisChartsProps) {
   const { t } = useTranslation();
   const expensePieData = useMemo(
     () =>
@@ -180,16 +183,9 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <h2 className="text-lg font-bold lg:text-xl">{t("auto.kf8c419ec92")}</h2>
-          <p className="text-sm text-muted">
-            {t("auto.kc76c3df1a7")}
-          </p>
-        </div>
-      </div>
-
-      <div className="grid gap-4 xl:grid-cols-2">
+      {section === "overview" && (
+        <>
+          <div className="grid gap-4 xl:grid-cols-2">
         <ChartCard title={t("auto.k94c6c32903")} subtitle={t("auto.kfdb1236f54")}>
           {overviewData.length > 0 ? (
             <div className="pb-chart-canvas h-64 w-full min-h-[16rem]" dir="ltr">
@@ -244,9 +240,9 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
             </ResponsiveContainer>
           </div>
         </ChartCard>
-      </div>
+          </div>
 
-      <div className="grid gap-4 xl:grid-cols-2">
+          <div className="grid gap-4 xl:grid-cols-2">
         <ChartCard
           title={t("auto.kb9aad2b7eb")}
           subtitle={
@@ -314,9 +310,13 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
             </ResponsiveContainer>
           </div>
         </ChartCard>
-      </div>
+          </div>
+        </>
+      )}
 
-      <div className="grid gap-4 xl:grid-cols-2">
+      {section === "expenses" && (
+        <>
+          <div className="grid gap-4 xl:grid-cols-2">
         <ChartCard title={t("auto.k3e3995d7f3")} subtitle={t("auto.kf291cf2a60")}>
           {expensePieData.length > 0 ? (
             <div className="pb-chart-canvas h-72 w-full min-h-[18rem]" dir="ltr">
@@ -351,6 +351,32 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
           )}
         </ChartCard>
 
+      <ChartCard title={t("auto.k06b64776cc")} subtitle={t("auto.kb1e41b1722")}>
+        {categoryBarData.length > 0 ? (
+          <div className="pb-chart-canvas h-80 w-full min-h-[20rem]" dir="ltr">
+            <ResponsiveContainer width="100%" height="100%" minHeight={320}>
+              <BarChart data={categoryBarData} layout="vertical" margin={{ left: 12 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.2)" />
+                <XAxis type="number" tickFormatter={formatChartPrice} />
+                <YAxis type="category" dataKey="name" width={90} tick={{ fontSize: 11 }} />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Bar dataKey="income" name={t("common.income")} fill={CHART_COLORS.income} radius={[0, 4, 4, 0]} />
+                <Bar dataKey="cost" name={t("common.expense")} fill={CHART_COLORS.cost} radius={[0, 4, 4, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        ) : (
+          <p className="py-12 text-center text-sm text-muted">{t("auto.ke4966467bc")}</p>
+        )}
+      </ChartCard>
+          </div>
+          <CategoryBreakdown rows={report.byCategory} />
+        </>
+      )}
+
+      {section === "income" && (
+        <div className="grid gap-4 xl:grid-cols-2">
         <ChartCard title={t("auto.kb161d91f75")} subtitle={t("auto.kf291cf2a60")}>
           {incomePieData.length > 0 ? (
             <div className="pb-chart-canvas h-72 w-full min-h-[18rem]" dir="ltr">
@@ -384,28 +410,11 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
             <p className="py-12 text-center text-sm text-muted">{t("auto.k800efb967e")}</p>
           )}
         </ChartCard>
-      </div>
+        </div>
+      )}
 
-      <ChartCard title={t("auto.k06b64776cc")} subtitle={t("auto.kb1e41b1722")}>
-        {categoryBarData.length > 0 ? (
-          <div className="pb-chart-canvas h-80 w-full min-h-[20rem]" dir="ltr">
-            <ResponsiveContainer width="100%" height="100%" minHeight={320}>
-              <BarChart data={categoryBarData} layout="vertical" margin={{ left: 12 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.2)" />
-                <XAxis type="number" tickFormatter={formatChartPrice} />
-                <YAxis type="category" dataKey="name" width={90} tick={{ fontSize: 11 }} />
-                <Tooltip content={<CustomTooltip />} />
-                <Legend />
-                <Bar dataKey="income" name={t("common.income")} fill={CHART_COLORS.income} radius={[0, 4, 4, 0]} />
-                <Bar dataKey="cost" name={t("common.expense")} fill={CHART_COLORS.cost} radius={[0, 4, 4, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        ) : (
-          <p className="py-12 text-center text-sm text-muted">{t("auto.ke4966467bc")}</p>
-        )}
-      </ChartCard>
-
+      {section === "assets" && (
+        <>
       {paymentCardBarData.length > 0 && (
         <ChartCard title={t("auto.k337e6243ed")} subtitle={t("auto.k4595c69cd7")}>
           <div className="pb-chart-canvas h-72 w-full min-h-[18rem]" dir="ltr">
@@ -424,7 +433,7 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
         </ChartCard>
       )}
 
-      <div className="grid gap-4 xl:grid-cols-2">
+          <div className="grid gap-4 xl:grid-cols-2">
         {boxData.length > 0 && (
           <ChartCard title={t("auto.kcac5d51cfc")} subtitle={t("auto.k41fe75d862")}>
             <div className="pb-chart-canvas h-64 w-full min-h-[16rem]" dir="ltr">
@@ -466,10 +475,9 @@ export function AnalysisCharts({ report, duration }: AnalysisChartsProps) {
             </div>
           </ChartCard>
         )}
-
-      </div>
-
-      <CategoryBreakdown rows={report.byCategory} />
+          </div>
+        </>
+      )}
     </div>
   );
 }

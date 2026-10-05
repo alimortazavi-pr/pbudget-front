@@ -44,7 +44,7 @@ export function ShellAccountMenu({
   showPlanning = true,
 }: ShellAccountMenuProps) {
   const { t } = useTranslation();
-  const { currencyLabel } = useCurrencyLabels();
+  const { displayCurrencyLabel } = useCurrencyLabels();
   const dispatch = useAppDispatch();
   const router = useRouter();
   const user = useAppSelector(userSelector);
@@ -146,7 +146,7 @@ export function ShellAccountMenu({
             }
             return (
               <div key={option.id} className="flex items-baseline justify-between gap-2">
-                <span className="text-xs text-muted">{currencyLabel(option.id)}</span>
+                <span className="text-xs text-muted">{displayCurrencyLabel(option.id)}</span>
                 <p className="text-base font-bold tracking-tight">
                   {formatPriceWithCurrency(amount, option.id)}
                 </p>

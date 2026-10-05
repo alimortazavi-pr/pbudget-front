@@ -14,6 +14,7 @@ import {
 
 import type { AnalyticsReport } from "@/common/interfaces/analytics.interface";
 import { formatPrice, toPersianDigits } from "@/common/utils";
+import { moneyDisplayUnitLabel } from "@/common/utils/money-display";
 
 type AnalysisKpiCardsProps = {
   report: AnalyticsReport;
@@ -89,13 +90,13 @@ export function AnalysisKpiCards({ report }: AnalysisKpiCardsProps) {
       <KpiCard
         title={t("auto.k1a6ef51534")}
         value={formatPrice(summary.userBalance)}
-        suffix={t("auto.k9e29f60874")}
+        suffix={moneyDisplayUnitLabel()}
         icon={<Wallet2 size={20} variant="Bold" />}
       />
       <KpiCard
         title={t("auto.k8dc3b9a771")}
         value={formatPrice(summary.income)}
-        suffix={t("auto.k9e29f60874")}
+        suffix={moneyDisplayUnitLabel()}
         icon={<ArrowUp size={20} variant="Bold" />}
         change={comparison?.incomeChangePercent}
         tone="income"
@@ -103,7 +104,7 @@ export function AnalysisKpiCards({ report }: AnalysisKpiCardsProps) {
       <KpiCard
         title={t("auto.kbd6109e27e")}
         value={formatPrice(summary.cost)}
-        suffix={t("auto.k9e29f60874")}
+        suffix={moneyDisplayUnitLabel()}
         icon={<ArrowDown size={20} variant="Bold" />}
         change={comparison?.costChangePercent}
         tone="cost"
@@ -111,7 +112,7 @@ export function AnalysisKpiCards({ report }: AnalysisKpiCardsProps) {
       <KpiCard
         title={t("auto.k35b908d245")}
         value={formatPrice(summary.net)}
-        suffix={t("auto.k9e29f60874")}
+        suffix={moneyDisplayUnitLabel()}
         icon={<ArrowSwapHorizontal size={20} variant="Bold" />}
         change={comparison?.netChangePercent}
         tone="net"
@@ -130,13 +131,13 @@ export function AnalysisKpiCards({ report }: AnalysisKpiCardsProps) {
       <KpiCard
         title={t("auto.k05b0a3e75c")}
         value={formatPrice(Math.round(summary.avgDailyCost))}
-        suffix={t("auto.k9e29f60874")}
+        suffix={moneyDisplayUnitLabel()}
         icon={<Coin1 size={20} variant="Bold" />}
       />
       <KpiCard
         title={t("auto.k76d12f4b06")}
         value={formatPrice(summary.netWorth)}
-        suffix={t("auto.k9e29f60874")}
+        suffix={moneyDisplayUnitLabel()}
         icon={<Wallet2 size={20} variant="Bold" />}
       />
     </section>

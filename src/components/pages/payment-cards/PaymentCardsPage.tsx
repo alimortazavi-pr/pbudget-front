@@ -24,6 +24,7 @@ import { CategoryColorPicker } from "@/components/common/form/CategoryColorPicke
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppSelector } from "@/stores/hooks";
 import { userSelector } from "@/stores/profile";
+import { PageHeader } from "@/components/common/layout/PageHeader";
 
 export function PaymentCardsPage() {
   const { t } = useTranslation();
@@ -121,19 +122,22 @@ export function PaymentCardsPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-bold">{t("nav.myCards")}</h2>
-          <p className="text-sm text-muted">
+      <PageHeader
+        icon={<Card size={24} variant="Bold" />}
+        title={t("nav.myCards")}
+        description={
+          <>
             {t("auto.keb25d51f69")}
             {t("auto.ke3e7d93891")}
-          </p>
-        </div>
-        <Button className="bg-accent text-accent-foreground" onPress={openCreate}>
-          <Add size={18} />
-          {t("auto.k480ffe699b")}
-        </Button>
-      </div>
+          </>
+        }
+        actions={
+          <Button className="bg-accent text-accent-foreground" onPress={openCreate}>
+            <Add size={18} />
+            {t("auto.k480ffe699b")}
+          </Button>
+        }
+      />
 
       {loading ? (
         <div className="glass rounded-2xl p-10 text-center text-muted">{t("common.loading")}</div>

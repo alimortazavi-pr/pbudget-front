@@ -4,9 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
   Add,
-  ArrowDown,
   ArrowLeft,
-  ArrowUp,
   Building,
   Calendar,
   Call,
@@ -38,6 +36,7 @@ import { LanguageSelector } from "@/components/common/layout/LanguageSelector";
 import { useTranslation } from "@/components/providers/LanguageProvider";
 import { formatLocalizedDigits } from "@/i18n/format-localized-digits";
 import { AnimatedNumber } from "@/components/common/motion/AnimatedNumber";
+import type { CSSProperties } from "react";
 import { landingContactLabels, landingWhyTitle } from "@/i18n/localize-landing-content";
 import { useAppSelector } from "@/stores/hooks";
 import { isAuthSelector } from "@/stores/auth";
@@ -106,122 +105,247 @@ function SectionHeading({ eyebrow, title, subtitle, id }: { eyebrow: string; tit
   );
 }
 
-/** Moves a soft light under the cursor on the card being hovered. */
-function spotlight(event: React.PointerEvent<HTMLElement>) {
-  const card = (event.target as HTMLElement).closest<HTMLElement>(".lx-card");
-  if (!card) return;
-  const rect = card.getBoundingClientRect();
-  card.style.setProperty("--mx", `${event.clientX - rect.left}px`);
-  card.style.setProperty("--my", `${event.clientY - rect.top}px`);
+const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
+
+/**
+ * One scroll listener drives every 3D scene: `[data-scene]` gets `--p` (0→1
+ * through the scene), `[data-rise]` gets `--e` (0→1 as it enters), and
+ * `[data-steps]` toggles `data-on` on its `[data-k]` children.
+ */
+function useScrollScenes() {
+  useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let raf = 0;
+
+    const update = () => {
+      raf = 0;
+      const vh = window.innerHeight;
+      document.querySelectorAll<HTMLElement>("[data-scene]").forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        const total = rect.height - vh;
+        const p = reduce ? 0.5 : total > 40 ? clamp01(-rect.top / total) : clamp01((vh - rect.top) / (vh + rect.height));
+        el.style.setProperty("--p", p.toFixed(4));
+        const count = Number(el.dataset.steps ?? 0);
+        if (count) {
+          const active = Math.min(count - 1, Math.floor(p * count));
+          el.querySelectorAll<HTMLElement>("[data-k]").forEach((child) => {
+            child.dataset.on = String(Number(child.dataset.k) === active);
+          });
+        }
+      });
+      document.querySelectorAll<HTMLElement>("[data-rise]").forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        const e = reduce ? 1 : clamp01((vh * 0.96 - rect.top) / (vh * 0.45));
+        el.style.setProperty("--e", e.toFixed(3));
+      });
+    };
+    const schedule = () => {
+      if (!raf) raf = window.requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    const timer = window.setTimeout(update, 400); // content (plans, CMS) may change heights
+    return () => {
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      window.clearTimeout(timer);
+      if (raf) window.cancelAnimationFrame(raf);
+    };
+  }, []);
 }
 
-function HeroMockup() {
+/** Cursor-reactive parallax for a scene (desktop pointers only). */
+function pointerParallax(event: React.PointerEvent<HTMLElement>) {
+  if (event.pointerType !== "mouse") return;
+  const rect = event.currentTarget.getBoundingClientRect();
+  event.currentTarget.style.setProperty("--mx", ((event.clientX - rect.left) / rect.width - 0.5).toFixed(3));
+  event.currentTarget.style.setProperty("--my", ((event.clientY - rect.top) / rect.height - 0.5).toFixed(3));
+}
+
+function cardGlow(event: React.PointerEvent<HTMLElement>) {
+  const rect = event.currentTarget.getBoundingClientRect();
+  event.currentTarget.style.setProperty("--mx2", `${event.clientX - rect.left}px`);
+  event.currentTarget.style.setProperty("--my2", `${event.clientY - rect.top}px`);
+}
+
+/** Pulls a button slightly toward the cursor. */
+function magnet(event: React.PointerEvent<HTMLElement>) {
+  if (event.pointerType !== "mouse") return;
+  const rect = event.currentTarget.getBoundingClientRect();
+  const x = (event.clientX - (rect.left + rect.width / 2)) * 0.25;
+  const y = (event.clientY - (rect.top + rect.height / 2)) * 0.35;
+  event.currentTarget.style.transform = `translate(${x}px, ${y}px)`;
+}
+function unmagnet(event: React.PointerEvent<HTMLElement>) {
+  event.currentTarget.style.transform = "";
+}
+
+function Words({ text, from = 0 }: { text: string; from?: number }) {
+  return (
+    <>
+      {text.split(" ").map((word, index) => (
+        <span key={`${word}-${index}`} className="l3-word" style={{ ["--w" as string]: from + index } as CSSProperties}>
+          {word}&nbsp;
+        </span>
+      ))}
+    </>
+  );
+}
+
+/** The exploded dashboard that separates into floating layers as you scroll. */
+function HeroStack() {
   const { t, language } = useTranslation();
   const digits = (value: string) => formatLocalizedDigits(value, language);
-  const bars = [42, 66, 38, 80, 54, 92, 70];
+  const bars = [42, 66, 38, 80, 54, 92, 70, 58];
   const rows = [
-    { label: t("landingUi.mockTx1"), amount: "+45,000,000", income: true, tone: "teal" as const },
-    { label: t("landingUi.mockTx2"), amount: "−1,240,000", income: false, tone: "rose" as const },
-    { label: t("landingUi.mockTx3"), amount: "−4,200,000", income: false, tone: "violet" as const },
-    { label: t("landingUi.mockTx4"), amount: "+10,000,000", income: true, tone: "teal" as const },
+    { label: t("landingUi.mockTx1"), amount: "+45,000,000", income: true },
+    { label: t("landingUi.mockTx2"), amount: "−1,240,000", income: false },
+    { label: t("landingUi.mockTx3"), amount: "−4,200,000", income: false },
   ];
-
-  // Subtle 3D tilt toward the cursor (desktop pointers only).
-  function onTilt(event: React.PointerEvent<HTMLDivElement>) {
-    if (event.pointerType !== "mouse") return;
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width - 0.5;
-    const y = (event.clientY - rect.top) / rect.height - 0.5;
-    event.currentTarget.style.setProperty("--ry", `${x * 10}deg`);
-    event.currentTarget.style.setProperty("--rx", `${-y * 8}deg`);
-  }
-  function resetTilt(event: React.PointerEvent<HTMLDivElement>) {
-    event.currentTarget.style.setProperty("--ry", "0deg");
-    event.currentTarget.style.setProperty("--rx", "0deg");
-  }
-
+  const circumference = 2 * Math.PI * 44;
   return (
-    <div className="lx-tilt lx-enter-mock relative mx-auto w-full max-w-[34rem]" aria-hidden onPointerMove={onTilt} onPointerLeave={resetTilt}>
-      <div className="lx-device lx-float relative p-4 sm:p-5">
-        <div className="lx-balance p-5">
-          <p className="text-xs opacity-80">{t("landingUi.mockBalance")}</p>
-          <p className="mt-1 text-3xl font-extrabold tracking-tight sm:text-4xl">
-            <AnimatedNumber from={0} value={53140000} durationMs={1800} format={(n) => digits(n.toLocaleString("en-US"))} />
-          </p>
-          <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
-            <div className="rounded-xl bg-white/15 px-3 py-2">
-              <p className="opacity-80">{t("landingUi.mockIncome")}</p>
-              <p className="mt-0.5 text-sm font-bold">{digits("55,000,000")}</p>
-            </div>
-            <div className="rounded-xl bg-white/15 px-3 py-2">
-              <p className="opacity-80">{t("landingUi.mockCost")}</p>
-              <p className="mt-0.5 text-sm font-bold">{digits("29,460,000")}</p>
-            </div>
-          </div>
+    <div className="l3-stackwrap" aria-hidden>
+      <div className="l3-stack">
+        <div className="l3-layer l3-g l3-frame" />
+        <div className="l3-layer l3-g l3-balance">
+          <p>{t("landingUi.mockBalance")}</p>
+          <strong>
+            <AnimatedNumber from={0} value={53140000} durationMs={2200} format={(n) => digits(n.toLocaleString("en-US"))} />
+          </strong>
         </div>
-
-        <div className="mt-4 flex h-24 items-end gap-2 px-1">
+        <div className="l3-layer l3-g l3-chart">
           {bars.map((height, index) => (
-            <div key={index} className="lx-bar flex-1" style={{ height: `${height}%`, animationDelay: `${index * 90}ms` }} />
+            <i key={index} style={{ height: `${height}%`, animationDelay: `${index * 90}ms` }} />
           ))}
         </div>
-
-        <p className="mt-4 text-xs font-semibold text-muted">{t("landingUi.mockRecent")}</p>
-        <ul className="mt-2 space-y-2">
+        <div className="l3-layer l3-g l3-list">
           {rows.map((row) => (
-            <li key={row.label} className="flex items-center justify-between rounded-xl bg-surface-secondary/70 px-3 py-2.5 text-sm">
-              <span className="flex items-center gap-2.5">
-                <span className="lx-icon !size-8 !rounded-lg" data-accent={row.tone}>
-                  {row.income ? <ArrowDown size={16} /> : <ArrowUp size={16} />}
-                </span>
-                {row.label}
-              </span>
-              <span className={`font-bold tabular-nums ${row.income ? "text-income" : "text-expense"}`} dir="ltr">
+            <div key={row.label} className="l3-row">
+              <span>{row.label}</span>
+              <b className={row.income ? "l3-in" : "l3-out"} dir="ltr">
                 {digits(row.amount)}
-              </span>
-            </li>
+              </b>
+            </div>
           ))}
-        </ul>
-      </div>
-
-      <div className="lx-device lx-float-delayed absolute -start-4 -top-6 hidden w-64 p-3 sm:block md:-start-10">
-        <div className="flex items-start gap-2.5">
-          <span className="lx-icon !size-9 shrink-0" data-accent="violet">
-            <Notification size={18} variant="Bold" />
-          </span>
-          <p className="text-xs leading-6">{t("landingUi.mockReminder")}</p>
         </div>
-      </div>
-
-      <div className="lx-device lx-float absolute -bottom-6 -end-3 hidden w-56 p-3 sm:block md:-end-8">
-        <div className="flex items-start gap-2.5">
-          <span className="lx-icon !size-9 shrink-0" data-accent="teal">
-            <Profile2User size={18} variant="Bold" />
+        <div className="l3-layer l3-g l3-ring">
+          <svg viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="44" fill="none" stroke="rgb(255 255 255 / 0.15)" strokeWidth="9" />
+            <circle cx="50" cy="50" r="44" fill="none" stroke="#2dd4bf" strokeWidth="9" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={circumference * 0.24} />
+          </svg>
+          <span>{digits("۷۶")}</span>
+        </div>
+        <div className="l3-layer l3-g l3-chip l3-chip-a">
+          <span className="lx-icon !size-8 shrink-0 !rounded-lg" data-accent="violet">
+            <Notification size={16} variant="Bold" />
           </span>
-          <p className="text-xs leading-6">{t("landingUi.mockDebt")}</p>
+          <span>{t("landingUi.mockReminder")}</span>
+        </div>
+        <div className="l3-layer l3-g l3-chip l3-chip-b">
+          <span className="lx-icon !size-8 shrink-0 !rounded-lg" data-accent="teal">
+            <Profile2User size={16} variant="Bold" />
+          </span>
+          <span>{t("landingUi.mockDebt")}</span>
         </div>
       </div>
     </div>
   );
 }
 
-function TelegramMockup() {
-  const { t } = useTranslation();
+/** Four phone screens that cross-fade as the story scrolls. */
+function StoryScreens() {
+  const { t, language } = useTranslation();
+  const digits = (value: string) => formatLocalizedDigits(value, language);
+  const bars = [42, 66, 38, 80, 54, 92, 70];
+  const labels = [t("landingUi.mockTx1"), t("landingUi.mockTx2"), t("landingUi.mockTx3"), t("landingUi.mockTx4")];
+  const colors = ["#fb7185", "#a78bfa", "#2dd4bf", "#fbbf24"];
+  const circumference = 2 * Math.PI * 40;
+  let offset = 0;
+  const shares = [0.38, 0.27, 0.21, 0.14];
   return (
-    <div className="lx-device mx-auto w-full max-w-md overflow-hidden" aria-hidden>
-      <div className="flex items-center gap-3 border-b border-border/60 px-4 py-3">
-        <span className="flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-sky-400 to-sky-600 text-white">
-          <Send2 size={20} variant="Bold" />
-        </span>
-        <div>
-          <p className="text-sm font-bold">Paradise Desk Bot</p>
-          <p className="text-[11px] text-sky-500">online</p>
+    <>
+      <div className="l3-screen" data-k="0">
+        <div className="l3-g" style={{ background: "linear-gradient(135deg,#fb7185,#a855f7)", border: 0 }}>
+          <p style={{ opacity: 0.85 }}>{t("landingUi.mockBalance")}</p>
+          <p className="mt-1 text-xl font-extrabold">{digits("53,140,000")}</p>
         </div>
+        <div className="l3-g flex h-28 items-end gap-1.5">
+          {bars.map((height, i) => (
+            <i key={i} className="flex-1 rounded-md" style={{ height: `${height}%`, background: i % 2 ? "#fb7185" : "#2dd4bf" }} />
+          ))}
+        </div>
+        {labels.slice(0, 3).map((label, i) => (
+          <div key={label} className="l3-g l3-row">
+            <span>{label}</span>
+            <b className={i % 2 ? "l3-out" : "l3-in"} dir="ltr">{digits(i % 2 ? "−1,240,000" : "+45,000,000")}</b>
+          </div>
+        ))}
       </div>
-      <div className="lx-chat m-3 space-y-3 p-4">
-        <div className="lx-bubble lx-bubble-me">{t("landingUi.chatUser")}</div>
-        <div className="lx-bubble lx-bubble-bot">{t("landingUi.chatBot")}</div>
-        <div className="lx-bubble lx-bubble-bot">{t("landingUi.chatReminder")}</div>
+
+      <div className="l3-screen" data-k="1">
+        {labels.map((label, i) => (
+          <div key={label} className="l3-g">
+            <div className="l3-row !bg-transparent !p-0">
+              <span className="font-semibold">{label}</span>
+              <b dir="ltr">{digits(`${(i + 2) * 2},500,000`)}</b>
+            </div>
+            <div className="l3-pbar"><i style={{ width: `${30 + i * 20}%` }} /></div>
+          </div>
+        ))}
+      </div>
+
+      <div className="l3-screen" data-k="2">
+        <div className="l3-g text-center">
+          <svg viewBox="0 0 100 100" className="l3-donut -rotate-90">
+            {shares.map((share, i) => {
+              const dash = share * circumference;
+              const circle = (
+                <circle key={i} cx="50" cy="50" r="40" fill="none" stroke={colors[i]} strokeWidth="14" strokeDasharray={`${dash - 2} ${circumference}`} strokeDashoffset={-offset} />
+              );
+              offset += dash;
+              return circle;
+            })}
+          </svg>
+          <p className="text-lg font-extrabold">{digits("۹۲")}<span className="text-xs opacity-60"> / {digits("۱۰۰")}</span></p>
+        </div>
+        {labels.map((label, i) => (
+          <div key={label} className="l3-row">
+            <span className="flex items-center gap-2"><i className="size-2.5 rounded-full" style={{ background: colors[i] }} />{label}</span>
+            <b>{digits(`${Math.round(shares[i] * 100)}%`)}</b>
+          </div>
+        ))}
+      </div>
+
+      <div className="l3-screen" data-k="3">
+        <div className="l3-g">
+          <div className="l3-avatars">
+            {["#fb7185", "#a78bfa", "#2dd4bf"].map((c, i) => (
+              <span key={c} style={{ background: c }}>{["A", "B", "C"][i]}</span>
+            ))}
+          </div>
+          <p className="mt-2 font-semibold">{t("landingUi.mockDebt")}</p>
+        </div>
+        {[0.5, 0.3, 0.2].map((share, i) => (
+          <div key={share} className="l3-g">
+            <div className="l3-row !bg-transparent !p-0"><span>{["A", "B", "C"][i]}</span><b>{digits(`${share * 100}%`)}</b></div>
+            <div className="l3-pbar"><i style={{ width: `${share * 100}%` }} /></div>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
+function PhoneDevice({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="l3-device-wrap" aria-hidden>
+      <div className="l3-device">
+        <div className="l3-phone">
+          <span className="l3-notch" />
+          <div className="l3-screen-area">{children}</div>
+        </div>
       </div>
     </div>
   );
@@ -237,6 +361,7 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
   const { apkAvailable } = useAndroidAppAvailability();
   const contactLabels = landingContactLabels(t);
   const digits = (value: string) => formatLocalizedDigits(value, language);
+  useScrollScenes();
 
   const primaryHref = isAuth ? PATHS.HOME : PATHS.GET_STARTED;
   const primaryLabel = isAuth ? t("landingUi.openApp") : content.hero.primaryCta || t("landingUi.start");
@@ -369,43 +494,41 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
       ) : null}
 
       <main>
-        {/* ------------------------------------------------ hero */}
-        <section className="relative -mt-16 overflow-hidden pt-16">
-          <div className="lx-hero-bg" />
-          <div className="lx-grid-bg" />
-          <div className="lx-container relative grid items-center gap-14 pb-20 pt-12 lg:grid-cols-[1.05fr_1fr] lg:gap-10 lg:pb-28 lg:pt-20">
-            <div className="text-center lg:text-start">
-              <span className="lx-eyebrow lx-enter" style={{ ["--d" as string]: 0 }}>
-                <span className="size-2 rounded-full bg-[var(--lx-rose)]" />
-                {content.hero.badge || t("landingUi.heroEyebrow")}
-              </span>
-              <h1 className="lx-h1 lx-enter mt-6" style={{ ["--d" as string]: 1 }}>
-                {content.hero.title}
-                <span className="lx-gradient-text mt-2 block pb-1">{content.hero.tagline}</span>
-              </h1>
-              <p className="lx-muted lx-enter mx-auto mt-6 max-w-xl text-base leading-8 md:text-lg lg:mx-0" style={{ ["--d" as string]: 2 }}>{content.hero.description}</p>
-              <div className="lx-enter mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start" style={{ ["--d" as string]: 3 }}>
-                <Link href={primaryHref} className="lx-btn lx-btn-primary w-full sm:w-auto">
-                  {primaryLabel}
-                  <ArrowLeft size={18} />
-                </Link>
-                <a href="#features" className="lx-btn lx-btn-ghost w-full sm:w-auto">
-                  {content.hero.secondaryCta}
-                </a>
+        {/* ------------------------------------------------ hero: exploding 3D dashboard */}
+        <section className="l3-hero" data-scene onPointerMove={pointerParallax}>
+          <div className="l3-sticky">
+            <div className="l3-aurora"><span className="l3-orb l3-orb-a" /><span className="l3-orb l3-orb-b" /><span className="l3-orb l3-orb-c" /></div>
+            <div className="l3-floor" aria-hidden />
+            <div className="lx-container l3-hero-grid">
+              <div className="l3-hero-copy text-center lg:text-start">
+                <span className="lx-eyebrow lx-enter" style={{ ["--d" as string]: 0 }}>
+                  <span className="size-2 rounded-full bg-[var(--lx-rose)]" />
+                  {content.hero.badge || t("landingUi.heroEyebrow")}
+                </span>
+                <h1 className="lx-h1 mt-6">
+                  <Words text={content.hero.title} />
+                  <span className="lx-gradient-text mt-2 block pb-1">
+                    <Words text={content.hero.tagline} from={content.hero.title.split(" ").length} />
+                  </span>
+                </h1>
+                <p className="lx-muted lx-enter mx-auto mt-6 max-w-xl text-base leading-8 md:text-lg lg:mx-0" style={{ ["--d" as string]: 3 }}>{content.hero.description}</p>
+                <div className="lx-enter mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start" style={{ ["--d" as string]: 4 }}>
+                  <Link href={primaryHref} className="lx-btn lx-btn-primary l3-magnet w-full sm:w-auto" onPointerMove={magnet} onPointerLeave={unmagnet}>
+                    {primaryLabel}
+                    <ArrowLeft size={18} />
+                  </Link>
+                  <a href="#how" className="lx-btn lx-btn-ghost w-full sm:w-auto">
+                    {content.hero.secondaryCta}
+                  </a>
+                </div>
+                <p className="lx-muted lx-enter mt-4 text-xs" style={{ ["--d" as string]: 5 }}>{t("landingUi.heroNote")}</p>
               </div>
-              <p className="lx-muted lx-enter mt-4 text-xs" style={{ ["--d" as string]: 4 }}>{t("landingUi.heroNote")}</p>
-
-              <dl className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                {content.stats.map((stat, index) => (
-                  <div key={stat.label} className="lx-enter rounded-2xl border border-border/60 bg-surface/60 px-3 py-3 backdrop-blur" style={{ ["--d" as string]: 5 + index * 0.5 }}>
-                    <dt className="lx-muted text-[11px]">{stat.label}</dt>
-                    <dd className="mt-1 text-xl font-extrabold">{stat.value}</dd>
-                  </div>
-                ))}
-              </dl>
+              <HeroStack />
             </div>
-
-            <HeroMockup />
+            <div className="l3-scrollhint" aria-hidden>
+              <i />
+              {t("landingUi.scrollHint")}
+            </div>
           </div>
         </section>
 
@@ -423,21 +546,46 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
           </div>
         </section>
 
-        {/* ------------------------------------------------ features */}
-        <section id="features" className="scroll-mt-20 py-20 md:py-28">
+        {/* ------------------------------------------------ story: pinned phone that rotates through the steps */}
+        <section id="how" className="l3-stage l3-story scroll-mt-0" data-scene data-steps={content.howSteps.length} style={{ ["--steps" as string]: content.howSteps.length } as CSSProperties}>
+          <div className="l3-aurora"><span className="l3-orb l3-orb-a" /><span className="l3-orb l3-orb-b" /></div>
+          <div className="l3-sticky">
+            <div className="lx-container l3-story-grid">
+              <div>
+                <span className="lx-eyebrow">{t("landingUi.howEyebrow")}</span>
+                <h2 className="lx-h2 mt-4 mb-6">{t("landingUi.howTitle")}</h2>
+                <ol className="l3-steps">
+                  {content.howSteps.map((step, index) => (
+                    <li key={step.title} className="l3-step" data-k={index} data-on={index === 0 ? "true" : "false"}>
+                      <span className="l3-step-n">{digits(String(index + 1))}</span>
+                      <h3>{step.title}</h3>
+                      <p>{step.description}</p>
+                    </li>
+                  ))}
+                </ol>
+                <div className="l3-progress" aria-hidden><i /></div>
+              </div>
+              <PhoneDevice>
+                <StoryScreens />
+              </PhoneDevice>
+            </div>
+          </div>
+        </section>
+
+        {/* ------------------------------------------------ features: cards fly in from depth */}
+        <section id="features" className="relative scroll-mt-20 py-20 md:py-28">
           <div className="lx-container">
             <SectionHeading eyebrow={t("landingUi.featuresEyebrow")} title={t("landingUi.featuresTitle")} subtitle={t("landingUi.featuresSubtitle")} />
-            <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" onPointerMove={spotlight}>
+            <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" >
               {content.features.map((feature, index) => {
                 const Icon = FEATURE_ICONS[feature.id] ?? Wallet2;
                 const accent = feature.accent ?? ACCENTS[index % ACCENTS.length];
-                // Widen cards only as needed so the 3-column grid never leaves a gap.
                 const remainder = content.features.length % 3;
                 const wide =
                   (remainder === 2 && index === 0) ||
                   (remainder === 1 && (index === 0 || index === content.features.length - 1));
                 return (
-                  <article key={feature.id} className={`lx-card lx-card-hover lx-reveal p-6 ${wide ? "lg:col-span-2" : ""}`}>
+                  <article key={feature.id} data-rise className={`l3-card ${wide ? "lg:col-span-2" : ""}`} onPointerMove={cardGlow}>
                     <span className="lx-icon" data-accent={accent}>
                       <Icon size={22} variant="Bold" />
                     </span>
@@ -472,57 +620,75 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
           ) : null}
         </section>
 
-        {/* ------------------------------------------------ telegram */}
-        <section className="relative overflow-hidden py-20 md:py-28">
-          <div className="lx-hero-bg opacity-60" />
-          <div className="lx-container relative grid items-center gap-12 lg:grid-cols-2">
-            <div className="lx-reveal">
-              <span className="lx-eyebrow">
-                <Send2 size={14} variant="Bold" />
-                {t("landingUi.telegramEyebrow")}
-              </span>
-              <h2 className="lx-h2 mt-4">{t("landingUi.telegramTitle")}</h2>
-              <p className="lx-muted mt-4 text-base leading-8 md:text-lg">{t("landingUi.telegramBody")}</p>
-              <ul className="mt-6 space-y-3">
-                {[t("landingUi.telegramPoint1"), t("landingUi.telegramPoint2"), t("landingUi.telegramPoint3")].map((point) => (
-                  <li key={point} className="flex items-center gap-3 text-sm font-medium">
-                    <span className="lx-icon !size-8 !rounded-lg" data-accent="teal">
-                      <TickCircle size={16} variant="Bold" />
-                    </span>
-                    {point}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="lx-reveal">
-              <TelegramMockup />
-            </div>
+        {/* ------------------------------------------------ big type + numbers */}
+        <section className="border-y border-border/60 py-12 md:py-16" data-scene aria-label={content.hero.title}>
+          <div className="l3-bigtext" aria-hidden>
+            <span>{content.hero.title} · {content.hero.title} · {content.hero.title}</span>
+          </div>
+          <div className="lx-container">
+            <dl className="mt-6 grid grid-cols-2 gap-6 md:grid-cols-4">
+              {content.stats.map((stat) => (
+                <div key={stat.label} className="l3-stat" data-rise>
+                  <dd>{stat.value}</dd>
+                  <dt className="lx-muted mt-1 text-sm">{stat.label}</dt>
+                </div>
+              ))}
+            </dl>
           </div>
         </section>
 
-        {/* ------------------------------------------------ how it works */}
-        <section id="how" className="scroll-mt-20 py-20 md:py-28">
-          <div className="lx-container">
-            <SectionHeading eyebrow={t("landingUi.howEyebrow")} title={t("landingUi.howTitle")} />
-            <ol className={`mt-14 grid gap-4 ${gridCols(content.howSteps.length)}`}>
-              {content.howSteps.map((step, index) => (
-                <li key={step.title} className="lx-card lx-reveal p-6">
-                  <span className="lx-gradient-text text-5xl font-black">{digits(String(index + 1).padStart(2, "0"))}</span>
-                  <h3 className="mt-4 text-lg font-bold">{step.title}</h3>
-                  <p className="lx-muted mt-2 text-sm leading-7">{step.description}</p>
-                </li>
-              ))}
-            </ol>
+        {/* ------------------------------------------------ telegram: chat plays as you scroll */}
+        <section className="l3-stage l3-chatscene" data-scene>
+          <div className="l3-aurora"><span className="l3-orb l3-orb-a" /><span className="l3-orb l3-orb-c" /></div>
+          <div className="l3-sticky">
+            <div className="lx-container l3-chat-grid">
+              <div>
+                <span className="lx-eyebrow">
+                  <Send2 size={14} variant="Bold" />
+                  {t("landingUi.telegramEyebrow")}
+                </span>
+                <h2 className="lx-h2 mt-4">{t("landingUi.telegramTitle")}</h2>
+                <p className="lx-muted mt-4 text-base leading-8 md:text-lg">{t("landingUi.telegramBody")}</p>
+                <ul className="mt-6 space-y-3">
+                  {[t("landingUi.telegramPoint1"), t("landingUi.telegramPoint2"), t("landingUi.telegramPoint3")].map((point) => (
+                    <li key={point} className="flex items-center gap-3 text-sm font-medium">
+                      <span className="lx-icon !size-8 !rounded-lg" data-accent="teal">
+                        <TickCircle size={16} variant="Bold" />
+                      </span>
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="l3-tg" aria-hidden>
+                <div className="l3-g l3-tg-card">
+                  <div className="l3-tg-head">
+                    <span className="flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-sky-400 to-sky-600 text-white">
+                      <Send2 size={20} variant="Bold" />
+                    </span>
+                    <div>
+                      <p className="text-sm font-bold">Paradise Desk Bot</p>
+                      <p className="text-[11px] text-sky-400">online</p>
+                    </div>
+                  </div>
+                  <div className="l3-tg-body">
+                    <div className="l3-msg l3-msg-me" style={{ ["--at" as string]: 0.12 } as CSSProperties}>{t("landingUi.chatUser")}</div>
+                    <div className="l3-msg l3-msg-bot" style={{ ["--at" as string]: 0.35 } as CSSProperties}>{t("landingUi.chatBot")}</div>
+                    <div className="l3-msg l3-msg-bot" style={{ ["--at" as string]: 0.6 } as CSSProperties}>{t("landingUi.chatReminder")}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
         {/* ------------------------------------------------ why us */}
-        <section id="why-us" className="scroll-mt-20 border-y border-border/60 bg-surface/50 py-20 md:py-28">
+        <section id="why-us" className="scroll-mt-20 py-20 md:py-28">
           <div className="lx-container">
             <SectionHeading eyebrow={t("landingUi.whyEyebrow")} title={landingWhyTitle(t)} />
             <div className={`mt-14 grid gap-4 ${gridCols(content.whyUs.length)}`}>
               {content.whyUs.map((item, index) => (
-                <div key={item.title} className="lx-card lx-reveal p-6">
+                <div key={item.title} data-rise className="l3-card" onPointerMove={cardGlow}>
                   <span className="lx-icon" data-accent={ACCENTS[index % ACCENTS.length]}>
                     {[<ShieldTick key="a" size={22} variant="Bold" />, <Calendar key="b" size={22} variant="Bold" />, <Chart key="c" size={22} variant="Bold" />, <Mobile key="d" size={22} variant="Bold" />][index % 4]}
                   </span>
@@ -542,7 +708,9 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
               {plans.map((plan) => (
                 <article
                   key={plan.id}
-                  className={`lx-card lx-reveal flex flex-col p-7 ${plan.highlighted ? "border-[color-mix(in_oklch,var(--lx-rose)_45%,transparent)] shadow-2xl shadow-rose-500/10" : ""}`}
+                  data-rise
+                  onPointerMove={cardGlow}
+                  className={`l3-card flex flex-col !p-7 ${plan.highlighted ? "border-[color-mix(in_oklch,var(--lx-rose)_45%,transparent)] shadow-2xl shadow-rose-500/10" : ""}`}
                 >
                   {plan.highlighted ? (
                     <span className="absolute -top-3 start-7 rounded-full bg-gradient-to-l from-rose-500 to-violet-500 px-3 py-1 text-xs font-bold text-white">
@@ -600,11 +768,11 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
         {/* ------------------------------------------------ CTA */}
         <section className="py-20 md:py-24">
           <div className="lx-container">
-            <div className="lx-cta lx-reveal relative overflow-hidden px-6 py-14 text-center md:px-16 md:py-20">
+            <div className="l3-cta" data-rise>
               <h2 className="lx-h2 mx-auto max-w-2xl">{t("landingUi.ctaTitle")}</h2>
               <p className="mx-auto mt-4 max-w-xl text-base leading-8 opacity-90 md:text-lg">{t("landingUi.ctaBody")}</p>
               <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                <Link href={primaryHref} className="lx-btn w-full bg-white text-rose-600 shadow-xl hover:-translate-y-0.5 sm:w-auto">
+                <Link href={primaryHref} className="lx-btn l3-magnet w-full bg-white text-rose-600 shadow-xl sm:w-auto" onPointerMove={magnet} onPointerLeave={unmagnet}>
                   {primaryLabel}
                   <ArrowLeft size={18} />
                 </Link>

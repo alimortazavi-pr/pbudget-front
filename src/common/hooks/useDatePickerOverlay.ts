@@ -5,8 +5,16 @@ import {
   keepModalPortalOverlaysInteractive,
 } from "@/common/utils/modal-portal-overlays";
 
-export function useDatePickerOverlay(inModal: boolean) {
+export function useDatePickerOverlay(inModalProp: boolean) {
   const wrapperRef = useRef<HTMLDivElement>(null);
+  // Pickers inside a dialog must portal into it; detect that instead of
+  // trusting every caller to pass `inModal` (a forgotten flag made the
+  // calendar unclickable and impossible to close).
+  const [insideDialog, setInsideDialog] = useState(false);
+  useEffect(() => {
+    setInsideDialog(Boolean(wrapperRef.current?.closest(".modal__dialog")));
+  }, []);
+  const inModal = inModalProp || insideDialog;
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
 
@@ -43,6 +51,7 @@ export function useDatePickerOverlay(inModal: boolean) {
   }, [calendarOpen]);
 
   return {
+    inModal,
     wrapperRef,
     calendarOpen,
     setCalendarOpen,

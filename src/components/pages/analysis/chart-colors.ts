@@ -1,3 +1,5 @@
+import { tomanToDisplayAmount } from "@/common/utils/money-display";
+
 export const CHART_COLORS = {
   income: "#10b981",
   cost: "#f43f5e",
@@ -18,15 +20,12 @@ export const CHART_COLORS = {
   ],
 };
 
-export function formatChartPrice(value: number) {
-  if (value >= 1_000_000_000) {
-    return `${(value / 1_000_000_000).toFixed(1)}B`;
-  }
-  if (value >= 1_000_000) {
-    return `${(value / 1_000_000).toFixed(1)}M`;
-  }
-  if (value >= 1_000) {
-    return `${(value / 1_000).toFixed(0)}K`;
-  }
-  return String(value);
+export function formatChartPrice(raw: number) {
+  const input = tomanToDisplayAmount(raw);
+  const value = Math.abs(input);
+  const sign = input < 0 ? "-" : "";
+  if (value >= 1_000_000_000) return `${sign}${(value / 1_000_000_000).toFixed(1)}B`;
+  if (value >= 1_000_000) return `${sign}${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 1_000) return `${sign}${(value / 1_000).toFixed(0)}K`;
+  return `${sign}${value}`;
 }

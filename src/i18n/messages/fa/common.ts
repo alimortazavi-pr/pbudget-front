@@ -376,4 +376,5 @@ export const commonMessages: MessageTree = {
     currentPlanCta: "پلن فعلی شما",
     requestedCta: "درخواست ثبت شده",
   },
+  clear: "پاک کردن",
 };

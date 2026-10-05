@@ -42,7 +42,7 @@ function statusLabel(status: IDebt["status"], t: (key: string) => string) {
 
 export function DebtsPage() {
   const { t } = useTranslation();
-  const { currencyLabel } = useCurrencyLabels();
+  const { displayCurrencyLabel } = useCurrencyLabels();
   const router = useRouter();
   const user = useAppSelector(userSelector);
   const summaryCurrency =
@@ -114,7 +114,7 @@ export function DebtsPage() {
             <p className="mt-1 text-xs text-muted">
               {formatCount(summary.openReceivableCount)} {t("auto.k209d590f8f")}
               {" · "}
-              {currencyLabel(summaryCurrency)}
+              {displayCurrencyLabel(summaryCurrency)}
             </p>
           </div>
           <div className="glass rounded-2xl p-4">
@@ -128,7 +128,7 @@ export function DebtsPage() {
             <p className="mt-1 text-xs text-muted">
               {formatCount(summary.openPayableCount)} {t("auto.k0fd1994e7f")}
               {" · "}
-              {currencyLabel(summaryCurrency)}
+              {displayCurrencyLabel(summaryCurrency)}
             </p>
           </div>
         </div>

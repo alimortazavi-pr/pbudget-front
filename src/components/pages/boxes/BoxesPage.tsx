@@ -13,6 +13,7 @@ import { formatPrice, formatPriceInput, getJalaliNow, parsePriceInput } from "@/
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { FormInput } from "@/components/common/form/FormFields";
 import { PageHeroSection } from "@/components/common/layout/PageHeroSection";
+import { OverflowReveal } from "@/components/common/ui/OverflowReveal";
 import { AnimatedNumber } from "@/components/common/motion/AnimatedNumber";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
@@ -166,10 +167,10 @@ export function BoxesPage() {
             <div className="mt-5 grid grid-cols-2 gap-2 text-white sm:grid-cols-3">
               <div className="col-span-2 rounded-2xl bg-white/12 px-3 py-2.5 sm:col-span-1">
                 <p className="text-[11px] text-white/75">{t("pages.boxes.totalSaved")}</p>
-                <p className="mt-0.5 truncate text-base font-extrabold lg:text-xl">
+                <OverflowReveal full={`${formatPrice(total)} ${unit}`} className="mt-0.5 truncate text-base font-extrabold lg:text-xl">
                   <AnimatedNumber value={total} format={(n) => formatPrice(n)} />{" "}
                   <span className="text-[11px] font-medium text-white/75">{unit}</span>
-                </p>
+                </OverflowReveal>
               </div>
               <div className="rounded-2xl bg-white/12 px-3 py-2.5">
                 <p className="text-[11px] text-white/75">{t("pages.boxes.count")}</p>
@@ -237,13 +238,15 @@ export function BoxesPage() {
                   </div>
                 </div>
 
-                <p className="mt-5 flex items-baseline gap-1.5">
-                  <AnimatedNumber
-                    value={box.budget}
-                    format={(n) => formatPrice(n)}
-                    className="text-2xl font-extrabold tracking-tight lg:text-[1.75rem]"
-                  />
-                  <span className="text-xs text-muted">{unit}</span>
+                <p className="mt-5 flex min-w-0 items-baseline gap-1.5">
+                  <OverflowReveal full={`${formatPrice(box.budget)} ${unit}`} className="truncate">
+                    <AnimatedNumber
+                      value={box.budget}
+                      format={(n) => formatPrice(n)}
+                      className="text-2xl font-extrabold tracking-tight lg:text-[1.75rem]"
+                    />
+                  </OverflowReveal>
+                  <span className="shrink-0 text-xs text-muted">{unit}</span>
                 </p>
 
                 {progress !== null ? (

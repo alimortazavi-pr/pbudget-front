@@ -37,7 +37,7 @@ export function PageHeroSection({
 }: PageHeroSectionProps) {
   const gradient = variant ? (VARIANT_CLASS[variant] ?? VARIANT_CLASS.teal) : "";
   const sectionClass = [
-    "text-white shadow-lg",
+    "pb-hero text-white shadow-lg",
     gradient,
     className ? "" : "rounded-3xl p-5",
     className,
@@ -61,6 +61,7 @@ export function PageHeroSection({
   // to `aside`, which squeezed stats on mobile).
   return (
     <section className={sectionClass}>
+      <span aria-hidden className="pb-hero-dots" />
       {aside ? (
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">{body}</div>

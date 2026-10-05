@@ -24,6 +24,7 @@ import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { categoriesSelector, setCategories } from "@/stores/category";
 import { CategoryKind } from "@/types/enums";
+import { PageHeader } from "@/components/common/layout/PageHeader";
 
 export function CategoriesPage() {
   const { t } = useTranslation();
@@ -137,19 +138,17 @@ export function CategoriesPage() {
 
   return (
     <div className="space-y-4 pt-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-bold">{t("nav.categories")}</h2>
-          <p className="text-sm text-muted">{t("auto.k6ec6a2f0d8")}</p>
-        </div>
-        <Button
-          isIconOnly
-          className="bg-accent text-accent-foreground"
-          onPress={openCreate}
-        >
-          <Add size={20} />
-        </Button>
-      </div>
+      <PageHeader
+        icon={<Category size={24} variant="Bold" />}
+        title={t("nav.categories")}
+        description={t("auto.k6ec6a2f0d8")}
+        actions={
+          <Button className="bg-accent text-accent-foreground" onPress={openCreate}>
+            <Add size={18} />
+            {t("categories.newCategory")}
+          </Button>
+        }
+      />
 
       <FormInput
         label={t("common.search")}

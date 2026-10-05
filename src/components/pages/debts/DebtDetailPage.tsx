@@ -80,7 +80,7 @@ function resolveBudgetTitle(budget: IBudget, categories: ICategory[]) {
 
 export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
   const { t } = useTranslation();
-  const { currencyLabel } = useCurrencyLabels();
+  const { displayCurrencyLabel } = useCurrencyLabels();
   const router = useRouter();
   const [debt, setDebt] = useState<IDebt | null>(null);
   const [loading, setLoading] = useState(true);
@@ -186,14 +186,14 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
     txType: isReceivable
       ? t("debts.costWithdraw")
       : t("debts.incomeDeposit"),
-    currency: currencyLabel(debtCurrency),
+    currency: displayCurrencyLabel(debtCurrency),
   });
   const attachSettlementEmpty = t("debts.attachEmptySettlement", {
     kind: debtKindLabel,
     txType: isReceivable
       ? t("debts.incomeDeposit")
       : t("debts.costWithdraw"),
-    currency: currencyLabel(debtCurrency),
+    currency: displayCurrencyLabel(debtCurrency),
   });
 
   return (

@@ -375,4 +375,5 @@ export const commonMessages: MessageTree = {
     currentPlanCta: "Your current plan",
     requestedCta: "Requested",
   },
+  clear: "Clear",
 };

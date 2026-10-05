@@ -9,6 +9,7 @@ import { createPortal } from "react-dom";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import type { Pagination } from "@/common/interfaces/admin";
 import { formatNumberFa, presenceOf } from "./admin-format";
+import { OverflowReveal } from "@/components/common/ui/OverflowReveal";
 import { AnimatedNumber } from "@/components/common/motion/AnimatedNumber";
 
 export type Tone = "neutral" | "accent" | "success" | "warning" | "danger" | "info";
@@ -108,7 +109,9 @@ export function StatTile({
             typeof value === "string" && value.length > 11 ? "text-lg sm:text-xl" : "text-2xl"
           }`}
         >
-          {typeof value === "number" ? <AnimatedNumber value={value} format={formatNumberFa} /> : value}
+          <OverflowReveal full={typeof value === "number" ? formatNumberFa(value) : String(value)} className="truncate">
+            {typeof value === "number" ? <AnimatedNumber value={value} format={formatNumberFa} /> : value}
+          </OverflowReveal>
         </p>
         {hint ? <p className="mt-1 text-xs text-muted">{hint}</p> : null}
       </div>

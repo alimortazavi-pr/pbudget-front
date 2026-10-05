@@ -20,13 +20,29 @@ import moment from "moment-jalali";
 import { showToast } from "@/common/utils/toast";
 import { BudgetExportModal } from "@/components/pages/dashboard/BudgetExportModal";
 import { DashboardInsights, DashboardKpis, DashboardPeriodBar } from "@/components/pages/dashboard/DashboardOverview";
-import { DashboardFilterSection } from "@/components/pages/dashboard/DashboardFilterSection";
+import {
+  ActiveFilterChips,
+  TransactionFilterModal,
+  TransactionSearchBar,
+} from "@/components/pages/dashboard/TransactionFilters";
+import {
+  FILTER_KEYS,
+  applyTransactionFilters,
+  countActiveFilters,
+  readFilters,
+  sumByType,
+} from "@/common/utils/transaction-filters";
+import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 import { DashboardHero } from "@/components/pages/dashboard/DashboardHero";
 import { WorkTimeQuickWidget } from "@/components/pages/projects/WorkTimeQuickWidget";
 import { HmiDashboardPage } from "@/components/pages/dashboard/HmiDashboardPage";
 import { TransactionCard } from "@/components/pages/dashboard/TransactionCard";
 import { TransactionListSkeleton } from "@/components/pages/dashboard/TransactionListSkeleton";
+import * as cardsApi from "@/common/api/payment-cards";
+import * as projectsApi from "@/common/api/projects";
 import type { IBudget, IBudgetsSummary } from "@/common/interfaces/budget.interface";
+import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
+import type { IProject } from "@/common/interfaces/project.interface";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import {
   budgetsSelector,
@@ -67,21 +83,31 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
 
   const calendarType = user?.preferences?.dateCalendar || "jalali";
   const nowParts = useMemo(() => getNowDateParts(calendarType), [calendarType]);
-  const duration = hydrated ? get("duration", "monthly") : "monthly";
+  const rawDuration = hydrated ? get("duration", "monthly") : "monthly";
+  const duration = ["monthly", "daily", "yearly", "all"].includes(rawDuration) ? rawDuration : "monthly";
   const year = hydrated ? get("year", nowParts.year) : nowParts.year;
   const month = hydrated ? get("month", nowParts.month) : nowParts.month;
   const day = hydrated ? get("day", nowParts.day) : nowParts.day;
   const category = hydrated ? get("category", "") : "";
+  const filters = readFilters(get);
+  const filtersKey = FILTER_KEYS.map((key) => filters[key]).join("|");
+  // A custom date range looks across every period.
+  const hasRange = Boolean(filters.from || filters.to);
+  const fetchDuration = hasRange ? "all" : duration;
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
+  const [cards, setCards] = useState<IPaymentCard[]>([]);
+  const [projects, setProjects] = useState<IProject[]>([]);
+  const { displayCurrencyLabel } = useCurrencyLabels();
 
   const queryString = useMemo(() => {
     const params = new URLSearchParams();
-    params.set("duration", duration);
-    params.set("year", year);
-    params.set("month", month);
-    if (duration === "daily") params.set("day", day);
+    params.set("duration", fetchDuration);
+    if (fetchDuration !== "all") params.set("year", year);
+    if (fetchDuration === "monthly" || fetchDuration === "daily") params.set("month", month);
+    if (fetchDuration === "daily") params.set("day", day);
     if (category) params.set("category", category);
     return params.toString();
-  }, [duration, year, month, day, category]);
+  }, [fetchDuration, year, month, day, category]);
 
   const updateQuery = useCallback(
     (patch: Record<string, string>) => {
@@ -144,13 +170,36 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
     };
   }, [dispatch, queryString, budgetRevision, t]);
 
-  const filteredBudgets = useMemo(() => budgets ?? [], [budgets]);
+  // Labels for the active-filter chips (cheap, once).
+  useEffect(() => {
+    if (!hydrated || appMode !== "advanced") return;
+    void cardsApi.fetchPaymentCards().then(setCards).catch(() => undefined);
+    void projectsApi.fetchProjects().then(setProjects).catch(() => undefined);
+  }, [hydrated, appMode]);
+
+  const preferredCurrency = resolveBudgetCurrency(user?.preferences?.currency);
+  const filterCount = countActiveFilters(filters, category);
+  const clientFilterCount = countActiveFilters(filters, "");
+  const filteredBudgets = useMemo(
+    () => applyTransactionFilters(budgets ?? [], filters),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- filtersKey covers every filter field
+    [budgets, filtersKey],
+  );
+  // With a client-side filter the server totals no longer describe the list.
+  const shownTotals = useMemo(
+    () =>
+      clientFilterCount
+        ? sumByType(filteredBudgets, preferredCurrency)
+        : { income: totalIncome ?? 0, cost: totalCost ?? 0 },
+    [clientFilterCount, filteredBudgets, preferredCurrency, totalIncome, totalCost],
+  );
 
   // Group by transaction day so a month reads like a statement.
   const dayGroups = useMemo(() => {
     const groups: { key: string; budgets: IBudget[]; income: number; cost: number }[] = [];
+    const byAmount = filters.sort === "highest" || filters.sort === "lowest";
     for (const budget of filteredBudgets) {
-      const key = `${budget.year}-${budget.month}-${budget.day}`;
+      const key = byAmount ? "sorted" : `${budget.year}-${budget.month}-${budget.day}`;
       let group = groups[groups.length - 1];
       if (!group || group.key !== key) {
         group = { key, budgets: [], income: 0, cost: 0 };
@@ -164,11 +213,12 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
       }
     }
     return groups;
-  }, [filteredBudgets, user?.preferences?.currency]);
+  }, [filteredBudgets, user?.preferences?.currency, filters.sort]);
 
   /** Year/month/day of the period `delta` steps away (month or day). */
   const shiftedParts = useCallback(
-    (delta: number, unit: "month" | "day") => {
+    (delta: number, unit: "month" | "day" | "year") => {
+      if (unit === "year") return { year: String(parseInt(year, 10) + delta), month, day };
       if (calendarType === "gregorian") {
         const m = moment()
           .year(parseInt(year, 10))
@@ -191,6 +241,10 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
     updateQuery(shiftedParts(delta, "month"));
   }
 
+  function shiftYear(delta: number) {
+    updateQuery(shiftedParts(delta, "year"));
+  }
+
   function shiftDay(delta: number) {
     updateQuery(shiftedParts(delta, "day"));
   }
@@ -200,8 +254,13 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
   useEffect(() => {
     if (!hydrated || appMode !== "advanced") return;
     let cancelled = false;
-    const prev = shiftedParts(-1, duration === "daily" ? "day" : "month");
-    const params: Record<string, string> = { duration, year: prev.year, month: prev.month };
+    if (duration === "all" || clientFilterCount) {
+      setPreviousTotals(null);
+      return;
+    }
+    const prev = shiftedParts(-1, duration === "daily" ? "day" : duration === "yearly" ? "year" : "month");
+    const params: Record<string, string> = { duration, year: prev.year };
+    if (duration === "monthly" || duration === "daily") params.month = prev.month;
     if (duration === "daily") params.day = prev.day;
     if (category) params.category = category;
     budgetsApi
@@ -215,40 +274,30 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
     return () => {
       cancelled = true;
     };
-  }, [hydrated, appMode, duration, category, shiftedParts, budgetRevision]);
+  }, [hydrated, appMode, duration, category, clientFilterCount, shiftedParts, budgetRevision]);
 
   const isCurrentPeriod =
     String(year) === String(nowParts.year) &&
-    String(month) === String(nowParts.month) &&
+    (duration === "yearly" || String(month) === String(nowParts.month)) &&
     (duration !== "daily" || String(day) === String(nowParts.day));
 
-  function setDuration(nextDuration: "monthly" | "daily") {
+  function setDuration(nextDuration: "monthly" | "daily" | "yearly" | "all") {
     if (nextDuration === duration) return;
-    if (nextDuration === "daily") {
-      updateQuery({ duration: "daily", year, month, day });
-      return;
-    }
-    updateQuery({ duration: "monthly", year, month, day: "" });
+    const keep = { year, month, day: "" };
+    if (nextDuration === "daily") updateQuery({ duration: "daily", year, month, day });
+    else if (nextDuration === "all") updateQuery({ duration: "all", from: "", to: "" });
+    else updateQuery({ duration: nextDuration, ...keep });
   }
 
-  const periodLabel =
-    calendarType === "gregorian"
-      ? duration === "daily"
-        ? formatDayMonthYear(
-            parseInt(day, 10),
-            parseInt(month, 10),
-            year,
-            "gregorian",
-          )
-        : formatMonthYear(parseInt(month, 10), year, "gregorian")
-      : duration === "daily"
-        ? formatDayMonthYear(
-            parseInt(day, 10),
-            parseInt(month, 10),
-            year,
-            "jalali",
-          )
-        : formatMonthYear(parseInt(month, 10), year, "jalali");
+  const periodLabel = hasRange
+    ? t("dashboard.customRange")
+    : duration === "all"
+      ? t("dashboard.allTimeLabel")
+      : duration === "yearly"
+        ? t("dashboard.yearLabel", { year: formatCount(parseInt(year, 10)).replace(/[,٬،]/g, "") })
+        : duration === "daily"
+          ? formatDayMonthYear(parseInt(day, 10), parseInt(month, 10), year, calendarType === "gregorian" ? "gregorian" : "jalali")
+          : formatMonthYear(parseInt(month, 10), year, calendarType === "gregorian" ? "gregorian" : "jalali");
 
   if (appMode !== "advanced") {
     return (
@@ -275,44 +324,63 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
     );
   }
 
-  const preferredCurrency = resolveBudgetCurrency(user?.preferences?.currency);
-
   return (
     <div className="pb-dashboard-page">
       <DashboardHero
         firstName={user?.firstName}
-        income={totalIncome ?? 0}
-        expense={totalCost ?? 0}
+        income={shownTotals.income}
+        expense={shownTotals.cost}
         data-tour="dashboard-balance"
       />
 
       <DashboardPeriodBar
-        duration={duration}
+        duration={hasRange ? "all" : duration}
         periodLabel={periodLabel}
-        onDuration={setDuration}
-        onPrev={() => (duration === "daily" ? shiftDay(-1) : shiftMonth(-1))}
-        onNext={() => (duration === "daily" ? shiftDay(1) : shiftMonth(1))}
+        onDuration={(next) => {
+          if (hasRange) updateQuery({ from: "", to: "" });
+          setDuration(next);
+        }}
+        hideNav={duration === "all" || hasRange}
+        onPrev={() => (duration === "daily" ? shiftDay(-1) : duration === "yearly" ? shiftYear(-1) : shiftMonth(-1))}
+        onNext={() => (duration === "daily" ? shiftDay(1) : duration === "yearly" ? shiftYear(1) : shiftMonth(1))}
         onToday={() => updateQuery({ ...getNowDateParts(calendarType) })}
-        isCurrentPeriod={isCurrentPeriod}
+        isCurrentPeriod={isCurrentPeriod || duration === "all" || hasRange}
         onExport={() => setExportOpen(true)}
         filter={
-          <DashboardFilterSection
-            inline
-            categories={categories ?? []}
+          <TransactionSearchBar
+            filters={filters}
             category={category}
-            year={year}
-            month={month}
-            day={day}
-            onCategoryChange={(nextCategory) => updateQuery({ category: nextCategory })}
-            onApplyFilter={(patch) =>
-              updateQuery({ category: patch.category, year: patch.year, month: patch.month, day: patch.day })
-            }
+            onChange={updateQuery}
+            onOpenAdvanced={() => setFilterModalOpen(true)}
           />
         }
       />
 
+      <TransactionFilterModal
+        open={filterModalOpen}
+        onOpenChange={setFilterModalOpen}
+        categories={categories ?? []}
+        category={category}
+        filters={filters}
+        onApply={updateQuery}
+      />
+
+      <ActiveFilterChips
+        filters={{ ...filters, q: "" }}
+        category={category}
+        categories={categories ?? []}
+        cards={cards}
+        projects={projects}
+        unit={displayCurrencyLabel(preferredCurrency)}
+        resultCount={filteredBudgets.length}
+        onChange={updateQuery}
+        onClear={() =>
+          updateQuery({ category: "", q: "", ...Object.fromEntries(FILTER_KEYS.map((key) => [key, ""])) })
+        }
+      />
+
       <DashboardKpis
-        current={{ income: totalIncome ?? 0, cost: totalCost ?? 0 }}
+        current={shownTotals}
         previous={previousTotals}
         count={filteredBudgets.length}
         currency={preferredCurrency}
@@ -349,8 +417,8 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
               <span className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-accent/10 text-accent">
                 <Filter size={26} variant="Bulk" />
               </span>
-              <p className="font-bold">{t("dashboard.noTransactionsFound")}</p>
-              <p className="mt-1 max-w-xs text-sm text-muted">{t("dashboard.noTransactionsInRange")}</p>
+              <p className="font-bold">{t(filterCount ? "dashboard.noMatch" : "dashboard.noTransactionsFound")}</p>
+              <p className="mt-1 max-w-xs text-sm text-muted">{t(filterCount ? "dashboard.noMatchHint" : "dashboard.noTransactionsInRange")}</p>
               <div className="mt-5 flex gap-2">
                 <Link href={`${PATHS.CREATE_BUDGET}?type=1`} className="pb-press pb-ghost-btn">
                   {t("dashboard.quickExpense")}

@@ -35,7 +35,7 @@ export function FilterDatePicker({
   day,
   onChange,
   hideHint,
-  inModal = false,
+  inModal: inModalProp = false,
   calendarType,
 }: FilterDatePickerProps) {
   const { t } = useTranslation();
@@ -44,12 +44,13 @@ export function FilterDatePicker({
     calendarType ?? user?.preferences?.dateCalendar ?? "jalali";
 
   const {
+    inModal,
     wrapperRef,
     calendarOpen,
     setCalendarOpen,
     usePortal,
     resolvedPortalTarget,
-  } = useDatePickerOverlay(inModal);
+  } = useDatePickerOverlay(inModalProp);
 
   const isGregorian = resolvedCalendar === "gregorian";
   const calendar = isGregorian ? gregorianCalendar : persianCalendar;
