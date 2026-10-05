@@ -11,6 +11,7 @@ import { PATHS } from "@/common/constants";
 import type { ILandingContent } from "@/common/interfaces/landing.interface";
 import { useLandingContent } from "./useLandingContent";
 import { LandingPricingSection } from "./LandingPricingSection";
+import { formatLocalizedDigits } from "@/i18n/format-localized-digits";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { useAppSelector } from "@/stores/hooks";
 import { isAuthSelector } from "@/stores/auth";
@@ -23,7 +24,7 @@ export function PricingPage({
 }: {
   initialContent?: ILandingContent;
 }) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { content } = useLandingContent(initialContent);
   const isAuth = useAppSelector(isAuthSelector);
   const router = useRouter();
@@ -34,17 +35,32 @@ export function PricingPage({
     void subscriptionApi.fetchPublicSubscriptionPlans().then(setLivePlans).catch(() => setLivePlans(null));
   }, []);
 
+  const digits = (value: string) => formatLocalizedDigits(value, language);
+  // Live plans come from the subscription system, so the copy around them must
+  // not promise "everything free" (the old CMS text did).
   const pricing = livePlans && livePlans.length > 0
     ? {
         ...content.pricing,
+        eyebrow: t("landingUi.pricingEyebrow"),
+        title: t("landingUi.pricingTitle"),
+        description: t("landingUi.pricingSubtitle"),
         plans: livePlans.map((plan) => ({
           id: `subscription-${plan.slug}`,
           name: plan.name,
-          price: `${plan.price.toLocaleString("fa-IR")} ${plan.priceUnit}`,
-          period: plan.period === "lifetime" ? "یک‌بار" : plan.period === "yearly" ? "سالانه" : plan.period === "monthly" ? "ماهانه" : `${plan.periodDays ?? ""} روزه`,
+          price: plan.price ? `${digits(plan.price.toLocaleString("en-US"))} ${plan.priceUnit}` : t("landingUi.free"),
+          period:
+            plan.price === 0
+              ? ""
+              : plan.period === "monthly"
+                ? t("landingUi.perMonth")
+                : plan.period === "yearly"
+                  ? t("landingUi.perYear")
+                  : plan.period === "lifetime"
+                    ? t("landingUi.lifetime")
+                    : digits(String(plan.periodDays ?? "")),
           description: plan.description,
-          features: plan.features.filter((feature) => feature.enabled).map((feature) => feature.limit ? `${feature.label} (${feature.limit})` : feature.label),
-          cta: "تماس با ادمین",
+          features: plan.features.filter((feature) => feature.enabled).map((feature) => feature.limit ? `${feature.label} (${digits(String(feature.limit))})` : feature.label),
+          cta: plan.price ? t("auto.k26dbf2a80c") : t("auto.k4bbf9a5a8b"),
           highlighted: plan.highlighted,
         })),
       }

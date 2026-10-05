@@ -17,6 +17,10 @@ const PAGE_TITLE_KEYS: Record<string, string> = {
   [PATHS.EXPORTS]: "nav.customExports",
   [PATHS.PLANS]: "nav.plans",
   [PATHS.BOXES]: "nav.boxes",
+  [PATHS.PAYMENT_CARDS]: "nav.myCards",
+  [PATHS.BANK_IMPORT]: "nav.bankImport",
+  [PATHS.VENTURES]: "nav.businessPartners",
+  [PATHS.WORK_ATTENDANCE]: "nav.workAttendance",
   [PATHS.CREATE_BUDGET]: "nav.createTransaction",
   [PATHS.CATEGORIES]: "nav.categories",
   [PATHS.DEBTS]: "nav.debts",
@@ -77,12 +81,16 @@ export function AppShell({ children }: { children: ReactNode }) {
   const titleKey =
     (isBudgetEdit
       ? "nav.editTransaction"
-      : isProjectDetail && pathname !== PATHS.PROJECTS
+      : isProjectDetail &&
+          pathname !== PATHS.PROJECTS &&
+          pathname !== PATHS.WORK_ATTENDANCE
         ? "nav.manageProject"
         : isInstallmentDetail
           ? "nav.paymentPlan"
           : isDebtDetail
             ? "nav.debts"
+            : pathname.startsWith("/ventures/")
+              ? "nav.businessPartners"
             : PAGE_TITLE_KEYS[pathname]) ?? APP_NAME_FA;
 
   const shellProps = {
