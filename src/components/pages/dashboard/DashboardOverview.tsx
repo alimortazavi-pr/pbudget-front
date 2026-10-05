@@ -8,7 +8,7 @@ import type { IBudget } from "@/common/interfaces/budget.interface";
 import { resolveBudgetCurrency, type UserCurrency } from "@/common/constants/user-preferences";
 import { getJalaliDaysInMonth } from "@/common/utils/jalali-date";
 import { resolveCategoryColor } from "@/common/constants/category-colors";
-import { formatAmountOnly, formatPriceWithCurrency } from "@/common/utils/format-currency";
+import { formatAmountOnly, formatCompactAmount, formatPriceWithCurrency } from "@/common/utils/format-currency";
 import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 import { OverflowReveal } from "@/components/common/ui/OverflowReveal";
 import { AnimatedNumber } from "@/components/common/motion/AnimatedNumber";
@@ -143,7 +143,8 @@ export function DashboardKpis({
   const { formatCount } = useLocalizedDate();
   const { displayCurrencyLabel } = useCurrencyLabels();
   const unit = displayCurrencyLabel(currency);
-  const amount = (n: number) => formatAmountOnly(n, currency);
+  const fullAmount = (n: number) => formatAmountOnly(n, currency);
+  const amount = (n: number) => formatCompactAmount(n, currency);
   const net = current.income - current.cost;
   const prevNet = previous ? previous.income - previous.cost : undefined;
   const savingsRate = current.income > 0 ? Math.round((net / current.income) * 100) : null;
@@ -176,6 +177,7 @@ export function DashboardKpis({
       tone: "violet",
       value: net,
       format: (n: number) => `${n < 0 ? "−" : ""}${amount(Math.abs(n))}`,
+      full: (n: number) => `${n < 0 ? "−" : ""}${fullAmount(Math.abs(n))}`,
       unit,
       delta:
         prevNet !== undefined && prevNet !== 0 ? (
@@ -219,7 +221,7 @@ export function DashboardKpis({
               </span>
             </div>
             <p className="mt-2 flex min-w-0 items-baseline gap-1">
-              <OverflowReveal full={`${card.format(card.value)} ${card.unit}`.trim()} className="truncate">
+              <OverflowReveal full={`${("full" in card && card.full ? card.full : fullAmount)(card.value)} ${card.unit}`.trim()} className="truncate">
                 <AnimatedNumber
                   value={card.value}
                   format={card.format}
@@ -245,10 +247,16 @@ type InsightsProps = {
   year: number;
   month: number;
   calendar: string;
+  /** Totals computed by the server over the whole filtered set (paginated mode). */
+  server?: {
+    totalCost: number;
+    categories: { categoryId: string | null; title: string | null; color: string | null; amount: number }[];
+    days: { year: number; month: number; day: number; cost: number }[];
+  } | null;
 };
 
 /** "This period at a glance": where the money went and how spending moved by day. */
-export function DashboardInsights({ budgets, currency, duration, year, month, calendar }: InsightsProps) {
+export function DashboardInsights({ budgets, currency, duration, year, month, calendar, server }: InsightsProps) {
   const { t } = useTranslation();
   const { formatCount } = useLocalizedDate();
 
@@ -258,6 +266,15 @@ export function DashboardInsights({ budgets, currency, duration, year, month, ca
   );
 
   const categories = useMemo(() => {
+    if (server) {
+      const rows = server.categories.map((row, index) => ({
+        title: row.title ?? t("dashboard.uncategorized"),
+        color: resolveCategoryColor(row.color, row.categoryId ?? `none-${index}`),
+        amount: row.amount,
+      }));
+      const top = rows.slice(0, 5);
+      return { rows: top, others: Math.max(0, server.totalCost - top.reduce((sum, row) => sum + row.amount, 0)), total: server.totalCost };
+    }
     const map = new Map<string, { title: string; color: string; amount: number }>();
     let total = 0;
     for (const budget of own) {
@@ -275,22 +292,28 @@ export function DashboardInsights({ budgets, currency, duration, year, month, ca
     }
     const rows = [...map.values()].sort((a, b) => b.amount - a.amount);
     return { rows: rows.slice(0, 5), others: rows.slice(5).reduce((s, r) => s + r.amount, 0), total };
-  }, [own, t]);
+  }, [own, server, t]);
 
   const days = useMemo(() => {
     if (duration !== "monthly") return null;
     const count =
       calendar === "gregorian" ? new Date(year, month, 0).getDate() : getJalaliDaysInMonth(year, month);
     const costs = Array.from({ length: count }, () => 0);
-    for (const budget of own) {
-      const day = Number(budget.day);
-      if (budget.type === BudgetType.COST && day >= 1 && day <= count) costs[day - 1] += budget.price;
+    if (server) {
+      for (const row of server.days) {
+        if (row.day >= 1 && row.day <= count) costs[row.day - 1] += row.cost;
+      }
+    } else {
+      for (const budget of own) {
+        const day = Number(budget.day);
+        if (budget.type === BudgetType.COST && day >= 1 && day <= count) costs[day - 1] += budget.price;
+      }
     }
     const max = Math.max(...costs, 1);
     const activeDays = costs.filter((c) => c > 0).length;
     const peak = costs.indexOf(Math.max(...costs));
     return { costs, max, activeDays, peak, total: costs.reduce((a, b) => a + b, 0) };
-  }, [own, duration, calendar, year, month]);
+  }, [own, server, duration, calendar, year, month]);
 
   const money = (n: number) => formatPriceWithCurrency(n, currency);
 

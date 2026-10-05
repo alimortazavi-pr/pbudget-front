@@ -76,4 +76,12 @@ export interface IBudgetsSummary {
   totalsByCurrency?: Record<string, { income: number; cost: number; count: number }>;
   currency?: string;
   truncated?: boolean;
+  /** Present only when the server paginated the list (newer backend). */
+  pagination?: { page: number; limit: number; total: number; pages: number };
+  dayTotals?: { year: number; month: number; day: number; income: number; cost: number }[];
+  insights?: {
+    totalCost: number;
+    categories: { categoryId: string | null; title: string | null; color: string | null; amount: number }[];
+    days: { year: number; month: number; day: number; cost: number }[];
+  };
 }

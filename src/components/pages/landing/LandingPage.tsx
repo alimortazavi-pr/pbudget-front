@@ -41,6 +41,7 @@ import { landingContactLabels, landingWhyTitle } from "@/i18n/localize-landing-c
 import { useAppSelector } from "@/stores/hooks";
 import { isAuthSelector } from "@/stores/auth";
 import { LandingContactForm } from "./LandingContactForm";
+import { BentoShowcase, CompareSection, PersonaSection, SavingsSimulator, SecuritySection } from "./LandingSections";
 import { useLandingContent } from "./useLandingContent";
 
 const FEATURE_ICONS: Record<string, typeof Wallet2> = {
@@ -243,6 +244,9 @@ function HeroStack() {
           </span>
           <span>{t("landingUi.mockReminder")}</span>
         </div>
+        <span className="l3-layer l3-coin l3-coin-a" aria-hidden>$</span>
+        <span className="l3-layer l3-coin l3-coin-b" aria-hidden>₮</span>
+        <span className="l3-layer l3-coin l3-coin-c" aria-hidden />
         <div className="l3-layer l3-g l3-chip l3-chip-b">
           <span className="lx-icon !size-8 shrink-0 !rounded-lg" data-accent="teal">
             <Profile2User size={16} variant="Bold" />
@@ -572,6 +576,8 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
           </div>
         </section>
 
+        <BentoShowcase />
+
         {/* ------------------------------------------------ features: cards fly in from depth */}
         <section id="features" className="relative scroll-mt-20 py-20 md:py-28">
           <div className="lx-container">
@@ -637,6 +643,10 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
           </div>
         </section>
 
+        <PersonaSection />
+
+        <SavingsSimulator href={isAuth ? PATHS.BOXES : PATHS.GET_STARTED} />
+
         {/* ------------------------------------------------ telegram: chat plays as you scroll */}
         <section className="l3-stage l3-chatscene" data-scene>
           <div className="l3-aurora"><span className="l3-orb l3-orb-a" /><span className="l3-orb l3-orb-c" /></div>
@@ -681,6 +691,10 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
             </div>
           </div>
         </section>
+
+        <CompareSection />
+
+        <SecuritySection />
 
         {/* ------------------------------------------------ why us */}
         <section id="why-us" className="scroll-mt-20 py-20 md:py-28">

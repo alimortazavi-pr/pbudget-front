@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowDown, ArrowUp, DocumentUpload, MoneyRecive, MoneySend, Wallet2 } from "iconsax-reactjs";
+import { useEffect, useId, useState } from "react";
+import { ArrowDown, ArrowUp, DocumentUpload, Eye, EyeSlash, MoneyRecive, MoneySend } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 import { AnimatedNumber } from "@/components/common/motion/AnimatedNumber";
-
-import { formatAmountOnly, formatPriceWithCurrency } from "@/common/utils/format-currency";
+import { OverflowReveal } from "@/components/common/ui/OverflowReveal";
+import { formatAmountOnly } from "@/common/utils/format-currency";
 import {
   CURRENCY_OPTIONS,
   DEFAULT_USER_PREFERENCES,
@@ -14,168 +15,199 @@ import {
 } from "@/common/constants/user-preferences";
 import { getWalletBalance } from "@/common/utils/wallet-balances";
 import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
+import { useLocalizedDate } from "@/i18n/hooks/useLocalizedDate";
 import { useTranslation } from "@/components/providers/LanguageProvider";
 import { useAppSelector } from "@/stores/hooks";
 import { userSelector } from "@/stores/profile";
 
 type DashboardHeroProps = {
   firstName?: string;
+  /** Totals of the period currently shown (after filters). */
   income: number;
   expense: number;
-  simple?: boolean;
+  /** Daily spending of the period, for the sparkline (empty = hide it). */
+  trend?: number[];
   "data-tour"?: string;
 };
 
+const HIDE_KEY = "pb-hide-balance";
+
 function walletDisplayOrder(preferred: UserCurrency): UserCurrency[] {
-  return [
-    preferred,
-    ...CURRENCY_OPTIONS.map((option) => option.id).filter(
-      (currency) => currency !== preferred,
-    ),
-  ];
+  return [preferred, ...CURRENCY_OPTIONS.map((option) => option.id).filter((currency) => currency !== preferred)];
 }
 
-export function DashboardHero({
-  firstName,
-  income,
-  expense,
-  simple = false,
-  "data-tour": dataTour,
-}: DashboardHeroProps) {
+/** Smooth area sparkline, drawn in with a stroke animation. */
+function Sparkline({ values, label }: { values: number[]; label: string }) {
+  const id = useId().replace(/:/g, "");
+  const max = Math.max(...values, 1);
+  const step = 100 / Math.max(values.length - 1, 1);
+  const points = values.map((value, index) => [index * step, 30 - (value / max) * 26] as const);
+  const line = points
+    .map(([x, y], index) => {
+      if (index === 0) return `M${x},${y}`;
+      const [px, py] = points[index - 1];
+      const cx = (px + x) / 2;
+      return `C${cx},${py} ${cx},${y} ${x},${y}`;
+    })
+    .join(" ");
+  const area = `${line} L100,32 L0,32 Z`;
+  return (
+    <svg viewBox="0 0 100 32" preserveAspectRatio="none" className="h-16 w-full overflow-visible" role="img" aria-label={label}>
+      <defs>
+        <linearGradient id={`g${id}`} x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stopColor="#fff" stopOpacity="0.45" />
+          <stop offset="100%" stopColor="#fff" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={area} fill={`url(#g${id})`} className="pb-fade-in" />
+      <path d={line} fill="none" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" vectorEffect="non-scaling-stroke" pathLength={1} className="pb-draw" />
+    </svg>
+  );
+}
+
+export function DashboardHero({ firstName, income, expense, trend = [], "data-tour": dataTour }: DashboardHeroProps) {
   const { t } = useTranslation();
+  const { formatCount } = useLocalizedDate();
   const { displayCurrencyLabel } = useCurrencyLabels();
   const user = useAppSelector(userSelector);
-  const preferred =
-    user?.preferences?.currency ?? DEFAULT_USER_PREFERENCES.currency;
-  const currency = preferred;
-  const orderedCurrencies = walletDisplayOrder(preferred);
+  const preferred = user?.preferences?.currency ?? DEFAULT_USER_PREFERENCES.currency;
+  const [hidden, setHidden] = useState(false);
+
+  useEffect(() => {
+    try {
+      setHidden(window.localStorage.getItem(HIDE_KEY) === "1");
+    } catch {
+      /* private mode */
+    }
+  }, []);
+
+  function toggleHidden() {
+    setHidden((value) => {
+      try {
+        window.localStorage.setItem(HIDE_KEY, value ? "0" : "1");
+      } catch {
+        /* private mode */
+      }
+      return !value;
+    });
+  }
+
+  const balance = getWalletBalance(user, preferred);
+  const unit = displayCurrencyLabel(preferred);
+  const others = walletDisplayOrder(preferred)
+    .slice(1)
+    .map((currency) => ({ currency, amount: getWalletBalance(user, currency) }))
+    .filter((row) => row.amount !== 0);
+  const net = income - expense;
+  const total = income + expense;
+  const incomeShare = total > 0 ? Math.round((income / total) * 100) : 0;
+  const hasTrend = trend.some((value) => value > 0);
+  const mask = "••••••";
+
+  const actions = [
+    { href: `${PATHS.CREATE_BUDGET}?type=1`, label: t("dashboard.quickExpense"), icon: MoneySend },
+    { href: `${PATHS.CREATE_BUDGET}?type=0`, label: t("dashboard.quickIncome"), icon: MoneyRecive },
+    { href: PATHS.BANK_IMPORT, label: t("nav.bankImport"), icon: DocumentUpload },
+  ];
 
   return (
-    <section
-      className="pb-dashboard-hero relative -mx-4 overflow-hidden px-4 pb-6 pt-0 lg:mx-0 lg:rounded-3xl lg:px-8 lg:pb-8 lg:pt-6"
-      data-tour={dataTour}
-    >
-      <div className="pointer-events-none absolute -end-8 -top-10 size-40 rounded-full bg-white/10 blur-2xl" />
-      <div className="pointer-events-none absolute -bottom-6 start-0 size-32 rounded-full bg-white/8 blur-xl" />
+    <section className="pb-wallet pb-hero relative text-white" data-tour={dataTour}>
+      <span aria-hidden className="pb-hero-dots" />
 
-      <div className="relative z-10 pt-5 lg:pt-0">
-        <div className="mb-5 flex items-start justify-between gap-3 lg:mb-0">
-          <div>
-            <p className="text-sm font-medium text-white/85 lg:text-base">
-              {t("dashboard.greeting", {
-                name: firstName ?? t("dashboard.defaultUserName"),
-              })}
-            </p>
-            <h2 className="mt-0.5 text-lg font-bold text-white lg:text-2xl">
-              {simple
-                ? t("dashboard.simpleDashboardTitle")
-                : t("dashboard.financialDashboard")}
-            </h2>
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:gap-8">
+        {/* ------------------------------------------------ balance */}
+        <div className="flex min-w-0 flex-col justify-between gap-5">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-white/20 text-lg font-extrabold backdrop-blur-sm">
+                {(firstName ?? "?").trim().charAt(0) || "?"}
+              </span>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium text-white/85">
+                  {t("dashboard.greeting", { name: firstName ?? t("dashboard.defaultUserName") })}
+                </p>
+                <p className="text-xs text-white/70">{t("dashboard.walletBalance")}</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={toggleHidden}
+              aria-pressed={hidden}
+              aria-label={t(hidden ? "dashboard.showBalance" : "dashboard.hideBalance")}
+              className="pb-press flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm transition-colors hover:bg-white/25"
+            >
+              {hidden ? <EyeSlash size={20} /> : <Eye size={20} />}
+            </button>
           </div>
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm lg:size-12">
-            <Wallet2 size={22} color="#fff" variant="Bold" />
+
+          <div className="flex min-w-0 items-end gap-2">
+            <OverflowReveal full={hidden ? mask : `${formatAmountOnly(balance, preferred)} ${unit}`} className="min-w-0 truncate">
+              <span className={`pb-balance-amount text-white ${formatAmountOnly(balance, preferred).length > 13 ? "pb-balance-sm" : ""}`} dir="ltr">
+                {hidden ? mask : <AnimatedNumber value={balance} format={(n) => formatAmountOnly(n, preferred)} />}
+              </span>
+            </OverflowReveal>
+            <span className="mb-1.5 shrink-0 text-sm font-semibold text-white/80 lg:text-base">{unit}</span>
+          </div>
+
+          <div className="-mt-2 flex flex-wrap items-center gap-2">
+            {!hidden && total > 0 ? (
+              <span className="pb-wallet-chip" data-tone={net >= 0 ? "up" : "down"}>
+                {net >= 0 ? <ArrowUp size={13} /> : <ArrowDown size={13} />}
+                {t("dashboard.periodNet")}: {net < 0 ? "−" : "+"}
+                {formatAmountOnly(Math.abs(net), preferred)} {unit}
+              </span>
+            ) : null}
+            {others.map((row) => (
+              <span key={row.currency} className="pb-wallet-chip">
+                {hidden ? mask : formatAmountOnly(row.amount, row.currency)} {displayCurrencyLabel(row.currency)}
+              </span>
+            ))}
           </div>
         </div>
 
-        <div className="pb-dashboard-hero-body">
-          <div className="mt-5 lg:mt-6">
-            <div className="rounded-2xl border border-white/20 bg-white/12 p-4 shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-md lg:p-6">
-              <p className="text-xs font-medium text-white/75 lg:text-sm">
-                {t("dashboard.walletBalance")}
-              </p>
-              <div className="mt-3 space-y-3">
-                {orderedCurrencies.map((walletCurrency) => {
-                  const amount = getWalletBalance(user, walletCurrency);
-                  const isPreferred = walletCurrency === preferred;
-                  if (!isPreferred && amount === 0) {
-                    return null;
-                  }
-
-                  const isNegative = amount < 0;
-                  return (
-                    <div
-                      key={walletCurrency}
-                      className={
-                        isPreferred
-                          ? ""
-                          : "rounded-xl border border-white/15 bg-black/10 px-3 py-2.5"
-                      }
-                    >
-                      {isNegative ? (
-                        <p className="text-xs font-medium text-rose-200">
-                          {t("dashboard.insufficientFunds", {
-                            currency: displayCurrencyLabel(walletCurrency),
-                          })}
-                        </p>
-                      ) : null}
-                      <div className="flex items-end justify-between gap-4">
-                        <p
-                          className={
-                            isPreferred
-                              ? "pb-balance-amount text-white"
-                              : "text-lg font-bold text-white"
-                          }
-                        >
-                          <AnimatedNumber
-                            value={amount}
-                            format={(n) => formatAmountOnly(n, walletCurrency)}
-                          />
-                        </p>
-                        <span className="mb-1 shrink-0 text-sm font-medium text-white/80 lg:text-base">
-                          {displayCurrencyLabel(walletCurrency)}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+        {/* ------------------------------------------------ period glance */}
+        <div className="pb-wallet-panel min-w-0">
+          <div className="flex items-center justify-between text-xs font-medium text-white/80">
+            <span>{t("dashboard.incomeVsExpense")}</span>
+            {total > 0 ? <span>{formatCount(incomeShare)}٪ {t("dashboard.periodIncome")}</span> : null}
+          </div>
+          <div className="mt-2 flex h-2.5 overflow-hidden rounded-full bg-white/20" role="img" aria-label={t("dashboard.incomeVsExpense")}>
+            <span className="pb-bar-x h-full bg-emerald-300" style={{ width: `${total > 0 ? incomeShare : 50}%` }} />
+            <span className="h-full flex-1 bg-rose-950/40" />
+          </div>
+          <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+            <div className="min-w-0 rounded-xl bg-white/10 px-3 py-2">
+              <p className="flex items-center gap-1 text-white/75"><ArrowDown size={12} />{t("dashboard.periodIncome")}</p>
+              <OverflowReveal full={`${formatAmountOnly(income, preferred)} ${unit}`} className="mt-0.5 truncate text-sm font-bold">
+                {hidden ? mask : formatAmountOnly(income, preferred)}
+              </OverflowReveal>
+            </div>
+            <div className="min-w-0 rounded-xl bg-white/10 px-3 py-2">
+              <p className="flex items-center gap-1 text-white/75"><ArrowUp size={12} />{t("dashboard.periodExpense")}</p>
+              <OverflowReveal full={`${formatAmountOnly(expense, preferred)} ${unit}`} className="mt-0.5 truncate text-sm font-bold">
+                {hidden ? mask : formatAmountOnly(expense, preferred)}
+              </OverflowReveal>
             </div>
           </div>
-
-          {simple ? (
-          <div className="pb-dashboard-hero-stats mt-3 grid grid-cols-2 gap-2 lg:mt-0 lg:gap-4">
-            <div className="rounded-xl border border-white/15 bg-black/10 px-3 py-2.5 backdrop-blur-sm lg:px-4 lg:py-4">
-              <div className="flex items-center gap-1 text-xs text-white/75 lg:text-sm">
-                <ArrowDown size={14} variant="Bold" />
-                {t("dashboard.periodIncome")}
-              </div>
-              <p className="mt-1 text-left text-sm font-bold text-white lg:text-lg">
-                {formatPriceWithCurrency(income, currency)}
-              </p>
+          {hasTrend ? (
+            <div className="mt-3">
+              <p className="mb-1 text-[11px] text-white/70">{t("dashboard.dailySpending")}</p>
+              <Sparkline values={trend} label={t("dashboard.dailySpending")} />
             </div>
-            <div className="rounded-xl border border-white/15 bg-black/10 px-3 py-2.5 backdrop-blur-sm lg:px-4 lg:py-4">
-              <div className="flex items-center gap-1 text-xs text-white/75 lg:text-sm">
-                <ArrowUp size={14} variant="Bold" />
-                {t("dashboard.periodExpense")}
-              </div>
-              <p className="mt-1 text-left text-sm font-bold text-white lg:text-lg">
-                {formatPriceWithCurrency(expense, currency)}
-              </p>
-            </div>
-          </div>
-          ) : (
-            // Period income/expense live in the KPI cards below; the hero
-            // offers the three things people do most from here instead.
-            <div className="pb-dashboard-hero-stats mt-3 grid grid-cols-3 gap-2 lg:mt-0 lg:grid-cols-1 lg:gap-2.5">
-              {[
-                { href: `${PATHS.CREATE_BUDGET}?type=1`, label: t("dashboard.quickExpense"), icon: MoneySend },
-                { href: `${PATHS.CREATE_BUDGET}?type=0`, label: t("dashboard.quickIncome"), icon: MoneyRecive },
-                { href: PATHS.BANK_IMPORT, label: t("nav.bankImport"), icon: DocumentUpload },
-              ].map((action) => (
-                <Link
-                  key={action.href}
-                  href={action.href}
-                  className="pb-press flex flex-col items-center gap-1.5 rounded-xl border border-white/20 bg-white/10 px-2 py-3 text-xs font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/20 lg:flex-row lg:gap-3 lg:px-4 lg:text-sm"
-                >
-                  <span className="flex size-8 items-center justify-center rounded-lg bg-white/20">
-                    <action.icon size={18} variant="Bold" color="#fff" />
-                  </span>
-                  {action.label}
-                </Link>
-              ))}
-            </div>
-          )}
+          ) : null}
         </div>
+      </div>
+
+      {/* ------------------------------------------------ quick actions */}
+      <div className="mt-5 grid grid-cols-3 gap-2 lg:mt-6 lg:gap-3">
+        {actions.map((action) => (
+          <Link key={action.href} href={action.href} className="pb-wallet-action pb-press">
+            <span className="flex size-8 items-center justify-center rounded-lg bg-white/20">
+              <action.icon size={18} variant="Bold" color="#fff" />
+            </span>
+            <span className="truncate">{action.label}</span>
+          </Link>
+        ))}
       </div>
     </section>
   );

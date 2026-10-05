@@ -27,7 +27,8 @@ export async function fetchBudgets(
   });
   return {
     ...data,
-    budgets: sortBudgetsByTransactionDateDesc(data.budgets ?? []),
+    // A paginated response is already in the order the user asked for.
+    budgets: data.pagination ? (data.budgets ?? []) : sortBudgetsByTransactionDateDesc(data.budgets ?? []),
   };
 }
 

@@ -184,6 +184,57 @@
 .l3-cta > * { position: relative; z-index: 1; }
 .l3-magnet { transition: transform 0.25s var(--pb-ease-out, ease); }
 
+/* ------------------------------------------------------------ bento tiles */
+.l3-ring-draw { animation: l3-ring 1.6s var(--pb-ease-out, ease) both; }
+@keyframes l3-ring { from { stroke-dashoffset: 251; } }
+.l3-minical { max-width: 24rem; margin-inline: auto; display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.3rem; font-size: 0.72rem; text-align: center; }
+.l3-minical-head { grid-column: 1 / -1; text-align: start; font-weight: 700; margin-bottom: 0.2rem; }
+.l3-minical i { font-style: normal; aspect-ratio: 1; display: grid; place-items: center; border-radius: 0.55rem; position: relative; background: color-mix(in oklch, var(--surface-secondary) 70%, transparent); }
+.l3-minical i:empty { background: transparent; }
+.l3-minical i[data-mark="true"] { background: color-mix(in oklch, var(--lx-violet) 22%, transparent); font-weight: 700; }
+.l3-minical i[data-mark="true"]::after { content: ""; position: absolute; inset-block-end: 3px; width: 4px; height: 4px; border-radius: 9999px; background: var(--lx-violet); }
+.l3-minical i[data-today="true"] { background: var(--lx-rose); color: #fff; font-weight: 800; box-shadow: 0 6px 14px -6px var(--lx-rose); }
+.l3-orbfill { --v: 50; width: 4.2rem; height: 4.2rem; border-radius: 9999px; display: grid; place-items: center; font-size: 0.78rem; font-weight: 700; background: conic-gradient(var(--lx-teal) calc(var(--v) * 1%), var(--surface-secondary) 0); position: relative; }
+.l3-orbfill::before { content: ""; position: absolute; inset: 0.4rem; border-radius: inherit; background: var(--surface); z-index: 0; }
+.l3-orbfill > * { position: relative; z-index: 1; }
+.l3-slidein { animation: l3-slidein 3.6s ease-in-out infinite both; }
+@keyframes l3-slidein { 0%, 8% { opacity: 0; transform: translateY(10px); } 22%, 80% { opacity: 1; transform: none; } 95%, 100% { opacity: 0; transform: translateY(-6px); } }
+.l3-split { display: block; height: 100%; transform-origin: inline-start; animation: lx-grow 1s var(--pb-ease-out, ease) both; }
+@keyframes lx-grow-x { from { transform: scaleX(0); } }
+.l3-split { animation-name: lx-grow-x; }
+.l3-persona { display: flex; flex-direction: column; }
+
+/* ------------------------------------------------------------ simulator */
+.l3-range { -webkit-appearance: none; appearance: none; width: 100%; height: 0.5rem; border-radius: 9999px; background: rgb(255 255 255 / 0.18); outline: none; }
+.l3-range::-webkit-slider-thumb { -webkit-appearance: none; width: 1.5rem; height: 1.5rem; border-radius: 9999px; background: linear-gradient(135deg, var(--lx-rose), var(--lx-violet)); border: 3px solid #fff; box-shadow: 0 6px 16px -4px rgb(0 0 0 / 0.5); cursor: grab; }
+.l3-range::-moz-range-thumb { width: 1.5rem; height: 1.5rem; border-radius: 9999px; background: linear-gradient(135deg, var(--lx-rose), var(--lx-violet)); border: 3px solid #fff; cursor: grab; }
+.l3-stage .l3-g .lx-gradient-text { display: inline-block; }
+
+/* -------------------------------------------------------------- compare */
+.l3-compare { border-radius: 1.75rem; border: 1px solid var(--lx-line); background: var(--lx-card); overflow: hidden; }
+.l3-compare-head, .l3-compare-row { display: grid; grid-template-columns: 1.6fr 1fr 1fr; align-items: center; gap: 0.5rem; padding: 0.9rem 1.25rem; }
+.l3-compare-head { font-size: 0.8rem; font-weight: 700; text-align: center; color: var(--lx-muted); background: color-mix(in oklch, var(--surface-secondary) 60%, transparent); }
+.l3-compare-row { font-size: 0.9rem; border-top: 1px solid var(--lx-line); }
+.l3-compare-row > span:first-child { text-align: start; font-weight: 500; }
+.l3-compare-new { background: color-mix(in oklch, var(--lx-teal) 8%, transparent); margin-block: -0.9rem; padding-block: 0.9rem; font-weight: 700; color: var(--lx-ink); }
+.l3-compare-head .l3-compare-new { margin-block: -0.9rem; color: color-mix(in oklch, var(--lx-teal) 60%, var(--lx-ink)); }
+
+/* ------------------------------------------------------------- security */
+.l3-shield { position: relative; display: grid; place-items: center; width: 4.6rem; height: 4.6rem; border-radius: 1.4rem; color: #fff; background: linear-gradient(135deg, var(--lx-teal), var(--lx-violet)); box-shadow: 0 20px 40px -16px var(--lx-teal); }
+.l3-shield::before, .l3-shield::after { content: ""; position: absolute; inset: 0; border-radius: inherit; border: 2px solid var(--lx-teal); opacity: 0; animation: l3-pulse 3s ease-out infinite; }
+.l3-shield::after { animation-delay: 1.5s; }
+@keyframes l3-pulse { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.7); opacity: 0; } }
+
+/* ------------------------------------------------------- hero coins/cards */
+.l3-coin { position: absolute; border-radius: 9999px; display: grid; place-items: center; font-weight: 800; color: #fff; box-shadow: inset 0 -4px 8px rgb(0 0 0 / 0.18), 0 12px 24px -10px rgb(0 0 0 / 0.5); animation: l3-bob 7s ease-in-out infinite; }
+.l3-coin-a { width: 3.2rem; height: 3.2rem; inset-block-start: -6%; inset-inline-end: 6%; background: radial-gradient(circle at 30% 30%, #fde68a, #f59e0b); --z: 240; animation-delay: -1s; }
+.l3-coin-b { width: 2.2rem; height: 2.2rem; inset-block-end: -8%; inset-inline-start: 14%; background: radial-gradient(circle at 30% 30%, #99f6e4, #14b8a6); --z: 210; animation-delay: -3s; }
+.l3-coin-c { width: 1.5rem; height: 1.5rem; inset-block-start: 38%; inset-inline-start: -9%; background: radial-gradient(circle at 30% 30%, #fecdd3, #f43f5e); --z: 260; animation-delay: -5s; }
+
+@media (max-width: 767px) {
+  .l3-compare-head, .l3-compare-row { grid-template-columns: 1.5fr 0.7fr 0.7fr; padding-inline: 0.8rem; font-size: 0.78rem; }
+}
+
 /* ----------------------------------------------------------------- mobile */
 @media (max-width: 1023px) {
   .l3-orb { opacity: 0.32; filter: blur(60px); }

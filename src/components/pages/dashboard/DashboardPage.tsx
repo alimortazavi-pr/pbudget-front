@@ -12,6 +12,7 @@ import { PATHS } from "@/common/constants";
 import { useHydratedSearchParams } from "@/common/hooks/useHydratedSearchParams";
 import { useLocalizedDate } from "@/i18n/hooks/useLocalizedDate";
 import { getJalaliNow } from "@/common/utils";
+import { getJalaliDaysInMonth } from "@/common/utils/jalali-date";
 import { formatBudgetDate, getNowDateParts } from "@/common/utils/calendar-date";
 import { formatPriceWithCurrency } from "@/common/utils/format-currency";
 import { resolveBudgetCurrency, resolveBudgetDateCalendar, type UserCurrency } from "@/common/constants/user-preferences";
@@ -37,6 +38,8 @@ import { DashboardHero } from "@/components/pages/dashboard/DashboardHero";
 import { WorkTimeQuickWidget } from "@/components/pages/projects/WorkTimeQuickWidget";
 import { HmiDashboardPage } from "@/components/pages/dashboard/HmiDashboardPage";
 import { TransactionCard } from "@/components/pages/dashboard/TransactionCard";
+import { TransactionPagination } from "@/components/pages/dashboard/TransactionPagination";
+import { displayAmountToToman, shouldConvertToman } from "@/common/utils/money-display";
 import { TransactionListSkeleton } from "@/components/pages/dashboard/TransactionListSkeleton";
 import * as cardsApi from "@/common/api/payment-cards";
 import * as projectsApi from "@/common/api/projects";
@@ -98,16 +101,59 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
   const [cards, setCards] = useState<IPaymentCard[]>([]);
   const [projects, setProjects] = useState<IProject[]>([]);
   const { displayCurrencyLabel } = useCurrencyLabels();
+  const paginated = appMode === "advanced";
+  const page = Math.max(1, parseInt(hydrated ? get("page", "1") : "1", 10) || 1);
+  const [pageSize, setPageSize] = useState(30);
+  const [serverMeta, setServerMeta] = useState<{
+    pagination: NonNullable<IBudgetsSummary["pagination"]>;
+    dayTotals: NonNullable<IBudgetsSummary["dayTotals"]>;
+    insights: NonNullable<IBudgetsSummary["insights"]>;
+  } | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const listTopRef = useRef<HTMLDivElement>(null);
+  const preferredCurrency = resolveBudgetCurrency(user?.preferences?.currency);
 
-  const queryString = useMemo(() => {
-    const params = new URLSearchParams();
-    params.set("duration", fetchDuration);
-    if (fetchDuration !== "all") params.set("year", year);
-    if (fetchDuration === "monthly" || fetchDuration === "daily") params.set("month", month);
-    if (fetchDuration === "daily") params.set("day", day);
-    if (category) params.set("category", category);
-    return params.toString();
-  }, [fetchDuration, year, month, day, category]);
+  useEffect(() => {
+    try {
+      const stored = Number(window.localStorage.getItem("pb-page-size"));
+      if ([20, 30, 50, 100].includes(stored)) setPageSize(stored);
+    } catch {
+      /* private mode */
+    }
+  }, []);
+
+  /** Filter params as the server understands them (amounts in toman). */
+  const toBaseAmount = (value: string) => {
+    if (!value) return "";
+    const n = Number(value.replace(/[,\s]/g, ""));
+    if (!Number.isFinite(n)) return "";
+    return String(shouldConvertToman(preferredCurrency) ? displayAmountToToman(n) : n);
+  };
+  const filterParams: Record<string, string> = {};
+  if (filters.q) filterParams.q = filters.q;
+  if (filters.type) filterParams.type = filters.type;
+  if (filters.min) filterParams.min = toBaseAmount(filters.min);
+  if (filters.max) filterParams.max = toBaseAmount(filters.max);
+  if (filters.card) filterParams.card = filters.card;
+  if (filters.project) filterParams.project = filters.project;
+  if (filters.flags) filterParams.flags = filters.flags;
+  if (filters.from) filterParams.from = filters.from;
+  if (filters.to) filterParams.to = filters.to;
+  if (filters.sort) filterParams.sort = filters.sort;
+  const filterParamsKey = JSON.stringify(filterParams);
+
+  const queryParams = new URLSearchParams();
+  queryParams.set("duration", fetchDuration);
+  if (fetchDuration !== "all") queryParams.set("year", year);
+  if (fetchDuration === "monthly" || fetchDuration === "daily") queryParams.set("month", month);
+  if (fetchDuration === "daily") queryParams.set("day", day);
+  if (category) queryParams.set("category", category);
+  if (paginated) {
+    queryParams.set("limit", String(pageSize));
+    queryParams.set("page", String(page));
+    Object.entries(filterParams).forEach(([key, value]) => queryParams.set(key, value));
+  }
+  const queryString = queryParams.toString();
 
   const updateQuery = useCallback(
     (patch: Record<string, string>) => {
@@ -116,6 +162,8 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         if (v) params.set(k, v);
         else params.delete(k);
       });
+      // Any change other than paging itself starts again from page 1.
+      if (!("page" in patch)) params.delete("page");
       router.replace(`${PATHS.HOME}?${params.toString()}`, { scroll: false });
     },
     [router],
@@ -136,15 +184,23 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
   }, [dispatch, initialData]);
 
   useEffect(() => {
+    // Wait for the URL (period + filters) — otherwise a default-period request is wasted.
+    if (!hydrated) return;
     let cancelled = false;
     async function load() {
       if (!hasLoadedOnce.current) setLoading(true);
+      else setRefreshing(true);
       try {
         const data = await budgetsApi.fetchBudgets(
           Object.fromEntries(new URLSearchParams(queryString)),
         );
         if (!cancelled) {
           dispatch(setBudgets(data));
+          setServerMeta(
+            data.pagination
+              ? { pagination: data.pagination, dayTotals: data.dayTotals ?? [], insights: data.insights ?? { totalCost: 0, categories: [], days: [] } }
+              : null,
+          );
           setOtherCurrencyTotals(
             Object.entries(data.totalsByCurrency ?? {})
               .filter(([currency]) => currency !== (data.currency ?? "toman"))
@@ -160,6 +216,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
       } finally {
         if (!cancelled) {
           setLoading(false);
+          setRefreshing(false);
           hasLoadedOnce.current = true;
         }
       }
@@ -168,7 +225,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
     return () => {
       cancelled = true;
     };
-  }, [dispatch, queryString, budgetRevision, t]);
+  }, [hydrated, dispatch, queryString, budgetRevision, t]);
 
   // Labels for the active-filter chips (cheap, once).
   useEffect(() => {
@@ -177,22 +234,49 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
     void projectsApi.fetchProjects().then(setProjects).catch(() => undefined);
   }, [hydrated, appMode]);
 
-  const preferredCurrency = resolveBudgetCurrency(user?.preferences?.currency);
   const filterCount = countActiveFilters(filters, category);
   const clientFilterCount = countActiveFilters(filters, "");
+  // Newer backend: filtering, totals and paging all happen on the server.
+  // Older backend (no `pagination` in the reply): filter the loaded period here.
+  const serverMode = serverMeta !== null;
   const filteredBudgets = useMemo(
-    () => applyTransactionFilters(budgets ?? [], filters),
+    () => (serverMode ? (budgets ?? []) : applyTransactionFilters(budgets ?? [], filters)),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- filtersKey covers every filter field
-    [budgets, filtersKey],
+    [budgets, serverMode, filtersKey],
   );
-  // With a client-side filter the server totals no longer describe the list.
   const shownTotals = useMemo(
     () =>
-      clientFilterCount
+      !serverMode && clientFilterCount
         ? sumByType(filteredBudgets, preferredCurrency)
         : { income: totalIncome ?? 0, cost: totalCost ?? 0 },
-    [clientFilterCount, filteredBudgets, preferredCurrency, totalIncome, totalCost],
+    [serverMode, clientFilterCount, filteredBudgets, preferredCurrency, totalIncome, totalCost],
   );
+  const resultTotal = serverMeta ? serverMeta.pagination.total : filteredBudgets.length;
+  // Daily spending line in the wallet card (monthly view only).
+  const trend = useMemo(() => {
+    if (duration !== "monthly") return [];
+    const y = parseInt(year, 10);
+    const m = parseInt(month, 10);
+    if (!y || !m) return [];
+    const count = calendarType === "gregorian" ? new Date(y, m, 0).getDate() : getJalaliDaysInMonth(y, m);
+    const costs = Array.from({ length: count }, () => 0);
+    if (serverMeta) {
+      for (const row of serverMeta.insights.days) if (row.day >= 1 && row.day <= count) costs[row.day - 1] += row.cost;
+    } else {
+      for (const budget of filteredBudgets) {
+        const d = Number(budget.day);
+        if (budget.type === BudgetType.COST && resolveBudgetCurrency(budget.currency) === preferredCurrency && d >= 1 && d <= count) {
+          costs[d - 1] += budget.price;
+        }
+      }
+    }
+    return costs;
+  }, [duration, year, month, calendarType, serverMeta, filteredBudgets, preferredCurrency]);
+  const dayTotalMap = useMemo(() => {
+    const map = new Map<string, { income: number; cost: number }>();
+    for (const row of serverMeta?.dayTotals ?? []) map.set(`${row.year}-${row.month}-${row.day}`, row);
+    return map;
+  }, [serverMeta]);
 
   // Group by transaction day so a month reads like a statement.
   const dayGroups = useMemo(() => {
@@ -212,8 +296,16 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         else group.cost += budget.price;
       }
     }
+    // A day can continue on the next page: show its real total, not this page's share.
+    for (const group of groups) {
+      const real = dayTotalMap.get(group.key);
+      if (real) {
+        group.income = real.income;
+        group.cost = real.cost;
+      }
+    }
     return groups;
-  }, [filteredBudgets, user?.preferences?.currency, filters.sort]);
+  }, [filteredBudgets, user?.preferences?.currency, filters.sort, dayTotalMap]);
 
   /** Year/month/day of the period `delta` steps away (month or day). */
   const shiftedParts = useCallback(
@@ -254,7 +346,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
   useEffect(() => {
     if (!hydrated || appMode !== "advanced") return;
     let cancelled = false;
-    if (duration === "all" || clientFilterCount) {
+    if (duration === "all" || hasRange || (!serverMode && clientFilterCount)) {
       setPreviousTotals(null);
       return;
     }
@@ -263,6 +355,8 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
     if (duration === "monthly" || duration === "daily") params.month = prev.month;
     if (duration === "daily") params.day = prev.day;
     if (category) params.category = category;
+    // Newer backend: compare like with like (same filters) and fetch totals only.
+    if (serverMode) Object.assign(params, JSON.parse(filterParamsKey), { limit: "1" });
     budgetsApi
       .fetchBudgets(params)
       .then((data) => {
@@ -274,7 +368,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
     return () => {
       cancelled = true;
     };
-  }, [hydrated, appMode, duration, category, clientFilterCount, shiftedParts, budgetRevision]);
+  }, [hydrated, appMode, duration, category, clientFilterCount, hasRange, serverMode, filterParamsKey, shiftedParts, budgetRevision]);
 
   const isCurrentPeriod =
     String(year) === String(nowParts.year) &&
@@ -330,6 +424,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         firstName={user?.firstName}
         income={shownTotals.income}
         expense={shownTotals.cost}
+        trend={trend}
         data-tour="dashboard-balance"
       />
 
@@ -372,7 +467,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         cards={cards}
         projects={projects}
         unit={displayCurrencyLabel(preferredCurrency)}
-        resultCount={filteredBudgets.length}
+        resultCount={resultTotal}
         onChange={updateQuery}
         onClear={() =>
           updateQuery({ category: "", q: "", ...Object.fromEntries(FILTER_KEYS.map((key) => [key, ""])) })
@@ -403,12 +498,13 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         <section className="min-w-0">
           <div className="mb-3 flex items-center justify-between">
             <h3 className="text-base font-bold lg:text-lg">{t("dashboard.transactions")}</h3>
-            {filteredBudgets.length ? (
+            {resultTotal ? (
               <span className="rounded-full bg-surface-secondary px-2.5 py-0.5 text-xs text-muted">
-                {t("dashboard.transactionCountInRange", { count: formatCount(filteredBudgets.length) })}
+                {t("dashboard.transactionCountInRange", { count: formatCount(resultTotal) })}
               </span>
             ) : null}
           </div>
+          <div ref={listTopRef} className="-mt-3 scroll-mt-24" aria-hidden />
 
           {loading ? (
             <TransactionListSkeleton />
@@ -429,7 +525,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
               </div>
             </div>
           ) : (
-            <div className="flex flex-col gap-5" data-tour="dashboard-transactions">
+            <div className={`flex flex-col gap-5 transition-opacity duration-200 ${refreshing ? "pointer-events-none opacity-50" : ""}`} data-tour="dashboard-transactions">
               {otherCurrencyTotals.length ? (
                 <div className="flex flex-wrap gap-2 text-xs">
                   {otherCurrencyTotals.map((row) => (
@@ -468,6 +564,28 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
                   </section>
                 );
               })}
+              {serverMeta ? (
+                <TransactionPagination
+                  page={serverMeta.pagination.page}
+                  pages={serverMeta.pagination.pages}
+                  total={serverMeta.pagination.total}
+                  limit={serverMeta.pagination.limit}
+                  busy={refreshing}
+                  onPage={(next) => {
+                    updateQuery({ page: next > 1 ? String(next) : "" });
+                    listTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }}
+                  onLimit={(next) => {
+                    setPageSize(next);
+                    try {
+                      window.localStorage.setItem("pb-page-size", String(next));
+                    } catch {
+                      /* private mode */
+                    }
+                    updateQuery({ page: "" });
+                  }}
+                />
+              ) : null}
             </div>
           )}
         </section>
@@ -479,6 +597,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
           year={parseInt(year, 10)}
           month={parseInt(month, 10)}
           calendar={calendarType}
+          server={serverMeta?.insights ?? null}
         />
       </div>
     </div>
