@@ -124,11 +124,16 @@
     position: absolute;
     inset-inline-end: -1.5rem;
     inset-block-start: -1.5rem;
-    width: 5rem;
-    height: 5rem;
+    width: 7rem;
+    height: 7rem;
     border-radius: 9999px;
-    opacity: 0.12;
-    background: currentColor;
+    pointer-events: none;
+    /* Soft brand glow; currentColor rendered as a flat grey blob. */
+    background: radial-gradient(
+      circle,
+      color-mix(in oklch, var(--accent) 22%, transparent),
+      transparent 70%
+    );
   }
 
   .pb-transaction-row {
