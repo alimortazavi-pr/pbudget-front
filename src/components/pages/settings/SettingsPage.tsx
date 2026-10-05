@@ -9,6 +9,7 @@ import { APP_VERSION } from "@/common/constants/app-version";
 import { SUPPORT_PHONE } from "@/components/common/layout/shell-nav";
 import { TelegramConnectSection } from "@/components/pages/profile/TelegramConnectSection";
 import { UserPreferencesSettings } from "@/components/pages/settings/UserPreferencesSection";
+import { SiteFooterCredits } from "@/components/common/brand/SiteFooterCredits";
 import { AppModeSection } from "@/components/pages/settings/AppModeSection";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { useVersion } from "@/components/providers/VersionProvider";
@@ -72,6 +73,7 @@ export function SettingsPage() {
         </a>
       </div>
       </div>
+      <SiteFooterCredits className="pt-2" />
     </div>
   );
 }

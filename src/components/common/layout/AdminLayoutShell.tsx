@@ -16,6 +16,7 @@ import { PATHS } from "@/common/constants";
 import { APP_NAME_FA } from "@/common/constants/brand";
 import { AuthBootstrap } from "@/components/common/layout/AuthBootstrap";
 import { ADMIN_NAV, ADMIN_NAV_GROUPS, type AdminNavItem } from "@/components/common/layout/admin-nav";
+import { SiteFooterCredits } from "@/components/common/brand/SiteFooterCredits";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { CommandPalette, openCommandPalette } from "@/components/common/command/CommandPalette";
 import { AppLogo } from "@/components/common/brand/AppLogo";
@@ -177,8 +178,11 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
       <AuthBootstrap />
       <div className="min-h-dvh bg-background">
         <div className="flex min-h-dvh">
-          <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 border-e border-border/60 bg-surface/70 p-4 backdrop-blur-xl lg:block">
-            <AdminNavigation />
+          <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-e border-border/60 bg-surface/70 p-4 backdrop-blur-xl lg:flex">
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              <AdminNavigation />
+            </div>
+            <SiteFooterCredits compact className="border-t border-border/50 pt-3" />
           </aside>
 
           {drawerOpen ? (

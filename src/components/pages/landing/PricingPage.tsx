@@ -10,6 +10,7 @@ import { ArrowRight2 } from "iconsax-reactjs";
 import { PATHS } from "@/common/constants";
 import type { ILandingContent } from "@/common/interfaces/landing.interface";
 import { useLandingContent } from "./useLandingContent";
+import { SiteFooterCredits } from "@/components/common/brand/SiteFooterCredits";
 import { LandingPricingSection } from "./LandingPricingSection";
 import { formatLocalizedDigits } from "@/i18n/format-localized-digits";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
@@ -113,6 +114,7 @@ export function PricingPage({
             {t("auto.k26dbf2a80c")}
           </Link>
         </div>
+        <SiteFooterCredits className="mt-12" />
       </main>
     </div>
   );

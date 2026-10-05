@@ -7,11 +7,14 @@ import {
   DEVELOPER_SITE_URL,
 } from "@/common/constants/brand";
 
-export function SiteFooterCredits({ className = "" }: { className?: string }) {
+/** `compact`: stacked for narrow sidebars (no separator dot). */
+export function SiteFooterCredits({ className = "", compact = false }: { className?: string; compact?: boolean }) {
   const { t } = useTranslation();
   return (
     <div
-      className={`flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs lp-muted ${className}`}
+      className={`flex items-center justify-center text-xs text-muted ${
+        compact ? "flex-col gap-0.5 text-[11px]" : "flex-wrap gap-x-3 gap-y-1"
+      } ${className}`}
     >
       <span>{t("common.developedBy")}</span>
       <Link
@@ -22,7 +25,7 @@ export function SiteFooterCredits({ className = "" }: { className?: string }) {
       >
         {DEVELOPER_SITE_LABEL}
       </Link>
-      <span aria-hidden>·</span>
+      {compact ? null : <span aria-hidden>·</span>}
       <Link
         href={`mailto:${CONTACT_EMAIL}`}
         className="hover:underline"

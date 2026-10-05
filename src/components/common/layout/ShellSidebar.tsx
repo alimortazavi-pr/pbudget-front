@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { Add, Lock1 } from "iconsax-reactjs";
 
+import { SiteFooterCredits } from "@/components/common/brand/SiteFooterCredits";
 import { ShellAccountMenu } from "@/components/common/layout/ShellAccountMenu";
 import { ShellNavGroup } from "@/components/common/layout/ShellNavGroup";
 import {
@@ -131,6 +132,7 @@ export function ShellSidebar() {
               menu has the download link), so the account menu must not draw
               them a second time. */}
           <ShellAccountMenu variant="sidebar" showPlanning={false} />
+          <SiteFooterCredits compact className="pt-3" />
         </div>
       </div>
     </aside>
