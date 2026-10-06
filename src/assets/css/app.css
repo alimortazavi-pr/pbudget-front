@@ -147,7 +147,7 @@
 
   .pb-fab {
     @apply relative flex size-14 items-center justify-center rounded-full text-white shadow-lg;
-    background: linear-gradient(135deg, #f43f5e 0%, #ec4899 45%, #a855f7 100%);
+    background: linear-gradient(135deg, var(--pb-fab-a, #f43f5e) 0%, var(--pb-fab-b, #ec4899) 45%, var(--pb-fab-c, #a855f7) 100%);
     box-shadow:
       0 8px 24px -4px color-mix(in oklch, var(--accent) 45%, transparent),
       0 0 0 4px color-mix(in oklch, var(--background) 80%, transparent);

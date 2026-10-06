@@ -13,7 +13,7 @@ import {
   pendingBazaarPurchases,
   purchaseWithBazaar,
 } from "@/common/native/bazaar";
-import { formatPrice, toPersianDigits } from "@/common/utils";
+import { formatPlanPrice, toPersianDigits } from "@/common/utils";
 import { formatIsoDateJalali } from "@/common/utils/jalali-date";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
@@ -304,7 +304,7 @@ export function SubscriptionPlansPage() {
                 <h2 className="text-xl font-bold">{plan.name}</h2>
                 <p className="mt-1 min-h-10 text-sm leading-6 text-muted">{plan.description}</p>
                 <p className="mt-5 flex items-baseline gap-2">
-                  <span className="text-3xl font-extrabold tracking-tight">{isFree ? t("common.subscription.free") : formatPrice(plan.price)}</span>
+                  <span className="text-3xl font-extrabold tracking-tight">{isFree ? t("common.subscription.free") : formatPlanPrice(plan.price)}</span>
                   {!isFree ? (
                     <span className="text-sm text-muted">
                       {plan.priceUnit} / {periodLabel(plan)}

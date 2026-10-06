@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useState } from "react";
+import { useId } from "react";
+import { useAmountsHidden } from "@/components/providers/AmountPrivacyProvider";
 import { ArrowDown, ArrowUp, DocumentUpload, Eye, EyeSlash, MoneyRecive, MoneySend } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
@@ -30,7 +31,6 @@ type DashboardHeroProps = {
   "data-tour"?: string;
 };
 
-const HIDE_KEY = "pb-hide-balance";
 
 function walletDisplayOrder(preferred: UserCurrency): UserCurrency[] {
   return [preferred, ...CURRENCY_OPTIONS.map((option) => option.id).filter((currency) => currency !== preferred)];
@@ -71,26 +71,7 @@ export function DashboardHero({ firstName, income, expense, trend = [], "data-to
   const { displayCurrencyLabel } = useCurrencyLabels();
   const user = useAppSelector(userSelector);
   const preferred = user?.preferences?.currency ?? DEFAULT_USER_PREFERENCES.currency;
-  const [hidden, setHidden] = useState(false);
-
-  useEffect(() => {
-    try {
-      setHidden(window.localStorage.getItem(HIDE_KEY) === "1");
-    } catch {
-      /* private mode */
-    }
-  }, []);
-
-  function toggleHidden() {
-    setHidden((value) => {
-      try {
-        window.localStorage.setItem(HIDE_KEY, value ? "0" : "1");
-      } catch {
-        /* private mode */
-      }
-      return !value;
-    });
-  }
+  const [hidden, toggleHidden] = useAmountsHidden();
 
   const balance = getWalletBalance(user, preferred);
   const unit = displayCurrencyLabel(preferred);

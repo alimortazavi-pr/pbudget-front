@@ -18,6 +18,7 @@ import {
   getParentSelectOptions,
 } from "@/common/utils/category-tree";
 import { showToast } from "@/common/utils/toast";
+import { formatAmountOnly } from "@/common/utils/format-currency";
 import { FormInput, FormPriceInput, FormSelect } from "@/components/common/form/FormFields";
 import { CategoryColorPicker } from "@/components/common/form/CategoryColorPicker";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
@@ -192,7 +193,7 @@ export function CategoriesPage() {
                   {category.monthlyLimit && category.monthlyLimit > 0 ? (
                     <span className="rounded-md bg-surface-secondary px-1.5 py-0.5 text-[10px] text-muted">
                       {t("categories.limitBadge", {
-                        amount: category.monthlyLimit.toLocaleString("fa-IR"),
+                        amount: formatAmountOnly(category.monthlyLimit),
                       })}
                     </span>
                   ) : null}

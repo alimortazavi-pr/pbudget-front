@@ -1,4 +1,5 @@
 import { toPersianDigits } from "./persian-digits";
+import { AMOUNT_MASK, areAmountsHidden } from "./amount-privacy";
 import { getActiveLanguage } from "@/i18n/translate";
 import {
   currencyShortLabel,
@@ -16,6 +17,10 @@ export function formatPriceWithCurrency(
   currency?: UserCurrency | null,
 ) {
   const resolved = resolveBudgetCurrency(currency);
+  if (areAmountsHidden()) {
+    const maskLabel = resolved === "usd" ? "$" : resolved === "toman" ? moneyDisplayUnitLabel() : currencyShortLabel(resolved);
+    return resolved === "usd" ? `$${AMOUNT_MASK}` : `${AMOUNT_MASK} ${maskLabel}`;
+  }
   const parsed = typeof amount === "string" ? Number(amount) : amount;
   const num = shouldConvertToman(resolved)
     ? tomanToDisplayAmount(parsed)
@@ -45,6 +50,7 @@ export function formatAmountOnly(
   amount: number | string,
   currency?: UserCurrency | null,
 ) {
+  if (areAmountsHidden()) return AMOUNT_MASK;
   const resolved = resolveBudgetCurrency(currency);
   const parsed = typeof amount === "string" ? Number(amount) : amount;
   const num = shouldConvertToman(resolved) ? tomanToDisplayAmount(parsed) : parsed;
@@ -54,6 +60,7 @@ export function formatAmountOnly(
 
 /** Very large amounts as "۸٫۴۹ میلیارد" so cards stay readable; the full value is shown on hover/tap. */
 export function formatCompactAmount(amount: number, currency?: UserCurrency | null) {
+  if (areAmountsHidden()) return AMOUNT_MASK;
   const resolved = resolveBudgetCurrency(currency);
   const converted = shouldConvertToman(resolved) ? tomanToDisplayAmount(amount) : amount;
   const abs = Math.abs(converted);

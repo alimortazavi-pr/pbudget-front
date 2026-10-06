@@ -1,5 +1,6 @@
 "use client";
 
+import { AmountPrivacyBoundary } from "@/components/providers/AmountPrivacyProvider";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
@@ -156,7 +157,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           {...shellProps}
           showBack={pathname !== PATHS.HOME}
         >
-          <SimpleModeGuard>{children}</SimpleModeGuard>
+          <AmountPrivacyBoundary>
+            <SimpleModeGuard>{children}</SimpleModeGuard>
+          </AmountPrivacyBoundary>
         </MobileAppShell>
       </SubscriptionAccessProvider>
     </BalanceModalProvider>
