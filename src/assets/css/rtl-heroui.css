@@ -272,3 +272,11 @@ html[dir="rtl"] .alert-dialog__dialog:has(.alert-dialog__close-trigger) .alert-d
     right: auto;
   }
 }
+
+/* HeroUI pagination always draws "previous" as "<" and "next" as ">". In RTL the
+   previous button sits on the right, so both arrows must be mirrored. */
+html[dir="rtl"] [data-slot="pagination-previous-icon"],
+html[dir="rtl"] [data-slot="pagination-next-icon"] {
+  display: inline-flex;
+  transform: scaleX(-1);
+}
