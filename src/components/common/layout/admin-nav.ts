@@ -7,6 +7,7 @@ import {
   DocumentText,
   Home2,
   LoginCurve,
+  MagicStar,
   Mobile,
   Monitor,
   People,
@@ -28,6 +29,7 @@ export const ADMIN_NAV_GROUPS: { title: string; items: AdminNavItem[] }[] = [
       { href: PATHS.ADMIN_ACTIVITY, label: "nav.adminActivity", icon: Radar },
       { href: PATHS.ADMIN_USERS, label: "nav.adminUsers", icon: People },
       { href: PATHS.ADMIN_SUBSCRIPTIONS, label: "nav.adminSubscriptions", icon: Crown },
+      { href: PATHS.ADMIN_AI, label: "nav.adminAi", icon: MagicStar },
     ],
   },
   {

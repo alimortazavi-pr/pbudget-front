@@ -34,7 +34,9 @@ import { DashboardPeriodBar } from "@/components/pages/dashboard/DashboardOvervi
 import { AnalysisFilterModal } from "@/components/pages/analysis/AnalysisFilterModal";
 import { AnalysisHealth } from "@/components/pages/analysis/AnalysisHealth";
 import { useLocalizedDate } from "@/i18n/hooks/useLocalizedDate";
-import { Chart21, CloseCircle, Filter } from "iconsax-reactjs";
+import Link from "next/link";
+import { Chart21, CloseCircle, Filter, MagicStar } from "iconsax-reactjs";
+import { PATHS } from "@/common/constants";
 import type { AnalysisSection } from "@/components/pages/analysis/AnalysisCharts";
 import { AnalysisInsightsPanel } from "@/components/pages/analysis/AnalysisInsightsPanel";
 import { AnalysisBudgetLimitsPanel } from "@/components/pages/analysis/AnalysisBudgetLimitsPanel";
@@ -279,6 +281,14 @@ export function AnalysisPage() {
   return (
     <div className="space-y-4 pb-6 lg:space-y-5">
       <PageHeader icon={<Chart21 size={24} variant="Bold" />} title={t("pages.analysis.title")} description={t("pages.analysis.subtitle")} />
+      <Link
+        href={PATHS.AI}
+        className="flex items-center gap-3 rounded-2xl border border-accent/30 bg-accent/8 px-4 py-3 text-sm transition hover:bg-accent/12"
+      >
+        <MagicStar size={20} variant="Bold" className="shrink-0 text-accent" />
+        <span className="font-semibold">{t("common.ai.analysisCta")}</span>
+        <span className="ms-auto shrink-0 text-xs font-semibold text-accent">{t("common.ai.analysisCtaAction")}</span>
+      </Link>
 
       <div data-tour="analysis-filters" className="space-y-3">
         <DashboardPeriodBar

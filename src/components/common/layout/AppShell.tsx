@@ -17,6 +17,7 @@ const PAGE_TITLE_KEYS: Record<string, string> = {
   [PATHS.ANALYSIS]: "nav.financialAnalysis",
   [PATHS.EXPORTS]: "nav.customExports",
   [PATHS.PLANS]: "nav.plans",
+  [PATHS.AI]: "nav.aiAssistant",
   [PATHS.BOXES]: "nav.boxes",
   [PATHS.PAYMENT_CARDS]: "nav.myCards",
   [PATHS.BANK_IMPORT]: "nav.bankImport",
@@ -40,6 +41,7 @@ const PAGE_TITLE_KEYS: Record<string, string> = {
 const APP_ROUTE_PREFIXES = [
   PATHS.HOME,
   PATHS.ANALYSIS,
+  PATHS.AI,
   PATHS.EXPORTS,
   PATHS.PLANS,
   PATHS.BOXES,
@@ -134,6 +136,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       pathname === PATHS.CREATE_BUDGET ||
       pathname.startsWith("/budgets/") ||
       pathname === PATHS.ANALYSIS ||
+      pathname === PATHS.AI ||
       pathname === PATHS.EXPORTS ||
       pathname === PATHS.PLANS ||
       pathname === PATHS.DEBTS ||
