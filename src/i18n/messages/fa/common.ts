@@ -402,5 +402,6 @@ export const commonMessages: MessageTree = {
       superseded: "جایگزین‌شده",
     },
   },
+  privacyPolicy: "حریم خصوصی",
   clear: "پاک کردن",
 };

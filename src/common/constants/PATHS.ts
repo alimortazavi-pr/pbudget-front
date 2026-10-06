@@ -7,6 +7,7 @@ export const PATHS = {
   EXPORTS: "/exports",
   GET_STARTED: "/get-started",
   DOWNLOAD: "/download",
+  PRIVACY: "/privacy",
   CREATE_BUDGET: "/create-budget",
   BUDGET: (id: string) => `/budgets/${id}`,
   BOXES: "/boxes",

@@ -3,6 +3,7 @@
 import { useTranslation } from "@/components/providers/LanguageProvider";
 import Link from "next/link";
 
+import { PATHS } from "@/common/constants/PATHS";
 import {
   CONTACT_EMAIL,
   DEVELOPER_SITE_LABEL,
@@ -26,6 +27,10 @@ export function SiteFooterCredits({ className = "", compact = false }: { classNa
         className="font-medium text-[var(--brand-violet)] hover:underline dark:text-violet-300"
       >
         {DEVELOPER_SITE_LABEL}
+      </Link>
+      {compact ? null : <span aria-hidden>·</span>}
+      <Link href={PATHS.PRIVACY} className="hover:underline">
+        {t("common.privacyPolicy")}
       </Link>
       {compact ? null : <span aria-hidden>·</span>}
       <Link

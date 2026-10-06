@@ -401,5 +401,6 @@ export const commonMessages: MessageTree = {
       superseded: "Replaced",
     },
   },
+  privacyPolicy: "Privacy policy",
   clear: "Clear",
 };
