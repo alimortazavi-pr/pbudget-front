@@ -179,18 +179,26 @@ export function buildThemeCss(theme: CustomTheme): string {
 
 // ---- persistence + application ------------------------------------------------
 
+/** Turn untrusted data (storage, server) into a valid theme, or null when there is none. */
+export function sanitizeTheme(raw: unknown): CustomTheme | null {
+  if (!raw || typeof raw !== "object") return null;
+  const value = raw as Partial<CustomTheme>;
+  const accent = normalizeHex(value.accent ?? "");
+  const secondary = normalizeHex(value.secondary ?? "");
+  if (!accent || !secondary) return null;
+  return {
+    accent,
+    secondary,
+    tinted: value.tinted !== false,
+    radius: value.radius && value.radius in THEME_RADII ? value.radius : "default",
+  };
+}
+
 export function readStoredTheme(): CustomTheme {
   if (typeof window === "undefined") return DEFAULT_THEME;
   try {
     const raw = window.localStorage.getItem(STORAGE_THEME);
-    if (!raw) return DEFAULT_THEME;
-    const parsed = JSON.parse(raw) as Partial<CustomTheme>;
-    return {
-      accent: normalizeHex(parsed.accent ?? "") ?? DEFAULT_THEME.accent,
-      secondary: normalizeHex(parsed.secondary ?? "") ?? DEFAULT_THEME.secondary,
-      tinted: parsed.tinted !== false,
-      radius: parsed.radius && parsed.radius in THEME_RADII ? parsed.radius : "default",
-    };
+    return (raw && sanitizeTheme(JSON.parse(raw))) || DEFAULT_THEME;
   } catch {
     return DEFAULT_THEME;
   }

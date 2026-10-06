@@ -1,5 +1,6 @@
 import { axiosInstance } from "@/common/axiosInstance";
 import type { IProfile } from "@/common/interfaces/profile.interface";
+import type { CustomTheme } from "@/common/theme/custom-theme";
 import { normalizeProfile } from "@/common/utils/profile";
 
 export async function fetchProfile() {
@@ -23,6 +24,15 @@ export async function updateUserPreferences(payload: {
   monthlySummaryEnabled?: boolean;
 }) {
   const { data } = await axiosInstance.put("/users/profile/preferences", payload);
+  return normalizeProfile(data.user as Record<string, unknown>);
+}
+
+/** Save (or with `null` clear) the account's custom theme so it follows the user to other devices. */
+export async function updateUserTheme(theme: CustomTheme | null) {
+  const { data } = await axiosInstance.put(
+    "/users/profile/theme",
+    theme ? { ...theme } : { reset: true },
+  );
   return normalizeProfile(data.user as Record<string, unknown>);
 }
 

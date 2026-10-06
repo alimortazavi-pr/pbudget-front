@@ -403,7 +403,7 @@ export const commonMessages: MessageTree = {
   },
   themeStudio: {
     title: "Theme & appearance",
-    description: "Change the colours and shape of your panel. Changes apply instantly and are saved on this device.",
+    description: "Change the colours and shape of your panel; changes apply instantly. Your theme is also saved to your account and follows you to other devices.",
     presets: "Ready-made themes",
     accent: "Primary colour",
     secondary: "Second colour (gradients)",

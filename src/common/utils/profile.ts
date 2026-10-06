@@ -5,6 +5,7 @@ import {
   type WalletBalances,
 } from "@/common/constants/user-preferences";
 import { normalizeWalletBalances } from "@/common/utils/wallet-balances";
+import { sanitizeTheme } from "@/common/theme/custom-theme";
 
 export function normalizeProfile(user: Record<string, unknown>): IProfile {
   const rawPrefs = (user.preferences ?? {}) as Partial<UserPreferences>;
@@ -48,5 +49,6 @@ export function normalizeProfile(user: Record<string, unknown>): IProfile {
     preferences,
     hasAnyBudget: Boolean(user.hasAnyBudget),
     monthlySummaryEnabled: user.monthlySummaryEnabled !== false,
+    theme: sanitizeTheme(user.theme),
   };
 }

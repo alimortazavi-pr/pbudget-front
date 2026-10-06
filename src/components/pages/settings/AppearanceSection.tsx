@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Button,
   Chip,
@@ -26,6 +26,7 @@ import {
   type CustomTheme,
   type ThemeRadius,
 } from "@/common/theme/custom-theme";
+import * as profileApi from "@/common/api/profile";
 import { useAmountsHidden } from "@/components/providers/AmountPrivacyProvider";
 import { useTranslation } from "@/components/providers/LanguageProvider";
 import { useTheme } from "@/components/providers/ThemeProvider";
@@ -83,10 +84,20 @@ export function AppearanceSection() {
     setCustom(readStoredTheme());
   }, []);
 
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+  }, []);
+
   function update(patch: Partial<CustomTheme>) {
     const next = { ...custom, ...patch };
     setCustom(next);
     applyCustomTheme(next);
+    // Dragging the colour area fires constantly: save to the account once it settles.
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      void profileApi.updateUserTheme(isDefaultTheme(next) ? null : next).catch(() => undefined);
+    }, 900);
   }
 
   const activePreset = THEME_PRESETS.find(

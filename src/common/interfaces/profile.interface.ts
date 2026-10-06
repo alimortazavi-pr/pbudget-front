@@ -1,3 +1,4 @@
+import type { CustomTheme } from "@/common/theme/custom-theme";
 import type { UserPreferences, WalletBalances } from "@/common/constants/user-preferences";
 
 export interface IProfileState {
@@ -18,6 +19,8 @@ export interface IProfile {
   hasAnyBudget: boolean;
   /** Monthly finance summary in Telegram. */
   monthlySummaryEnabled?: boolean;
+  /** Custom colour theme saved on the account (null = default theme). */
+  theme?: CustomTheme | null;
 }
 
 export interface IEditProfileForm {

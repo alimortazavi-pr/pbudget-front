@@ -1,5 +1,6 @@
 "use client";
 
+import { ThemeSync } from "@/components/providers/ThemeSync";
 import { AmountPrivacyBoundary } from "@/components/providers/AmountPrivacyProvider";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
@@ -155,6 +156,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <BalanceModalProvider>
       <AuthBootstrap />
+      <ThemeSync />
       <SubscriptionAccessProvider>
         <MobileAppShell
           {...shellProps}
