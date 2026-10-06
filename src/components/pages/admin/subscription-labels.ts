@@ -6,6 +6,8 @@ export const SUBSCRIPTION_STATUS_LABEL: Record<UserSubscription["status"], strin
   pending: "در انتظار تأیید",
   expired: "منقضی",
   canceled: "لغوشده",
+  rejected: "ردشده",
+  superseded: "جایگزین‌شده",
 };
 
 export const SUBSCRIPTION_STATUS_TONE: Record<UserSubscription["status"], Tone> = {
@@ -13,6 +15,8 @@ export const SUBSCRIPTION_STATUS_TONE: Record<UserSubscription["status"], Tone> 
   pending: "warning",
   expired: "neutral",
   canceled: "danger",
+  rejected: "danger",
+  superseded: "neutral",
 };
 
 export const SUBSCRIPTION_PERIOD_LABEL: Record<string, string> = {

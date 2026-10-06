@@ -22,13 +22,19 @@ export interface SubscriptionPlan {
   active: boolean;
   sortOrder: number;
   contactMessage: string;
+  /** Cafe Bazaar in-app product that sells one period of this plan. */
+  bazaarProductId?: string | null;
   activeSubscribers?: number;
   isFallback?: boolean;
 }
 
+export type SubscriptionStatus = "active" | "expired" | "canceled" | "pending" | "rejected" | "superseded";
+
 export interface UserSubscription {
   _id: string;
-  status: "active" | "expired" | "canceled" | "pending";
+  status: SubscriptionStatus;
+  source?: "manual" | "bazaar";
+  amountPaid?: number | null;
   startsAt: string;
   expiresAt?: string | null;
   note?: string;

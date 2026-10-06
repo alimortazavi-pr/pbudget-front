@@ -11,6 +11,8 @@ import { userSelector } from "@/stores/profile";
 type SubscriptionAccessContextValue = {
   data: MySubscriptionResponse | null;
   loading: boolean;
+  /** The last fetch failed; `data` may still hold the last good answer. */
+  error: boolean;
   isFeatureEnabled: (key: string) => boolean;
   refresh: () => Promise<void>;
 };
@@ -24,12 +26,15 @@ export function SubscriptionAccessProvider({ children }: { children: ReactNode }
   const userId = user?._id;
   const [data, setData] = useState<MySubscriptionResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   const refresh = useCallback(async () => {
     try {
       setData(await subscriptionApi.fetchMySubscription());
+      setError(false);
     } catch {
-      setData(null);
+      // Keep the last good answer: a network blip must not lock paid features.
+      setError(true);
     }
   }, []);
 
@@ -37,6 +42,7 @@ export function SubscriptionAccessProvider({ children }: { children: ReactNode }
     if (!didTryAutoLogin) return;
     if (!isAuth) {
       setData(null);
+      setError(false);
       setLoading(false);
       return;
     }
@@ -46,10 +52,15 @@ export function SubscriptionAccessProvider({ children }: { children: ReactNode }
     void subscriptionApi
       .fetchMySubscription()
       .then((next) => {
-        if (!cancelled) setData(next);
+        if (cancelled) return;
+        setData(next);
+        setError(false);
       })
       .catch(() => {
-        if (!cancelled) setData(null);
+        // A different account must never inherit the previous account's plan.
+        if (cancelled) return;
+        setData(null);
+        setError(true);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -73,10 +84,11 @@ export function SubscriptionAccessProvider({ children }: { children: ReactNode }
     () => ({
       data,
       loading,
+      error,
       isFeatureEnabled: (key: string) => Boolean(data?.subscription && data.entitlements[key]?.enabled),
       refresh,
     }),
-    [data, loading, refresh],
+    [data, loading, error, refresh],
   );
 
   return <SubscriptionAccessContext.Provider value={value}>{children}</SubscriptionAccessContext.Provider>;

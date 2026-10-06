@@ -11,6 +11,17 @@ export async function fetchMySubscription() {
   return data;
 }
 
+export async function fetchMySubscriptionHistory() {
+  const { data } = await axiosInstance.get<UserSubscription[]>("/subscriptions/me/history");
+  return data;
+}
+
+/** Hands a Cafe Bazaar purchase to the server, which verifies it with Bazaar. */
+export async function verifyBazaarPurchase(payload: { productId: string; purchaseToken: string; orderId?: string }) {
+  const { data } = await axiosInstance.post<UserSubscription>("/subscriptions/bazaar/verify", payload);
+  return data;
+}
+
 export async function fetchAdminSubscriptionPlans() {
   const { data } = await axiosInstance.get<SubscriptionPlan[]>("/admin/subscriptions/plans");
   return data;
@@ -72,7 +83,7 @@ export async function rejectSubscriptionRequest(id: string, payload: { note?: st
   return data;
 }
 
-export type AdminSubscriptionStatusFilter = "" | "current" | "expiring" | "scheduled" | "pending" | "active" | "expired" | "canceled";
+export type AdminSubscriptionStatusFilter = "" | "current" | "expiring" | "scheduled" | "pending" | "active" | "expired" | "canceled" | "rejected" | "superseded";
 
 export async function fetchAdminSubscriptionsFiltered(params: {
   page?: number;

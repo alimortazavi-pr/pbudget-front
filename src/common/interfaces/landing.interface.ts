@@ -59,6 +59,8 @@ export interface ILandingContent {
       cta: string;
       highlighted: boolean;
       externalUrl?: string;
+      /** Internal link for the plan's call to action; falls back to the contact action. */
+      href?: string;
     }[];
   };
 }

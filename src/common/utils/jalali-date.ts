@@ -66,6 +66,11 @@ export function formatIsoDateTimeJalali(iso: string) {
   return toPersianDigits(moment(iso).format("jYYYY/jMM/jDD HH:mm"));
 }
 
+/** ISO datetime to a Jalali calendar day, e.g. 1405/03/18 */
+export function formatIsoDateJalali(iso: string) {
+  return toPersianDigits(moment(iso).format("jYYYY/jMM/jDD"));
+}
+
 /** Record time + transaction date: 10:40 - 1405/03/18 */
 export function formatBudgetDateTime(
   year: string,

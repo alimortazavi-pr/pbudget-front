@@ -21,10 +21,10 @@ function planAction(
   primaryCta: string,
   onContactPress?: () => void,
 ) {
-  if (plan.id === "personal") {
+  if (plan.id === "personal" || plan.href) {
     return (
       <Link
-        href={primaryCta}
+        href={plan.href ?? primaryCta}
         className={buttonVariants({
           className: "w-full",
           variant: plan.highlighted ? "primary" : "secondary",

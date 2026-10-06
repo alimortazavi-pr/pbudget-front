@@ -390,10 +390,9 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
         description: plan.description,
         features: plan.features.filter((feature) => feature.enabled).map((feature) => feature.label),
         highlighted: plan.highlighted,
-        paid: plan.price > 0,
       }));
     }
-    return content.pricing.plans.map((plan) => ({ ...plan, paid: false }));
+    return content.pricing.plans;
     // eslint-disable-next-line react-hooks/exhaustive-deps -- digits depends on language only
   }, [livePlans, content.pricing.plans, language, t]);
 
@@ -753,11 +752,6 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
                   <Link href={isAuth ? PATHS.PLANS : PATHS.GET_STARTED} className={`lx-btn w-full ${plan.highlighted ? "lx-btn-primary" : "lx-btn-ghost"}`}>
                     {isAuth ? t("landingUi.choose") : t("landingUi.start")}
                   </Link>
-                  {plan.paid ? (
-                    <p className="lx-muted mt-3 text-center text-xs">
-                      {t("common.subscription.onlinePaymentSoon")}
-                    </p>
-                  ) : null}
                 </article>
               ))}
             </div>

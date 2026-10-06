@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Crown, Lock1 } from "iconsax-reactjs";
+import { Button } from "@heroui/react";
+import { Crown, Lock1, Refresh2 } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 import { SUBSCRIPTION_FEATURE_CATALOG, type SubscriptionFeatureKey } from "@/common/constants/subscription-features";
@@ -15,12 +16,28 @@ import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccess
  */
 export function FeatureGate({ feature, children }: { feature: SubscriptionFeatureKey; children: ReactNode }) {
   const { t } = useTranslation();
-  const { loading, data, isFeatureEnabled } = useSubscriptionAccess();
+  const { loading, data, error, refresh, isFeatureEnabled } = useSubscriptionAccess();
 
   if (loading && !data) {
     return <div className="pb-shimmer h-48 w-full rounded-2xl" aria-hidden />;
   }
   if (isFeatureEnabled(feature)) return <>{children}</>;
+
+  // We could not reach the server: say so instead of claiming the plan lacks the feature.
+  if (error && !data) {
+    return (
+      <section className="mx-auto flex min-h-[420px] w-full max-w-2xl items-center justify-center rounded-3xl border border-border/60 bg-surface p-8 text-center shadow-sm">
+        <div className="max-w-md">
+          <h1 className="text-xl font-bold">{t("common.subscription.checkFailedTitle")}</h1>
+          <p className="mt-3 text-sm leading-7 text-muted">{t("common.subscription.checkFailedBody")}</p>
+          <Button className="mt-6" onPress={() => void refresh()}>
+            <Refresh2 size={18} />
+            {t("common.subscription.retry")}
+          </Button>
+        </div>
+      </section>
+    );
+  }
 
   const catalog = SUBSCRIPTION_FEATURE_CATALOG.find((item) => item.key === feature);
   const label = catalog ? t(catalog.labelKey) : feature;

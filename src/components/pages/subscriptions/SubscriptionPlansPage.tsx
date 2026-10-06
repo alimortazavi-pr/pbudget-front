@@ -1,18 +1,30 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button, Modal, TextArea } from "@heroui/react";
-import { Card, Clock, Crown, Lock1, TickCircle, Timer1 } from "iconsax-reactjs";
+import { Clock, Crown, Lock1, Refresh2, TickCircle, Timer1, Warning2 } from "iconsax-reactjs";
 import { createPortal } from "react-dom";
 
 import * as subscriptionApi from "@/common/api/subscriptions";
-import type { SubscriptionPlan } from "@/common/interfaces/subscription.interface";
+import type { SubscriptionPlan, UserSubscription } from "@/common/interfaces/subscription.interface";
+import {
+  BazaarError,
+  isBazaarBillingAvailable,
+  pendingBazaarPurchases,
+  purchaseWithBazaar,
+} from "@/common/native/bazaar";
 import { formatPrice, toPersianDigits } from "@/common/utils";
+import { formatIsoDateJalali } from "@/common/utils/jalali-date";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useTranslation } from "@/components/providers/LanguageProvider";
 import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
 import { PageHeader } from "@/components/common/layout/PageHeader";
+import { useAppSelector } from "@/stores/hooks";
+import { userSelector } from "@/stores/profile";
+
+const EXPIRING_SOON_DAYS = 7;
+const HISTORY_PREVIEW = 4;
 
 function usePeriodLabel() {
   const { t } = useTranslation();
@@ -26,27 +38,82 @@ function usePeriodLabel() {
           : `${toPersianDigits(plan.periodDays ?? 0)} ${t("common.subscription.custom")}`;
 }
 
+function planOf(subscription: UserSubscription) {
+  return subscription.plan?.name ?? subscription.planSnapshot?.name ?? "";
+}
+
 export function SubscriptionPlansPage() {
   const { t } = useTranslation();
   const periodLabel = usePeriodLabel();
-  const { data: mine, refresh } = useSubscriptionAccess();
+  const userId = useAppSelector(userSelector)?._id;
+  const { data: mine, error: accessError, refresh } = useSubscriptionAccess();
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [plansLoading, setPlansLoading] = useState(true);
+  const [plansFailed, setPlansFailed] = useState(false);
+  const [history, setHistory] = useState<UserSubscription[]>([]);
+  const [showAllHistory, setShowAllHistory] = useState(false);
   const [requesting, setRequesting] = useState<SubscriptionPlan | null>(null);
   const [canceling, setCanceling] = useState(false);
+  const [buyingPlanId, setBuyingPlanId] = useState<string | null>(null);
+  // Decided after mount: the native bridge does not exist on the server render.
+  const [bazaarReady, setBazaarReady] = useState(false);
+
+  const loadPlans = useCallback(async () => {
+    setPlansLoading(true);
+    setPlansFailed(false);
+    try {
+      setPlans(await subscriptionApi.fetchPublicSubscriptionPlans());
+    } catch {
+      setPlansFailed(true);
+    } finally {
+      setPlansLoading(false);
+    }
+  }, []);
+
+  const loadHistory = useCallback(async () => {
+    try {
+      setHistory(await subscriptionApi.fetchMySubscriptionHistory());
+    } catch {
+      // The history is secondary; the page works without it.
+    }
+  }, []);
 
   useEffect(() => {
-    let cancelled = false;
-    void subscriptionApi
-      .fetchPublicSubscriptionPlans()
-      .then((next) => !cancelled && setPlans(next))
-      .catch(() => !cancelled && showToast(t("common.subscription.loadError"), "danger"))
-      .finally(() => !cancelled && setLoading(false));
+    setBazaarReady(isBazaarBillingAvailable());
+    void loadPlans();
+    void loadHistory();
     void refresh();
+  }, [loadPlans, loadHistory, refresh]);
+
+  // A purchase paid for but never redeemed (app killed, network dropped) is
+  // still listed by Bazaar as unconsumed: hand it to the server again.
+  useEffect(() => {
+    if (!bazaarReady || !userId) return;
+    let cancelled = false;
+    void (async () => {
+      let recovered = false;
+      for (const purchase of await pendingBazaarPurchases(userId)) {
+        try {
+          await subscriptionApi.verifyBazaarPurchase({
+            productId: purchase.productId,
+            purchaseToken: purchase.purchaseToken,
+            orderId: purchase.orderId,
+          });
+          recovered = true;
+        } catch {
+          // Stays pending in Bazaar; the next visit tries again.
+        }
+      }
+      if (recovered && !cancelled) {
+        showToast(t("common.subscription.purchaseRecovered"), "success");
+        await refresh();
+        await loadHistory();
+      }
+    })();
     return () => {
       cancelled = true;
     };
-  }, [refresh, t]);
+  }, [bazaarReady, userId, refresh, loadHistory, t]);
 
   const featureCatalog = useMemo(() => {
     const map = new Map<string, { key: string; label: string }>();
@@ -60,9 +127,12 @@ export function SubscriptionPlansPage() {
 
   const current = mine?.subscription ?? null;
   const currentSlug = current?.plan?.slug ?? current?.planSnapshot?.slug;
+  const currentIsFree = current ? (current.plan?.price ?? current.planSnapshot?.price ?? 0) === 0 : true;
   const pending = mine?.pendingRequest ?? null;
   const pendingPlanId = typeof pending?.plan === "object" ? pending?.plan?._id : (pending?.plan as unknown as string | undefined);
+  const upcoming = mine?.upcoming ?? null;
   const days = mine?.daysRemaining;
+  const expiringSoon = !currentIsFree && days != null && days <= EXPIRING_SOON_DAYS;
 
   async function cancelRequest() {
     setCanceling(true);
@@ -70,12 +140,42 @@ export function SubscriptionPlansPage() {
       await subscriptionApi.cancelSubscriptionRequest();
       showToast(t("common.subscription.requestCanceled"), "success");
       await refresh();
+      await loadHistory();
     } catch (error) {
       showErrorToast(error);
     } finally {
       setCanceling(false);
     }
   }
+
+  async function buyWithBazaar(plan: SubscriptionPlan) {
+    if (!plan.bazaarProductId || !userId) return;
+    setBuyingPlanId(plan._id);
+    try {
+      const purchase = await purchaseWithBazaar(plan.bazaarProductId, userId);
+      await subscriptionApi.verifyBazaarPurchase({
+        productId: purchase.productId,
+        purchaseToken: purchase.purchaseToken,
+        orderId: purchase.orderId,
+      });
+      showToast(t("common.subscription.purchaseSuccess"), "success");
+      await refresh();
+      await loadHistory();
+    } catch (error) {
+      if (error instanceof BazaarError) {
+        if (error.code === "bazaar_missing") showToast(t("common.subscription.bazaarMissing"), "danger");
+        else if (error.code === "failed") showToast(t("common.subscription.purchaseFailed"), "danger");
+        // "canceled" is the user's own choice: say nothing.
+      } else {
+        // Paid, but the server could not confirm it yet: it is picked up again on the next visit.
+        showToast(t("common.subscription.purchaseUnconfirmed"), "danger");
+      }
+    } finally {
+      setBuyingPlanId(null);
+    }
+  }
+
+  const visibleHistory = showAllHistory ? history : history.slice(0, HISTORY_PREVIEW);
 
   return (
     <div className="mx-auto w-full max-w-6xl space-y-6">
@@ -85,29 +185,60 @@ export function SubscriptionPlansPage() {
         description={t("common.subscription.plansDescription")}
       />
 
-      {current ? (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/60 bg-surface p-4">
-          <div className="flex items-center gap-3">
-            <span className="flex size-10 items-center justify-center rounded-xl bg-success/15 text-success-foreground">
-              <TickCircle size={20} variant="Bold" />
-            </span>
-            <div>
-              <p className="text-xs text-muted">{t("common.subscription.currentPlan")}</p>
-              <p className="font-bold">{current.plan?.name ?? current.planSnapshot?.name}</p>
-            </div>
+      {accessError ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-warning/40 bg-warning/10 p-4">
+          <div className="flex items-start gap-3">
+            <Warning2 size={22} className="mt-0.5 shrink-0 text-warning-foreground" variant="Bold" />
+            <p className="text-sm font-medium">{t("common.subscription.statusStale")}</p>
           </div>
-          <span
-            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
-              days != null && days <= 7 ? "bg-warning/20 text-warning-foreground" : "bg-surface-secondary text-muted"
-            }`}
-          >
-            <Timer1 size={14} />
-            {days == null
-              ? t("common.subscription.neverExpires")
-              : days <= 7
-                ? t("common.subscription.expiresSoon", { days })
-                : t("common.subscription.daysLeft", { days })}
-          </span>
+          <Button size="sm" variant="ghost" onPress={() => void refresh()}>
+            <Refresh2 size={16} />
+            {t("common.subscription.retry")}
+          </Button>
+        </div>
+      ) : null}
+
+      {current ? (
+        <div className="rounded-2xl border border-border/60 bg-surface p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className="flex size-10 items-center justify-center rounded-xl bg-success/15 text-success-foreground">
+                <TickCircle size={20} variant="Bold" />
+              </span>
+              <div>
+                <p className="text-xs text-muted">{t("common.subscription.currentPlan")}</p>
+                <p className="font-bold">{planOf(current)}</p>
+                {current.expiresAt ? (
+                  <p className="text-xs text-muted">
+                    {t("common.subscription.endsOn", { date: formatIsoDateJalali(current.expiresAt) })}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
+                expiringSoon ? "bg-warning/20 text-warning-foreground" : "bg-surface-secondary text-muted"
+              }`}
+            >
+              <Timer1 size={14} />
+              {days == null
+                ? t("common.subscription.neverExpires")
+                : expiringSoon
+                  ? t("common.subscription.expiresSoon", { days })
+                  : t("common.subscription.daysLeft", { days })}
+            </span>
+          </div>
+          {currentIsFree ? <p className="mt-3 text-sm text-muted">{t("common.subscription.freePlanHint")}</p> : null}
+          {upcoming ? (
+            <p className="mt-3 flex items-center gap-2 rounded-xl bg-accent/10 px-3 py-2 text-sm">
+              <Clock size={16} className="shrink-0 text-accent" />
+              {t("common.subscription.scheduledPlan", {
+                plan: planOf(upcoming),
+                date: formatIsoDateJalali(upcoming.startsAt),
+              })}
+            </p>
+          ) : null}
+          {expiringSoon ? <p className="mt-3 text-xs text-muted">{t("common.subscription.earlyRenewNote")}</p> : null}
         </div>
       ) : null}
 
@@ -116,9 +247,7 @@ export function SubscriptionPlansPage() {
           <div className="flex items-start gap-3">
             <Clock size={22} className="mt-0.5 shrink-0 text-warning-foreground" variant="Bold" />
             <div>
-              <p className="font-semibold">
-                {t("common.subscription.pendingRequest", { plan: pending.plan?.name ?? pending.planSnapshot?.name ?? "" })}
-              </p>
+              <p className="font-semibold">{t("common.subscription.pendingRequest", { plan: planOf(pending) })}</p>
               <p className="mt-0.5 text-xs text-muted">{t("common.subscription.pendingRequestHint")}</p>
             </div>
           </div>
@@ -128,19 +257,29 @@ export function SubscriptionPlansPage() {
         </div>
       ) : null}
 
-      {loading ? (
+      {plansLoading ? (
         <div className="grid gap-5 lg:grid-cols-2">
           <div className="h-96 animate-pulse rounded-3xl bg-surface-secondary" />
           <div className="h-96 animate-pulse rounded-3xl bg-surface-secondary" />
         </div>
+      ) : plansFailed ? (
+        <div className="rounded-3xl border border-border/60 bg-surface p-10 text-center">
+          <p className="text-muted">{t("common.subscription.loadError")}</p>
+          <Button className="mt-4" variant="secondary" onPress={() => void loadPlans()}>
+            <Refresh2 size={16} />
+            {t("common.subscription.retry")}
+          </Button>
+        </div>
       ) : plans.length === 0 ? (
         <div className="rounded-3xl border border-border/60 bg-surface p-10 text-center text-muted">{t("common.subscription.noPlans")}</div>
       ) : (
-        <div className={`grid gap-5 ${plans.length >= 3 ? "lg:grid-cols-3" : "lg:grid-cols-2"}`}>
+        <div className={`grid gap-5 ${plans.length >= 3 ? "lg:grid-cols-3" : plans.length === 2 ? "lg:grid-cols-2" : "mx-auto max-w-md"}`}>
           {plans.map((plan) => {
             const isCurrent = plan.slug === currentSlug;
             const isRequested = pendingPlanId === plan._id;
             const isFree = plan.price === 0;
+            const canBuyInBazaar = bazaarReady && Boolean(plan.bazaarProductId);
+            const isBuying = buyingPlanId === plan._id;
             return (
               <article
                 key={plan._id}
@@ -175,8 +314,7 @@ export function SubscriptionPlansPage() {
 
                 <ul className="my-6 flex-1 space-y-2.5 border-t border-border/60 pt-5">
                   {featureCatalog.map((catalogFeature) => {
-                    const feature = plan.features.find((item) => item.key === catalogFeature.key);
-                    const enabled = Boolean(feature?.enabled);
+                    const enabled = Boolean(plan.features.find((item) => item.key === catalogFeature.key)?.enabled);
                     return (
                       <li key={catalogFeature.key} className={`flex items-center gap-2.5 text-sm ${enabled ? "" : "text-muted"}`}>
                         {enabled ? (
@@ -185,46 +323,73 @@ export function SubscriptionPlansPage() {
                           <Lock1 size={16} className="shrink-0 text-muted/70" />
                         )}
                         <span className={enabled ? "" : "line-through decoration-muted/40"}>{catalogFeature.label}</span>
-                        {feature?.limit != null && enabled ? (
-                          <span className="text-xs text-muted">({toPersianDigits(feature.limit)})</span>
-                        ) : null}
                       </li>
                     );
                   })}
                 </ul>
 
-                {isCurrent ? (
-                  <Button variant="secondary" isDisabled className="w-full">
-                    {t("common.subscription.currentPlanCta")}
-                  </Button>
-                ) : isFree ? null : isRequested ? (
+                {isFree ? (
+                  isCurrent ? (
+                    <Button variant="secondary" isDisabled className="w-full">
+                      {t("common.subscription.currentPlanCta")}
+                    </Button>
+                  ) : null
+                ) : isRequested ? (
                   <Button variant="secondary" isDisabled className="w-full">
                     <Clock size={17} />
                     {t("common.subscription.requestedCta")}
                   </Button>
-                ) : (
-                  <Button className="w-full" variant={plan.highlighted ? "primary" : "secondary"} onPress={() => setRequesting(plan)}>
+                ) : canBuyInBazaar ? (
+                  <Button
+                    className="w-full"
+                    variant={plan.highlighted || isCurrent ? "primary" : "secondary"}
+                    isPending={isBuying}
+                    isDisabled={buyingPlanId !== null && !isBuying}
+                    onPress={() => void buyWithBazaar(plan)}
+                  >
                     <Crown size={17} variant="Bold" />
-                    {t("common.subscription.requestPlan")}
+                    {isCurrent ? t("common.subscription.renew") : t("common.subscription.buyWithBazaar")}
                   </Button>
+                ) : (
+                  <>
+                    <Button className="w-full" variant={plan.highlighted || isCurrent ? "primary" : "secondary"} onPress={() => setRequesting(plan)}>
+                      <Crown size={17} variant="Bold" />
+                      {isCurrent ? t("common.subscription.renew") : t("common.subscription.requestPlan")}
+                    </Button>
+                    {plan.contactMessage ? <p className="mt-3 text-center text-xs leading-5 text-muted">{plan.contactMessage}</p> : null}
+                  </>
                 )}
-                {!isCurrent && !isFree ? (
-                  <Button variant="ghost" isDisabled className="mt-2 w-full" aria-label={t("common.subscription.onlinePaymentSoon")}>
-                    <Card size={17} />
-                    {t("common.subscription.onlinePayment")}
-                    <span className="rounded-full bg-accent/12 px-2 py-0.5 text-[11px] font-semibold text-accent">
-                      {t("common.subscription.soon")}
-                    </span>
-                  </Button>
-                ) : null}
-                {!isCurrent && !isFree && plan.contactMessage ? (
-                  <p className="mt-3 text-center text-xs leading-5 text-muted">{plan.contactMessage}</p>
-                ) : null}
               </article>
             );
           })}
         </div>
       )}
+
+      {history.length > 0 ? (
+        <section className="rounded-3xl border border-border/60 bg-surface p-5">
+          <h2 className="text-lg font-bold">{t("common.subscription.historyTitle")}</h2>
+          <ul className="mt-3 divide-y divide-border/50">
+            {visibleHistory.map((item) => (
+              <li key={item._id} className="flex flex-wrap items-center justify-between gap-2 py-3 text-sm">
+                <div>
+                  <p className="font-semibold">{planOf(item)}</p>
+                  <p className="text-xs text-muted">
+                    {formatIsoDateJalali(item.startsAt)}
+                    {item.expiresAt ? ` ← ${formatIsoDateJalali(item.expiresAt)}` : ` · ${t("common.subscription.neverExpires")}`}
+                    {item.source === "bazaar" ? ` · ${t("common.subscription.sourceBazaar")}` : ""}
+                  </p>
+                </div>
+                <span className="rounded-full bg-surface-secondary px-3 py-1 text-xs font-semibold text-muted">{statusLabel(item, t)}</span>
+              </li>
+            ))}
+          </ul>
+          {history.length > HISTORY_PREVIEW ? (
+            <Button className="mt-2" size="sm" variant="ghost" onPress={() => setShowAllHistory((value) => !value)}>
+              {showAllHistory ? t("common.subscription.showLess") : t("common.subscription.showAll")}
+            </Button>
+          ) : null}
+        </section>
+      ) : null}
 
       <RequestPlanDialog
         plan={requesting}
@@ -232,10 +397,17 @@ export function SubscriptionPlansPage() {
         onRequested={async () => {
           setRequesting(null);
           await refresh();
+          await loadHistory();
         }}
       />
     </div>
   );
+}
+
+function statusLabel(item: UserSubscription, t: (key: string) => string) {
+  // "Scheduled" is not a stored status: it is an active subscription that has not started yet.
+  if (item.status === "active" && new Date(item.startsAt).getTime() > Date.now()) return t("common.subscription.status.scheduled");
+  return t(`common.subscription.status.${item.status}`);
 }
 
 function RequestPlanDialog({

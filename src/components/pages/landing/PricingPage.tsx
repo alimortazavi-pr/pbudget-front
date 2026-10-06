@@ -61,7 +61,10 @@ export function PricingPage({
                     : digits(String(plan.periodDays ?? "")),
           description: plan.description,
           features: plan.features.filter((feature) => feature.enabled).map((feature) => feature.limit ? `${feature.label} (${digits(String(feature.limit))})` : feature.label),
-          cta: plan.price ? t("auto.k26dbf2a80c") : t("auto.k4bbf9a5a8b"),
+          // Paid plans are bought from the plans page (or Bazaar in the app), so send
+          // everyone there; guests sign up first.
+          cta: plan.price ? t("landingUi.choose") : t("auto.k4bbf9a5a8b"),
+          href: plan.price ? (isAuth ? PATHS.PLANS : PATHS.GET_STARTED) : primaryCta,
           highlighted: plan.highlighted,
         })),
       }
