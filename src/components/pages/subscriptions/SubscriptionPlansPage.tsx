@@ -20,6 +20,7 @@ import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui
 import { useTranslation } from "@/components/providers/LanguageProvider";
 import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
 import { PageHeader } from "@/components/common/layout/PageHeader";
+import { PlansFaq, PlansHowItWorks, PlansSupportCta, PlansTrustBar } from "@/components/pages/subscriptions/PlansExtras";
 import { useAppSelector } from "@/stores/hooks";
 import { userSelector } from "@/stores/profile";
 
@@ -57,6 +58,7 @@ export function SubscriptionPlansPage() {
   const [buyingPlanId, setBuyingPlanId] = useState<string | null>(null);
   // Decided after mount: the native bridge does not exist on the server render.
   const [bazaarReady, setBazaarReady] = useState(false);
+  const [baleEnabled, setBaleEnabled] = useState(false);
   const [baleSession, setBaleSession] = useState<{ plan: SubscriptionPlan; checkout: subscriptionApi.BaleCheckout } | null>(null);
 
   const loadPlans = useCallback(async () => {
@@ -81,6 +83,7 @@ export function SubscriptionPlansPage() {
 
   useEffect(() => {
     setBazaarReady(isBazaarBillingAvailable());
+    void subscriptionApi.fetchBaleAvailability().then(setBaleEnabled).catch(() => setBaleEnabled(false));
     void loadPlans();
     void loadHistory();
     void refresh();
@@ -199,6 +202,8 @@ export function SubscriptionPlansPage() {
         title={t("common.subscription.plansTitle")}
         description={t("common.subscription.plansDescription")}
       />
+
+      <PlansTrustBar />
 
       {accessError ? (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-warning/40 bg-warning/10 p-4">
@@ -326,10 +331,18 @@ export function SubscriptionPlansPage() {
                     </span>
                   ) : null}
                 </p>
+                {!isFree && plan.period === "monthly" ? (
+                  <p className="mt-1 text-xs text-muted">
+                    {t("common.subscription.perDay", { amount: formatPlanPrice(Math.round(plan.price / 30)), unit: plan.priceUnit })}
+                  </p>
+                ) : null}
 
                 <ul className="my-6 flex-1 space-y-2.5 border-t border-border/60 pt-5">
                   {featureCatalog.map((catalogFeature) => {
-                    const enabled = Boolean(plan.features.find((item) => item.key === catalogFeature.key)?.enabled);
+                    const planFeature = plan.features.find((item) => item.key === catalogFeature.key);
+                    const enabled = Boolean(planFeature?.enabled);
+                    // Only the AI quota is enforced per plan, so only it shows a number.
+                    const limitNote = enabled && catalogFeature.key === "ai" && planFeature?.limit ? planFeature.limit : null;
                     return (
                       <li key={catalogFeature.key} className={`flex items-center gap-2.5 text-sm ${enabled ? "" : "text-muted"}`}>
                         {enabled ? (
@@ -337,7 +350,10 @@ export function SubscriptionPlansPage() {
                         ) : (
                           <Lock1 size={16} className="shrink-0 text-muted/70" />
                         )}
-                        <span className={enabled ? "" : "line-through decoration-muted/40"}>{catalogFeature.label}</span>
+                        <span className={enabled ? "" : "line-through decoration-muted/40"}>
+                          {catalogFeature.label}
+                          {limitNote ? <span className="ms-1.5 text-xs font-semibold text-accent">· {t("common.subscription.featureLimitPerDay", { count: toPersianDigits(limitNote) })}</span> : null}
+                        </span>
                       </li>
                     );
                   })}
@@ -367,19 +383,28 @@ export function SubscriptionPlansPage() {
                   </Button>
                 ) : (
                   <>
-                    <Button
-                      className="w-full"
-                      variant={plan.highlighted || isCurrent ? "primary" : "secondary"}
-                      isPending={isBuying}
-                      isDisabled={buyingPlanId !== null && !isBuying}
-                      onPress={() => void payWithBale(plan)}
-                    >
-                      <Crown size={17} variant="Bold" />
-                      {isCurrent ? t("common.subscription.renew") : t("common.subscription.payWithBale")}
-                    </Button>
-                    <Button className="mt-2 w-full" size="sm" variant="ghost" onPress={() => setRequesting(plan)}>
-                      {t("common.subscription.orRequestManually")}
-                    </Button>
+                    {baleEnabled ? (
+                      <>
+                        <Button
+                          className="w-full"
+                          variant={plan.highlighted || isCurrent ? "primary" : "secondary"}
+                          isPending={isBuying}
+                          isDisabled={buyingPlanId !== null && !isBuying}
+                          onPress={() => void payWithBale(plan)}
+                        >
+                          <Crown size={17} variant="Bold" />
+                          {isCurrent ? t("common.subscription.renew") : t("common.subscription.payWithBale")}
+                        </Button>
+                        <Button className="mt-2 w-full" size="sm" variant="ghost" onPress={() => setRequesting(plan)}>
+                          {t("common.subscription.orRequestManually")}
+                        </Button>
+                      </>
+                    ) : (
+                      <Button className="w-full" variant={plan.highlighted || isCurrent ? "primary" : "secondary"} onPress={() => setRequesting(plan)}>
+                        <Crown size={17} variant="Bold" />
+                        {isCurrent ? t("common.subscription.renew") : t("common.subscription.requestPlan")}
+                      </Button>
+                    )}
                     {plan.contactMessage ? <p className="mt-3 text-center text-xs leading-5 text-muted">{plan.contactMessage}</p> : null}
                   </>
                 )}
@@ -388,6 +413,8 @@ export function SubscriptionPlansPage() {
           })}
         </div>
       )}
+
+      <PlansHowItWorks />
 
       {history.length > 0 ? (
         <section className="rounded-3xl border border-border/60 bg-surface p-5">
@@ -415,6 +442,10 @@ export function SubscriptionPlansPage() {
           ) : null}
         </section>
       ) : null}
+
+      <PlansFaq />
+
+      <PlansSupportCta />
 
       <BalePayDialog
         session={baleSession}

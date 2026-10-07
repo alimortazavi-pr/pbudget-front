@@ -32,7 +32,7 @@ import {
 import { formatDateFa, formatNumberFa, formatRelativeFa } from "./ui/admin-format";
 import { SUBSCRIPTION_PERIOD_LABEL, SUBSCRIPTION_STATUS_LABEL, SUBSCRIPTION_STATUS_TONE } from "./subscription-labels";
 
-type Tab = "requests" | "subscribers" | "plans";
+type Tab = "requests" | "subscribers" | "plans" | "payments";
 type Summary = { paidActive: number; pending: number; expiringSoon: number; expiredThisMonth: number };
 type ListResponse = Awaited<ReturnType<typeof subscriptionApi.fetchAdminSubscriptionsFiltered>>;
 
@@ -108,6 +108,7 @@ export function AdminSubscriptionsPage() {
           { id: "requests" as const, label: "درخواست‌ها", count: summary?.pending },
           { id: "subscribers" as const, label: "مشترکین" },
           { id: "plans" as const, label: "پلن‌ها", count: plans.length },
+          { id: "payments" as const, label: "پرداخت‌های بله" },
         ]}
         value={tab}
         onChange={setTab}
@@ -115,9 +116,91 @@ export function AdminSubscriptionsPage() {
 
       {tab === "requests" ? <RequestsTab onChanged={refreshAll} /> : null}
       {tab === "subscribers" ? <SubscribersTab plans={plans} onChanged={refreshAll} /> : null}
+      {tab === "payments" ? <BalePaymentsTab /> : null}
       {tab === "plans" ? <PlansTab plans={plans} onChanged={refreshAll} /> : null}
 
       <AssignDialog open={assignOpen} onOpenChange={setAssignOpen} plans={plans} onDone={refreshAll} />
+    </div>
+  );
+}
+
+function BalePaymentsTab() {
+  const [status, setStatus] = useState("");
+  const [page, setPage] = useState(1);
+  const [data, setData] = useState<Awaited<ReturnType<typeof subscriptionApi.fetchAdminBalePayments>> | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    subscriptionApi
+      .fetchAdminBalePayments({ status, page })
+      .then((result) => {
+        if (!cancelled) setData(result);
+      })
+      .catch((error) => showErrorToast(error))
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [status, page]);
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3">
+        <StatTile label="پرداخت موفق (کل)" value={formatNumberFa(data?.summary.paidCount ?? 0)} tone="success" icon={<TickCircle size={20} variant="Bold" />} />
+        <StatTile label="جمع دریافتی (تومان)" value={formatNumberFa(Math.round((data?.summary.paidRial ?? 0) / 10))} tone="accent" icon={<Crown size={20} variant="Bold" />} />
+      </div>
+      <AdminPanel
+        title="پرداخت‌های کیف پول بله"
+        description="هر ردیف یک تلاش پرداخت است. «در انتظار» یعنی هنوز در بله پرداخت نشده؛ پرداخت‌های ناتمام بعد از ۳۰ دقیقه بی‌اثر می‌شوند."
+        actions={
+          <SegmentedTabs
+            size="sm"
+            value={status}
+            onChange={(value) => {
+              setStatus(value);
+              setPage(1);
+            }}
+            items={[
+              { id: "", label: "همه" },
+              { id: "paid", label: "پرداخت‌شده" },
+              { id: "pending", label: "در انتظار" },
+            ]}
+          />
+        }
+      >
+        {loading && !data ? (
+          <SkeletonRows rows={4} />
+        ) : !data || data.items.length === 0 ? (
+          <EmptyState title="هنوز پرداختی ثبت نشده" />
+        ) : (
+          <ul className="divide-y divide-border/50">
+            {data.items.map((item) => (
+              <li key={item._id} className="flex flex-wrap items-center justify-between gap-3 py-3 text-sm">
+                <div className="min-w-0">
+                  <p className="font-semibold">
+                    {`${item.user?.firstName ?? ""} ${item.user?.lastName ?? ""}`.trim() || "—"}{" "}
+                    <span className="text-xs font-normal text-muted" dir="ltr">{item.user?.mobile}</span>
+                  </p>
+                  <p className="text-xs text-muted">
+                    {item.plan?.name ?? "—"} · {formatNumberFa(item.amountPlanUnit)} تومان · {formatDateFa(item.paidAt ?? item.createdAt)}
+                    {item.providerChargeId ? <span dir="ltr"> · {item.providerChargeId}</span> : null}
+                  </p>
+                </div>
+                {item.status === "paid" ? (
+                  <Pill tone={item.subscription ? "success" : "danger"}>{item.subscription ? "پرداخت شد و فعال است" : "پرداخت شد؛ فعال‌سازی ناتمام"}</Pill>
+                ) : (
+                  <Pill tone="warning">در انتظار پرداخت</Pill>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+        <PaginationBar pagination={data?.pagination} onPage={setPage} />
+      </AdminPanel>
     </div>
   );
 }

@@ -8,6 +8,8 @@ export const navMessages: MessageTree = {
   aiAssistant: "AI assistant",
   customExports: "Custom exports",
   plans: "Plans",
+  support: "Support",
+  adminSupport: "Support inbox",
   boxes: "Boxes",
   myCards: "My Cards",
   categories: "Categories",

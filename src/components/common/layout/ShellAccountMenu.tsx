@@ -24,7 +24,6 @@ import {
   ACCOUNT_NAV_ITEMS,
   DOWNLOAD_NAV_ITEM,
   PLANNING_NAV_GROUPS,
-  SUPPORT_PHONE,
 } from "@/components/common/layout/shell-nav";
 import { useTelegramStatus } from "@/common/hooks/useTelegramStatus";
 import { usePendingInvitesCount } from "@/common/hooks/usePendingInvitesCount";
@@ -184,10 +183,10 @@ export function ShellAccountMenu({
             {theme === "dark" ? <Sun1 size={20} /> : <Moon size={20} />}
             {theme === "dark" ? t("common.lightMode") : t("common.darkMode")}
           </button>
-          <a href={SUPPORT_PHONE} className={utilityLinkClass} onClick={onNavigate}>
+          <Link href={PATHS.SUPPORT} className={utilityLinkClass} onClick={onNavigate}>
             <Call size={20} />
             {t("common.support")}
-          </a>
+          </Link>
           <Link href={DOWNLOAD_NAV_ITEM.href} className={utilityLinkClass} onClick={onNavigate}>
             <Mobile size={20} />
             {t(DOWNLOAD_NAV_ITEM.label)}

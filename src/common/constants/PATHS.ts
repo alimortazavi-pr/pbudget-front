@@ -51,5 +51,7 @@ export const PATHS = {
   ADMIN_BANKS: "/admin/banks",
   ADMIN_SUBSCRIPTIONS: "/admin/subscriptions",
   ADMIN_AI: "/admin/ai",
+  ADMIN_SUPPORT: "/admin/support",
+  SUPPORT: "/support",
   BANK_IMPORT: "/bank-import",
 } as const;

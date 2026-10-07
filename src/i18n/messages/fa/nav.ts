@@ -8,6 +8,8 @@ export const navMessages: MessageTree = {
   aiAssistant: "دستیار هوشمند",
   customExports: "خروجی سفارشی",
   plans: "پلن‌ها",
+  support: "پشتیبانی",
+  adminSupport: "پیام‌های پشتیبانی",
   boxes: "صندوق‌ها",
   myCards: "کارت‌های من",
   categories: "دسته‌بندی‌ها",

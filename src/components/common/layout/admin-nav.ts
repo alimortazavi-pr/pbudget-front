@@ -12,8 +12,7 @@ import {
   Monitor,
   People,
   Radar,
-  ShieldSearch,
-} from "iconsax-reactjs";
+  ShieldSearch, Messages2 } from "iconsax-reactjs";
 import type { Icon } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
@@ -30,6 +29,7 @@ export const ADMIN_NAV_GROUPS: { title: string; items: AdminNavItem[] }[] = [
       { href: PATHS.ADMIN_USERS, label: "nav.adminUsers", icon: People },
       { href: PATHS.ADMIN_SUBSCRIPTIONS, label: "nav.adminSubscriptions", icon: Crown },
       { href: PATHS.ADMIN_AI, label: "nav.adminAi", icon: MagicStar },
+      { href: PATHS.ADMIN_SUPPORT, label: "nav.adminSupport", icon: Messages2 },
     ],
   },
   {

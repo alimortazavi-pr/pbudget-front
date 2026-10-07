@@ -20,8 +20,7 @@ import {
   Profile,
   Profile2User,
   Setting2,
-  Wallet,
-} from "iconsax-reactjs";
+  Wallet } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 
@@ -99,6 +98,7 @@ export const PLANNING_NAV_GROUPS = [
       { href: PATHS.NOTES, label: "nav.notes", icon: DocumentText },
       { href: PATHS.EXPORTS, label: "nav.customExports", icon: DocumentDownload, featureKey: "custom_exports" },
       { href: PATHS.PLANS, label: "nav.plans", icon: Crown },
+      { href: PATHS.SUPPORT, label: "nav.support", icon: Messages2 },
     ],
   },
   {

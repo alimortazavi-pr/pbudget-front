@@ -93,3 +93,18 @@ export async function unlinkTelegram() {
   );
   return data;
 }
+
+export async function fetchBaleStatus() {
+  const { data } = await axiosInstance.get<{ linked: boolean; botUsername: string }>("/users/profile/bale");
+  return data;
+}
+
+export async function createBaleLink() {
+  const { data } = await axiosInstance.post<{ token: string; expiresAt: string; botUsername: string }>("/users/profile/bale-link");
+  return data;
+}
+
+export async function unlinkBale() {
+  const { data } = await axiosInstance.delete<{ linked: boolean }>("/users/profile/bale");
+  return data;
+}

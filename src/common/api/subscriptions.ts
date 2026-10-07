@@ -31,6 +31,11 @@ export interface BaleCheckout {
 
 export type BalePaymentState = "pending" | "paid" | "expired";
 
+export async function fetchBaleAvailability() {
+  const { data } = await axiosInstance.get<{ enabled: boolean }>("/subscriptions/bale/status");
+  return data.enabled;
+}
+
 /** Starts a Bale wallet payment; the user then finishes it inside the Bale bot. */
 export async function createBaleCheckout(planId: string) {
   const { data } = await axiosInstance.post<BaleCheckout>("/subscriptions/bale/checkout", { planId });
@@ -125,5 +130,29 @@ export async function fetchAdminSubscriptionsFiltered(params: {
       planId: params.planId || undefined,
     },
   });
+  return data;
+}
+
+export interface AdminBalePayment {
+  _id: string;
+  status: "pending" | "paid";
+  amountRial: number;
+  amountPlanUnit: number;
+  expiresAt: string;
+  paidAt?: string | null;
+  createdAt: string;
+  chargeId?: string | null;
+  providerChargeId?: string | null;
+  subscription?: string | null;
+  user?: { firstName?: string; lastName?: string; mobile?: string } | null;
+  plan?: { name?: string } | null;
+}
+
+export async function fetchAdminBalePayments(params: { status?: string; page?: number }) {
+  const { data } = await axiosInstance.get<{
+    items: AdminBalePayment[];
+    summary: { paidCount: number; paidRial: number };
+    pagination: { page: number; limit: number; total: number; totalPages: number };
+  }>("/admin/subscriptions/bale-payments", { params: { status: params.status || undefined, page: params.page ?? 1, limit: 20 } });
   return data;
 }
