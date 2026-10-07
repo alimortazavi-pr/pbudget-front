@@ -14,6 +14,7 @@ import { formatNumberFa } from "./ui/admin-format";
 
 const SPEED_LABEL = { fast: "سریع", medium: "متوسط", slow: "کند" } as const;
 const NONE = "__none__";
+const KIND_LABEL: Record<string, string> = { insights: "تحلیل هوشمند", plan: "برنامهٔ ماه بعد", chat: "دستیار گفتگو", test: "آزمایشگاه" };
 const TEMPERATURE_PRESETS = [
   { value: 0.3, label: "دقیق" },
   { value: 0.6, label: "متعادل" },
@@ -76,6 +77,28 @@ function OverviewTab({ stats, loading }: { stats: AiStats | null; loading: boole
 
       <AdminPanel title="درخواست‌ها در روز" description="سبز/رنگ اصلی = موفق، قرمز = ناموفق (شامل خطای سهمیه و fallback)">
         <DayBars days={stats.byDay} />
+      </AdminPanel>
+
+      <AdminPanel title="درخواست‌ها بر اساس نوع" description="سهم هر بخش از کل درخواست‌های بازهٔ انتخابی.">
+        {stats.byKind.length === 0 ? (
+          <EmptyState title="هنوز درخواستی ثبت نشده" />
+        ) : (
+          <ul className="space-y-3">
+            {stats.byKind.map((row) => (
+              <li key={row.kind}>
+                <div className="mb-1 flex items-center justify-between text-sm">
+                  <span className="font-medium">{KIND_LABEL[row.kind] ?? row.kind}</span>
+                  <span className="text-xs tabular-nums text-muted">
+                    {formatNumberFa(row.calls)} · {formatNumberFa(percent(row.calls, totals.requests))}٪
+                  </span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-surface-secondary">
+                  <div className="h-full rounded-full bg-accent" style={{ width: `${Math.max(2, percent(row.calls, totals.requests))}%` }} />
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </AdminPanel>
 
       <AdminPanel title="مصرف هر مدل" description="ستون «۲۴ ساعت اخیر» با سقف رایگان روزانهٔ Google مقایسه می‌شود (سهمیهٔ رایگان به‌ازای هر مدل جداست).">
