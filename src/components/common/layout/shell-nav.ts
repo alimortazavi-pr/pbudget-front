@@ -44,7 +44,7 @@ export const SIMPLE_NAV_ITEMS = [
 export const PRIMARY_NAV_ITEMS = [
   { href: PATHS.HOME, label: "nav.home", icon: Home2 },
   { href: PATHS.BANK_IMPORT, label: "nav.bankImport", icon: DocumentUpload, featureKey: "bank_import" },
-  { href: PATHS.ANALYSIS, label: "nav.financialAnalysis", icon: Chart },
+  { href: PATHS.ANALYSIS, label: "nav.financialAnalysis", icon: Chart, featureKey: "analytics" },
   { href: PATHS.AI, label: "nav.aiAssistant", icon: MagicStar, featureKey: "ai" },
   { href: PATHS.BOXES, label: "nav.boxes", icon: Box1 },
   { href: PATHS.PAYMENT_CARDS, label: "nav.myCards", icon: Card },
@@ -78,9 +78,9 @@ export const MOBILE_TAB_SIDE_ITEMS = [
 
 /** @deprecated flat list — use PLANNING_NAV_GROUPS */
 export const PLANNING_NAV_ITEMS = [
-  { href: PATHS.TASKS, label: "nav.dailyPlanner", icon: Task },
-  { href: PATHS.PROJECTS, label: "nav.projects", icon: Briefcase },
-  { href: PATHS.VENTURES, label: "nav.businessPartners", icon: Profile2User },
+  { href: PATHS.TASKS, label: "nav.dailyPlanner", icon: Task, featureKey: "planner" },
+  { href: PATHS.PROJECTS, label: "nav.projects", icon: Briefcase, featureKey: "projects" },
+  { href: PATHS.VENTURES, label: "nav.businessPartners", icon: Profile2User, featureKey: "partners" },
   { href: PATHS.WORK_ATTENDANCE, label: "nav.workAttendance", icon: Clock, featureKey: "work_time" },
   { href: PATHS.DEBTS, label: "nav.debts", icon: Card },
   { href: PATHS.INSTALLMENTS, label: "nav.installments", icon: Calendar },
@@ -93,12 +93,11 @@ export const PLANNING_NAV_GROUPS = [
   {
     title: "nav.planning",
     items: [
-      { href: PATHS.TASKS, label: "nav.dailyPlanner", icon: Task },
-      { href: PATHS.PROJECTS, label: "nav.projects", icon: Briefcase },
+      { href: PATHS.TASKS, label: "nav.dailyPlanner", icon: Task, featureKey: "planner" },
+      { href: PATHS.PROJECTS, label: "nav.projects", icon: Briefcase, featureKey: "projects" },
       { href: PATHS.NOTES, label: "nav.notes", icon: DocumentText },
       { href: PATHS.EXPORTS, label: "nav.customExports", icon: DocumentDownload, featureKey: "custom_exports" },
       { href: PATHS.PLANS, label: "nav.plans", icon: Crown },
-      { href: PATHS.SUPPORT, label: "nav.support", icon: Messages2 },
     ],
   },
   {
@@ -113,7 +112,7 @@ export const PLANNING_NAV_GROUPS = [
   {
     title: "nav.partnership",
     items: [
-      { href: PATHS.VENTURES, label: "nav.businessPartners", icon: Profile2User },
+      { href: PATHS.VENTURES, label: "nav.businessPartners", icon: Profile2User, featureKey: "partners" },
       { href: PATHS.WORK_ATTENDANCE, label: "nav.workAttendance", icon: Clock, featureKey: "work_time" },
     ],
   },

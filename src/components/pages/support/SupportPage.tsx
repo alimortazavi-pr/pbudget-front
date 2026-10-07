@@ -2,11 +2,13 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Button, Chip, Input, TextArea } from "@heroui/react";
-import { Clock, DirectboxSend, Message2, MessageQuestion, Sms, TickCircle } from "iconsax-reactjs";
+import { Call, Clock, DirectboxSend, Message2, MessageQuestion, Sms, TickCircle } from "iconsax-reactjs";
 
 import * as supportApi from "@/common/api/support";
 import type { SupportCategory, SupportStatus, SupportTicket } from "@/common/api/support";
 import { CONTACT_EMAIL } from "@/common/constants/brand";
+import { toPersianDigits } from "@/common/utils";
+import { SUPPORT_PHONE } from "@/components/common/layout/shell-nav";
 import { formatIsoDateTimeJalali } from "@/common/utils/jalali-date";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { AppSelect } from "@/components/common/form/AppControls";
@@ -143,6 +145,7 @@ export function SupportPage() {
   const channels = [
     { label: t("common.helpDesk.channelBale"), value: `@${BALE_BOT}`, href: `https://ble.ir/${BALE_BOT}`, icon: Message2 },
     { label: t("common.helpDesk.channelTelegram"), value: `@${TELEGRAM_BOT}`, href: `https://t.me/${TELEGRAM_BOT}`, icon: DirectboxSend },
+    { label: t("common.helpDesk.channelPhone"), value: toPersianDigits(SUPPORT_PHONE.replace("tel:", "")), href: SUPPORT_PHONE, icon: Call },
     { label: t("common.helpDesk.channelEmail"), value: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}`, icon: Sms },
   ];
 
@@ -202,7 +205,7 @@ export function SupportPage() {
 
       <section className="space-y-3">
         <h2 className="text-sm font-bold text-muted">{t("common.helpDesk.channelsTitle")}</h2>
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2">
           {channels.map((channel) => (
             <a key={channel.label} href={channel.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-2xl border border-border/60 bg-surface p-4 transition hover:border-accent/50">
               <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent/12 text-accent">

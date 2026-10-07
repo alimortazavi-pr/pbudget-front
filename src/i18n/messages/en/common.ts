@@ -494,6 +494,7 @@ export const commonMessages: MessageTree = {
     channelsTitle: "Other ways to reach us",
     channelTelegram: "Telegram bot",
     channelBale: "Bale bot",
+    channelPhone: "Phone",
     channelEmail: "Email",
     newTicket: "Send a new message",
     category: "Topic",

@@ -1,3 +1,4 @@
+import { FeatureGate } from "@/components/common/subscription/FeatureGate";
 import { VentureDetailPage } from "@/components/pages/partners/VentureDetailPage";
 
 type PageProps = {
@@ -6,5 +7,9 @@ type PageProps = {
 
 export default async function Page({ params }: PageProps) {
   const { id } = await params;
-  return <VentureDetailPage ventureId={id} />;
+  return (
+    <FeatureGate feature="partners">
+      <VentureDetailPage ventureId={id} />
+    </FeatureGate>
+  );
 }

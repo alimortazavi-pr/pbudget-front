@@ -495,6 +495,7 @@ export const commonMessages: MessageTree = {
     channelsTitle: "راه‌های ارتباطی",
     channelTelegram: "بات تلگرام",
     channelBale: "بات بله",
+    channelPhone: "تماس تلفنی",
     channelEmail: "ایمیل",
     newTicket: "ارسال پیام جدید",
     category: "موضوع",

@@ -187,6 +187,9 @@ export function ShellAccountMenu({
           <Link href={PATHS.SUPPORT} className={utilityLinkClass} onClick={onNavigate}>
             <Call size={20} />
             {t("common.support")}
+            {supportUnread > 0 ? (
+              <span className="ms-auto rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold text-accent-foreground">{supportUnread}</span>
+            ) : null}
           </Link>
           <Link href={DOWNLOAD_NAV_ITEM.href} className={utilityLinkClass} onClick={onNavigate}>
             <Mobile size={20} />
