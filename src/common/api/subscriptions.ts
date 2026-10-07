@@ -31,6 +31,12 @@ export interface BaleCheckout {
 
 export type BalePaymentState = "pending" | "paid" | "expired";
 
+/** Starts the one-time 7-day trial (every feature except AI). */
+export async function startTrial() {
+  const { data } = await axiosInstance.post<UserSubscription>("/subscriptions/trial");
+  return data;
+}
+
 export async function fetchBaleAvailability() {
   const { data } = await axiosInstance.get<{ enabled: boolean }>("/subscriptions/bale/status");
   return data.enabled;

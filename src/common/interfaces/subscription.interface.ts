@@ -33,7 +33,7 @@ export type SubscriptionStatus = "active" | "expired" | "canceled" | "pending" |
 export interface UserSubscription {
   _id: string;
   status: SubscriptionStatus;
-  source?: "manual" | "bazaar" | "bale";
+  source?: "manual" | "bazaar" | "bale" | "trial";
   amountPaid?: number | null;
   startsAt: string;
   expiresAt?: string | null;
@@ -58,4 +58,8 @@ export interface MySubscriptionResponse {
   pendingRequest?: UserSubscription | null;
   /** A plan scheduled to start in the future. */
   upcoming?: UserSubscription | null;
+  /** The one-time free trial (all features except AI). */
+  trial?: { eligible: boolean; used: boolean; active: boolean; days: number };
+  /** New accounts can use this feature freely during their first week. */
+  welcomeDemo?: { feature: string; endsAt: string } | null;
 }

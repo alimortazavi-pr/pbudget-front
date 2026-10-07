@@ -20,6 +20,7 @@ import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui
 import { useTranslation } from "@/components/providers/LanguageProvider";
 import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
 import { PageHeader } from "@/components/common/layout/PageHeader";
+import { TrialActiveBanner, TrialCard } from "@/components/common/subscription/TrialPromo";
 import { PlansFaq, PlansHowItWorks, PlansSupportCta, PlansTrustBar } from "@/components/pages/subscriptions/PlansExtras";
 import { useAppSelector } from "@/stores/hooks";
 import { userSelector } from "@/stores/profile";
@@ -202,6 +203,9 @@ export function SubscriptionPlansPage() {
         title={t("common.subscription.plansTitle")}
         description={t("common.subscription.plansDescription")}
       />
+
+      <TrialCard />
+      <TrialActiveBanner />
 
       <PlansTrustBar />
 
