@@ -515,7 +515,9 @@ export function BankImportWizardPage() {
                   ? t("pages.bankImport.draftSaving")
                   : draft.status === "saved"
                     ? t("pages.bankImport.draftSaved")
-                    : draft.status === "unavailable"
+                    : draft.status === "local"
+                      ? t("pages.bankImport.draftLocalOnly")
+                      : draft.status === "unavailable"
                       ? t("pages.bankImport.draftUnavailable")
                       : null}
               </p>

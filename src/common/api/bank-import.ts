@@ -62,3 +62,28 @@ export async function categorizeBankImports(
   }>("/bank-imports/categorize", { items });
   return data;
 }
+
+/** The saved review of a statement (one per account, available on every device). */
+export type BankImportDraftPayload = {
+  bankId: string;
+  fileName: string;
+  rows: unknown[];
+  meta: Record<string, string | undefined>;
+  duplicateCount: number;
+  rangeFromDay: string;
+  rangeToDay: string;
+};
+
+export async function fetchBankImportDraft() {
+  const { data } = await axiosInstance.get<(BankImportDraftPayload & { updatedAt: string }) | "">("/bank-imports/draft");
+  return data || null;
+}
+
+export async function saveBankImportDraft(payload: BankImportDraftPayload) {
+  const { data } = await axiosInstance.put<{ savedAt: string }>("/bank-imports/draft", payload, { timeout: 60_000 });
+  return data;
+}
+
+export async function deleteBankImportDraft() {
+  await axiosInstance.delete("/bank-imports/draft");
+}
