@@ -11,12 +11,21 @@ import { PageHeader } from "@/components/common/layout/PageHeader";
 import { AiChatPanel } from "@/components/pages/ai/AiChatPanel";
 import { AiInsightsPanel } from "@/components/pages/ai/AiInsightsPanel";
 import { AiPlanPanel } from "@/components/pages/ai/AiPlanPanel";
+import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 export function AiAssistantPage() {
   const { t } = useTranslation();
   const [status, setStatus] = useState<AiStatus | null>(null);
-  const [tab, setTab] = useState("insights");
+  const { isFeatureEnabled } = useSubscriptionAccess();
+  const tabs = {
+    insights: isFeatureEnabled("ai_insights"),
+    plan: isFeatureEnabled("ai_plan"),
+    chat: isFeatureEnabled("ai_chat"),
+  };
+  const firstTab = (Object.keys(tabs) as Array<keyof typeof tabs>).find((id) => tabs[id]) ?? "insights";
+  const [chosenTab, setTab] = useState<string>("");
+  const tab = chosenTab && tabs[chosenTab as keyof typeof tabs] ? chosenTab : firstTab;
 
   const refresh = useCallback(async () => {
     try {
@@ -84,6 +93,7 @@ export function AiAssistantPage() {
       <Tabs selectedKey={tab} onSelectionChange={(key) => setTab(String(key))}>
         <Tabs.ListContainer>
           <Tabs.List aria-label={t("common.ai.title")}>
+            {tabs.insights ? (
             <Tabs.Tab id="insights">
               <span className="inline-flex items-center gap-1.5">
                 <Chart2 size={16} variant="Bold" />
@@ -91,6 +101,8 @@ export function AiAssistantPage() {
               </span>
               <Tabs.Indicator />
             </Tabs.Tab>
+            ) : null}
+            {tabs.plan ? (
             <Tabs.Tab id="plan">
               <span className="inline-flex items-center gap-1.5">
                 <Calendar2 size={16} variant="Bold" />
@@ -98,6 +110,8 @@ export function AiAssistantPage() {
               </span>
               <Tabs.Indicator />
             </Tabs.Tab>
+            ) : null}
+            {tabs.chat ? (
             <Tabs.Tab id="chat">
               <span className="inline-flex items-center gap-1.5">
                 <MessageText1 size={16} variant="Bold" />
@@ -105,17 +119,24 @@ export function AiAssistantPage() {
               </span>
               <Tabs.Indicator />
             </Tabs.Tab>
+            ) : null}
           </Tabs.List>
         </Tabs.ListContainer>
-        <Tabs.Panel id="insights" className="pt-4">
-          <AiInsightsPanel enabled={enabled} onStatus={setStatus} />
-        </Tabs.Panel>
-        <Tabs.Panel id="plan" className="pt-4">
-          <AiPlanPanel enabled={enabled} onStatus={setStatus} />
-        </Tabs.Panel>
-        <Tabs.Panel id="chat" className="pt-4">
-          <AiChatPanel enabled={enabled} onStatus={setStatus} />
-        </Tabs.Panel>
+        {tabs.insights ? (
+          <Tabs.Panel id="insights" className="pt-4">
+            <AiInsightsPanel enabled={enabled} onStatus={setStatus} />
+          </Tabs.Panel>
+        ) : null}
+        {tabs.plan ? (
+          <Tabs.Panel id="plan" className="pt-4">
+            <AiPlanPanel enabled={enabled} onStatus={setStatus} />
+          </Tabs.Panel>
+        ) : null}
+        {tabs.chat ? (
+          <Tabs.Panel id="chat" className="pt-4">
+            <AiChatPanel enabled={enabled} onStatus={setStatus} />
+          </Tabs.Panel>
+        ) : null}
       </Tabs>
 
       <p className="text-center text-xs leading-6 text-muted">{t("common.ai.disclaimer")}</p>

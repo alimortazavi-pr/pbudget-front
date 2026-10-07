@@ -162,3 +162,17 @@ export async function fetchAdminBalePayments(params: { status?: string; page?: n
   }>("/admin/subscriptions/bale-payments", { params: { status: params.status || undefined, page: params.page ?? 1, limit: 20 } });
   return data;
 }
+
+export interface FeatureDefinition {
+  key: string;
+  group: string;
+  label: string;
+  description: string;
+  defaultEnabled: boolean;
+  limitLabel?: string;
+}
+
+export async function fetchAdminFeatureCatalog() {
+  const { data } = await axiosInstance.get<FeatureDefinition[]>("/admin/subscriptions/feature-catalog");
+  return data;
+}

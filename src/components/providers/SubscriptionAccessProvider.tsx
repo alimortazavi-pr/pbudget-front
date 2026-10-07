@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 
 import * as subscriptionApi from "@/common/api/subscriptions";
 import type { MySubscriptionResponse } from "@/common/interfaces/subscription.interface";
+import { setAmountsHidden } from "@/common/utils/amount-privacy";
 import { useAppSelector } from "@/stores/hooks";
 import { didTryAutoLoginSelector, isAuthSelector } from "@/stores/auth";
 import { userSelector } from "@/stores/profile";
@@ -71,6 +72,11 @@ export function SubscriptionAccessProvider({ children }: { children: ReactNode }
     };
     // Re-fetch when the active account changes (multi-account switch).
   }, [didTryAutoLogin, isAuth, userId]);
+
+  // A plan without the privacy switch must not leave amounts masked with no way back.
+  useEffect(() => {
+    if (data?.subscription && !data.entitlements.privacy_mode?.enabled) setAmountsHidden(false);
+  }, [data]);
 
   useEffect(() => {
     if (!isAuth) return;

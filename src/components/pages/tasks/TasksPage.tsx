@@ -32,6 +32,7 @@ import { useLocalizedDate } from "@/i18n/hooks/useLocalizedDate";
 import { PeriodNavigator } from "@/components/pages/planning/PeriodNavigator";
 import { usePeriodQuery } from "@/components/pages/planning/usePeriodQuery";
 import { CreateTaskModal } from "@/components/pages/tasks/CreateTaskModal";
+import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
 import { TaskRoutinesSection } from "@/components/pages/tasks/TaskRoutinesSection";
 
 function priorityLabel(priority: ITask["priority"], t: (key: string) => string) {
@@ -81,7 +82,9 @@ export function TasksPage() {
   } = usePeriodQuery(PATHS.TASKS);
 
   const duration = (get("duration", "daily") as TaskDuration);
-  const section = get("section") === "routines" ? "routines" : "schedule";
+  const { isFeatureEnabled } = useSubscriptionAccess();
+  const routinesEnabled = isFeatureEnabled("routines");
+  const section = get("section") === "routines" && routinesEnabled ? "routines" : "schedule";
   const projectFilter = get("projectId", "");
   const [statusFilter, setStatusFilter] = useState<TaskStatusFilter>("all");
 
@@ -239,7 +242,7 @@ export function TasksPage() {
         aside={<Task size={36} variant="Bold" className="shrink-0 opacity-90" />}
       />
 
-      <div className="mb-4 flex gap-2" data-tour="tasks-section-tabs">
+      <div className={`mb-4 flex gap-2 ${routinesEnabled ? "" : "hidden"}`} data-tour="tasks-section-tabs">
         {(
           [
             { id: "schedule" as const, label: t("pages.tasks.tabSchedule") },

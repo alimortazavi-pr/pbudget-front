@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useId } from "react";
+import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
 import { useAmountsHidden } from "@/components/providers/AmountPrivacyProvider";
 import { ArrowDown, ArrowUp, DocumentUpload, Eye, EyeSlash, MoneyRecive, MoneySend } from "iconsax-reactjs";
 
@@ -72,6 +73,8 @@ export function DashboardHero({ firstName, income, expense, trend = [], "data-to
   const user = useAppSelector(userSelector);
   const preferred = user?.preferences?.currency ?? DEFAULT_USER_PREFERENCES.currency;
   const [hidden, toggleHidden] = useAmountsHidden();
+  const { isFeatureEnabled } = useSubscriptionAccess();
+  const privacyEnabled = isFeatureEnabled("privacy_mode");
 
   const balance = getWalletBalance(user, preferred);
   const unit = displayCurrencyLabel(preferred);
@@ -110,6 +113,7 @@ export function DashboardHero({ firstName, income, expense, trend = [], "data-to
                 <p className="text-xs text-white/70">{t("dashboard.walletBalance")}</p>
               </div>
             </div>
+            {privacyEnabled ? (
             <button
               type="button"
               onClick={toggleHidden}
@@ -119,6 +123,7 @@ export function DashboardHero({ firstName, income, expense, trend = [], "data-to
             >
               {hidden ? <EyeSlash size={20} /> : <Eye size={20} />}
             </button>
+            ) : null}
           </div>
 
           <div className="flex min-w-0 items-end gap-2">

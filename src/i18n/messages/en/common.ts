@@ -404,6 +404,7 @@ export const commonMessages: MessageTree = {
     baleRestart: "Start again",
     baleUnavailable: "Bale payments are temporarily unavailable.",
     baleSuccess: "Payment confirmed and your plan is active. 🎉",
+    commonFeatures: "+ {{count}} more core features in every plan",
     sourceBale: "Bale wallet",
     trust: {
       secureTitle: "Secure payment with Bale",

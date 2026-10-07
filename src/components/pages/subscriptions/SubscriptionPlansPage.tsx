@@ -120,14 +120,19 @@ export function SubscriptionPlansPage() {
     };
   }, [bazaarReady, userId, refresh, loadHistory, t]);
 
-  const featureCatalog = useMemo(() => {
+  // Only features that differ between plans make a useful comparison; the rest
+  // are included everywhere and summarised in one line.
+  const { featureCatalog, commonCount } = useMemo(() => {
     const map = new Map<string, { key: string; label: string }>();
     plans.forEach((plan) =>
       plan.features.forEach((feature) => {
         if (!map.has(feature.key)) map.set(feature.key, { key: feature.key, label: feature.label });
       }),
     );
-    return [...map.values()];
+    const all = [...map.values()];
+    const everywhere = (key: string) => plans.length > 0 && plans.every((plan) => plan.features.find((item) => item.key === key)?.enabled);
+    const differing = all.filter((feature) => !everywhere(feature.key));
+    return { featureCatalog: differing, commonCount: all.length - differing.length };
   }, [plans]);
 
   const current = mine?.subscription ?? null;
@@ -341,7 +346,7 @@ export function SubscriptionPlansPage() {
                   </p>
                 ) : null}
 
-                <ul className="my-6 flex-1 space-y-2.5 border-t border-border/60 pt-5">
+                <ul className="mt-6 flex-1 space-y-2.5 border-t border-border/60 pt-5">
                   {featureCatalog.map((catalogFeature) => {
                     const planFeature = plan.features.find((item) => item.key === catalogFeature.key);
                     const enabled = Boolean(planFeature?.enabled);
@@ -362,6 +367,11 @@ export function SubscriptionPlansPage() {
                     );
                   })}
                 </ul>
+                {commonCount > 0 ? (
+                  <p className="mb-6 mt-4 text-xs text-muted">{t("common.subscription.commonFeatures", { count: toPersianDigits(commonCount) })}</p>
+                ) : (
+                  <div className="mb-6" />
+                )}
 
                 {isFree ? (
                   isCurrent ? (

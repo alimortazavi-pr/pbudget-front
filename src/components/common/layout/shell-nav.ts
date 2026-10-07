@@ -38,7 +38,7 @@ export function getTelegramHref() {
 export const SIMPLE_NAV_ITEMS = [
   { href: PATHS.HOME, label: "nav.home", icon: Home2 },
   { href: PATHS.CATEGORIES, label: "nav.categories", icon: Category },
-  { href: PATHS.BOXES, label: "nav.boxes", icon: Box1 },
+  { href: PATHS.BOXES, label: "nav.boxes", icon: Box1, featureKey: "boxes" },
 ] as const;
 
 export const PRIMARY_NAV_ITEMS = [
@@ -46,15 +46,15 @@ export const PRIMARY_NAV_ITEMS = [
   { href: PATHS.BANK_IMPORT, label: "nav.bankImport", icon: DocumentUpload, featureKey: "bank_import" },
   { href: PATHS.ANALYSIS, label: "nav.financialAnalysis", icon: Chart, featureKey: "analytics" },
   { href: PATHS.AI, label: "nav.aiAssistant", icon: MagicStar, featureKey: "ai" },
-  { href: PATHS.BOXES, label: "nav.boxes", icon: Box1 },
-  { href: PATHS.PAYMENT_CARDS, label: "nav.myCards", icon: Card },
+  { href: PATHS.BOXES, label: "nav.boxes", icon: Box1, featureKey: "boxes" },
+  { href: PATHS.PAYMENT_CARDS, label: "nav.myCards", icon: Card, featureKey: "payment_cards" },
   { href: PATHS.CATEGORIES, label: "nav.categories", icon: Category },
 ] as const;
 
 /** Simple mobile tab bar — beside the center FAB */
 export const SIMPLE_MOBILE_TAB_SIDE_ITEMS = [
   { href: PATHS.CATEGORIES, label: "nav.categoriesShort", icon: Category },
-  { href: PATHS.BOXES, label: "nav.boxes", icon: Box1 },
+  { href: PATHS.BOXES, label: "nav.boxes", icon: Box1, featureKey: "boxes" },
 ] as const;
 
 export const BANK_IMPORT_NAV_ITEM = {
@@ -73,7 +73,7 @@ export const DOWNLOAD_NAV_ITEM = {
 /** Classic mobile tab bar — beside the center FAB */
 export const MOBILE_TAB_SIDE_ITEMS = [
   { href: PATHS.TASKS, label: "nav.dailyPlanner", icon: Task },
-  { href: PATHS.NOTES, label: "nav.notes", icon: DocumentText },
+  { href: PATHS.NOTES, label: "nav.notes", icon: DocumentText, featureKey: "notes" },
 ] as const;
 
 /** @deprecated flat list — use PLANNING_NAV_GROUPS */
@@ -82,11 +82,11 @@ export const PLANNING_NAV_ITEMS = [
   { href: PATHS.PROJECTS, label: "nav.projects", icon: Briefcase, featureKey: "projects" },
   { href: PATHS.VENTURES, label: "nav.businessPartners", icon: Profile2User, featureKey: "partners" },
   { href: PATHS.WORK_ATTENDANCE, label: "nav.workAttendance", icon: Clock, featureKey: "work_time" },
-  { href: PATHS.DEBTS, label: "nav.debts", icon: Card },
-  { href: PATHS.INSTALLMENTS, label: "nav.installments", icon: Calendar },
-  { href: PATHS.CHECKS, label: "nav.checks", icon: MoneyRecive },
-  { href: PATHS.COMMITMENTS, label: "nav.commitments", icon: Wallet },
-  { href: PATHS.NOTES, label: "nav.notes", icon: DocumentText },
+  { href: PATHS.DEBTS, label: "nav.debts", icon: Card, featureKey: "debts" },
+  { href: PATHS.INSTALLMENTS, label: "nav.installments", icon: Calendar, featureKey: "installments" },
+  { href: PATHS.CHECKS, label: "nav.checks", icon: MoneyRecive, featureKey: "checks" },
+  { href: PATHS.COMMITMENTS, label: "nav.commitments", icon: Wallet, featureKey: "commitments" },
+  { href: PATHS.NOTES, label: "nav.notes", icon: DocumentText, featureKey: "notes" },
 ] as const;
 
 export const PLANNING_NAV_GROUPS = [
@@ -95,7 +95,7 @@ export const PLANNING_NAV_GROUPS = [
     items: [
       { href: PATHS.TASKS, label: "nav.dailyPlanner", icon: Task, featureKey: "planner" },
       { href: PATHS.PROJECTS, label: "nav.projects", icon: Briefcase, featureKey: "projects" },
-      { href: PATHS.NOTES, label: "nav.notes", icon: DocumentText },
+      { href: PATHS.NOTES, label: "nav.notes", icon: DocumentText, featureKey: "notes" },
       { href: PATHS.EXPORTS, label: "nav.customExports", icon: DocumentDownload, featureKey: "custom_exports" },
       { href: PATHS.PLANS, label: "nav.plans", icon: Crown },
     ],
@@ -103,10 +103,10 @@ export const PLANNING_NAV_GROUPS = [
   {
     title: "nav.advancedFinance",
     items: [
-      { href: PATHS.DEBTS, label: "nav.debts", icon: Card },
-      { href: PATHS.INSTALLMENTS, label: "nav.installments", icon: Calendar },
-      { href: PATHS.CHECKS, label: "nav.checks", icon: MoneyRecive },
-      { href: PATHS.COMMITMENTS, label: "nav.commitments", icon: Wallet },
+      { href: PATHS.DEBTS, label: "nav.debts", icon: Card, featureKey: "debts" },
+      { href: PATHS.INSTALLMENTS, label: "nav.installments", icon: Calendar, featureKey: "installments" },
+      { href: PATHS.CHECKS, label: "nav.checks", icon: MoneyRecive, featureKey: "checks" },
+      { href: PATHS.COMMITMENTS, label: "nav.commitments", icon: Wallet, featureKey: "commitments" },
     ],
   },
   {

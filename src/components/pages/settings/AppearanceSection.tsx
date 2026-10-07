@@ -26,6 +26,7 @@ import {
   type CustomTheme,
   type ThemeRadius,
 } from "@/common/theme/custom-theme";
+import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
 import { useAmountsHidden } from "@/components/providers/AmountPrivacyProvider";
 import { useTranslation } from "@/components/providers/LanguageProvider";
 import { useTheme } from "@/components/providers/ThemeProvider";
@@ -124,6 +125,9 @@ export function AppearanceSection() {
   const { t } = useTranslation();
   const { theme: mode, toggleTheme } = useTheme();
   const [amountsHidden, toggleAmounts] = useAmountsHidden();
+  const { isFeatureEnabled } = useSubscriptionAccess();
+  const customThemeEnabled = isFeatureEnabled("theme_custom");
+  const privacyEnabled = isFeatureEnabled("privacy_mode");
   const [custom, setCustom] = useState<CustomTheme>(DEFAULT_THEME);
 
   useEffect(() => {
@@ -207,6 +211,8 @@ export function AppearanceSection() {
           </div>
         </section>
 
+        {customThemeEnabled ? (
+          <>
         <section>
           <SectionTitle>{t("common.themeStudio.customColors")}</SectionTitle>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -232,6 +238,8 @@ export function AppearanceSection() {
             ))}
           </div>
         </section>
+          </>
+        ) : null}
 
         <div className="flex items-center justify-between gap-4 rounded-xl border border-border/50 bg-surface-secondary px-4 py-3">
           <div className="min-w-0">
@@ -253,6 +261,7 @@ export function AppearanceSection() {
         </div>
       </div>
 
+      {privacyEnabled ? (
       <div className="glass flex items-center justify-between gap-4 rounded-2xl p-5">
         <div className="flex min-w-0 items-start gap-3">
           <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent/12 text-accent">
@@ -269,6 +278,7 @@ export function AppearanceSection() {
           </Switch.Control>
         </Switch>
       </div>
+      ) : null}
     </div>
   );
 }

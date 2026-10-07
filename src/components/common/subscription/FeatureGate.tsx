@@ -42,7 +42,7 @@ export function FeatureGate({ feature, children }: { feature: SubscriptionFeatur
   }
 
   const catalog = SUBSCRIPTION_FEATURE_CATALOG.find((item) => item.key === feature);
-  const label = catalog ? t(catalog.labelKey) : feature;
+  const label = data?.entitlements[feature]?.label ?? catalog?.label ?? feature;
   // The trial covers everything except the AI assistant.
   const canTrial = Boolean(data?.trial?.eligible) && feature !== "ai";
 

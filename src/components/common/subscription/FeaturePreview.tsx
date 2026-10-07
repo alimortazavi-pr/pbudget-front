@@ -179,6 +179,34 @@ const PREVIEWS: Record<string, () => ReactNode> = {
       </Card>
     </div>
   ),
+  boxes: () => (
+    <div className="grid gap-3 sm:grid-cols-2">
+      <Card title="صندوق سفر">
+        <Bar label="۶٬۵۰۰٬۰۰۰ از ۱۰٬۰۰۰٬۰۰۰" value={6500000} max={10000000} color="bg-success" />
+      </Card>
+      <Card title="صندوق اضطراری">
+        <Bar label="۱۲٬۰۰۰٬۰۰۰ از ۳۰٬۰۰۰٬۰۰۰" value={12000000} max={30000000} />
+      </Card>
+    </div>
+  ),
+  payment_cards: () => (
+    <Card title="کارت‌های من">
+      <Row left="کارت اصلی" sub="•••• ۱۲۳۴" chip={{ text: "ملی", tone: NEUTRAL }} />
+      <Row left="کارت پس‌انداز" sub="•••• ۵۶۷۸" chip={{ text: "ملت", tone: NEUTRAL }} />
+    </Card>
+  ),
+  notes: () => (
+    <Card title="یادداشت‌ها">
+      <Row left="ایدهٔ بودجه‌بندی سال جدید" sub="امروز" />
+      <Row left="لیست خرید ماهانه" sub="دیروز" />
+    </Card>
+  ),
+  commitments: () => (
+    <Card title="تعهدات پیش‌رو">
+      <Row left="قسط وام خودرو" sub="۵ روز دیگر" right={money(4200000)} chip={{ text: "قسط", tone: NEUTRAL }} />
+      <Row left="چک پرداختنی" sub="۱۱ روز دیگر" right={money(6500000)} chip={{ text: "چک", tone: WARN }} />
+    </Card>
+  ),
   debts: () => (
     <Card title="طلب و بدهی">
       <Row left="طلب از محمد کریمی" sub="سررسید ۱۴۰۵/۰۸/۰۱" right={money(5000000)} chip={{ text: "طلب", tone: OK }} />

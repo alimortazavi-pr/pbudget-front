@@ -405,6 +405,7 @@ export const commonMessages: MessageTree = {
     baleRestart: "شروع دوباره",
     baleUnavailable: "پرداخت با بله فعلاً در دسترس نیست.",
     baleSuccess: "پرداخت تأیید شد و اشتراک شما فعال شد. 🎉",
+    commonFeatures: "+ {{count}} امکان پایهٔ دیگر در همهٔ پلن‌ها",
     sourceBale: "کیف پول بله",
     trust: {
       secureTitle: "پرداخت امن با بله",

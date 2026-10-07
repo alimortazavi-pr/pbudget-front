@@ -7,9 +7,8 @@ import { Add, Archive, Clock, Crown, Edit2, Flash, TickCircle, Timer1 } from "ic
 
 import * as insightsApi from "@/common/api/admin-insights";
 import * as subscriptionApi from "@/common/api/subscriptions";
-import type { AdminSubscriptionStatusFilter } from "@/common/api/subscriptions";
+import type { AdminSubscriptionStatusFilter, FeatureDefinition } from "@/common/api/subscriptions";
 import { PATHS } from "@/common/constants";
-import { SUBSCRIPTION_FEATURE_CATALOG } from "@/common/constants/subscription-features";
 import type { AdminUserRow } from "@/common/interfaces/admin";
 import type { SubscriptionFeature, SubscriptionPeriod, SubscriptionPlan, UserSubscription } from "@/common/interfaces/subscription.interface";
 import { showErrorToast, showToast } from "@/common/utils/toast";
@@ -688,6 +687,12 @@ function PlanEditorDialog({
 }) {
   const [form, setForm] = useState<PlanForm>(() => toForm(null));
   const [saving, setSaving] = useState(false);
+  const [catalog, setCatalog] = useState<FeatureDefinition[]>([]);
+
+  useEffect(() => {
+    if (!open || catalog.length > 0) return;
+    subscriptionApi.fetchAdminFeatureCatalog().then(setCatalog).catch((error) => showErrorToast(error));
+  }, [open, catalog.length]);
 
   useEffect(() => {
     if (open) setForm(toForm(plan));
@@ -696,12 +701,12 @@ function PlanEditorDialog({
   const update = <K extends keyof PlanForm>(key: K, value: PlanForm[K]) => setForm((current) => ({ ...current, [key]: value }));
 
   function setFeature(key: string, patch: Partial<SubscriptionFeature>) {
-    const catalog = SUBSCRIPTION_FEATURE_CATALOG.find((feature) => feature.key === key);
+    const definition = catalog.find((feature) => feature.key === key);
     setForm((current) => {
       const index = current.features.findIndex((feature) => feature.key === key);
       const next = [...current.features];
       if (index >= 0) next[index] = { ...next[index], ...patch };
-      else next.push({ key, label: catalog?.label ?? key, description: "", enabled: false, limit: null, ...patch });
+      else next.push({ key, label: definition?.label ?? key, description: "", enabled: definition?.defaultEnabled ?? false, limit: null, ...patch });
       return { ...current, features: next };
     });
   }
@@ -711,9 +716,10 @@ function PlanEditorDialog({
       showToast("نام و شناسه پلن را وارد کنید", "warning");
       return;
     }
+    // Save every catalog feature explicitly (missing ones keep their catalog default).
     const features = [
-      ...SUBSCRIPTION_FEATURE_CATALOG.map((catalog) => form.features.find((feature) => feature.key === catalog.key) ?? { key: catalog.key, label: catalog.label, description: "", enabled: false, limit: null }),
-      ...form.features.filter((feature) => !SUBSCRIPTION_FEATURE_CATALOG.some((catalog) => catalog.key === feature.key)),
+      ...catalog.map((definition) => form.features.find((feature) => feature.key === definition.key) ?? { key: definition.key, label: definition.label, description: "", enabled: definition.defaultEnabled, limit: null }),
+      ...form.features.filter((feature) => !catalog.some((definition) => definition.key === feature.key)),
     ];
     const payload = {
       name: form.name.trim(),
@@ -791,27 +797,87 @@ function PlanEditorDialog({
         </label>
       </div>
 
-      <div>
-        <p className="mb-2 text-sm font-semibold">قابلیت‌ها</p>
-        <div className="grid gap-2 sm:grid-cols-2">
-          {SUBSCRIPTION_FEATURE_CATALOG.map((catalog) => {
-            const configured = form.features.find((feature) => feature.key === catalog.key);
-            const enabled = configured?.enabled === true;
-            return (
-              <div key={catalog.key} className={`flex items-center justify-between gap-3 rounded-xl border p-3 ${enabled ? "border-accent/40 bg-accent/5" : "border-border/60"}`}>
-                <div>
-                  <p className="text-sm font-medium">{catalog.label}</p>
-                  <p className="font-mono text-[10px] text-muted" dir="ltr">{catalog.key}</p>
-                </div>
-                <Switch aria-label={catalog.label} size="sm" isSelected={enabled} onChange={(selected) => setFeature(catalog.key, { enabled: selected, label: catalog.label })}>
-                  <Switch.Control><Switch.Thumb /></Switch.Control>
-                </Switch>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      <FeatureMatrix catalog={catalog} features={form.features} onChange={setFeature} />
       {plan ? <p className="text-xs text-muted">آخرین تغییر روی مشترکین فعلی این پلن هم اعمال می‌شود.</p> : null}
     </FormDialog>
+  );
+}
+
+function FeatureMatrix({
+  catalog,
+  features,
+  onChange,
+}: {
+  catalog: FeatureDefinition[];
+  features: SubscriptionFeature[];
+  onChange: (key: string, patch: Partial<SubscriptionFeature>) => void;
+}) {
+  const groups = useMemo(() => {
+    const map = new Map<string, FeatureDefinition[]>();
+    catalog.forEach((feature) => map.set(feature.group, [...(map.get(feature.group) ?? []), feature]));
+    return [...map.entries()];
+  }, [catalog]);
+  const stateOf = (definition: FeatureDefinition) => {
+    const configured = features.find((feature) => feature.key === definition.key);
+    return { enabled: configured ? configured.enabled !== false : definition.defaultEnabled, limit: configured?.limit ?? null };
+  };
+  const enabledCount = catalog.filter((definition) => stateOf(definition).enabled).length;
+
+  if (catalog.length === 0) return <SkeletonRows rows={4} />;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-sm font-semibold">قابلیت‌ها</p>
+        <span className="text-xs text-muted">
+          {formatNumberFa(enabledCount)} از {formatNumberFa(catalog.length)} قابلیت فعال
+        </span>
+      </div>
+      {groups.map(([group, items]) => {
+        const allOn = items.every((definition) => stateOf(definition).enabled);
+        return (
+          <section key={group} className="rounded-2xl border border-border/60">
+            <header className="flex items-center justify-between gap-3 border-b border-border/50 bg-surface-secondary/60 px-3 py-2 text-sm font-semibold">
+              {group}
+              <Button size="sm" variant="ghost" onPress={() => items.forEach((definition) => onChange(definition.key, { enabled: !allOn, label: definition.label }))}>
+                {allOn ? "خاموش‌کردن همه" : "روشن‌کردن همه"}
+              </Button>
+            </header>
+            <ul className="divide-y divide-border/40">
+              {items.map((definition) => {
+                const state = stateOf(definition);
+                return (
+                  <li key={definition.key} className="flex flex-wrap items-center justify-between gap-3 px-3 py-2.5">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium">{definition.label}</p>
+                      <p className="text-xs leading-5 text-muted">{definition.description}</p>
+                      <p className="font-mono text-[10px] text-muted" dir="ltr">{definition.key}</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {definition.limitLabel ? (
+                        <Input
+                          variant="secondary"
+                          type="number"
+                          min={1}
+                          aria-label={definition.limitLabel}
+                          placeholder={definition.limitLabel}
+                          className="w-28"
+                          disabled={!state.enabled}
+                          value={state.limit === null ? "" : String(state.limit)}
+                          onChange={(event) => onChange(definition.key, { limit: event.target.value === "" ? null : Math.max(1, Number(event.target.value) || 1), label: definition.label, enabled: state.enabled })}
+                        />
+                      ) : null}
+                      <Switch aria-label={definition.label} size="sm" isSelected={state.enabled} onChange={(selected) => onChange(definition.key, { enabled: selected, label: definition.label })}>
+                        <Switch.Control><Switch.Thumb /></Switch.Control>
+                      </Switch>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        );
+      })}
+    </div>
   );
 }

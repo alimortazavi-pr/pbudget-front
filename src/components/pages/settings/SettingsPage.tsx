@@ -13,6 +13,7 @@ import { BaleConnectSection } from "@/components/pages/profile/BaleConnectSectio
 import { TelegramConnectSection } from "@/components/pages/profile/TelegramConnectSection";
 import { UserPreferencesSettings } from "@/components/pages/settings/UserPreferencesSection";
 import { SiteFooterCredits } from "@/components/common/brand/SiteFooterCredits";
+import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
 import { AppModeSection } from "@/components/pages/settings/AppModeSection";
 import { AppearanceSection } from "@/components/pages/settings/AppearanceSection";
 import { useVersion } from "@/components/providers/VersionProvider";
@@ -20,6 +21,7 @@ import { useVersion } from "@/components/providers/VersionProvider";
 export function SettingsPage() {
   const { t } = useTranslation();
   const { hasUpdate, applyUpdate, showChangelog } = useVersion();
+  const { isFeatureEnabled } = useSubscriptionAccess();
 
   return (
     <div className="pb-form-page space-y-6">
@@ -30,8 +32,8 @@ export function SettingsPage() {
       <UserPreferencesSettings />
 
       <div data-tour="settings-telegram">
-        <TelegramConnectSection />
-        <BaleConnectSection />
+        {isFeatureEnabled("telegram_bot") ? <TelegramConnectSection /> : null}
+        {isFeatureEnabled("bale_bot") ? <BaleConnectSection /> : null}
       </div>
 
       <div data-tour="settings-support" className="space-y-6">
