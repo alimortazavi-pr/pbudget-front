@@ -33,7 +33,7 @@ export type SubscriptionStatus = "active" | "expired" | "canceled" | "pending" |
 export interface UserSubscription {
   _id: string;
   status: SubscriptionStatus;
-  source?: "manual" | "bazaar";
+  source?: "manual" | "bazaar" | "bale";
   amountPaid?: number | null;
   startsAt: string;
   expiresAt?: string | null;

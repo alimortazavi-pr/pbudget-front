@@ -22,6 +22,26 @@ export async function verifyBazaarPurchase(payload: { productId: string; purchas
   return data;
 }
 
+export interface BaleCheckout {
+  id: string;
+  link: string;
+  amountRial: number;
+  expiresAt: string;
+}
+
+export type BalePaymentState = "pending" | "paid" | "expired";
+
+/** Starts a Bale wallet payment; the user then finishes it inside the Bale bot. */
+export async function createBaleCheckout(planId: string) {
+  const { data } = await axiosInstance.post<BaleCheckout>("/subscriptions/bale/checkout", { planId });
+  return data;
+}
+
+export async function fetchBalePaymentStatus(id: string) {
+  const { data } = await axiosInstance.get<{ id: string; status: BalePaymentState }>(`/subscriptions/bale/payments/${id}`);
+  return data;
+}
+
 export async function fetchAdminSubscriptionPlans() {
   const { data } = await axiosInstance.get<SubscriptionPlan[]>("/admin/subscriptions/plans");
   return data;

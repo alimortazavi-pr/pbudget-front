@@ -13,7 +13,7 @@ import {
   pendingBazaarPurchases,
   purchaseWithBazaar,
 } from "@/common/native/bazaar";
-import { formatPlanPrice, toPersianDigits } from "@/common/utils";
+import { formatPlanPrice, formatPrice, toPersianDigits } from "@/common/utils";
 import { formatIsoDateJalali } from "@/common/utils/jalali-date";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
@@ -57,6 +57,7 @@ export function SubscriptionPlansPage() {
   const [buyingPlanId, setBuyingPlanId] = useState<string | null>(null);
   // Decided after mount: the native bridge does not exist on the server render.
   const [bazaarReady, setBazaarReady] = useState(false);
+  const [baleSession, setBaleSession] = useState<{ plan: SubscriptionPlan; checkout: subscriptionApi.BaleCheckout } | null>(null);
 
   const loadPlans = useCallback(async () => {
     setPlansLoading(true);
@@ -170,6 +171,20 @@ export function SubscriptionPlansPage() {
         // Paid, but the server could not confirm it yet: it is picked up again on the next visit.
         showToast(t("common.subscription.purchaseUnconfirmed"), "danger");
       }
+    } finally {
+      setBuyingPlanId(null);
+    }
+  }
+
+  async function payWithBale(plan: SubscriptionPlan) {
+    setBuyingPlanId(plan._id);
+    try {
+      const checkout = await subscriptionApi.createBaleCheckout(plan._id);
+      setBaleSession({ plan, checkout });
+      // May be blocked by the browser; the dialog has a real link as the fallback.
+      window.open(checkout.link, "_blank", "noopener");
+    } catch (error) {
+      showErrorToast(error, t("common.subscription.baleUnavailable"));
     } finally {
       setBuyingPlanId(null);
     }
@@ -352,9 +367,18 @@ export function SubscriptionPlansPage() {
                   </Button>
                 ) : (
                   <>
-                    <Button className="w-full" variant={plan.highlighted || isCurrent ? "primary" : "secondary"} onPress={() => setRequesting(plan)}>
+                    <Button
+                      className="w-full"
+                      variant={plan.highlighted || isCurrent ? "primary" : "secondary"}
+                      isPending={isBuying}
+                      isDisabled={buyingPlanId !== null && !isBuying}
+                      onPress={() => void payWithBale(plan)}
+                    >
                       <Crown size={17} variant="Bold" />
-                      {isCurrent ? t("common.subscription.renew") : t("common.subscription.requestPlan")}
+                      {isCurrent ? t("common.subscription.renew") : t("common.subscription.payWithBale")}
+                    </Button>
+                    <Button className="mt-2 w-full" size="sm" variant="ghost" onPress={() => setRequesting(plan)}>
+                      {t("common.subscription.orRequestManually")}
                     </Button>
                     {plan.contactMessage ? <p className="mt-3 text-center text-xs leading-5 text-muted">{plan.contactMessage}</p> : null}
                   </>
@@ -377,6 +401,7 @@ export function SubscriptionPlansPage() {
                     {formatIsoDateJalali(item.startsAt)}
                     {item.expiresAt ? ` ← ${formatIsoDateJalali(item.expiresAt)}` : ` · ${t("common.subscription.neverExpires")}`}
                     {item.source === "bazaar" ? ` · ${t("common.subscription.sourceBazaar")}` : ""}
+                    {item.source === "bale" ? ` · ${t("common.subscription.sourceBale")}` : ""}
                   </p>
                 </div>
                 <span className="rounded-full bg-surface-secondary px-3 py-1 text-xs font-semibold text-muted">{statusLabel(item, t)}</span>
@@ -390,6 +415,21 @@ export function SubscriptionPlansPage() {
           ) : null}
         </section>
       ) : null}
+
+      <BalePayDialog
+        session={baleSession}
+        onClose={() => setBaleSession(null)}
+        onRestart={(plan) => {
+          setBaleSession(null);
+          void payWithBale(plan);
+        }}
+        onPaid={async () => {
+          setBaleSession(null);
+          showToast(t("common.subscription.baleSuccess"), "success");
+          await refresh();
+          await loadHistory();
+        }}
+      />
 
       <RequestPlanDialog
         plan={requesting}
@@ -472,6 +512,114 @@ function RequestPlanDialog({
           <Button isPending={saving} onPress={() => void submit()}>
             {t("common.subscription.requestSubmit")}
           </Button>
+        </Modal.Footer>
+      </AppModalDialog>
+    </AppModal>,
+    document.body,
+  );
+}
+
+const BALE_POLL_MS = 3000;
+
+function BalePayDialog({
+  session,
+  onClose,
+  onPaid,
+  onRestart,
+}: {
+  session: { plan: SubscriptionPlan; checkout: subscriptionApi.BaleCheckout } | null;
+  onClose: () => void;
+  onPaid: () => Promise<void>;
+  onRestart: (plan: SubscriptionPlan) => void;
+}) {
+  const { t } = useTranslation();
+  const [mounted, setMounted] = useState(false);
+  const [expired, setExpired] = useState(false);
+  const paymentId = session?.checkout.id;
+
+  useEffect(() => setMounted(true), []);
+  useEffect(() => setExpired(false), [paymentId]);
+
+  // Poll until the bot reports the wallet payment; stops on success, expiry or close.
+  useEffect(() => {
+    if (!paymentId) return;
+    let stopped = false;
+    const timer = window.setInterval(async () => {
+      try {
+        const { status } = await subscriptionApi.fetchBalePaymentStatus(paymentId);
+        if (stopped) return;
+        if (status === "paid") {
+          stopped = true;
+          window.clearInterval(timer);
+          await onPaid();
+        } else if (status === "expired") {
+          stopped = true;
+          window.clearInterval(timer);
+          setExpired(true);
+        }
+      } catch {
+        // Transient network error: keep polling.
+      }
+    }, BALE_POLL_MS);
+    return () => {
+      stopped = true;
+      window.clearInterval(timer);
+    };
+    // onPaid is recreated each render; the payment id is the real dependency.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentId]);
+
+  if (!mounted) return null;
+
+  const steps = [t("common.subscription.baleStep1"), t("common.subscription.baleStep2"), t("common.subscription.baleStep3")];
+
+  return createPortal(
+    <AppModal open={Boolean(session)} onOpenChange={(open) => !open && onClose()}>
+      <AppModalDialog className="sm:max-w-md">
+        <AppModalHeader>
+          <Modal.Heading>{t("common.subscription.baleDialogTitle", { plan: session?.plan.name ?? "" })}</Modal.Heading>
+        </AppModalHeader>
+        <Modal.Body className="space-y-4">
+          {session ? (
+            <p className="rounded-xl bg-surface-secondary px-3 py-2 text-sm font-semibold">
+              {t("common.subscription.baleAmount", { amount: formatPrice(session.plan.price) })}
+            </p>
+          ) : null}
+          <ol className="space-y-2.5">
+            {steps.map((step, index) => (
+              <li key={step} className="flex items-start gap-3 text-sm leading-6">
+                <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-accent/12 text-xs font-bold text-accent">
+                  {toPersianDigits(index + 1)}
+                </span>
+                {step}
+              </li>
+            ))}
+          </ol>
+          {expired ? (
+            <p className="text-sm font-medium text-danger">{t("common.subscription.baleExpired")}</p>
+          ) : (
+            <p className="flex items-center gap-2 text-xs text-muted">
+              <Timer1 size={16} className="animate-pulse" />
+              {t("common.subscription.baleWaiting")}
+            </p>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="ghost" onPress={onClose}>
+            {t("common.cancel")}
+          </Button>
+          {expired && session ? (
+            <Button onPress={() => onRestart(session.plan)}>{t("common.subscription.baleRestart")}</Button>
+          ) : session ? (
+            <a
+              href={session.checkout.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-10 items-center justify-center rounded-xl bg-accent px-4 text-sm font-semibold text-accent-foreground"
+            >
+              {t("common.subscription.baleOpen")}
+            </a>
+          ) : null}
         </Modal.Footer>
       </AppModalDialog>
     </AppModal>,
