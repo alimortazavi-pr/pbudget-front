@@ -28,6 +28,7 @@ import { FormInput } from "@/components/common/form/FormFields";
 import { BankImportRowCard } from "@/components/pages/bank-import/BankImportRowCard";
 import { BankImportRowGroup } from "@/components/pages/bank-import/BankImportRowGroup";
 import { BankImportRowEditorModal } from "@/components/pages/bank-import/BankImportRowEditorModal";
+import { useBankImportDraft } from "@/components/pages/bank-import/useBankImportDraft";
 import { groupImportRows } from "@/components/pages/bank-import/import-row-group.util";
 import type { ImportRowDraft } from "@/components/pages/bank-import/import-row.types";
 import {
@@ -63,7 +64,7 @@ export function BankImportWizardPage() {
   const [step, setStep] = useState<WizardStep>(1);
   const [banks, setBanks] = useState<IBank[]>([]);
   const [selectedBankId, setSelectedBankId] = useState("");
-  const [file, setFile] = useState<File | null>(null);
+  const [fileName, setFileName] = useState("");
   const [rows, setRows] = useState<ImportRowDraft[]>([]);
   const [paymentCards, setPaymentCards] = useState<IPaymentCard[]>([]);
   const [meta, setMeta] = useState<Record<string, string | undefined>>({});
@@ -79,6 +80,8 @@ export function BankImportWizardPage() {
   const [rangeFromDay, setRangeFromDay] = useState("");
   const [rangeToDay, setRangeToDay] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const draft = useBankImportDraft(user?._id);
+  const autoRestored = useRef(false);
 
   const selectedBank = useMemo(
     () => banks.find((bank) => bank._id === selectedBankId),
@@ -161,7 +164,7 @@ export function BankImportWizardPage() {
       setRows(
         preview.rows.map((row) => createImportRowDraft(row, cards, user?._id)),
       );
-      setFile(selectedFile);
+      setFileName(selectedFile.name);
       setStep(3);
     } catch (err) {
       showToast(err instanceof Error ? err.message : t("auto.k9417b15f0c"), "danger");
@@ -199,7 +202,7 @@ export function BankImportWizardPage() {
     try {
       const result = await bankImportApi.confirmBankImport({
         bankId: selectedBankId,
-        fileName: file?.name,
+        fileName: fileName || undefined,
         rows: selectedRows.map((row) => buildConfirmPayloadRow(row)),
       });
 
@@ -208,6 +211,7 @@ export function BankImportWizardPage() {
       }
       dispatch(bumpBudgetRevision());
 
+      void draft.clear();
       setImportResult({
         importedCount: result.importedCount,
         skippedDuplicates: result.skippedDuplicates,
@@ -296,9 +300,42 @@ export function BankImportWizardPage() {
     );
   }
 
+  function restoreDraft() {
+    if (!draft.stored) return;
+    const saved = draft.stored.draft;
+    setSelectedBankId(saved.bankId);
+    setFileName(saved.fileName);
+    setRows(saved.rows);
+    setMeta(saved.meta);
+    setDuplicateCount(saved.duplicateCount);
+    setRangeFromDay(saved.rangeFromDay);
+    setRangeToDay(saved.rangeToDay);
+    draft.dismiss();
+    setStep(3);
+  }
+
+  // A draft saved moments ago (typically a refresh mid-work) continues by itself.
+  useEffect(() => {
+    if (autoRestored.current || !draft.loaded || !draft.stored) return;
+    autoRestored.current = true;
+    if (Date.now() - draft.stored.savedAt < 30 * 60 * 1000) {
+      restoreDraft();
+      showToast(t("pages.bankImport.draftRestored"), "success");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once when the draft arrives
+  }, [draft.loaded, draft.stored]);
+
+  // Autosave while reviewing.
+  const { save: saveDraftState } = draft;
+  useEffect(() => {
+    if (step !== 3 || rows.length === 0) return;
+    saveDraftState({ bankId: selectedBankId, fileName, rows, meta, duplicateCount, rangeFromDay, rangeToDay });
+  }, [step, rows, selectedBankId, fileName, meta, duplicateCount, rangeFromDay, rangeToDay, saveDraftState]);
+
   function resetWizard() {
+    void draft.clear();
     setStep(1);
-    setFile(null);
+    setFileName("");
     setRows([]);
     setMeta({});
     setImportResult(null);
@@ -341,6 +378,29 @@ export function BankImportWizardPage() {
           );
         })}
       </div>
+
+      {draft.stored && step < 3 ? (
+        <section className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-accent/30 bg-accent/8 p-4">
+          <div className="min-w-0">
+            <p className="font-semibold">{t("pages.bankImport.draftTitle")}</p>
+            <p className="mt-0.5 text-xs leading-6 text-muted">
+              {t("pages.bankImport.draftBody", {
+                count: toPersianDigits(draft.stored.draft.rows.length),
+                file: draft.stored.draft.fileName || "—",
+                time: new Date(draft.stored.savedAt).toLocaleString("fa-IR"),
+              })}
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button size="sm" variant="ghost" onPress={() => void draft.clear()}>
+              {t("pages.bankImport.draftDiscard")}
+            </Button>
+            <Button size="sm" onPress={restoreDraft}>
+              {t("pages.bankImport.draftResume")}
+            </Button>
+          </div>
+        </section>
+      ) : null}
 
       {step === 1 && (
         <section className="glass space-y-4 rounded-2xl p-6">
@@ -450,6 +510,15 @@ export function BankImportWizardPage() {
               ) : selectedRows.length > 0 ? (
                 <p className="mt-1 text-xs text-success-foreground">{t("auto.k6559c79735")}</p>
               ) : null}
+              <p className="mt-1 text-xs text-muted" aria-live="polite">
+                {draft.status === "saving"
+                  ? t("pages.bankImport.draftSaving")
+                  : draft.status === "saved"
+                    ? t("pages.bankImport.draftSaved")
+                    : draft.status === "unavailable"
+                      ? t("pages.bankImport.draftUnavailable")
+                      : null}
+              </p>
             </div>
             <div className="flex flex-wrap gap-2">
               <Button size="sm" variant="secondary" onPress={() => setAllSelected(true)}>
