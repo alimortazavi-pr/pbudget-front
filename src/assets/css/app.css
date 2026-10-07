@@ -267,10 +267,12 @@
   }
 
   .pb-form-date-input {
-    @apply w-full min-h-11 rounded-xl bg-surface-secondary px-3 text-sm text-foreground;
-    border: none;
+    /* Same surface and border as every other field, so a date never looks out of place. */
+    @apply w-full min-h-11 rounded-field px-3 text-sm text-field-foreground shadow-none;
+    background-color: var(--default);
+    border-width: var(--border-width-field);
+    border-color: var(--field-border);
     outline: none;
-    box-shadow: none;
   }
 
   .pb-form-date-input:focus {
@@ -1086,5 +1088,33 @@
     @apply flex size-11 shrink-0 items-center justify-center rounded-2xl;
     color: color-mix(in oklch, var(--tone) 85%, var(--foreground));
     background: color-mix(in oklch, var(--tone) 15%, transparent);
+  }
+}
+
+/* Form controls fill their column inside dialogs and form pages. `:where` keeps
+   specificity at zero, so an explicit width utility (w-28, w-40…) still wins. */
+@layer components {
+  .modal__body :where(.input, .textarea),
+  .pb-form-page :where(.input, .textarea) {
+    width: 100%;
+  }
+}
+
+@layer components {
+  /* Notes and descriptions need room to type; keep the handle vertical only. */
+  .modal__body .textarea,
+  .pb-form-page .textarea {
+    min-height: 5.5rem;
+    resize: vertical;
+  }
+
+  .modal__header :where(.modal__heading) {
+    font-weight: 700;
+  }
+
+  .modal__footer {
+    border-top: 1px solid color-mix(in oklch, var(--border) 60%, transparent);
+    padding-top: 0.875rem;
+    gap: 0.5rem;
   }
 }

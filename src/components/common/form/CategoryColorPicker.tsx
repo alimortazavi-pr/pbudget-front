@@ -20,7 +20,7 @@ export function CategoryColorPicker({ value, onChange }: CategoryColorPickerProp
   return (
     <div className="space-y-3">
       <p className="text-sm font-medium">{t("auto.ka158979643")}</p>
-      <div className="flex flex-wrap gap-2">
+      <div className="grid grid-cols-6 justify-items-center gap-2">
         {DEFAULT_CATEGORY_COLORS.map((color) => (
           <button
             key={color}

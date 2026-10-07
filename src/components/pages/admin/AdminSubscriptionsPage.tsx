@@ -12,6 +12,7 @@ import { PATHS } from "@/common/constants";
 import type { AdminUserRow } from "@/common/interfaces/admin";
 import type { SubscriptionFeature, SubscriptionPeriod, SubscriptionPlan, UserSubscription } from "@/common/interfaces/subscription.interface";
 import { showErrorToast, showToast } from "@/common/utils/toast";
+import { FormField, FormGrid, FormSection, SwitchRow } from "@/components/common/form/FormKit";
 import {
   AdminPageHeader,
   AdminPanel,
@@ -750,52 +751,51 @@ function PlanEditorDialog({
 
   return (
     <FormDialog open={open} onOpenChange={onOpenChange} title={plan ? `ویرایش پلن «${plan.name}»` : "پلن جدید"} wide isPending={saving} onSubmit={() => void save()} submitLabel="ذخیره پلن">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="شناسه (انگلیسی)" hint={plan ? "شناسه بعد از ساخت تغییر نمی‌کند" : "مثلاً pro یا business-yearly"}>
-          <Input variant="secondary" dir="ltr" value={form.slug} disabled={Boolean(plan)} onChange={(event) => update("slug", event.target.value)} />
-        </Field>
-        <Field label="نام پلن">
-          <Input variant="secondary" value={form.name} onChange={(event) => update("name", event.target.value)} />
-        </Field>
-        <Field label="قیمت">
-          <Input variant="secondary" dir="ltr" inputMode="numeric" value={form.price} onChange={(event) => update("price", event.target.value.replace(/[^\d]/g, ""))} />
-        </Field>
-        <Field label="واحد قیمت">
-          <Input variant="secondary" value={form.priceUnit} onChange={(event) => update("priceUnit", event.target.value)} />
-        </Field>
-        <Field label="دوره">
-          <NativeSelect ariaLabel="دوره" value={form.period} onChange={(value) => update("period", value as SubscriptionPeriod)} options={Object.entries(SUBSCRIPTION_PERIOD_LABEL).map(([value, label]) => ({ value, label }))} />
-        </Field>
-        {form.period === "custom" ? (
-          <Field label="تعداد روز">
-            <Input variant="secondary" dir="ltr" inputMode="numeric" value={form.periodDays} onChange={(event) => update("periodDays", event.target.value.replace(/[^\d]/g, ""))} />
-          </Field>
-        ) : (
-          <Field label="ترتیب نمایش">
-            <Input variant="secondary" dir="ltr" inputMode="numeric" value={form.sortOrder} onChange={(event) => update("sortOrder", event.target.value.replace(/[^\d-]/g, ""))} />
-          </Field>
-        )}
-      </div>
-      <Field label="توضیح">
-        <TextArea variant="secondary" rows={2} value={form.description} onChange={(event) => update("description", event.target.value)} />
-      </Field>
-      <Field label="پیام راهنمای خرید">
-        <Input variant="secondary" value={form.contactMessage} onChange={(event) => update("contactMessage", event.target.value)} />
-      </Field>
-      <div className="flex flex-wrap gap-6">
-        <label className="flex items-center gap-2 text-sm">
-          <Switch size="sm" isSelected={form.highlighted} onChange={(selected) => update("highlighted", selected)}>
-            <Switch.Control><Switch.Thumb /></Switch.Control>
-          </Switch>
-          پلن پیشنهادی (برجسته)
-        </label>
-        <label className="flex items-center gap-2 text-sm">
-          <Switch size="sm" isSelected={form.active} isDisabled={plan?.isFallback} onChange={(selected) => update("active", selected)}>
-            <Switch.Control><Switch.Thumb /></Switch.Control>
-          </Switch>
-          فعال و قابل خرید
-        </label>
-      </div>
+      <FormSection title="اطلاعات پلن" description="نامی که کاربر در صفحهٔ پلن‌ها می‌بیند.">
+        <FormGrid>
+          <FormField label="نام پلن" required>
+            <Input variant="secondary" className="w-full" value={form.name} onChange={(event) => update("name", event.target.value)} />
+          </FormField>
+          <FormField label="شناسه (انگلیسی)" required={!plan} hint={plan ? "بعد از ساخت پلن تغییر نمی‌کند." : "مثلاً pro یا business-yearly"}>
+            <Input variant="secondary" className="w-full" dir="ltr" value={form.slug} disabled={Boolean(plan)} onChange={(event) => update("slug", event.target.value)} />
+          </FormField>
+        </FormGrid>
+        <FormField label="توضیح کوتاه" hint="یک یا دو جمله دربارهٔ مناسب‌بودن این پلن.">
+          <TextArea variant="secondary" rows={2} className="w-full" value={form.description} onChange={(event) => update("description", event.target.value)} />
+        </FormField>
+      </FormSection>
+
+      <FormSection title="قیمت و دوره">
+        <FormGrid cols={3}>
+          <FormField label="قیمت">
+            <Input variant="secondary" className="w-full" dir="ltr" inputMode="numeric" value={form.price} onChange={(event) => update("price", event.target.value.replace(/[^\d]/g, ""))} />
+          </FormField>
+          <FormField label="واحد قیمت">
+            <Input variant="secondary" className="w-full" value={form.priceUnit} onChange={(event) => update("priceUnit", event.target.value)} />
+          </FormField>
+          <FormField label="دورهٔ اشتراک">
+            <NativeSelect ariaLabel="دوره" value={form.period} onChange={(value) => update("period", value as SubscriptionPeriod)} options={Object.entries(SUBSCRIPTION_PERIOD_LABEL).map(([value, label]) => ({ value, label }))} />
+          </FormField>
+        </FormGrid>
+        <FormGrid>
+          {form.period === "custom" ? (
+            <FormField label="تعداد روز">
+              <Input variant="secondary" className="w-full" dir="ltr" inputMode="numeric" value={form.periodDays} onChange={(event) => update("periodDays", event.target.value.replace(/[^\d]/g, ""))} />
+            </FormField>
+          ) : null}
+          <FormField label="ترتیب نمایش" hint="عدد کمتر زودتر نمایش داده می‌شود.">
+            <Input variant="secondary" className="w-full" dir="ltr" inputMode="numeric" value={form.sortOrder} onChange={(event) => update("sortOrder", event.target.value.replace(/[^\d-]/g, ""))} />
+          </FormField>
+        </FormGrid>
+      </FormSection>
+
+      <FormSection title="نمایش و فروش">
+        <SwitchRow label="فعال و قابل خرید" description="اگر خاموش باشد، پلن در صفحهٔ پلن‌ها نمایش داده نمی‌شود." selected={form.active} isDisabled={plan?.isFallback} onChange={(selected) => update("active", selected)} />
+        <SwitchRow label="پلن پیشنهادی (برجسته)" description="با نشان «پیشنهاد ویژه» بالای کارت پلن دیده می‌شود." selected={form.highlighted} onChange={(selected) => update("highlighted", selected)} />
+        <FormField label="پیام راهنمای خرید" hint="زیر دکمهٔ خرید نمایش داده می‌شود.">
+          <Input variant="secondary" className="w-full" value={form.contactMessage} onChange={(event) => update("contactMessage", event.target.value)} />
+        </FormField>
+      </FormSection>
 
       <FeatureMatrix catalog={catalog} features={form.features} onChange={setFeature} />
       {plan ? <p className="text-xs text-muted">آخرین تغییر روی مشترکین فعلی این پلن هم اعمال می‌شود.</p> : null}

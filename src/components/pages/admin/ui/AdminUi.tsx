@@ -438,12 +438,13 @@ export function KeyValue({ label, children }: { label: string; children: ReactNo
   );
 }
 
+/** Label above a control that fills the column (see FormKit.FormField). */
 export function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
   return (
-    <label className="block space-y-1.5">
+    <label className="flex min-w-0 flex-col gap-1.5">
       <span className="text-sm font-medium">{label}</span>
       {children}
-      {hint ? <span className="block text-xs leading-5 text-muted">{hint}</span> : null}
+      {hint ? <span className="text-xs leading-5 text-muted">{hint}</span> : null}
     </label>
   );
 }
