@@ -1,5 +1,6 @@
 export interface AiUsageStatus {
   hasAccess: boolean;
+  blocked: boolean;
   limit: number;
   used: number;
   remaining: number;
@@ -10,7 +11,6 @@ export interface AiUsageStatus {
 export interface AiStatus {
   enabled: boolean;
   usage: AiUsageStatus;
-  model: { id: string; label: string };
 }
 
 export type AiInsightTone = "good" | "warn" | "risk" | "info";
@@ -25,12 +25,69 @@ export interface AiInsights {
   savingsGoal: { monthlyAmount: number; rationale: string } | null;
 }
 
+/** Figures computed by the server (never written by the model). */
+export interface AiInsightFacts {
+  kpis: {
+    income: number;
+    cost: number;
+    net: number;
+    savingsRate: number;
+    transactionCount: number;
+    incomeChange: number | null;
+    costChange: number | null;
+    previousLabel: string | null;
+  };
+  categories: Array<{ title: string; color: string | null; cost: number; share: number }>;
+  forecast: { daysPassed: number; daysInMonth: number; projectedCost: number } | null;
+}
+
 export interface AiInsightsResponse {
   insights: AiInsights;
+  facts: AiInsightFacts;
   period: string;
   cached: boolean;
   generatedAt: string;
-  model: string;
+  status: AiStatus;
+}
+
+export type AiObligationKind = "installment" | "check_payable" | "check_receivable" | "debt_payable" | "debt_receivable";
+
+export interface AiPlanBudget {
+  categoryId: string;
+  title: string;
+  average: number;
+  limit: number | null;
+  suggested: number;
+  reason: string;
+}
+
+export interface AiPlan {
+  headline: string;
+  summary: string;
+  savingsTarget: number;
+  budgets: AiPlanBudget[];
+  steps: Array<{ when: "week1" | "week2" | "week3" | "week4" | "any"; title: string; detail: string }>;
+  risks: string[];
+}
+
+export interface AiPlanFacts {
+  target: { year: number; month: number; label: string; days: number };
+  history: Array<{ label: string; income: number; cost: number }>;
+  expectedIncome: number;
+  averageCost: number;
+  obligations: Array<{ kind: AiObligationKind; title: string; day: number; amount: number }>;
+  fixedOutflow: number;
+  expectedInflowUncertain: number;
+  boxes: Array<{ title: string; balance: number; goal: number | null }>;
+  walletBalance: number;
+}
+
+export interface AiPlanResponse {
+  plan: AiPlan;
+  facts: AiPlanFacts;
+  totals: { budgeted: number; fixed: number; savings: number; leftover: number };
+  cached: boolean;
+  generatedAt: string;
   status: AiStatus;
 }
 
@@ -41,7 +98,7 @@ export interface AiChatMessage {
 
 export interface AiChatResponse {
   reply: string;
-  model: string;
+  followUps: string[];
   status: AiStatus;
 }
 
@@ -106,9 +163,38 @@ export interface AiStats {
     last24h: number;
     freeRpd: number | null;
   }>;
-  topUsers: Array<{ name: string; mobile: string; requests: number }>;
+  byKind: Array<{ kind: string; calls: number }>;
+  topUsers: Array<{ userId: string; name: string; mobile: string; requests: number }>;
 }
 
 export type AiTestResult =
   | { ok: true; text: string; latencyMs: number; promptTokens: number; outputTokens: number }
   | { ok: false; error: string; status: number };
+
+export interface AiAdminPlanRow {
+  id: string;
+  slug: string;
+  name: string;
+  price: number;
+  priceUnit: string;
+  active: boolean;
+  enabled: boolean;
+  limit: number | null;
+}
+
+export interface AiAdminPlans {
+  defaultDailyLimit: number;
+  plans: AiAdminPlanRow[];
+}
+
+export interface AiAdminUser {
+  userId: string;
+  name: string;
+  mobile: string;
+  hasAccess: boolean;
+  blocked: boolean;
+  planLimit: number;
+  override: number | null;
+  effectiveLimit: number;
+  usedToday: number;
+}

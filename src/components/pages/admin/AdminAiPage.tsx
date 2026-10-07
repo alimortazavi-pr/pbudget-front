@@ -2,18 +2,23 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button, Input, ProgressBar, Switch, Tabs, TextArea } from "@heroui/react";
-import { Activity, Flash, Magicpen, People, Refresh2, TickCircle, Timer1, Warning2 } from "iconsax-reactjs";
+import { Activity, Flash, Magicpen, People, Refresh2, SearchNormal1, TickCircle, Timer1, Warning2 } from "iconsax-reactjs";
 
 import * as aiApi from "@/common/api/ai";
-import type { AiModelCatalog, AiModelOption, AiSettings, AiStats, AiTestResult } from "@/common/interfaces/ai.interface";
+import type { AiAdminPlans, AiAdminUser, AiModelCatalog, AiModelOption, AiSettings, AiStats, AiTestResult } from "@/common/interfaces/ai.interface";
 import { showErrorToast, showToast } from "@/common/utils/toast";
-import { AppSelect, AppSlider } from "@/components/common/form/AppControls";
+import { AppSelect } from "@/components/common/form/AppControls";
 import { AiRichText } from "@/components/pages/ai/AiRichText";
 import { AdminPageHeader, AdminPanel, EmptyState, Field, Pill, SkeletonRows, StatTile } from "./ui/AdminUi";
 import { formatNumberFa } from "./ui/admin-format";
 
 const SPEED_LABEL = { fast: "سریع", medium: "متوسط", slow: "کند" } as const;
 const NONE = "__none__";
+const TEMPERATURE_PRESETS = [
+  { value: 0.3, label: "دقیق" },
+  { value: 0.6, label: "متعادل" },
+  { value: 1, label: "خلاق" },
+];
 
 function modelLabel(option: AiModelOption) {
   // Isolate the Latin name so the Persian part cannot reorder it in the RTL menu.
@@ -261,8 +266,14 @@ function SettingsTab({ catalog, initial, onSaved }: { catalog: AiModelCatalog | 
 
       <AdminPanel title="کیفیت و محدودیت‌ها">
         <div className="grid gap-6 sm:grid-cols-2">
-          <Field label={`خلاقیت (temperature): ${formatNumberFa(form.temperature)}`} hint="کمتر = دقیق‌تر و یکنواخت‌تر؛ برای تحلیل مالی ۰٫۳ تا ۰٫۵ مناسب است.">
-            <AppSlider ariaLabel="temperature" min={0} max={1.2} step={0.1} value={form.temperature} onChange={(temperature) => setForm({ ...form, temperature: Math.round(temperature * 10) / 10 })} />
+          <Field label="سبک پاسخ‌دهی" hint={`کمتر = دقیق‌تر و یکنواخت‌تر؛ برای تحلیل مالی «دقیق» یا «متعادل» مناسب است. مقدار فعلی: ${formatNumberFa(form.temperature)}`}>
+            <div className="grid grid-cols-3 gap-2" role="group" aria-label="سبک پاسخ‌دهی">
+              {TEMPERATURE_PRESETS.map((preset) => (
+                <Button key={preset.value} size="sm" variant={Math.abs(form.temperature - preset.value) < 0.05 ? "primary" : "secondary"} onPress={() => setForm({ ...form, temperature: preset.value })}>
+                  {preset.label}
+                </Button>
+              ))}
+            </div>
           </Field>
           <Field label="حداکثر توکن خروجی" hint="سقف طول هر پاسخ؛ ۲۰۴۸ برای بیشتر پاسخ‌ها کافی است.">
             <Input
@@ -274,7 +285,7 @@ function SettingsTab({ catalog, initial, onSaved }: { catalog: AiModelCatalog | 
               onChange={(event) => setForm({ ...form, maxOutputTokens: Number(event.target.value) || 2048 })}
             />
           </Field>
-          <Field label="سهمیهٔ روزانهٔ پیش‌فرض هر کاربر" hint="وقتی پلن کاربر سقف AI خودش را ندارد. سقف هر پلن از «اشتراک‌ها ← ویرایش پلن ← قابلیت AI (limit)» تنظیم می‌شود.">
+          <Field label="سهمیهٔ روزانهٔ پیش‌فرض هر کاربر" hint="فقط وقتی پلن کاربر سقف AI نداشته باشد استفاده می‌شود. سقف هر پلن و هر کاربر از تب «سهمیه و دسترسی» تنظیم می‌شود.">
             <Input
               variant="secondary"
               type="number"
@@ -325,6 +336,197 @@ function SettingsTab({ catalog, initial, onSaved }: { catalog: AiModelCatalog | 
           ذخیرهٔ تنظیمات
         </Button>
       </div>
+    </div>
+  );
+}
+
+// ---- quota -------------------------------------------------------------------
+
+function PlanQuotaRow({ plan, onSaved }: { plan: AiAdminPlans["plans"][number]; onSaved: () => void }) {
+  const [enabled, setEnabled] = useState(plan.enabled);
+  const [limit, setLimit] = useState(String(plan.limit ?? ""));
+  const [saving, setSaving] = useState(false);
+  useEffect(() => {
+    setEnabled(plan.enabled);
+    setLimit(String(plan.limit ?? ""));
+  }, [plan]);
+  const parsed = Number(limit);
+  const valid = Number.isInteger(parsed) && parsed >= 1 && parsed <= 2000;
+  const dirty = enabled !== plan.enabled || parsed !== (plan.limit ?? NaN);
+
+  async function save() {
+    setSaving(true);
+    try {
+      await aiApi.updateAdminAiPlan(plan.id, { enabled, limit: parsed });
+      showToast(`سهمیهٔ پلن «${plan.name}» ذخیره شد`, "success");
+      onSaved();
+    } catch (error) {
+      showErrorToast(error);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <li className="grid items-center gap-3 py-3 sm:grid-cols-[1fr_auto_9rem_auto]">
+      <div className="min-w-0">
+        <p className="font-semibold">{plan.name}</p>
+        <p className="text-xs text-muted">
+          {plan.price > 0 ? `${formatNumberFa(plan.price)} ${plan.priceUnit}` : "رایگان"}
+          {plan.active ? "" : " · غیرفعال"}
+        </p>
+      </div>
+      <Switch isSelected={enabled} onChange={setEnabled} aria-label={`دسترسی AI برای ${plan.name}`}>
+        <Switch.Control>
+          <Switch.Thumb />
+        </Switch.Control>
+        <Switch.Content>{enabled ? "فعال" : "غیرفعال"}</Switch.Content>
+      </Switch>
+      <Input
+        variant="secondary"
+        type="number"
+        min={1}
+        max={2000}
+        aria-label={`سقف روزانهٔ ${plan.name}`}
+        value={limit}
+        disabled={!enabled}
+        onChange={(event) => setLimit(event.target.value)}
+      />
+      <Button size="sm" isDisabled={!dirty || (enabled && !valid)} isPending={saving} onPress={() => void save()}>
+        ذخیره
+      </Button>
+    </li>
+  );
+}
+
+function UserQuotaCard({ user, onSaved }: { user: AiAdminUser; onSaved: (user: AiAdminUser) => void }) {
+  const [override, setOverride] = useState(user.override === null ? "" : String(user.override));
+  const [blocked, setBlocked] = useState(user.blocked);
+  const [saving, setSaving] = useState(false);
+  const parsed = override.trim() === "" ? null : Number(override);
+  const valid = parsed === null || (Number.isInteger(parsed) && parsed >= 0 && parsed <= 2000);
+  const dirty = parsed !== user.override || blocked !== user.blocked;
+
+  async function save() {
+    setSaving(true);
+    try {
+      const saved = await aiApi.updateAdminAiUser(user.userId, { dailyLimit: parsed, blocked });
+      onSaved(saved);
+      showToast("محدودیت کاربر ذخیره شد", "success");
+    } catch (error) {
+      showErrorToast(error);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <li className="space-y-3 rounded-2xl border border-border/60 bg-surface p-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <p className="font-semibold">{user.name || "—"}</p>
+          <p className="text-xs text-muted" dir="ltr">
+            {user.mobile}
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          <Pill tone={user.hasAccess ? "success" : "neutral"}>{user.hasAccess ? "پلن دارای AI" : "پلن بدون AI"}</Pill>
+          <Pill tone="info">
+            امروز {formatNumberFa(user.usedToday)} از {formatNumberFa(user.effectiveLimit)}
+          </Pill>
+        </div>
+      </div>
+      <div className="grid items-end gap-3 sm:grid-cols-[1fr_auto_auto]">
+        <Field label="سقف روزانهٔ اختصاصی" hint={`خالی = طبق پلن (${formatNumberFa(user.planLimit)} در روز). ۰ = بدون دسترسی.`}>
+          <Input variant="secondary" type="number" min={0} max={2000} value={override} onChange={(event) => setOverride(event.target.value)} placeholder={String(user.planLimit)} />
+        </Field>
+        <Switch isSelected={blocked} onChange={setBlocked} aria-label="مسدودسازی AI">
+          <Switch.Control>
+            <Switch.Thumb />
+          </Switch.Control>
+          <Switch.Content>مسدود</Switch.Content>
+        </Switch>
+        <Button size="sm" isDisabled={!dirty || !valid} isPending={saving} onPress={() => void save()}>
+          ذخیره
+        </Button>
+      </div>
+    </li>
+  );
+}
+
+function QuotaTab({ defaultLimit }: { defaultLimit: number }) {
+  const [plans, setPlans] = useState<AiAdminPlans | null>(null);
+  const [query, setQuery] = useState("");
+  const [users, setUsers] = useState<AiAdminUser[] | null>(null);
+  const [searching, setSearching] = useState(false);
+
+  const loadPlans = useCallback(async () => {
+    try {
+      setPlans(await aiApi.fetchAdminAiPlans());
+    } catch (error) {
+      showErrorToast(error);
+    }
+  }, []);
+  useEffect(() => {
+    void loadPlans();
+  }, [loadPlans]);
+
+  async function search() {
+    setSearching(true);
+    try {
+      setUsers(await aiApi.searchAdminAiUsers(query.trim()));
+    } catch (error) {
+      showErrorToast(error);
+    } finally {
+      setSearching(false);
+    }
+  }
+
+  return (
+    <div className="space-y-5">
+      <AdminPanel
+        title="سهمیهٔ روزانهٔ هر پلن"
+        description={`تعداد درخواست AI که هر کاربر در روز (بر اساس تقویم تهران) می‌تواند بزند. پلنی که غیرفعال باشد، صفحهٔ AI را به کاربرانش نشان نمی‌دهد. پیش‌فرض عمومی: ${formatNumberFa(defaultLimit)} در روز.`}
+      >
+        {!plans ? (
+          <SkeletonRows rows={4} />
+        ) : (
+          <ul className="divide-y divide-border/50">
+            {plans.plans.map((plan) => (
+              <PlanQuotaRow key={plan.id} plan={plan} onSaved={() => void loadPlans()} />
+            ))}
+          </ul>
+        )}
+      </AdminPanel>
+
+      <AdminPanel title="محدودیت هر کاربر" description="برای یک کاربر خاص سقف روزانهٔ جداگانه بگذارید یا دسترسی‌اش را ببندید. اولویت: مسدود ← سقف اختصاصی ← سقف پلن.">
+        <form
+          className="flex gap-2"
+          onSubmit={(event) => {
+            event.preventDefault();
+            void search();
+          }}
+        >
+          <Input variant="secondary" className="flex-1" aria-label="جست‌وجوی کاربر" placeholder="شماره موبایل یا نام کاربر…" value={query} onChange={(event) => setQuery(event.target.value)} />
+          <Button type="submit" isPending={searching}>
+            <SearchNormal1 size={16} />
+            جست‌وجو
+          </Button>
+        </form>
+        <div className="mt-4">
+          {users === null ? (
+            <p className="text-sm text-muted">برای دیدن مصرف و تنظیم محدودیت، کاربر را جست‌وجو کنید.</p>
+          ) : users.length === 0 ? (
+            <EmptyState title="کاربری پیدا نشد" />
+          ) : (
+            <ul className="space-y-3">
+              {users.map((user) => (
+                <UserQuotaCard key={user.userId} user={user} onSaved={(saved) => setUsers((list) => (list ?? []).map((item) => (item.userId === saved.userId ? saved : item)))} />
+              ))}
+            </ul>
+          )}
+        </div>
+      </AdminPanel>
     </div>
   );
 }
@@ -426,7 +628,7 @@ export function AdminAiPage() {
     <div className="space-y-5">
       <AdminPageHeader
         title="هوش مصنوعی"
-        description="مدیریت مدل‌های Gemini/Gemma، محدودیت‌ها، مصرف و آزمایش مدل‌ها. سهمیهٔ هر کاربر از پلن او (قابلیت AI) تعیین می‌شود."
+        description="مدیریت مدل‌های Gemini/Gemma، محدودیت‌ها، مصرف و آزمایش مدل‌ها. سهمیهٔ روزانه را برای هر پلن و هر کاربر از تب «سهمیه و دسترسی» تنظیم کنید."
         icon={<Magicpen size={22} variant="Bold" />}
         actions={
           <>
@@ -456,6 +658,10 @@ export function AdminAiPage() {
               نمای کلی
               <Tabs.Indicator />
             </Tabs.Tab>
+            <Tabs.Tab id="quota">
+              سهمیه و دسترسی
+              <Tabs.Indicator />
+            </Tabs.Tab>
             <Tabs.Tab id="settings">
               مدل‌ها و تنظیمات
               <Tabs.Indicator />
@@ -468,6 +674,9 @@ export function AdminAiPage() {
         </Tabs.ListContainer>
         <Tabs.Panel id="overview" className="pt-4">
           <OverviewTab stats={stats} loading={loading} />
+        </Tabs.Panel>
+        <Tabs.Panel id="quota" className="pt-4">
+          <QuotaTab defaultLimit={settings?.defaultDailyLimit ?? 30} />
         </Tabs.Panel>
         <Tabs.Panel id="settings" className="pt-4">
           {settings ? <SettingsTab catalog={catalog} initial={settings} onSaved={setSettings} /> : <SkeletonRows rows={6} />}

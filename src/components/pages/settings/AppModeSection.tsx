@@ -3,7 +3,7 @@
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
 import { useRouter } from "next/navigation";
-import { Book1, Calendar1, CommandSquare, Setting4 } from "iconsax-reactjs";
+import { Book1, Calendar1, CommandSquare, Setting4, TickCircle } from "iconsax-reactjs";
 
 import { APP_MODES, type AppMode } from "@/common/constants/app-mode";
 import { PATHS } from "@/common/constants";
@@ -35,7 +35,7 @@ export function AppModeSection() {
         <p className="mt-1 text-sm text-muted">{t("common.appModeDesc")}</p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2">
         {APP_MODES.map((mode) => {
           const active = appMode === mode.id;
           const Icon =
@@ -57,10 +57,11 @@ export function AppModeSection() {
               data-active={active ? "true" : "false"}
               onClick={() => selectMode(mode.id)}
             >
+              {active ? <TickCircle size={20} variant="Bold" className="pb-experience-card-check" /> : null}
               <span className="pb-experience-card-icon">
                 <Icon size={24} variant={active ? "Bold" : "Linear"} />
               </span>
-              <span className="block text-start">
+              <span className="block w-full text-start">
                 <span className="block text-sm font-semibold">
                   {t(mode.labelKey)}
                 </span>

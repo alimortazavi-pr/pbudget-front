@@ -689,7 +689,7 @@
   }
 
   .pb-experience-card {
-    @apply flex min-h-40 cursor-pointer items-start gap-4 rounded-2xl border border-border/50 bg-surface-secondary p-5 text-start transition-all;
+    @apply relative flex min-w-0 cursor-pointer flex-col items-start gap-3 rounded-2xl border border-border/60 bg-surface-secondary p-4 text-start transition-all;
   }
 
   .pb-experience-card[data-active="true"] {
@@ -697,7 +697,11 @@
   }
 
   .pb-experience-card-icon {
-    @apply flex size-12 shrink-0 items-center justify-center rounded-xl bg-surface text-accent;
+    @apply flex size-11 shrink-0 items-center justify-center rounded-xl bg-surface text-accent;
+  }
+
+  .pb-experience-card-check {
+    @apply absolute end-3 top-3 text-accent;
   }
 
   .pb-experience-card:hover {

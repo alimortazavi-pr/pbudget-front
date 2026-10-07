@@ -1,9 +1,12 @@
 import { axiosInstance } from "@/common/axiosInstance";
 import type {
+  AiAdminPlans,
+  AiAdminUser,
   AiChatMessage,
   AiChatResponse,
   AiInsightsResponse,
   AiModelCatalog,
+  AiPlanResponse,
   AiSettings,
   AiStats,
   AiStatus,
@@ -50,5 +53,30 @@ export async function fetchAdminAiStats(days = 14) {
 
 export async function testAdminAiModel(model: string, prompt: string) {
   const { data } = await axiosInstance.post<AiTestResult>("/admin/ai/test", { model, prompt }, { timeout: AI_TIMEOUT_MS });
+  return data;
+}
+
+export async function requestAiPlan(params: { year?: string; month?: string; force?: boolean } = {}) {
+  const { data } = await axiosInstance.post<AiPlanResponse>("/ai/plan", params, { timeout: AI_TIMEOUT_MS });
+  return data;
+}
+
+export async function fetchAdminAiPlans() {
+  const { data } = await axiosInstance.get<AiAdminPlans>("/admin/ai/plans");
+  return data;
+}
+
+export async function updateAdminAiPlan(id: string, payload: { enabled: boolean; limit: number }) {
+  const { data } = await axiosInstance.put<{ id: string; enabled: boolean; limit: number }>(`/admin/ai/plans/${id}`, payload);
+  return data;
+}
+
+export async function searchAdminAiUsers(search: string) {
+  const { data } = await axiosInstance.get<AiAdminUser[]>("/admin/ai/users", { params: { search } });
+  return data;
+}
+
+export async function updateAdminAiUser(userId: string, payload: { dailyLimit?: number | null; blocked?: boolean; note?: string }) {
+  const { data } = await axiosInstance.put<AiAdminUser>(`/admin/ai/users/${userId}`, payload);
   return data;
 }
