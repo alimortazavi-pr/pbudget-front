@@ -27,6 +27,7 @@ import {
 } from "@/components/common/layout/shell-nav";
 import { useTelegramStatus } from "@/common/hooks/useTelegramStatus";
 import { usePendingInvitesCount } from "@/common/hooks/usePendingInvitesCount";
+import { useSupportUnread } from "@/common/hooks/useSupportUnread";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { resetAuth } from "@/stores/auth";
 import { userSelector } from "@/stores/profile";
@@ -50,13 +51,13 @@ export function ShellAccountMenu({
   const { theme, toggleTheme } = useTheme();
   const { linked: telegramLinked } = useTelegramStatus();
   const { count: pendingInvitesCount } = usePendingInvitesCount();
-  const navBadges = useMemo(
-    () =>
-      pendingInvitesCount > 0
-        ? { [PATHS.VENTURES]: pendingInvitesCount }
-        : undefined,
-    [pendingInvitesCount],
-  );
+  const supportUnread = useSupportUnread();
+  const navBadges = useMemo(() => {
+    const badges: Record<string, number> = {};
+    if (pendingInvitesCount > 0) badges[PATHS.VENTURES] = pendingInvitesCount;
+    if (supportUnread > 0) badges[PATHS.SUPPORT] = supportUnread;
+    return Object.keys(badges).length > 0 ? badges : undefined;
+  }, [pendingInvitesCount, supportUnread]);
   const { openBalanceModal } = useBalanceModal();
 
   const accountNavItems = ACCOUNT_NAV_ITEMS.filter(
