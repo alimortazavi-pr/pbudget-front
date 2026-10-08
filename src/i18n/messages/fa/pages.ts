@@ -88,6 +88,13 @@ export const pagesMessages: MessageTree = {
     apiFallbackNotice:
       "API تحلیل در دسترس نیست؛ نمودارها از تراکنش‌های همین بازه ساخته شده‌اند.",
     categoriesOverLimit: "{{count}} دسته از سقف ماهانه عبور کرده‌اند.",
+    categorySearch: "جست‌وجوی دسته‌بندی…",
+    onlySelected: "فقط انتخاب‌شده‌ها",
+    clearSelection: "پاک‌کردن انتخاب",
+    selectedCount: "دسته‌بندی انتخاب‌شده",
+    shareOfExpense: "سهم از کل هزینه",
+    selectAll: "انتخاب همهٔ نمایش‌داده‌شده‌ها",
+    noCategoryMatch: "دسته‌بندی‌ای با این شرایط پیدا نشد.",
     categoryBreakdownTitle: "جزئیات همه دسته‌بندی‌ها",
     categoryBreakdownDescription:
       "تمام دسته‌بندی‌های استفاده‌شده در این بازه، با جمع دخل و خرج نمایش داده می‌شوند.",

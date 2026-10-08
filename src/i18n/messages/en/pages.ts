@@ -88,6 +88,13 @@ export const pagesMessages: MessageTree = {
     apiFallbackNotice:
       "Analytics API is unavailable; charts are built from transactions in this range.",
     categoriesOverLimit: "{{count}} categories exceeded the monthly limit.",
+    categorySearch: "Search categories…",
+    onlySelected: "Selected only",
+    clearSelection: "Clear selection",
+    selectedCount: "Selected categories",
+    shareOfExpense: "Share of total spending",
+    selectAll: "Select all shown",
+    noCategoryMatch: "No category matches.",
     categoryBreakdownTitle: "All category details",
     categoryBreakdownDescription:
       "Every category used in this period, with its total income and expense.",

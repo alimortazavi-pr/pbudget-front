@@ -2,7 +2,11 @@
 
 import { useTranslation } from "@/components/providers/LanguageProvider";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { Button, Checkbox } from "@heroui/react";
+import { ArrowDown2, ArrowSwapVertical, ArrowUp2 } from "iconsax-reactjs";
+
+import { AppCheckbox, AppSearch } from "@/components/common/form/AppControls";
 import {
   Area,
   AreaChart,
@@ -482,13 +486,86 @@ export function AnalysisCharts({ report, duration, section }: AnalysisChartsProp
   );
 }
 
+type SortKey = "title" | "income" | "cost" | "net" | "count";
+type SortDirection = "asc" | "desc";
+
+/**
+ * Per-category table the user can sort by any column, search, and narrow to a
+ * hand-picked set of categories — with a total for exactly that selection.
+ */
 function CategoryBreakdown({
   rows,
 }: {
   rows: AnalyticsReport["byCategory"];
 }) {
   const { t } = useTranslation();
-  const usedRows = rows.filter((row) => row.income > 0 || row.cost > 0);
+  const [sortKey, setSortKey] = useState<SortKey>("cost");
+  const [direction, setDirection] = useState<SortDirection>("desc");
+  const [query, setQuery] = useState("");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [onlySelected, setOnlySelected] = useState(false);
+
+  const usedRows = useMemo(
+    () =>
+      rows
+        .filter((row) => row.income > 0 || row.cost > 0)
+        .map((row, index) => ({ ...row, key: row.categoryId || row.title, color: resolveCategoryColor(row.color, index) })),
+    [rows],
+  );
+
+  const visibleRows = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    const filtered = usedRows.filter(
+      (row) => (!needle || row.title.toLowerCase().includes(needle)) && (!onlySelected || selected.has(row.key)),
+    );
+    const factor = direction === "asc" ? 1 : -1;
+    return [...filtered].sort((a, b) =>
+      sortKey === "title" ? factor * a.title.localeCompare(b.title, "fa") : factor * (a[sortKey] - b[sortKey]),
+    );
+  }, [usedRows, query, onlySelected, selected, sortKey, direction]);
+
+  const selectedRows = useMemo(() => usedRows.filter((row) => selected.has(row.key)), [usedRows, selected]);
+  const totals = useMemo(() => {
+    const sum = (key: "income" | "cost" | "net" | "count") => selectedRows.reduce((acc, row) => acc + row[key], 0);
+    const allCost = usedRows.reduce((acc, row) => acc + row.cost, 0);
+    const cost = sum("cost");
+    return { income: sum("income"), cost, net: sum("net"), count: sum("count"), share: allCost > 0 ? (cost / allCost) * 100 : 0 };
+  }, [selectedRows, usedRows]);
+
+  function toggleSort(key: SortKey) {
+    if (key === sortKey) setDirection((current) => (current === "asc" ? "desc" : "asc"));
+    else {
+      setSortKey(key);
+      setDirection(key === "title" ? "asc" : "desc");
+    }
+  }
+
+  function toggleRow(key: string) {
+    setSelected((current) => {
+      const next = new Set(current);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  }
+
+  const allVisibleSelected = visibleRows.length > 0 && visibleRows.every((row) => selected.has(row.key));
+  function toggleAllVisible() {
+    setSelected((current) => {
+      const next = new Set(current);
+      visibleRows.forEach((row) => (allVisibleSelected ? next.delete(row.key) : next.add(row.key)));
+      return next;
+    });
+  }
+
+  const unit = moneyDisplayUnitLabel();
+  const columns: Array<{ key: SortKey; label: string }> = [
+    { key: "title", label: t("pages.analysis.category") },
+    { key: "income", label: t("pages.analysis.income") },
+    { key: "cost", label: t("pages.analysis.expense") },
+    { key: "net", label: t("pages.analysis.net") },
+    { key: "count", label: t("pages.analysis.transactions") },
+  ];
 
   return (
     <section className="glass rounded-2xl p-4 lg:p-5">
@@ -499,37 +576,114 @@ function CategoryBreakdown({
       {usedRows.length === 0 ? (
         <p className="text-sm text-muted">{t("auto.ke4966467bc")}</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-[680px] w-full text-sm">
-            <thead>
-              <tr className="border-b border-border/60 text-muted">
-                <th className="pb-2 text-start font-medium">{t("pages.analysis.category")}</th>
-                <th className="pb-2 text-start font-medium">{t("pages.analysis.income")}</th>
-                <th className="pb-2 text-start font-medium">{t("pages.analysis.expense")}</th>
-                <th className="pb-2 text-start font-medium">{t("pages.analysis.net")}</th>
-                <th className="pb-2 text-start font-medium">{t("pages.analysis.transactions")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {usedRows.map((row, index) => (
-                <tr key={row.categoryId || row.title} className="border-b border-border/30">
-                  <td className="py-2.5 font-medium">
-                    <span className="inline-flex items-center gap-2">
-                      <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: resolveCategoryColor(row.color, index) }} />
-                      {row.title}
-                    </span>
-                  </td>
-                  <td className="py-2.5">{formatPrice(row.income)} {moneyDisplayUnitLabel()}</td>
-                  <td className="py-2.5">{formatPrice(row.cost)} {moneyDisplayUnitLabel()}</td>
-                  <td className={`py-2.5 font-semibold ${row.net >= 0 ? "text-success-foreground" : "text-danger"}`}>
-                    {formatPrice(row.net)} {moneyDisplayUnitLabel()}
-                  </td>
-                  <td className="py-2.5">{toPersianDigits(row.count)}</td>
+        <>
+          <div className="mb-3 flex flex-wrap items-center gap-3">
+            <AppSearch
+              className="min-w-48 max-w-xs flex-1"
+              ariaLabel={t("pages.analysis.categorySearch")}
+              placeholder={t("pages.analysis.categorySearch")}
+              value={query}
+              onChange={setQuery}
+            />
+            <AppCheckbox isSelected={onlySelected} onChange={setOnlySelected}>
+              {t("pages.analysis.onlySelected")}
+            </AppCheckbox>
+            {selected.size > 0 ? (
+              <Button size="sm" variant="ghost" onPress={() => { setSelected(new Set()); setOnlySelected(false); }}>
+                {t("pages.analysis.clearSelection")}
+              </Button>
+            ) : null}
+          </div>
+
+          {selected.size > 0 ? (
+            <div className="mb-3 grid grid-cols-2 gap-3 rounded-2xl border border-accent/30 bg-accent/8 p-3 text-sm sm:grid-cols-5" aria-live="polite">
+              <div>
+                <p className="text-xs text-muted">{t("pages.analysis.selectedCount")}</p>
+                <p className="font-bold">{toPersianDigits(selected.size)}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted">{t("pages.analysis.income")}</p>
+                <p className="font-semibold">{formatPrice(totals.income)} {unit}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted">{t("pages.analysis.expense")}</p>
+                <p className="font-bold text-danger">{formatPrice(totals.cost)} {unit}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted">{t("pages.analysis.shareOfExpense")}</p>
+                <p className="font-semibold">{toPersianDigits(totals.share.toFixed(1))}٪</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted">{t("pages.analysis.transactions")}</p>
+                <p className="font-semibold">{toPersianDigits(totals.count)}</p>
+              </div>
+            </div>
+          ) : null}
+
+          <div className="overflow-x-auto">
+            <table className="min-w-[720px] w-full text-sm">
+              <thead>
+                <tr className="border-b border-border/60 text-muted">
+                  <th className="w-10 pb-2 text-start">
+                    <Checkbox aria-label={t("pages.analysis.selectAll")} isSelected={allVisibleSelected} onChange={toggleAllVisible} variant="secondary">
+                      <Checkbox.Control>
+                        <Checkbox.Indicator />
+                      </Checkbox.Control>
+                    </Checkbox>
+                  </th>
+                  {columns.map((column) => {
+                    const active = column.key === sortKey;
+                    return (
+                      <th key={column.key} className="pb-2 text-start font-medium" aria-sort={active ? (direction === "asc" ? "ascending" : "descending") : "none"}>
+                        <button
+                          type="button"
+                          onClick={() => toggleSort(column.key)}
+                          className={`inline-flex cursor-pointer items-center gap-1 rounded-lg px-1 py-0.5 transition hover:text-foreground ${active ? "font-bold text-foreground" : ""}`}
+                        >
+                          {column.label}
+                          {active ? (
+                            direction === "asc" ? <ArrowUp2 size={14} variant="Bold" /> : <ArrowDown2 size={14} variant="Bold" />
+                          ) : (
+                            <ArrowSwapVertical size={13} className="opacity-50" />
+                          )}
+                        </button>
+                      </th>
+                    );
+                  })}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {visibleRows.map((row) => {
+                  const isSelected = selected.has(row.key);
+                  return (
+                    <tr key={row.key} className={`border-b border-border/30 ${isSelected ? "bg-accent/6" : ""}`}>
+                      <td className="py-2.5">
+                        <Checkbox aria-label={row.title} isSelected={isSelected} onChange={() => toggleRow(row.key)} variant="secondary">
+                          <Checkbox.Control>
+                            <Checkbox.Indicator />
+                          </Checkbox.Control>
+                        </Checkbox>
+                      </td>
+                      <td className="py-2.5 font-medium">
+                        <span className="inline-flex items-center gap-2">
+                          <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: row.color }} />
+                          {row.title}
+                        </span>
+                      </td>
+                      <td className="py-2.5">{formatPrice(row.income)} {unit}</td>
+                      <td className="py-2.5">{formatPrice(row.cost)} {unit}</td>
+                      <td className={`py-2.5 font-semibold ${row.net >= 0 ? "text-success-foreground" : "text-danger"}`}>
+                        {formatPrice(row.net)} {unit}
+                      </td>
+                      <td className="py-2.5">{toPersianDigits(row.count)}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            {visibleRows.length === 0 ? <p className="py-6 text-center text-sm text-muted">{t("pages.analysis.noCategoryMatch")}</p> : null}
+          </div>
+        </>
       )}
     </section>
   );
