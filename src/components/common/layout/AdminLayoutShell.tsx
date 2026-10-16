@@ -24,6 +24,8 @@ import { useAppSelector } from "@/stores/hooks";
 import { didTryAutoLoginSelector, isAuthSelector } from "@/stores/auth";
 import { userSelector } from "@/stores/profile";
 import { forceAuthLogout } from "@/common/utils/force-auth-logout";
+import { useAdminSupportUnread } from "@/common/hooks/useSupportUnread";
+import { toPersianDigits } from "@/common/utils/persian-digits";
 
 function isActive(pathname: string, href: string) {
   return href === PATHS.ADMIN ? pathname === PATHS.ADMIN : pathname === href || pathname.startsWith(`${href}/`);
@@ -34,6 +36,8 @@ function NavLink({ item, onNavigate }: { item: AdminNavItem; onNavigate?: () => 
   const { t } = useTranslation();
   const active = isActive(pathname, item.href);
   const IconComponent = item.icon;
+  const supportUnread = useAdminSupportUnread();
+  const badge = item.href === PATHS.ADMIN_SUPPORT ? supportUnread : 0;
 
   return (
     <Link
@@ -46,6 +50,9 @@ function NavLink({ item, onNavigate }: { item: AdminNavItem; onNavigate?: () => 
     >
       <IconComponent size={19} variant={active ? "Bold" : "Linear"} />
       {t(item.label)}
+      {badge > 0 ? (
+        <span className="ms-auto rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold text-accent-foreground">{toPersianDigits(badge)}</span>
+      ) : null}
     </Link>
   );
 }

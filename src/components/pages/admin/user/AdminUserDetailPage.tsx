@@ -10,6 +10,7 @@ import {
   Edit2,
   Key,
   LogoutCurve,
+  Messages2,
   Send2,
   ShieldTick,
   Trash,
@@ -177,6 +178,13 @@ export function AdminUserDetailPage({ userId }: { userId: string }) {
           </div>
 
           <div className="mt-4 flex flex-wrap gap-2 border-t border-border/50 pt-4">
+            <Link
+              href={`${PATHS.ADMIN_SUPPORT}?${new URLSearchParams({ compose: user._id, name: `${user.firstName} ${user.lastName}`.trim(), mobile: user.mobile })}`}
+              className="inline-flex h-8 items-center gap-1.5 rounded-xl bg-accent px-3 text-sm font-medium text-accent-foreground"
+            >
+              <Messages2 size={16} />
+              پیام به کاربر
+            </Link>
             <Button size="sm" variant="secondary" onPress={() => { setEditForm({ firstName: user.firstName, lastName: user.lastName }); setDialog("edit"); }}>
               <Edit2 size={16} />
               ویرایش
