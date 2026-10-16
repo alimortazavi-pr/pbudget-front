@@ -49,9 +49,13 @@ async function jsonLdNodes(page: Page) {
 }
 
 function types(nodes: Record<string, unknown>[]) {
-  return nodes.flatMap((node) => {
+  // Includes nested entities (e.g. a WebPage's mainEntity Product).
+  return nodes.flatMap((node): string[] => {
     const type = node["@type"];
-    return Array.isArray(type) ? (type as string[]) : [type as string];
+    const own = Array.isArray(type) ? (type as string[]) : [type as string];
+    const main = node.mainEntity;
+    const nested = main && typeof main === "object" && !Array.isArray(main) ? types([main as Record<string, unknown>]) : [];
+    return [...own, ...nested];
   });
 }
 
@@ -91,7 +95,7 @@ test.describe("Public SEO pages", () => {
     await page.goto("/");
     await expect(page.locator("h1")).toHaveCount(1);
     await expect(page.locator("html")).toHaveAttribute("lang", "fa-IR");
-    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /\/$/);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /^https?:\/\/[^/]+\/?$/);
     await expect(page.locator('meta[property="og:locale"]')).toHaveAttribute("content", "fa_IR");
     await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute("content", "summary_large_image");
     const hreflangs = await page.locator('link[rel="alternate"][hreflang]').evaluateAll((links) =>
@@ -109,8 +113,8 @@ test.describe("Public SEO pages", () => {
     expect(raw).not.toContain("SearchAction");
 
     const footer = page.locator("footer");
-    await expect(footer.locator('a[href="/privacy"]')).toBeAttached();
-    await expect(footer.locator('a[href="/pricing"]')).toBeAttached();
+    await expect(footer.locator('a[href="/privacy"]').first()).toBeAttached();
+    await expect(footer.locator('a[href="/pricing"]').first()).toBeAttached();
     await expect(footer.locator('a[href^="/learn/"]').first()).toBeAttached();
   });
 
