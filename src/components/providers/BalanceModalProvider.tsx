@@ -15,7 +15,6 @@ import { Button, Modal } from "@heroui/react";
 import type { FormEvent } from "react";
 
 import * as profileApi from "@/common/api/profile";
-import { parsePriceInput } from "@/common/utils";
 import { formatPriceWithCurrency } from "@/common/utils/format-currency";
 import {
   CURRENCY_OPTIONS,
@@ -75,9 +74,9 @@ function BalanceModalDialog({
 
   async function submit(e?: FormEvent) {
     e?.preventDefault();
-    // The input is rendered in the selected display unit, while the API
-    // always stores the canonical Toman amount. Keep non-Toman wallets raw.
-    const delta = Number(parsePriceInput(price, true, currency));
+    // FormPriceInput already converts the displayed unit (e.g. Rial) to the
+    // canonical Toman amount on input, so `price` is ready for the API.
+    const delta = Number(price);
     if (!price.trim() || Number.isNaN(delta) || delta === 0) {
       showToast(t("dashboard.amountChangeRequired"));
       return;
@@ -149,6 +148,7 @@ function BalanceModalDialog({
               })}
               value={price}
               onChange={setPrice}
+              currency={currency}
               allowNegative
               placeholder={t("dashboard.amountChangePlaceholder")}
             />

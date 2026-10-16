@@ -83,7 +83,8 @@ export function BoxesPage() {
     try {
       // Only send `goal` when it is set or being cleared, so boxes keep
       // working against a backend that does not know the field yet.
-      const goalValue = goal ? parsePriceInput(goal, true) : "";
+      // `goal` already holds the canonical toman value (parsed on input).
+      const goalValue = goal && Number(goal) > 0 ? String(Number(goal)) : "";
       const payload: { title: string; goal?: string } = { title: title.trim() };
       if (goalValue && goalValue !== "0") payload.goal = goalValue;
       else if (editor.box?.goal) payload.goal = "0";
@@ -107,8 +108,10 @@ export function BoxesPage() {
   async function submitMove(event?: FormEvent) {
     event?.preventDefault();
     if (!move || !amount) return;
-    const value = Number(parsePriceInput(amount, true));
-    if (!value || value <= 0) return;
+    // `amount` already holds the canonical toman value (parsed on input);
+    // parsing it again would divide by 10 a second time in rial mode.
+    const value = Number(amount);
+    if (!Number.isFinite(value) || value <= 0) return;
     const now = getJalaliNow();
     setMoving(true);
     try {
