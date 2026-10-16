@@ -1,50 +1,42 @@
-import { t } from "@/i18n";
 import { DownloadPage } from "@/components/pages/download/DownloadPage";
-import { APP_NAME_EN, APP_NAME_FA } from "@/common/constants/brand";
+import { fetchPublicPlansServer } from "@/common/api/site";
+import { APP_NAME_FA } from "@/common/constants/brand";
 import {
-  absoluteUrl,
+  androidAppJsonLd,
+  breadcrumbJsonLd,
   createPublicPageMetadata,
-  serializeJsonLd,
-  SITE_URL,
+  jsonLdGraph,
+  plansToOffers,
 } from "@/common/seo";
 
-const title = t("download.badge", { appName: APP_NAME_FA });
+export const revalidate = 3600;
+
+const title = `دانلود اپلیکیشن مدیریت مالی شخصی ${APP_NAME_FA} برای اندروید`;
 const description =
-  "دانلود مستقیم اپ اندروید میز پردیس برای مدیریت مالی شخصی، ثبت درآمد و هزینه، اقساط، چک، پروژه و برنامه‌ریزی با تقویم شمسی.";
+  "دانلود اپ اندروید میز پردیس (اندروید ۷ به بالا) برای حسابداری شخصی: ثبت درآمد و هزینه، بودجه‌بندی، اقساط، چک و صندوق پس‌انداز با تقویم شمسی؛ نسخه وب و PWA هم در دسترس است.";
 
 export const metadata = createPublicPageMetadata({
   title,
   description,
   path: "/download",
-  keywords: ["دانلود اپ مدیریت مالی", "دانلود برنامه حسابداری شخصی اندروید"],
+  keywords: ["دانلود اپ مدیریت مالی", "دانلود برنامه حسابداری شخصی اندروید", "اپ مدیریت هزینه اندروید", "دانلود میز پردیس"],
 });
 
-export default function Page() {
-  const installUrl = process.env.NEXT_PUBLIC_APK_URL ?? "/downloads/pdesk.apk";
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "@id": `${absoluteUrl("/download")}#android-app`,
-    name: APP_NAME_FA,
-    alternateName: APP_NAME_EN,
-    description,
-    url: absoluteUrl("/download"),
-    installUrl: installUrl.startsWith("http")
-      ? installUrl
-      : absoluteUrl(installUrl),
-    applicationCategory: "FinanceApplication",
-    applicationSubCategory: "Personal finance",
-    operatingSystem: "Android 7.0 or later",
-    offers: { "@type": "Offer", price: 0, priceCurrency: "IRR" },
-    publisher: { "@id": `${SITE_URL}/#organization` },
-    inLanguage: "fa-IR",
-  };
+export default async function Page() {
+  const plans = await fetchPublicPlansServer();
+  const nodes = [
+    androidAppJsonLd(plansToOffers(plans)),
+    breadcrumbJsonLd([
+      { name: APP_NAME_FA, path: "/" },
+      { name: "دانلود اپ اندروید", path: "/download" },
+    ]),
+  ];
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdGraph(nodes) }}
       />
       <DownloadPage />
     </>

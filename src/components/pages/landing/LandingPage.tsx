@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -38,9 +39,12 @@ import { AnimatedNumber } from "@/components/common/motion/AnimatedNumber";
 import type { CSSProperties } from "react";
 import { useAppSelector } from "@/stores/hooks";
 import { isAuthSelector } from "@/stores/auth";
-import { LandingContactForm } from "./LandingContactForm";
-import { AnnouncementBar, AppTour, BentoShowcase, CompareSection, GuidesSection, PersonaSection, SavingsSimulator, SecuritySection, StickyCta, TypingDemo } from "./LandingSections";
+import { AnnouncementBar, AppTour, BentoShowcase, CompareSection, GuidesSection, PersonaSection, SavingsSimulator, SecuritySection, StickyCta, TypingDemo, type LandingGuideLink } from "./LandingSections";
 import { useLandingContent } from "./useLandingContent";
+
+// The contact form sits at the bottom of the page: split it (and its form
+// controls) into its own chunk; it is still server-rendered.
+const LandingContactForm = dynamic(() => import("./LandingContactForm").then((mod) => mod.LandingContactForm));
 
 const FEATURE_ICONS: Record<string, typeof Wallet2> = {
   finance: Wallet2,
@@ -353,7 +357,7 @@ function PhoneDevice({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function LandingPage({ initialContent }: { initialContent?: ILandingContent }) {
+export function LandingPage({ initialContent, guides = [] }: { initialContent?: ILandingContent; guides?: LandingGuideLink[] }) {
   const { t } = useTranslation();
   const { content } = useLandingContent(initialContent);
   const isAuth = useAppSelector(isAuthSelector);
@@ -777,7 +781,7 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
           </div>
         </section>
 
-        <GuidesSection />
+        <GuidesSection guides={guides} />
 
         {/* ------------------------------------------------ CTA */}
         <section className="py-20 md:py-24">
@@ -858,7 +862,7 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
       {/* ------------------------------------------------ footer */}
       <footer className="relative overflow-hidden border-t border-border/60 bg-surface/60">
         <div className="l3-footer-word" aria-hidden>{content.hero.title}</div>
-        <div className="lx-container grid gap-10 py-12 md:grid-cols-[1.4fr_1fr_1fr]">
+        <div className="lx-container grid gap-10 py-12 md:grid-cols-[1.4fr_1fr_1.4fr_1fr]">
           <div>
             <div className="flex items-center gap-2.5">
               <AppLogo size={34} showText={false} />
@@ -888,6 +892,25 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
               </li>
             </ul>
           </div>
+          {guides.length ? (
+            <nav aria-label={t("landingUi.guidesEyebrow")}>
+              <p className="text-sm font-bold">{t("landingUi.guidesEyebrow")}</p>
+              <ul className="mt-3 space-y-2 text-sm">
+                {guides.slice(0, 6).map((guide) => (
+                  <li key={guide.slug}>
+                    <Link href={`/learn/${guide.slug}`} className="lx-muted hover:text-foreground">
+                      {guide.title.split("؛")[0]}
+                    </Link>
+                  </li>
+                ))}
+                <li>
+                  <Link href="/faq" className="lx-muted hover:text-foreground">
+                    {t("landingUi.faqLink")}
+                  </Link>
+                </li>
+              </ul>
+            </nav>
+          ) : null}
           <div>
             <p className="text-sm font-bold">{t("landingUi.support")}</p>
             <ul className="mt-3 space-y-2 text-sm">
@@ -907,6 +930,11 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
                 <a href="#contact" className="lx-muted hover:text-foreground">
                   {t("landingUi.contactEyebrow")}
                 </a>
+              </li>
+              <li>
+                <Link href={PATHS.PRIVACY} className="lx-muted hover:text-foreground">
+                  {t("landingUi.privacy")}
+                </Link>
               </li>
             </ul>
           </div>

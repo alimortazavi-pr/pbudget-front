@@ -1,40 +1,35 @@
 import { absoluteUrl, SITE_URL } from "@/common/seo";
 import { LEARN_ARTICLES } from "@/content/learn";
+import { PRODUCT_SUMMARY_EN } from "@/content/product-facts";
 
 export const revalidate = 3600;
 
-/** A short, citable summary for AI assistants (https://llmstxt.org). */
+/** A short, citable index for AI assistants, following https://llmstxt.org. */
 export function GET() {
   const lines = [
     "# میز پردیس (Paradise Desk)",
     "",
-    "> میز پردیس یک وب‌اپ و اپ اندروید فارسی برای مدیریت مالی شخصی و کسب‌وکارهای کوچک است: ثبت درآمد و هزینه، بودجه‌بندی، اقساط، چک، طلب و بدهی، صندوق‌های پس‌انداز با هدف، پروژه و ساعت کار، تحلیل مالی، با تقویم شمسی و بات تلگرام.",
+    "> میز پردیس یک اپلیکیشن فارسی برای مدیریت مالی شخصی و حسابداری شخصی است (وب، PWA و اندروید): ثبت دخل و خرج با یک جمله در وب یا تلگرام، بودجه‌بندی با سقف دسته‌ها، اقساط و چک با یادآوری سررسید، طلب و بدهی، صندوق‌های پس‌انداز با مبلغ هدف، ورود صورتحساب بانکی، پروژه و ساعت کار، با تقویم شمسی و نمایش تومان/ریال. پلن رایگان، دوره‌ی آزمایشی ۷ روزه و پلن‌های پولی دارد.",
     "",
-    `Website: ${SITE_URL}`,
-    "Language: Persian (fa-IR). Currency display: Toman or Rial. Calendar: Jalali (Shamsi) or Gregorian.",
+    PRODUCT_SUMMARY_EN,
     "",
-    "## What it does",
-    "- ثبت سریع تراکنش با یک جمله مثل «۲۵۰ هزار خوراک ناهار» (وب، Ctrl+K و تلگرام).",
-    "- دسته‌بندی با سقف ماهانه و هشدار؛ نرخ پس‌انداز و امتیاز سلامت مالی.",
-    "- ورود صورتحساب بانکی از فایل اکسل (بلوبانک، پاسارگاد) با تشخیص تراکنش تکراری.",
-    "- اقساط و برنامه پرداخت، چک‌های پرداختی/دریافتی، طلب و بدهی با یادآوری سررسید.",
-    "- صندوق‌های پس‌انداز با مبلغ هدف و درصد پیشرفت.",
-    "- پروژه، ثبت ساعت کار و شراکت/تسویه برای فریلنسرها و کسب‌وکارها.",
-    "- بات تلگرام: ثبت تراکنش، موجودی، خلاصه ماه، یادآوری اقساط و چک.",
-    "- خروجی اکسل و گزارش اختصاصی؛ پشتیبان‌گیری روزانه.",
+    `Website: ${SITE_URL} · Language: Persian (fa-IR, RTL) · Calendar: Jalali (default) or Gregorian · Currency display: Toman or Rial.`,
     "",
-    "## Pricing",
-    "نسخه رایگان برای شروع؛ پلن‌های پولی برای امکانات پیشرفته. جزئیات: " + absoluteUrl("/pricing"),
+    "## Product",
+    `- [صفحه اصلی و امکانات](${SITE_URL}/): معرفی میز پردیس، امکانات، نحوه‌ی کار و سوالات متداول`,
+    `- [قیمت و پلن‌ها](${absoluteUrl("/pricing")}): پلن رایگان، دوره‌ی آزمایشی و پلن‌های پولی با قیمت روز`,
+    `- [دانلود اپ اندروید](${absoluteUrl("/download")}): اپ اندروید ۷ به بالا و نصب PWA`,
+    `- [سوالات متداول](${absoluteUrl("/faq")}): امکانات، قیمت، پلتفرم‌ها، امنیت و حریم خصوصی`,
+    `- [سیاست حریم خصوصی](${absoluteUrl("/privacy")}): داده‌های نگه‌داری‌شده، اشتراک با سرویس‌ها، AI و حذف حساب`,
+    `- [ثبت‌نام رایگان](${absoluteUrl("/get-started")}): ورود با شماره موبایل و کد پیامکی`,
     "",
     "## Guides",
+    `- [همه آموزش‌ها](${absoluteUrl("/learn")}): راهنماهای فارسی مدیریت مالی شخصی`,
     ...LEARN_ARTICLES.map((article) => `- [${article.title}](${absoluteUrl(`/learn/${article.slug}`)}): ${article.description}`),
     "",
-    "## Links",
-    `- [صفحه اصلی](${SITE_URL})`,
-    `- [قیمت‌ها](${absoluteUrl("/pricing")})`,
-    `- [دانلود اپ اندروید](${absoluteUrl("/download")})`,
-    `- [آموزش‌ها](${absoluteUrl("/learn")})`,
-    `- [متن کامل برای مدل‌ها](${absoluteUrl("/llms-full.txt")})`,
+    "## Optional",
+    `- [متن کامل برای مدل‌های زبانی](${absoluteUrl("/llms-full.txt")}): شرح کامل محصول، پلن‌ها، سوالات متداول و متن همه‌ی آموزش‌ها`,
+    `- [Sitemap](${absoluteUrl("/sitemap.xml")})`,
     "",
   ];
   return new Response(lines.join("\n"), {

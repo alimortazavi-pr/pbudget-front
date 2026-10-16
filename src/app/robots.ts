@@ -1,64 +1,21 @@
 import type { MetadataRoute } from "next";
 
-import { SITE_URL } from "@/common/seo";
+import { AI_CRAWLERS, PRIVATE_PATH_PREFIXES, SITE_URL } from "@/common/seo";
 
+const PUBLIC_PATHS = ["/", "/pricing", "/download", "/learn", "/faq", "/privacy", "/get-started", "/llms.txt", "/llms-full.txt"];
+const PRIVATE_PATHS = [...PRIVATE_PATH_PREFIXES];
+
+/**
+ * Everything public is crawlable. A crawler that matches a named group ignores
+ * the "*" group, so the AI/answer-engine group repeats the full private list.
+ */
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
-      {
-        userAgent: "*",
-        allow: ["/", "/pricing", "/download", "/learn", "/llms.txt", "/llms-full.txt"],
-        disallow: [
-          "/admin",
-          "/api",
-          "/app",
-          "/analysis",
-          "/bank-import",
-          "/boxes",
-          "/budgets",
-          "/checks",
-          "/commitments",
-          "/create-budget",
-          "/debts",
-          "/exports",
-          "/get-started",
-          "/installments",
-          "/invites",
-          "/landing-preview",
-          "/notes",
-          "/partner-invite",
-          "/payment-cards",
-          "/planning",
-          "/plans",
-          "/profile",
-          "/projects",
-          "/settings",
-          "/tasks",
-          "/ventures",
-          "/workspace",
-          "/~offline",
-        ],
-      },
+      { userAgent: "*", allow: PUBLIC_PATHS, disallow: PRIVATE_PATHS },
       // AI assistants and answer engines are welcome: the public pages are
-      // written to be quoted (see /llms.txt).
-      {
-        userAgent: [
-          "GPTBot",
-          "OAI-SearchBot",
-          "ChatGPT-User",
-          "ClaudeBot",
-          "Claude-SearchBot",
-          "Claude-User",
-          "PerplexityBot",
-          "Perplexity-User",
-          "Google-Extended",
-          "Applebot-Extended",
-          "Bingbot",
-          "YandexBot",
-        ],
-        allow: ["/", "/pricing", "/download", "/learn", "/llms.txt", "/llms-full.txt"],
-        disallow: ["/admin", "/api", "/app", "/get-started", "/workspace", "/partner-invite"],
-      },
+      // written to be quoted (see /llms.txt and /llms-full.txt).
+      { userAgent: [...AI_CRAWLERS], allow: PUBLIC_PATHS, disallow: PRIVATE_PATHS },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,
     host: SITE_URL,

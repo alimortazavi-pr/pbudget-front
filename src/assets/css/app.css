@@ -970,6 +970,9 @@
   .pb-prose p { @apply mt-4 text-base leading-9 text-foreground/90; }
   .pb-prose ul { @apply mt-4 list-disc space-y-2 ps-6 leading-9 text-foreground/90 marker:text-accent; }
   .pb-prose details { @apply mt-3; }
+  .pb-prose h3 { @apply mt-8 text-lg font-bold leading-8; }
+  .pb-prose ol { @apply mt-4 list-decimal space-y-2 ps-6 leading-9 text-foreground/90 marker:text-accent; }
+  .pb-prose a { @apply font-semibold text-accent underline-offset-4 hover:underline; }
   .pb-tabs {
     @apply flex gap-1 overflow-x-auto rounded-2xl bg-surface-secondary/70 p-1;
     scrollbar-width: none;

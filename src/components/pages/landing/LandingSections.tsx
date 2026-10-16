@@ -22,7 +22,6 @@ import { AppSlider } from "@/components/common/form/AppControls";
 import { AnimatedNumber } from "@/components/common/motion/AnimatedNumber";
 import { useTranslation } from "@/i18n";
 import { toPersianDigits } from "@/common/utils/persian-digits";
-import { LEARN_ARTICLES } from "@/content/learn";
 import { parseQuickEntry } from "@/common/utils/quick-entry";
 
 function Heading({ eyebrow, title, subtitle }: { eyebrow: string; title: string; subtitle?: string }) {
@@ -358,14 +357,18 @@ export function SecuritySection() {
 /* ----------------------------------------------------------------- guides */
 
 /** Internal links to the /learn guides — feeds readers and search engines. */
-export function GuidesSection() {
+export type LandingGuideLink = { slug: string; title: string; description: string };
+
+/** Guides are passed in from the server page so the full article bodies never reach the client bundle. */
+export function GuidesSection({ guides }: { guides: LandingGuideLink[] }) {
   const { t } = useTranslation();
+  if (!guides.length) return null;
   return (
     <section id="guides" className="scroll-mt-20 py-20 md:py-28">
       <div className="lx-container">
         <Heading eyebrow={t("landingUi.guidesEyebrow")} title={t("landingUi.guidesTitle")} subtitle={t("landingUi.guidesSubtitle")} />
         <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {LEARN_ARTICLES.slice(0, 6).map((article) => (
+          {guides.slice(0, 6).map((article) => (
             <Link key={article.slug} href={`/learn/${article.slug}`} data-rise className="l3-card block" onPointerMove={glow}>
               <h3 className="font-bold leading-8">{article.title.split("؛")[0]}</h3>
               <p className="lx-muted mt-2 line-clamp-3 text-sm leading-7">{article.description}</p>

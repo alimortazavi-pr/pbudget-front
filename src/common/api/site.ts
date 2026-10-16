@@ -2,6 +2,7 @@ import { getTranslator } from "@/i18n";
 import { axiosInstance } from "@/common/axiosInstance";
 import { SERVER_BASE_API_URL } from "@/common/constants";
 import type { ILandingContent } from "@/common/interfaces/landing.interface";
+import type { SubscriptionPlan } from "@/common/interfaces/subscription.interface";
 import axios from "axios";
 
 const t = getTranslator();
@@ -28,6 +29,24 @@ export async function fetchLandingContentServer(): Promise<ILandingContent> {
       "@/components/pages/landing/landing-data"
     );
     return DEFAULT_LANDING_CONTENT;
+  }
+}
+
+/**
+ * Public subscription plans for server-rendered pages (JSON-LD offers).
+ * Returns null when the API is unreachable so pages still render statically.
+ */
+export async function fetchPublicPlansServer(): Promise<SubscriptionPlan[] | null> {
+  try {
+    const res = await fetch(`${SERVER_BASE_API_URL}/subscriptions/plans`, {
+      next: { revalidate: 3600 },
+      signal: AbortSignal.timeout(4000),
+    });
+    if (!res.ok) return null;
+    const plans = (await res.json()) as SubscriptionPlan[];
+    return Array.isArray(plans) ? plans.filter((plan) => plan.active !== false) : null;
+  } catch {
+    return null;
   }
 }
 

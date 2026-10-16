@@ -69,6 +69,8 @@ export const metadata: Metadata = {
     ...(process.env.BING_SITE_VERIFICATION ? { other: { "msvalidate.01": process.env.BING_SITE_VERIFICATION } } : {}),
   },
   openGraph: {
+    locale: "fa_IR",
+    siteName: APP_NAME_FA,
     images: [{ url: LOGO_OG_IMAGE_SRC, width: 1200, height: 630, alt: APP_NAME_FA }],
   },
   twitter: {

@@ -17,21 +17,23 @@ export function LearnLayout({ children }: { children: ReactNode }) {
             <AppLogo size={32} showText={false} />
             <span className="text-base font-extrabold">{APP_NAME_FA}</span>
           </Link>
-          <nav className="flex items-center gap-1 text-sm" aria-label="main">
+          <nav className="flex items-center gap-1 text-sm" aria-label="منوی اصلی">
             <Link href="/learn" className="lx-nav-link">آموزش‌ها</Link>
+            <Link href="/faq" className="lx-nav-link hidden sm:inline-flex">سوالات متداول</Link>
             <Link href="/pricing" className="lx-nav-link">قیمت‌ها</Link>
+            <Link href={PATHS.DOWNLOAD} className="lx-nav-link hidden sm:inline-flex">دانلود اپ</Link>
             <Link href={PATHS.GET_STARTED} className="lx-btn lx-btn-primary lx-btn-sm">شروع رایگان</Link>
           </nav>
         </div>
       </header>
       <main>{children}</main>
       <footer className="mt-20 border-t border-border/60 bg-surface/60">
-        <div className="lx-container grid gap-8 py-10 md:grid-cols-[1.2fr_2fr]">
+        <div className="lx-container grid gap-8 py-10 md:grid-cols-[1.2fr_2fr_1fr]">
           <div>
             <p className="font-extrabold">{APP_NAME_FA} — Paradise Desk</p>
             <p className="lx-muted mt-2 text-sm leading-7">مدیریت مالی شخصی، بودجه، اقساط، چک و برنامه روزانه با تقویم شمسی، ثبت از تلگرام و ورود از صورتحساب بانک.</p>
           </div>
-          <div>
+          <nav aria-label="راهنماها">
             <p className="text-sm font-bold">راهنماها</p>
             <ul className="mt-3 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
               {LEARN_ARTICLES.map((article) => (
@@ -40,7 +42,18 @@ export function LearnLayout({ children }: { children: ReactNode }) {
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
+          <nav aria-label={APP_NAME_FA}>
+            <p className="text-sm font-bold">{APP_NAME_FA}</p>
+            <ul className="mt-3 space-y-2 text-sm">
+              <li><Link href="/" className="lx-muted hover:text-foreground">معرفی و امکانات</Link></li>
+              <li><Link href={PATHS.PRICING} className="lx-muted hover:text-foreground">قیمت و پلن‌ها</Link></li>
+              <li><Link href={PATHS.DOWNLOAD} className="lx-muted hover:text-foreground">دانلود اپ اندروید</Link></li>
+              <li><Link href="/faq" className="lx-muted hover:text-foreground">سوالات متداول</Link></li>
+              <li><Link href={PATHS.PRIVACY} className="lx-muted hover:text-foreground">حریم خصوصی</Link></li>
+              <li><Link href={PATHS.GET_STARTED} className="lx-muted hover:text-foreground">ثبت‌نام رایگان</Link></li>
+            </ul>
+          </nav>
         </div>
         <div className="border-t border-border/60">
           <div className="lx-container flex flex-col items-center justify-between gap-3 py-5 text-xs sm:flex-row">

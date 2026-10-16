@@ -2,13 +2,19 @@ import Link from "next/link";
 
 import { APP_NAME_FA, CONTACT_EMAIL, DEVELOPER_SITE_LABEL, DEVELOPER_SITE_URL } from "@/common/constants/brand";
 import { PATHS } from "@/common/constants/PATHS";
-import { createPublicPageMetadata } from "@/common/seo";
+import { breadcrumbJsonLd, createPublicPageMetadata, jsonLdGraph } from "@/common/seo";
+import { LearnLayout } from "@/components/pages/learn/LearnLayout";
 
 const title = `سیاست حفظ حریم خصوصی — ${APP_NAME_FA}`;
 const description =
   "چه اطلاعاتی از شما نگه‌داری می‌کنیم، برای چه کاری استفاده می‌شود، با چه کسانی به اشتراک گذاشته می‌شود و چطور می‌توانید آن را حذف کنید.";
 
-export const metadata = createPublicPageMetadata({ title, description, path: "/privacy" });
+export const metadata = createPublicPageMetadata({
+  title,
+  description,
+  path: "/privacy",
+  keywords: ["حریم خصوصی اپ مدیریت مالی", "امنیت اطلاعات مالی"],
+});
 
 const sections: { heading: string; body: string[] }[] = [
   {
@@ -71,35 +77,48 @@ const sections: { heading: string; body: string[] }[] = [
 
 export default function Page() {
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-12 md:py-16">
-      <Link href={PATHS.LANDING} className="text-sm text-muted hover:text-foreground">
-        ← بازگشت
-      </Link>
-      <h1 className="mt-6 text-2xl font-extrabold md:text-3xl">سیاست حفظ حریم خصوصی</h1>
-      <p className="mt-2 text-sm text-muted">{APP_NAME_FA} · آخرین به‌روزرسانی: مهر ۱۴۰۵</p>
-      <p className="mt-6 leading-8">
-        این متن توضیح می‌دهد {APP_NAME_FA} (وب‌سایت و اپ اندروید) چه اطلاعاتی از شما دریافت می‌کند، چرا، و چه اختیاری روی آن دارید.
-      </p>
-      {sections.map((section) => (
-        <section key={section.heading} className="mt-8">
-          <h2 className="text-lg font-bold">{section.heading}</h2>
-          <div className="mt-2 space-y-3 leading-8 text-muted">
-            {section.body.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-          </div>
-        </section>
-      ))}
-      <p className="mt-8 leading-8">
-        پرسش یا درخواست حذف اطلاعات:{" "}
-        <a href={`mailto:${CONTACT_EMAIL}`} dir="ltr" className="font-medium text-accent hover:underline">
-          {CONTACT_EMAIL}
-        </a>{" "}
-        · توسعه‌دهنده:{" "}
-        <a href={DEVELOPER_SITE_URL} target="_blank" rel="noopener noreferrer" className="font-medium text-accent hover:underline">
-          {DEVELOPER_SITE_LABEL}
-        </a>
-      </p>
-    </main>
+    <LearnLayout>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLdGraph([
+            breadcrumbJsonLd([
+              { name: APP_NAME_FA, path: "/" },
+              { name: "حریم خصوصی", path: "/privacy" },
+            ]),
+          ]),
+        }}
+      />
+      <article className="mx-auto w-full max-w-3xl px-4 py-12 md:py-16">
+        <Link href={PATHS.LANDING} className="text-sm text-muted hover:text-foreground">
+          ← بازگشت به صفحه اصلی
+        </Link>
+        <h1 className="mt-6 text-2xl font-extrabold md:text-3xl">سیاست حفظ حریم خصوصی</h1>
+        <p className="mt-2 text-sm text-muted">{APP_NAME_FA} · آخرین به‌روزرسانی: مهر ۱۴۰۵</p>
+        <p className="mt-6 leading-8">
+          این متن توضیح می‌دهد {APP_NAME_FA} (وب‌سایت و اپ اندروید) چه اطلاعاتی از شما دریافت می‌کند، چرا، و چه اختیاری روی آن دارید.
+        </p>
+        {sections.map((section) => (
+          <section key={section.heading} className="mt-8">
+            <h2 className="text-lg font-bold">{section.heading}</h2>
+            <div className="mt-2 space-y-3 leading-8 text-muted">
+              {section.body.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
+            </div>
+          </section>
+        ))}
+        <p className="mt-8 leading-8">
+          پرسش یا درخواست حذف اطلاعات:{" "}
+          <a href={`mailto:${CONTACT_EMAIL}`} dir="ltr" className="font-medium text-accent hover:underline">
+            {CONTACT_EMAIL}
+          </a>{" "}
+          · توسعه‌دهنده:{" "}
+          <a href={DEVELOPER_SITE_URL} target="_blank" rel="noopener noreferrer" className="font-medium text-accent hover:underline">
+            {DEVELOPER_SITE_LABEL}
+          </a>
+        </p>
+      </article>
+    </LearnLayout>
   );
 }
