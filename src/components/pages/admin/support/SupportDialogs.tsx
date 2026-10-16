@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button, Input, TextArea } from "@heroui/react";
+import { Button, Input, Switch, TextArea } from "@heroui/react";
 import { Edit2, Trash } from "iconsax-reactjs";
 
 import { fetchUsers } from "@/common/api/admin-insights";
@@ -253,6 +253,99 @@ export function CannedRepliesDialog({
           </ul>
         )}
       </div>
+    </FormDialog>
+  );
+}
+
+const AUTO_KINDS: { id: supportApi.AutoMessageKind; title: string; hint: string }[] = [
+  { id: "signup", title: "خوش‌آمد بعد از ثبت‌نام", hint: "بلافاصله بعد از ساخت حساب در صندوق پشتیبانی کاربر قرار می‌گیرد." },
+  { id: "plan", title: "فعال شدن اشتراک", hint: "وقتی پلن پولی خریداری یا توسط ادمین فعال شود." },
+  { id: "trial", title: "شروع دورهٔ آزمایشی", hint: "وقتی کاربر دورهٔ آزمایشی را شروع کند." },
+];
+
+const PLACEHOLDER_LABEL: Record<string, string> = {
+  name: "نام کامل",
+  firstName: "نام",
+  plan: "نام پلن",
+  expiresAt: "تاریخ پایان",
+  days: "روزهای باقی‌مانده",
+};
+
+/** Edit the automatic support messages (welcome, plan activated, trial) and switch each on or off. */
+export function AutoMessagesDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+  const [data, setData] = useState<supportApi.AutoMessages | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    void supportApi.fetchAutoMessages().then(setData).catch((error) => showErrorToast(error));
+  }, [open]);
+
+  function patch(kind: supportApi.AutoMessageKind, value: Partial<supportApi.AutoMessageTemplate>) {
+    setData((current) => (current ? { ...current, [kind]: { ...current[kind], ...value } } : current));
+  }
+
+  async function save() {
+    if (!data) return;
+    setBusy(true);
+    try {
+      setData(await supportApi.saveAutoMessages({ signup: data.signup, plan: data.plan, trial: data.trial }));
+      showToast("پیام‌های خودکار ذخیره شد", "success");
+      onOpenChange(false);
+    } catch (error) {
+      showErrorToast(error);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <FormDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title="پیام‌های خودکار پشتیبانی"
+      description="این پیام‌ها از طرف پشتیبانی در صندوق کاربر می‌نشینند و اعتماد او را بیشتر می‌کنند. تا کاربر جواب ندهد، در فهرست «فعال» ادمین دیده نمی‌شوند."
+      submitLabel="ذخیره"
+      isPending={busy}
+      submitDisabled={!data}
+      onSubmit={() => void save()}
+      wide
+    >
+      {!data ? (
+        <p className="text-sm text-muted">در حال بارگذاری…</p>
+      ) : (
+        <div className="space-y-5">
+          <p className="text-xs leading-6 text-muted">
+            متغیرها:{" "}
+            {data.placeholders.map((key) => (
+              <code key={key} className="mx-0.5 rounded bg-surface-secondary px-1.5 py-0.5" dir="ltr" title={PLACEHOLDER_LABEL[key]}>
+                {`{{${key}}}`}
+              </code>
+            ))}
+          </p>
+          {AUTO_KINDS.map((kind) => (
+            <section key={kind.id} className={`space-y-3 rounded-2xl border p-4 ${data[kind.id].enabled ? "border-accent/30" : "border-border/60 opacity-80"}`}>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-semibold">{kind.title}</p>
+                  <p className="text-xs text-muted">{kind.hint}</p>
+                </div>
+                <Switch isSelected={data[kind.id].enabled} onChange={(enabled) => patch(kind.id, { enabled })} aria-label={`${kind.title} فعال باشد`}>
+                  <Switch.Control>
+                    <Switch.Thumb />
+                  </Switch.Control>
+                </Switch>
+              </div>
+              <Field label="عنوان">
+                <Input variant="secondary" maxLength={120} value={data[kind.id].subject} onChange={(event) => patch(kind.id, { subject: event.target.value })} />
+              </Field>
+              <Field label="متن پیام">
+                <TextArea variant="secondary" rows={4} maxLength={4000} value={data[kind.id].text} onChange={(event) => patch(kind.id, { text: event.target.value })} />
+              </Field>
+            </section>
+          ))}
+        </div>
+      )}
     </FormDialog>
   );
 }

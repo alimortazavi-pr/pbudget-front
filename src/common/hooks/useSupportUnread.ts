@@ -4,6 +4,7 @@ import { useEffect, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 
 import { fetchAdminSupportPulse, fetchUnreadSupportCount } from "@/common/api/support";
+import { useSupportEvent } from "@/common/hooks/useSupportSocket";
 
 const CHANGED_EVENT = "pdesk:support-changed";
 const POLL_MS = 60_000;
@@ -74,6 +75,8 @@ const adminStore = createStore(async () => (await fetchAdminSupportPulse()).unre
 function useStore(store: ReturnType<typeof createStore>) {
   const pathname = usePathname();
   const count = useSyncExternalStore(store.subscribe, store.getSnapshot, () => 0);
+  // Live: any change to a conversation re-checks the count at once.
+  useSupportEvent("support:changed", () => void store.refresh());
   // Re-check on navigation, so the badge clears after the conversation is opened.
   useEffect(() => {
     void store.refresh();

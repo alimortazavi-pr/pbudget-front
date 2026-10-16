@@ -16,7 +16,7 @@ export const PRIORITY_TONE: Record<SupportPriority, "danger" | "warning" | "neut
   normal: "neutral",
   low: "info",
 };
-export const SOURCE_LABEL = { landing: "فرم سایت", app: "اپ", admin: "شروع‌شده توسط ادمین" } as const;
+export const SOURCE_LABEL = { landing: "فرم سایت", app: "اپ", admin: "شروع‌شده توسط ادمین", system: "پیام خودکار" } as const;
 
 /** Fills {{name}}, {{firstName}} and {{code}} in a canned reply. */
 export function fillCannedReply(text: string, ticket: { name: string; code: string }) {

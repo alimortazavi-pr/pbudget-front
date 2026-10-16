@@ -63,8 +63,9 @@ export interface AdminTicketListItem {
   phone: string;
   category: SupportCategory;
   subject: string;
-  source: "landing" | "app" | "admin";
+  source: "landing" | "app" | "admin" | "system";
   startedBy: "user" | "admin";
+  automated: "signup" | "plan" | "trial" | null;
   status: SupportStatus;
   priority: SupportPriority;
   assignedTo: string | null;
@@ -206,7 +207,7 @@ export interface AdminTicketQuery {
   search?: string;
   priority?: "" | SupportPriority;
   category?: "" | SupportCategory;
-  source?: "" | "landing" | "app" | "admin";
+  source?: "" | "landing" | "app" | "admin" | "system";
   assignee?: string;
   unread?: boolean;
   userId?: string;
@@ -308,4 +309,24 @@ export async function deleteCannedReply(id: string) {
 
 export async function markCannedReplyUsed(id: string) {
   await axiosInstance.post(`/admin/support/canned/${id}/use`);
+}
+
+// ---- Automatic messages ------------------------------------------------------
+
+export type AutoMessageKind = "signup" | "plan" | "trial";
+export interface AutoMessageTemplate {
+  enabled: boolean;
+  subject: string;
+  text: string;
+}
+export type AutoMessages = Record<AutoMessageKind, AutoMessageTemplate> & { placeholders: string[] };
+
+export async function fetchAutoMessages() {
+  const { data } = await axiosInstance.get<AutoMessages>("/admin/support/auto-messages");
+  return data;
+}
+
+export async function saveAutoMessages(payload: Partial<Record<AutoMessageKind, Partial<AutoMessageTemplate>>>) {
+  const { data } = await axiosInstance.put<AutoMessages>("/admin/support/auto-messages", payload);
+  return data;
 }

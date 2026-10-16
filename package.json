@@ -31,7 +31,8 @@
     "react-dom": "19.2.8",
     "react-multi-date-picker": "^4.5.2",
     "react-redux": "^9.3.0",
-    "recharts": "^3.8.1"
+    "recharts": "^3.8.1",
+    "socket.io-client": "^4.8.4"
   },
   "devDependencies": {
     "@playwright/test": "^1.61.1",

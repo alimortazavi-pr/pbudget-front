@@ -14,7 +14,8 @@ import { AppSelect } from "@/components/common/form/AppControls";
 import { PageHeader } from "@/components/common/layout/PageHeader";
 import { notifySupportChanged } from "@/common/hooks/useSupportUnread";
 import { useTranslation } from "@/i18n";
-import { AttachButton, ChatThread, Composer, PendingFiles, formatChatTime, useAttachmentUploads, usePolling } from "./SupportChat";
+import { AttachButton, ChatThread, Composer, PendingFiles, TypingNotice, formatChatTime, useAttachmentUploads, usePolling } from "./SupportChat";
+import { useSupportEvent, useSupportRoom, useSupportSocket, useTypingIndicator, useTypingSender, type SupportChangeEvent } from "@/common/hooks/useSupportSocket";
 
 const STATUS_COLOR: Record<SupportStatus, "warning" | "success" | "default"> = {
   open: "warning",
@@ -196,6 +197,9 @@ function Conversation({ ticket, onBack, onChanged }: { ticket: SupportTicket; on
   const [sending, setSending] = useState(false);
   const [closing, setClosing] = useState(false);
   const uploads = useAttachmentUploads("user");
+  useSupportRoom(ticket._id);
+  const sendTyping = useTypingSender(ticket._id);
+  const adminTyping = useTypingIndicator(ticket._id, "admin");
 
   async function send() {
     setSending(true);
@@ -244,6 +248,7 @@ function Conversation({ ticket, onBack, onChanged }: { ticket: SupportTicket; on
       <div className="min-h-0 flex-1 overflow-y-auto">
         <ChatThread items={ticket.thread} scope="user" viewer="user" otherSeenAt={ticket.adminSeenAt} otherName={t("common.helpDesk.team")} />
       </div>
+      <TypingNotice name={adminTyping === null ? null : t("common.helpDesk.team")} />
       {ticket.status === "closed" ? (
         <div className="space-y-3 border-t border-border/50 p-3">
           <p className="text-xs text-muted">{t("common.helpDesk.closedNote")}</p>
@@ -265,6 +270,7 @@ function Conversation({ ticket, onBack, onChanged }: { ticket: SupportTicket; on
             uploads={uploads}
             placeholder={t("common.helpDesk.replyPlaceholder")}
             sendLabel={t("common.helpDesk.sendReply")}
+            onTyping={sendTyping}
           />
         </>
       )}
@@ -298,7 +304,11 @@ export function SupportPage() {
     });
   }, [load]);
 
-  // Near-real-time: a cheap pulse every 10s; the list reloads only when something changed.
+  // Live updates over socket.io; the cheap pulse poll stays as a fallback
+  // (every 10s while the socket is down, every minute otherwise).
+  const live = useSupportSocket();
+  useSupportEvent<SupportChangeEvent>("support:changed", () => void load());
+  useSupportEvent("support:read", () => void load());
   const poll = useCallback(async () => {
     try {
       const pulse = await supportApi.fetchSupportPulse();
@@ -308,7 +318,7 @@ export function SupportPage() {
       // Offline or signed out; try again on the next tick.
     }
   }, [load]);
-  usePolling(poll, 10_000);
+  usePolling(poll, live ? 60_000 : 10_000);
 
   const selected = useMemo(() => tickets?.find((item) => item._id === selectedId) ?? null, [tickets, selectedId]);
 

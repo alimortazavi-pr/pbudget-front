@@ -231,6 +231,22 @@ export function ChatThread({
   );
 }
 
+export function TypingNotice({ name }: { name: string | null }) {
+  if (name === null) return null;
+  return (
+    <p className="px-4 pb-1 text-xs text-muted" aria-live="polite">
+      <span className="inline-flex items-center gap-1">
+        <span className="inline-flex gap-0.5">
+          <i className="size-1 animate-bounce rounded-full bg-muted [animation-delay:-0.2s]" />
+          <i className="size-1 animate-bounce rounded-full bg-muted [animation-delay:-0.1s]" />
+          <i className="size-1 animate-bounce rounded-full bg-muted" />
+        </span>
+        {name ? `${name} در حال نوشتن…` : "در حال نوشتن…"}
+      </span>
+    </p>
+  );
+}
+
 type PendingFile = { key: string; name: string; uploading: boolean; attachment?: SupportAttachment };
 
 /** Uploads chosen/pasted/dropped files right away and tracks their ids for sending. */
@@ -328,6 +344,7 @@ export function Composer({
   toolbar,
   sendLabel = "ارسال",
   tone = "default",
+  onTyping,
 }: {
   scope: SupportScope;
   value: string;
@@ -340,6 +357,8 @@ export function Composer({
   toolbar?: ReactNode;
   sendLabel?: string;
   tone?: "default" | "note";
+  /** Called while the user types (throttled by the caller). */
+  onTyping?: () => void;
 }) {
   const [dragging, setDragging] = useState(false);
   const canSend = !disabled && !sending && !uploads.uploading && (value.trim().length > 0 || uploads.ids.length > 0);
@@ -373,7 +392,10 @@ export function Composer({
           value={value}
           maxLength={4000}
           disabled={disabled}
-          onChange={(event) => onChange(event.target.value)}
+          onChange={(event) => {
+            onChange(event.target.value);
+            onTyping?.();
+          }}
           onPaste={(event) => {
             const pasted = Array.from(event.clipboardData.files);
             if (pasted.length) {

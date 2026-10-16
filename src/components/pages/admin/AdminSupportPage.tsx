@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Button, Dropdown, Input, Label } from "@heroui/react";
-import { Add, ArrowRight2, Flash, MessageText1, Messages2, Notification as NotificationIcon, Profile2User, Star1, TaskSquare, UserTick } from "iconsax-reactjs";
+import { Add, CloseSquare, ArrowRight2, Flash, Maximize4, MessageNotif, MessageText1, Messages2, Notification as NotificationIcon, Profile2User, Setting4, SidebarLeft, SidebarRight, Star1, TaskSquare, UserTick } from "iconsax-reactjs";
 
 import * as supportApi from "@/common/api/support";
 import {
@@ -21,10 +22,11 @@ import { toPersianDigits } from "@/common/utils/persian-digits";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { useAppSelector } from "@/stores/hooks";
 import { userSelector } from "@/stores/profile";
-import { ChatThread, Composer, formatChatTime, useAttachmentUploads, usePolling } from "@/components/pages/support/SupportChat";
+import { ChatThread, Composer, TypingNotice, formatChatTime, useAttachmentUploads, usePolling } from "@/components/pages/support/SupportChat";
+import { useSupportEvent, useSupportRoom, useSupportSocket, useTypingIndicator, useTypingSender, type SupportChangeEvent } from "@/common/hooks/useSupportSocket";
 import { AdminPageHeader, EmptyState, NativeSelect, PaginationBar, Pill, SearchField, SegmentedTabs, SkeletonRows, StatTile } from "./ui/AdminUi";
 import { formatDateTimeFa, formatRelativeFa } from "./ui/admin-format";
-import { CannedRepliesDialog, StartConversationDialog } from "./support/SupportDialogs";
+import { AutoMessagesDialog, CannedRepliesDialog, StartConversationDialog } from "./support/SupportDialogs";
 import { SupportUserContext } from "./support/SupportUserContext";
 import { CATEGORY_LABEL, PRIORITY_LABEL, PRIORITY_TONE, SOURCE_LABEL, STATUS_LABEL, STATUS_TONE, fillCannedReply } from "./support/support-labels";
 
@@ -45,6 +47,35 @@ function folderQuery(folder: Folder): Partial<AdminTicketQuery> {
     default:
       return { status: "active" };
   }
+}
+
+type InboxLayout = { full: boolean; list: boolean; context: boolean; filters: boolean };
+const LAYOUT_KEY = "pdesk.admin-support.layout";
+const DEFAULT_LAYOUT: InboxLayout = { full: false, list: true, context: true, filters: false };
+
+/** Full screen and collapsed panels, remembered per admin on this device. */
+function useInboxLayout() {
+  const [layout, setLayout] = useState<InboxLayout>(DEFAULT_LAYOUT);
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(window.localStorage.getItem(LAYOUT_KEY) ?? "null") as Partial<InboxLayout> | null;
+      if (saved) setLayout({ ...DEFAULT_LAYOUT, ...saved });
+    } catch {
+      // Private mode or bad JSON: keep the defaults.
+    }
+  }, []);
+  const toggle = useCallback((key: keyof InboxLayout) => {
+    setLayout((current) => {
+      const next = { ...current, [key]: !current[key] };
+      try {
+        window.localStorage.setItem(LAYOUT_KEY, JSON.stringify(next));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  }, []);
+  return { layout, toggle };
 }
 
 function readParam(name: string) {
@@ -115,6 +146,9 @@ function ConversationPane({
   const [sending, setSending] = useState(false);
   const uploads = useAttachmentUploads("admin");
   const drafts = useRef(new Map<string, string>());
+  useSupportRoom(ticket._id);
+  const sendTyping = useTypingSender(mode === "reply" ? ticket._id : null);
+  const userTyping = useTypingIndicator(ticket._id, "user");
 
   // Keep an unsent draft per conversation while switching between them.
   useEffect(() => {
@@ -225,9 +259,9 @@ function ConversationPane({
               <span dir="ltr">{ticket.code}</span> · {SOURCE_LABEL[ticket.source]} · {ticket.subject || CATEGORY_LABEL[ticket.category]} · {formatDateTimeFa(ticket.createdAt)}
             </p>
           </div>
-          <Button size="sm" variant={showContext ? "secondary" : "ghost"} className="hidden xl:inline-flex" onPress={onToggleContext}>
+          <Button size="sm" variant={showContext ? "secondary" : "ghost"} className="hidden lg:inline-flex" onPress={onToggleContext} aria-pressed={showContext}>
             <Profile2User size={16} />
-            اطلاعات کاربر
+            <span className="hidden xl:inline">اطلاعات کاربر</span>
           </Button>
         </div>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -271,6 +305,7 @@ function ConversationPane({
           <div className="min-h-0 flex-1 overflow-y-auto">
             <ChatThread items={ticket.thread} scope="admin" viewer="admin" otherSeenAt={ticket.userSeenAt} otherName={ticket.name} emptyHint="پیامی نیست" />
           </div>
+          <TypingNotice name={userTyping} />
           <Composer
             scope="admin"
             value={draft}
@@ -282,15 +317,16 @@ function ConversationPane({
             toolbar={toolbar}
             placeholder={mode === "note" ? "یادداشت برای ادمین‌های دیگر (کاربر نمی‌بیند)…" : ticket.status === "closed" ? "پاسخ شما گفتگو را دوباره باز می‌کند…" : "پاسخ شما برای کاربر…"}
             sendLabel={mode === "note" ? "ثبت یادداشت" : "ارسال"}
+            onTyping={sendTyping}
           />
         </div>
         {showContext ? (
-          <aside className="hidden w-80 shrink-0 overflow-y-auto border-s border-border/50 xl:block" aria-label="اطلاعات کاربر">
+          <aside className="hidden w-72 shrink-0 overflow-y-auto border-s border-border/50 lg:block 2xl:w-80" aria-label="اطلاعات کاربر">
             <SupportUserContext ticket={ticket} onOpenTicket={onOpenTicket} />
           </aside>
         ) : null}
       </div>
-      <details className="border-t border-border/50 xl:hidden">
+      <details className="border-t border-border/50 lg:hidden">
         <summary className="cursor-pointer px-4 py-2 text-xs font-semibold text-muted">اطلاعات کاربر</summary>
         <SupportUserContext ticket={ticket} onOpenTicket={onOpenTicket} />
       </details>
@@ -304,7 +340,7 @@ export function AdminSupportPage() {
   const [search, setSearch] = useState("");
   const [priority, setPriority] = useState<"" | SupportPriority>("");
   const [category, setCategory] = useState<"" | SupportCategory>("");
-  const [source, setSource] = useState<"" | "landing" | "app" | "admin">("");
+  const [source, setSource] = useState<"" | "landing" | "app" | "admin" | "system">("");
   const [sort, setSort] = useState<"" | "oldest" | "priority">("");
   const [page, setPage] = useState(1);
   const [data, setData] = useState<AdminTicketList | null>(null);
@@ -316,7 +352,9 @@ export function AdminSupportPage() {
   const [composeOpen, setComposeOpen] = useState(false);
   const [composeUser, setComposeUser] = useState<{ _id: string; name: string; mobile: string } | null>(null);
   const [cannedOpen, setCannedOpen] = useState(false);
-  const [showContext, setShowContext] = useState(true);
+  const [autoOpen, setAutoOpen] = useState(false);
+  const { layout, toggle } = useInboxLayout();
+  const live = useSupportSocket();
   const [notifyGranted, setNotifyGranted] = useState(false);
   const pulse = useRef<{ stamp: string | null; unread: number } | null>(null);
 
@@ -389,7 +427,36 @@ export function AdminSupportPage() {
     document.title = unread ? `(${toPersianDigits(unread)}) ${base}` : base;
   }, [data?.summary.unread]);
 
-  // Near-real-time: a cheap pulse every 8s; reload only when something changed.
+  const selectedRef = useRef(selectedId);
+  useEffect(() => {
+    selectedRef.current = selectedId;
+  }, [selectedId]);
+
+  // Live over socket.io: refresh the list, the open conversation, and alert on new user messages.
+  useSupportEvent<SupportChangeEvent>("support:changed", (event) => {
+    void loadListRef.current(true);
+    if (event.ticketId === selectedRef.current) {
+      // loadTicket also marks it read when the admin is looking at it.
+      if (document.visibilityState === "visible") void loadTicket(event.ticketId);
+      else void supportApi.fetchAdminTicket(event.ticketId).then(setTicket).catch(() => undefined);
+    }
+    if (event.by === "user" && (event.kind === "message" || event.kind === "created")) {
+      notifySupportChanged();
+      if (event.ticketId !== selectedRef.current || document.visibilityState !== "visible") {
+        showToast("پیام تازه‌ای در پشتیبانی رسید", "success");
+      }
+      if (document.visibilityState !== "visible" && typeof Notification !== "undefined" && Notification.permission === "granted") {
+        new Notification("پیام جدید پشتیبانی", { body: "یک گفتگو منتظر پاسخ است", tag: "pdesk-support" });
+      }
+    }
+  });
+  useSupportEvent("support:read", (event: { ticketId: string }) => {
+    if (event.ticketId === selectedRef.current) {
+      void supportApi.fetchAdminTicket(event.ticketId).then(setTicket).catch(() => undefined);
+    }
+  });
+
+  // Fallback when the socket is down: a cheap pulse every 8s (every 45s while live).
   const poll = useCallback(async () => {
     try {
       const next = await supportApi.fetchAdminSupportPulse();
@@ -411,7 +478,17 @@ export function AdminSupportPage() {
       // Try again on the next tick.
     }
   }, [loadList, selectedId]);
-  usePolling(poll, 8_000);
+  usePolling(poll, live ? 45_000 : 8_000);
+
+  // Esc leaves full screen.
+  useEffect(() => {
+    if (!layout.full) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !document.querySelector("[role=dialog]")) toggle("full");
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [layout.full, toggle]);
 
   function select(id: string | null) {
     setSelectedId(id);
@@ -436,120 +513,142 @@ export function AdminSupportPage() {
     setPage(1);
   };
 
-  return (
-    <div className="space-y-5">
-      <AdminPageHeader
-        title="پشتیبانی"
-        description="صندوق گفتگو با کاربران: پاسخ، یادداشت داخلی، سپردن به ادمین، اولویت، پاسخ آماده و شروع گفتگو با هر کاربر. فهرست هر چند ثانیه خودکار به‌روز می‌شود."
-        icon={<Messages2 size={22} variant="Bold" />}
-        actions={
-          <>
-            {!notifyGranted ? (
-              <Button variant="ghost" size="sm" onPress={() => void enableNotifications()}>
-                <NotificationIcon size={16} />
-                اعلان مرورگر
-              </Button>
-            ) : null}
-            <Button variant="secondary" size="sm" onPress={() => setCannedOpen(true)}>
-              <MessageText1 size={16} />
-              پاسخ‌های آماده
-            </Button>
-            <Button size="sm" onPress={() => { setComposeUser(null); setComposeOpen(true); }}>
-              <Add size={16} />
-              گفتگوی جدید با کاربر
-            </Button>
-          </>
-        }
-      />
+  const activeFilters = [priority, category, source, sort].filter(Boolean).length;
+  const headerActions = (
+    <>
+      {!notifyGranted ? (
+        <Button variant="ghost" size="sm" onPress={() => void enableNotifications()}>
+          <NotificationIcon size={16} />
+          اعلان مرورگر
+        </Button>
+      ) : null}
+      <Button variant="ghost" size="sm" onPress={() => setAutoOpen(true)}>
+        <MessageNotif size={16} />
+        پیام‌های خودکار
+      </Button>
+      <Button variant="secondary" size="sm" onPress={() => setCannedOpen(true)}>
+        <MessageText1 size={16} />
+        پاسخ‌های آماده
+      </Button>
+      <Button size="sm" onPress={() => { setComposeUser(null); setComposeOpen(true); }}>
+        <Add size={16} />
+        گفتگوی جدید
+      </Button>
+    </>
+  );
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
-        <StatTile label="خوانده‌نشده" value={summary?.unread ?? 0} tone={summary?.unread ? "danger" : "success"} icon={<NotificationIcon size={20} />} />
-        <StatTile label="در انتظار پاسخ" value={summary?.open ?? 0} tone={summary?.open ? "warning" : "success"} icon={<Messages2 size={20} />} />
-        <StatTile label="سپرده به من" value={summary?.mine ?? 0} tone="accent" icon={<UserTick size={20} />} />
-        <StatTile label="بدون مسئول" value={summary?.unassigned ?? 0} tone={summary?.unassigned ? "warning" : "neutral"} icon={<Profile2User size={20} />} />
-        <StatTile label="فوری و مهم" value={summary?.urgent ?? 0} tone={summary?.urgent ? "danger" : "neutral"} icon={<Flash size={20} />} />
-        <StatTile
-          label="رضایت کاربران"
-          value={summary?.ratingAverage != null ? `${toPersianDigits(summary.ratingAverage)} از ۵` : "—"}
-          hint={summary?.ratingCount ? `${toPersianDigits(summary.ratingCount)} امتیاز` : undefined}
-          tone="info"
-          icon={<Star1 size={20} />}
+  const listPanel = layout.list ? (
+    <aside className={`min-h-0 flex-col border-border/50 lg:flex lg:border-e ${ticket ? "hidden" : "flex"}`} aria-label="فهرست گفتگوها">
+      <div className="space-y-2 border-b border-border/50 p-3">
+        <div className="flex items-center gap-2">
+          <SearchField className="min-w-0 flex-1" value={search} onChange={(value) => { setSearch(value); setPage(1); }} placeholder="جستجو در کد، نام، موبایل، متن…" />
+          <Button isIconOnly size="sm" variant={layout.filters || activeFilters ? "secondary" : "ghost"} aria-label="فیلترها" aria-pressed={layout.filters} onPress={() => toggle("filters")} className="relative">
+            <Setting4 size={18} />
+            {activeFilters ? <span className="absolute -end-1 -top-1 rounded-full bg-accent px-1 text-[10px] text-accent-foreground">{toPersianDigits(activeFilters)}</span> : null}
+          </Button>
+        </div>
+        <SegmentedTabs
+          size="sm"
+          value={folder}
+          onChange={changeFolder}
+          items={[
+            { id: "active", label: "فعال", count: summary ? summary.open + summary.answered : undefined },
+            { id: "unread", label: "خوانده‌نشده", count: summary?.unread },
+            { id: "mine", label: "مال من", count: summary?.mine },
+            { id: "unassigned", label: "بی‌مسئول", count: summary?.unassigned },
+            { id: "closed", label: "بسته" },
+            { id: "all", label: "همه" },
+          ]}
         />
+        {layout.filters ? (
+          <div className="grid grid-cols-2 gap-2">
+            <NativeSelect ariaLabel="اولویت" value={priority} onChange={(value) => { setPriority(value as "" | SupportPriority); setPage(1); }} options={[{ value: "", label: "همهٔ اولویت‌ها" }, ...SUPPORT_PRIORITIES.map((id) => ({ value: id, label: PRIORITY_LABEL[id] }))]} />
+            <NativeSelect ariaLabel="موضوع" value={category} onChange={(value) => { setCategory(value as "" | SupportCategory); setPage(1); }} options={[{ value: "", label: "همهٔ موضوع‌ها" }, ...SUPPORT_CATEGORIES.map((id) => ({ value: id, label: CATEGORY_LABEL[id] }))]} />
+            <NativeSelect ariaLabel="منبع" value={source} onChange={(value) => { setSource(value as "" | "landing" | "app" | "admin" | "system"); setPage(1); }} options={[{ value: "", label: "همهٔ منابع" }, { value: "app", label: "اپ" }, { value: "landing", label: "فرم سایت" }, { value: "admin", label: "شروع‌شده توسط ادمین" }, { value: "system", label: "پیام خودکار" }]} />
+            <NativeSelect ariaLabel="مرتب‌سازی" value={sort} onChange={(value) => setSort(value as "" | "oldest" | "priority")} options={[{ value: "", label: "تازه‌ترین" }, { value: "priority", label: "اولویت" }, { value: "oldest", label: "قدیمی‌ترین" }]} />
+          </div>
+        ) : null}
       </div>
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        {loading && !data ? (
+          <div className="p-3">
+            <SkeletonRows rows={6} />
+          </div>
+        ) : !data || data.items.length === 0 ? (
+          <EmptyState title="گفتگویی پیدا نشد" description={folder === "active" ? "همهٔ گفتگوها پاسخ داده یا بسته شده‌اند." : undefined} />
+        ) : (
+          <ul>
+            {data.items.map((item) => {
+              const assignee = item.assignedTo ? admins.find((admin) => admin._id === item.assignedTo)?.name : null;
+              return (
+                <li key={item._id}>
+                  <button
+                    type="button"
+                    onClick={() => select(item._id)}
+                    aria-current={item._id === selectedId ? "true" : undefined}
+                    className={`flex w-full flex-col gap-1 border-b border-border/40 px-3 py-2.5 text-start transition hover:bg-surface-secondary ${item._id === selectedId ? "bg-accent/8" : ""}`}
+                  >
+                    <span className="flex items-center gap-2">
+                      {item.unreadByAdmin ? <span className="size-2 shrink-0 rounded-full bg-danger" aria-label="خوانده‌نشده" /> : null}
+                      <span className={`min-w-0 flex-1 truncate text-sm ${item.unreadByAdmin ? "font-bold" : "font-semibold"}`}>{item.name}</span>
+                      <span className="shrink-0 text-[11px] text-muted" title={formatDateTimeFa(item.lastActivityAt)}>
+                        {formatRelativeFa(item.lastActivityAt)}
+                      </span>
+                    </span>
+                    <span className="truncate text-xs text-muted" dir="auto">
+                      {item.subject ? <span className="font-medium text-foreground/80">{item.subject} — </span> : null}
+                      {item.lastMessage ? `${item.lastMessage.from === "admin" ? "شما: " : ""}${item.lastMessage.text || "📎 فایل"}` : ""}
+                    </span>
+                    <span className="flex flex-wrap items-center gap-1">
+                      <Pill tone={STATUS_TONE[item.status]}>{STATUS_LABEL[item.status]}</Pill>
+                      {item.priority !== "normal" ? <Pill tone={PRIORITY_TONE[item.priority]}>{PRIORITY_LABEL[item.priority]}</Pill> : null}
+                      {item.automated ? <Pill tone="info">خودکار</Pill> : null}
+                      {item.source === "landing" ? <Pill tone="info">سایت</Pill> : null}
+                      {assignee ? <span className="text-[11px] text-muted">· {assignee}</span> : null}
+                      {item.assignedTo && item.assignedTo === me?._id ? <span className="text-[11px] text-accent">(من)</span> : null}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+      <div className="border-t border-border/50 px-3 py-2">
+        <PaginationBar pagination={data?.pagination} onPage={setPage} />
+      </div>
+    </aside>
+  ) : (
+    <aside className={`min-h-0 flex-col items-center gap-2 border-border/50 py-3 lg:flex lg:border-e ${ticket ? "hidden" : "flex"}`} aria-label="فهرست گفتگوها (جمع‌شده)">
+      <Button isIconOnly size="sm" variant="ghost" aria-label="نمایش فهرست گفتگوها" onPress={() => toggle("list")}>
+        <SidebarRight size={18} />
+      </Button>
+      {summary?.unread ? (
+        <span className="rounded-full bg-danger px-1.5 text-[11px] font-bold text-white" title="خوانده‌نشده">{toPersianDigits(summary.unread)}</span>
+      ) : null}
+    </aside>
+  );
 
-      <div className="grid overflow-hidden rounded-2xl border border-border/60 bg-surface lg:h-[calc(100dvh-220px)] lg:min-h-[560px] lg:grid-cols-[360px_1fr]">
-        <aside className={`min-h-0 flex-col border-border/50 lg:flex lg:border-e ${ticket ? "hidden" : "flex"}`} aria-label="فهرست گفتگوها">
-          <div className="space-y-2 border-b border-border/50 p-3">
-            <SearchField value={search} onChange={(value) => { setSearch(value); setPage(1); }} placeholder="کد، نام، موبایل، برچسب یا متن پیام…" />
-            <SegmentedTabs
-              size="sm"
-              value={folder}
-              onChange={changeFolder}
-              items={[
-                { id: "active", label: "فعال", count: summary ? summary.open + summary.answered : undefined },
-                { id: "unread", label: "خوانده‌نشده", count: summary?.unread },
-                { id: "mine", label: "مال من", count: summary?.mine },
-                { id: "unassigned", label: "بی‌مسئول", count: summary?.unassigned },
-                { id: "closed", label: "بسته" },
-                { id: "all", label: "همه" },
-              ]}
-            />
-            <div className="grid grid-cols-2 gap-2">
-              <NativeSelect ariaLabel="اولویت" value={priority} onChange={(value) => { setPriority(value as "" | SupportPriority); setPage(1); }} options={[{ value: "", label: "همهٔ اولویت‌ها" }, ...SUPPORT_PRIORITIES.map((id) => ({ value: id, label: PRIORITY_LABEL[id] }))]} />
-              <NativeSelect ariaLabel="موضوع" value={category} onChange={(value) => { setCategory(value as "" | SupportCategory); setPage(1); }} options={[{ value: "", label: "همهٔ موضوع‌ها" }, ...SUPPORT_CATEGORIES.map((id) => ({ value: id, label: CATEGORY_LABEL[id] }))]} />
-              <NativeSelect ariaLabel="منبع" value={source} onChange={(value) => { setSource(value as "" | "landing" | "app" | "admin"); setPage(1); }} options={[{ value: "", label: "همهٔ منابع" }, { value: "app", label: "اپ" }, { value: "landing", label: "فرم سایت" }, { value: "admin", label: "شروع‌شده توسط ادمین" }]} />
-              <NativeSelect ariaLabel="مرتب‌سازی" value={sort} onChange={(value) => setSort(value as "" | "oldest" | "priority")} options={[{ value: "", label: "تازه‌ترین" }, { value: "priority", label: "اولویت" }, { value: "oldest", label: "قدیمی‌ترین" }]} />
-            </div>
-          </div>
-          <div className="min-h-0 flex-1 overflow-y-auto">
-            {loading && !data ? (
-              <div className="p-3">
-                <SkeletonRows rows={6} />
-              </div>
-            ) : !data || data.items.length === 0 ? (
-              <EmptyState title="گفتگویی پیدا نشد" description={folder === "active" ? "همهٔ گفتگوها پاسخ داده یا بسته شده‌اند." : undefined} />
-            ) : (
-              <ul>
-                {data.items.map((item) => {
-                  const assignee = item.assignedTo ? admins.find((admin) => admin._id === item.assignedTo)?.name : null;
-                  return (
-                    <li key={item._id}>
-                      <button
-                        type="button"
-                        onClick={() => select(item._id)}
-                        aria-current={item._id === selectedId ? "true" : undefined}
-                        className={`flex w-full flex-col gap-1 border-b border-border/40 px-3 py-2.5 text-start transition hover:bg-surface-secondary ${item._id === selectedId ? "bg-accent/8" : ""}`}
-                      >
-                        <span className="flex items-center gap-2">
-                          {item.unreadByAdmin ? <span className="size-2 shrink-0 rounded-full bg-danger" aria-label="خوانده‌نشده" /> : null}
-                          <span className={`min-w-0 flex-1 truncate text-sm ${item.unreadByAdmin ? "font-bold" : "font-semibold"}`}>{item.name}</span>
-                          <span className="shrink-0 text-[11px] text-muted" title={formatDateTimeFa(item.lastActivityAt)}>
-                            {formatRelativeFa(item.lastActivityAt)}
-                          </span>
-                        </span>
-                        <span className="truncate text-xs text-muted" dir="auto">
-                          {item.subject ? <span className="font-medium text-foreground/80">{item.subject} — </span> : null}
-                          {item.lastMessage ? `${item.lastMessage.from === "admin" ? "شما: " : ""}${item.lastMessage.text || "📎 فایل"}` : ""}
-                        </span>
-                        <span className="flex flex-wrap items-center gap-1">
-                          <Pill tone={STATUS_TONE[item.status]}>{STATUS_LABEL[item.status]}</Pill>
-                          {item.priority !== "normal" ? <Pill tone={PRIORITY_TONE[item.priority]}>{PRIORITY_LABEL[item.priority]}</Pill> : null}
-                          <Pill>{CATEGORY_LABEL[item.category]}</Pill>
-                          {item.source === "landing" ? <Pill tone="info">سایت</Pill> : null}
-                          {assignee ? <span className="text-[11px] text-muted">· {assignee}</span> : null}
-                          {item.assignedTo && item.assignedTo === me?._id ? <span className="text-[11px] text-accent">(من)</span> : null}
-                        </span>
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
-          <div className="border-t border-border/50 px-3 py-2">
-            <PaginationBar pagination={data?.pagination} onPage={setPage} />
-          </div>
-        </aside>
+  const inbox = (
+    <div className={`flex min-h-0 flex-col overflow-hidden rounded-2xl border border-border/60 bg-surface ${layout.full ? "flex-1" : "lg:h-[calc(100dvh-200px)] lg:min-h-[560px]"}`}>
+      <div className="flex items-center gap-1 border-b border-border/50 px-2 py-1.5">
+        <Button isIconOnly size="sm" variant="ghost" className="hidden lg:inline-flex" aria-label={layout.list ? "جمع کردن فهرست" : "نمایش فهرست"} aria-pressed={layout.list} onPress={() => toggle("list")}>
+          <SidebarRight size={18} />
+        </Button>
+        <span className="flex items-center gap-1.5 px-1 text-xs text-muted" title={live ? "به‌روزرسانی زنده فعال است" : "اتصال زنده برقرار نیست؛ هر چند ثانیه به‌روز می‌شود"}>
+          <span className={`size-2 rounded-full ${live ? "bg-success" : "bg-warning"}`} />
+          {live ? "زنده" : "در حال اتصال…"}
+        </span>
+        <span className="flex-1" />
+        <Button isIconOnly size="sm" variant="ghost" className="hidden lg:inline-flex" aria-label={layout.context ? "جمع کردن اطلاعات کاربر" : "نمایش اطلاعات کاربر"} aria-pressed={layout.context} onPress={() => toggle("context")}>
+          <SidebarLeft size={18} />
+        </Button>
+        <Button isIconOnly size="sm" variant="ghost" aria-label={layout.full ? "خروج از تمام‌صفحه" : "تمام‌صفحه"} onPress={() => toggle("full")}>
+          {layout.full ? <CloseSquare size={18} /> : <Maximize4 size={18} />}
+        </Button>
+      </div>
+      <div className={`grid min-h-0 flex-1 ${layout.list ? "lg:grid-cols-[minmax(280px,340px)_1fr]" : "lg:grid-cols-[48px_1fr]"}`}>
+        {listPanel}
         <section className={`min-h-[70dvh] lg:block lg:min-h-0 ${ticket ? "block" : "hidden"}`}>
           {ticket ? (
             <ConversationPane
@@ -560,8 +659,8 @@ export function AdminSupportPage() {
               onBack={() => select(null)}
               onOpenTicket={(id) => select(id)}
               onManageCanned={() => setCannedOpen(true)}
-              showContext={showContext}
-              onToggleContext={() => setShowContext((value) => !value)}
+              showContext={layout.context}
+              onToggleContext={() => toggle("context")}
             />
           ) : (
             <div className="flex h-full flex-col items-center justify-center gap-2 p-8 text-center text-sm text-muted">
@@ -573,6 +672,53 @@ export function AdminSupportPage() {
           )}
         </section>
       </div>
+    </div>
+  );
+
+  return (
+    <div className="space-y-5">
+      {layout.full ? (
+        createPortal(
+        <div className="fixed inset-0 z-[60] flex flex-col gap-2 bg-background p-2 sm:p-3" role="region" aria-label="پشتیبانی — تمام‌صفحه">
+          <div className="flex flex-wrap items-center gap-2 px-1">
+            <Messages2 size={20} variant="Bold" className="text-accent" />
+            <span className="font-bold">پشتیبانی</span>
+            <Pill tone={summary?.unread ? "danger" : "neutral"}>{toPersianDigits(summary?.unread ?? 0)} خوانده‌نشده</Pill>
+            <Pill tone={summary?.open ? "warning" : "neutral"}>{toPersianDigits(summary?.open ?? 0)} در انتظار</Pill>
+            <span className="flex-1" />
+            <div className="flex flex-wrap items-center gap-2">{headerActions}</div>
+          </div>
+          {inbox}
+        </div>,
+        document.body,
+        )
+      ) : (
+        <>
+          <AdminPageHeader
+            title="پشتیبانی"
+            description="گفتگو با کاربران، زنده و یک‌جا: پاسخ، یادداشت داخلی، سپردن، اولویت، پاسخ آماده و پیام‌های خودکار."
+            icon={<Messages2 size={22} variant="Bold" />}
+            actions={headerActions}
+          />
+
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+            <StatTile label="خوانده‌نشده" value={summary?.unread ?? 0} tone={summary?.unread ? "danger" : "success"} icon={<NotificationIcon size={20} />} />
+            <StatTile label="در انتظار پاسخ" value={summary?.open ?? 0} tone={summary?.open ? "warning" : "success"} icon={<Messages2 size={20} />} />
+            <StatTile label="سپرده به من" value={summary?.mine ?? 0} tone="accent" icon={<UserTick size={20} />} />
+            <StatTile label="بدون مسئول" value={summary?.unassigned ?? 0} tone={summary?.unassigned ? "warning" : "neutral"} icon={<Profile2User size={20} />} />
+            <StatTile label="فوری و مهم" value={summary?.urgent ?? 0} tone={summary?.urgent ? "danger" : "neutral"} icon={<Flash size={20} />} />
+            <StatTile
+              label="رضایت کاربران"
+              value={summary?.ratingAverage != null ? `${toPersianDigits(summary.ratingAverage)} از ۵` : "—"}
+              hint={summary?.ratingCount ? `${toPersianDigits(summary.ratingCount)} امتیاز` : undefined}
+              tone="info"
+              icon={<Star1 size={20} />}
+            />
+          </div>
+
+          {inbox}
+        </>
+      )}
 
       <StartConversationDialog
         open={composeOpen}
@@ -585,6 +731,7 @@ export function AdminSupportPage() {
         }}
       />
       <CannedRepliesDialog open={cannedOpen} onOpenChange={setCannedOpen} replies={canned} onChanged={loadCanned} />
+      <AutoMessagesDialog open={autoOpen} onOpenChange={setAutoOpen} />
     </div>
   );
 }
