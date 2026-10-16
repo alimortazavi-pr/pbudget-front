@@ -177,6 +177,10 @@ export function GetStartedPage() {
 
   async function handleRegister(e?: FormEvent) {
     e?.preventDefault();
+    if (!firstName.trim() || !lastName.trim()) {
+      showToast(t("auth.nameRequired"));
+      return;
+    }
     if (password.trim().length < 6) {
       showToast(t("auto.k19c70f8d7e"));
       return;
@@ -184,8 +188,8 @@ export function GetStartedPage() {
     setLoading(true);
     try {
       const data = await authApi.signUp({
-        firstName,
-        lastName,
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
         mobile,
         password: password.trim(),
       });

@@ -4,6 +4,7 @@ export const authMessages: MessageTree = {
   stepMobileTitle: "ورود یا ثبت‌نام",
   stepMobileSub: "شماره موبایل خود را وارد کنید.",
   stepRegisterTitle: "ساخت حساب",
+  nameRequired: "نام و نام خانوادگی را وارد کنید.",
   stepRegisterSub: "اطلاعات خود را تکمیل کنید.",
   stepSigninTitle: "خوش برگشتی",
   stepSigninSub: "با رمز عبور یا کد تلگرام وارد شوید.",
