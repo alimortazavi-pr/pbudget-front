@@ -18,7 +18,7 @@ import { PATHS } from "@/common/constants";
 import { usePendingInvitesCount } from "@/common/hooks/usePendingInvitesCount";
 import { useSupportUnread } from "@/common/hooks/useSupportUnread";
 import { AppLogo } from "@/components/common/brand/AppLogo";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
 
 export function ShellSidebar() {

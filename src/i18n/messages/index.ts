@@ -1,10 +1,53 @@
-import type { Language } from "../types";
-import { messages as faMessages } from "./fa";
-import { messages as enMessages } from "./en";
-import { messages as arMessages } from "./ar";
+import type { MessageTree } from "../types";
+import { flattenMessages } from "../flatten";
+import { commonMessages } from "./common";
+import { navMessages } from "./nav";
+import { dashboardMessages } from "./dashboard";
+import { projectsMessages } from "./projects";
+import { debtsMessages } from "./debts";
+import { adminMessages } from "./admin";
+import { planningMessages } from "./planning";
+import { categoriesMessages } from "./categories";
+import { budgetMessages } from "./budget";
+import { pageHeroMessages } from "./pageHero";
+import { downloadMessages } from "./download";
+import { landingMessages } from "./landing";
+import { landingUiMessages } from "./landingUi";
+import { brandMessages } from "./brand";
+import { pagesMessages } from "./pages";
+import { authMessages } from "./auth";
+import { autoMessages } from "./auto";
+import { errorsMessages } from "./errors";
+import { changelogMessages } from "./changelog";
 
-export const allMessages: Record<Language, Record<string, string>> = {
-  fa: faMessages,
-  en: enMessages,
-  ar: arMessages,
+function merge(...trees: MessageTree[]): Record<string, string> {
+  return Object.assign({}, ...trees.map((t) => flattenMessages(t)));
+}
+
+const autoFlat = Object.fromEntries(
+  Object.entries(autoMessages).map(([k, v]) => [`auto.${k}`, v]),
+);
+
+export const messages = {
+  ...merge(
+    { nav: navMessages },
+    { common: commonMessages },
+    { dashboard: dashboardMessages },
+    { projects: projectsMessages },
+    { debts: debtsMessages },
+    { admin: adminMessages },
+    { planning: planningMessages },
+    { categories: categoriesMessages },
+    { budget: budgetMessages },
+    { pageHero: pageHeroMessages },
+    { download: downloadMessages },
+    { landing: landingMessages },
+    { landingUi: landingUiMessages },
+    { brand: brandMessages },
+    { pages: pagesMessages },
+    { auth: authMessages },
+    { errors: errorsMessages },
+    { changelog: changelogMessages },
+  ),
+  ...autoFlat,
 };

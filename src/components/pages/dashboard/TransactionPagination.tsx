@@ -5,7 +5,7 @@ import { Input, Pagination } from "@heroui/react";
 
 import { AppSelect } from "@/components/common/form/AppControls";
 
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 import { useLocalizedDate } from "@/i18n/hooks/useLocalizedDate";
 
 export const PAGE_SIZES = [20, 30, 50, 100] as const;

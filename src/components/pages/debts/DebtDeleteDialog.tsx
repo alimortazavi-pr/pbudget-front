@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Button, Modal, Radio, RadioGroup } from "@heroui/react";
 
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 /**
  * Deleting a debt is about the record, not the money: by default the linked

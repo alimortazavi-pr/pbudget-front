@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 import { useMemo } from "react";
 import Link from "next/link";

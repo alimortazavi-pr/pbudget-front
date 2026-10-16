@@ -12,7 +12,6 @@ import { TourProvider } from "./TourProvider";
 import { VersionProvider } from "./VersionProvider";
 import { AppShell } from "@/components/common/layout/AppShell";
 import { PwaInstallPrompt } from "@/components/common/PwaInstallPrompt";
-import { LanguageProvider } from "./LanguageProvider";
 import { AppModeProvider } from "./AppModeProvider";
 import { MoneyDisplayBoundary } from "./MoneyDisplayBoundary";
 import { Suspense } from "react";
@@ -24,7 +23,6 @@ export const ClientProvider: FC<PropsWithChildren> = ({ children }) => {
     <ReduxProvider>
       <MoneyDisplayBoundary>
         <ThemeProvider>
-          <LanguageProvider>
             <AppModeProvider>
               <MobileOverlayProvider>
                 <VersionProvider>
@@ -43,7 +41,6 @@ export const ClientProvider: FC<PropsWithChildren> = ({ children }) => {
                 </VersionProvider>
               </MobileOverlayProvider>
             </AppModeProvider>
-          </LanguageProvider>
         </ThemeProvider>
       </MoneyDisplayBoundary>
     </ReduxProvider>

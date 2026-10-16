@@ -12,7 +12,7 @@ import { AiChatPanel } from "@/components/pages/ai/AiChatPanel";
 import { AiInsightsPanel } from "@/components/pages/ai/AiInsightsPanel";
 import { AiPlanPanel } from "@/components/pages/ai/AiPlanPanel";
 import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 export function AiAssistantPage() {
   const { t } = useTranslation();

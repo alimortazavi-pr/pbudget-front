@@ -20,8 +20,8 @@ import {
 
 import { AppSlider } from "@/components/common/form/AppControls";
 import { AnimatedNumber } from "@/components/common/motion/AnimatedNumber";
-import { useTranslation } from "@/components/providers/LanguageProvider";
-import { formatLocalizedDigits } from "@/i18n/format-localized-digits";
+import { useTranslation } from "@/i18n";
+import { toPersianDigits } from "@/common/utils/persian-digits";
 import { LEARN_ARTICLES } from "@/content/learn";
 import { parseQuickEntry } from "@/common/utils/quick-entry";
 
@@ -44,8 +44,8 @@ function glow(event: React.PointerEvent<HTMLElement>) {
 /* ------------------------------------------------------------------ bento */
 
 export function BentoShowcase() {
-  const { t, language } = useTranslation();
-  const digits = (value: string) => formatLocalizedDigits(value, language);
+  const { t } = useTranslation();
+  const digits = (value: string) => toPersianDigits(value);
   const circumference = 2 * Math.PI * 40;
   const categories = [
     { label: t("landingUi.mockTx2"), value: 85, color: "#f59e0b" },
@@ -226,8 +226,8 @@ export function PersonaSection() {
 /* -------------------------------------------------------------- simulator */
 
 export function SavingsSimulator({ href }: { href: string }) {
-  const { t, language } = useTranslation();
-  const digits = (value: string) => formatLocalizedDigits(value, language);
+  const { t } = useTranslation();
+  const digits = (value: string) => toPersianDigits(value);
   const [monthly, setMonthly] = useState(10);
   const [goal, setGoal] = useState(300);
 
@@ -398,25 +398,15 @@ export function AnnouncementBar({ href }: { href: string }) {
 
 /* ----------------------------------------------------------- typing demo */
 
-const DEMOS: Record<string, { texts: string[]; categories: { _id: string; title: string }[] }> = {
-  fa: {
-    texts: ["۲۵۰ هزار خوراک ناهار", "حقوق ۴۵ میلیون", "اسنپ ۸۵ هزار حمل و نقل"],
-    categories: [{ _id: "1", title: "خوراک" }, { _id: "2", title: "حقوق" }, { _id: "3", title: "حمل و نقل" }],
-  },
-  en: {
-    texts: ["250k food lunch", "salary 45m", "taxi 85k transport"],
-    categories: [{ _id: "1", title: "food" }, { _id: "2", title: "salary" }, { _id: "3", title: "transport" }],
-  },
-  ar: {
-    texts: ["250 ألف طعام غداء", "راتب 45 مليون", "تاكسي 85 ألف نقل"],
-    categories: [{ _id: "1", title: "طعام" }, { _id: "2", title: "راتب" }, { _id: "3", title: "نقل" }],
-  },
+const DEMO = {
+  texts: ["۲۵۰ هزار خوراک ناهار", "حقوق ۴۵ میلیون", "اسنپ ۸۵ هزار حمل و نقل"],
+  categories: [{ _id: "1", title: "خوراک" }, { _id: "2", title: "حقوق" }, { _id: "3", title: "حمل و نقل" }],
 };
 
 /** Types example sentences and parses them with the real quick-entry parser. */
 export function TypingDemo() {
-  const { t, language } = useTranslation();
-  const demo = DEMOS[language] ?? DEMOS.fa;
+  const { t } = useTranslation();
+  const demo = DEMO;
   const [index, setIndex] = useState(0);
   const [typed, setTyped] = useState("");
 
@@ -440,7 +430,7 @@ export function TypingDemo() {
   }, [index, demo]);
 
   const parsed = typed ? parseQuickEntry(typed, demo.categories) : null;
-  const digits = (value: string) => formatLocalizedDigits(value, language);
+  const digits = (value: string) => toPersianDigits(value);
 
   return (
     <section id="quick-entry" className="l3-stage scroll-mt-20 py-20 md:py-28">
@@ -475,8 +465,8 @@ export function TypingDemo() {
 
 /** A pinned scene: vertical scroll slides the app screens sideways. */
 export function AppTour() {
-  const { t, language } = useTranslation();
-  const digits = (value: string) => formatLocalizedDigits(value, language);
+  const { t } = useTranslation();
+  const digits = (value: string) => toPersianDigits(value);
   const bars = [42, 66, 38, 80, 54, 92, 70, 58, 84];
   const panels = [
     { id: "tourDash", accent: "#fb7185" },

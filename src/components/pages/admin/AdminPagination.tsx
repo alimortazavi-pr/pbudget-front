@@ -3,7 +3,7 @@
 import { Button } from "@heroui/react";
 
 import { toPersianDigits } from "@/common/utils";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 type AdminPaginationProps = {
   page: number;

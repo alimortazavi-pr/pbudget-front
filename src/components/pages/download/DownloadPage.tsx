@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
@@ -21,9 +21,8 @@ import { useAndroidAppAvailability } from "@/common/hooks/useAndroidAppAvailabil
 import { useBrandLabels } from "@/common/hooks/useBrandLabels";
 import { APP_NAME_FA } from "@/common/constants/brand";
 import { showToast } from "@/common/utils/toast";
-import { formatLocalizedDigits } from "@/i18n/format-localized-digits";
+import { toPersianDigits } from "@/common/utils/persian-digits";
 import { AppLogo } from "@/components/common/brand/AppLogo";
-import { LanguageSelector } from "@/components/common/layout/LanguageSelector";
 import { SiteFooterCredits } from "@/components/common/brand/SiteFooterCredits";
 import { useAppSelector } from "@/stores/hooks";
 import { isAuthSelector } from "@/stores/auth";
@@ -36,7 +35,7 @@ const STEP_INDICES = [0, 1, 2] as const;
 const MOCK_ROW_INDICES = [0, 1, 2] as const;
 
 export function DownloadPage() {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
   const { tagline } = useBrandLabels();
   const isAuth = useAppSelector(isAuthSelector);
   const appHomeHref = isAuth ? PATHS.HOME : PATHS.GET_STARTED;
@@ -85,7 +84,6 @@ export function DownloadPage() {
           <AppLogo size={44} />
         </Link>
         <div className="flex gap-2">
-          <LanguageSelector />
           <Button variant="ghost" size="sm" onPress={() => void copyLink()}>
             <Copy size={16} />
             {t("download.copyLink")}
@@ -138,7 +136,7 @@ export function DownloadPage() {
             )}
             <p className="text-center text-xs text-muted sm:text-start">
               {t("download.versionInfo", {
-                version: formatLocalizedDigits(appVersion, language),
+                version: toPersianDigits(appVersion),
               })}
             </p>
           </div>
@@ -221,7 +219,7 @@ export function DownloadPage() {
             {STEP_INDICES.map((index) => (
               <li key={index} className="flex items-start gap-3 text-sm leading-7">
                 <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent/15 text-xs font-bold text-accent">
-                  {formatLocalizedDigits(index + 1, language)}
+                  {toPersianDigits(index + 1)}
                 </span>
                 <span className="text-muted">{t(`download.steps.${index}`)}</span>
               </li>

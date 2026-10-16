@@ -20,7 +20,7 @@ import { AppSearch } from "@/components/common/form/AppControls";
 import { FormCategoryComboBox, FormPriceInput, FormSelect } from "@/components/common/form/FormFields";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { FilterDatePicker } from "@/components/pages/dashboard/FilterDatePicker";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 import type { ICategory } from "@/common/interfaces/category.interface";
 import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";

@@ -1,6 +1,5 @@
 import { toPersianDigits } from "./persian-digits";
 import { AMOUNT_MASK, areAmountsHidden } from "./amount-privacy";
-import { getActiveLanguage } from "@/i18n/translate";
 import {
   currencyShortLabel,
   resolveBudgetCurrency,
@@ -65,11 +64,8 @@ export function formatCompactAmount(amount: number, currency?: UserCurrency | nu
   const converted = shouldConvertToman(resolved) ? tomanToDisplayAmount(amount) : amount;
   const abs = Math.abs(converted);
   if (abs < 1_000_000_000) return formatAmountOnly(amount, currency);
-  const language = getActiveLanguage();
   const [divisor, word] =
-    abs >= 1_000_000_000_000
-      ? [1_000_000_000_000, language === "en" ? "T" : language === "ar" ? "تريليون" : "تریلیون"]
-      : [1_000_000_000, language === "en" ? "B" : language === "ar" ? "مليار" : "میلیارد"];
+    abs >= 1_000_000_000_000 ? [1_000_000_000_000, "تریلیون"] : [1_000_000_000, "میلیارد"];
   const short = (converted / divisor).toFixed(2).replace(/\.?0+$/, "");
-  return `${toPersianDigits(short)}${language === "en" ? "" : " "}${word}`;
+  return `${toPersianDigits(short)} ${word}`;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -12,7 +12,7 @@ import type { ILandingContent } from "@/common/interfaces/landing.interface";
 import { useLandingContent } from "./useLandingContent";
 import { SiteFooterCredits } from "@/components/common/brand/SiteFooterCredits";
 import { LandingPricingSection } from "./LandingPricingSection";
-import { formatLocalizedDigits } from "@/i18n/format-localized-digits";
+import { toPersianDigits } from "@/common/utils/persian-digits";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { useAppSelector } from "@/stores/hooks";
 import { isAuthSelector } from "@/stores/auth";
@@ -25,7 +25,7 @@ export function PricingPage({
 }: {
   initialContent?: ILandingContent;
 }) {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
   const { content } = useLandingContent(initialContent);
   const isAuth = useAppSelector(isAuthSelector);
   const router = useRouter();
@@ -36,7 +36,7 @@ export function PricingPage({
     void subscriptionApi.fetchPublicSubscriptionPlans().then(setLivePlans).catch(() => setLivePlans(null));
   }, []);
 
-  const digits = (value: string) => formatLocalizedDigits(value, language);
+  const digits = (value: string) => toPersianDigits(value);
   // Live plans come from the subscription system, so the copy around them must
   // not promise "everything free" (the old CMS text did).
   const pricing = livePlans && livePlans.length > 0

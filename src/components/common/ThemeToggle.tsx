@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 import { Button } from "@heroui/react";
 import { Moon, Sun1 } from "iconsax-reactjs";

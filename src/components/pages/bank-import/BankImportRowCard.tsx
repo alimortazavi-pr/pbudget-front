@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 import { Button, Checkbox } from "@heroui/react";
 import { Edit2 } from "iconsax-reactjs";

@@ -10,7 +10,7 @@ import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { FormCategoryComboBox, FormSelect } from "@/components/common/form/FormFields";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 export type AnalysisFilterValue = { category: string; paymentCard: string; type: AnalyticsTypeFilter; compare: boolean };
 

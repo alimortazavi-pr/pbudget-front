@@ -12,7 +12,7 @@ import { formatAmountOnly, formatCompactAmount, formatPriceWithCurrency } from "
 import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 import { OverflowReveal } from "@/components/common/ui/OverflowReveal";
 import { AnimatedNumber } from "@/components/common/motion/AnimatedNumber";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 import { useLocalizedDate } from "@/i18n/hooks/useLocalizedDate";
 import { BudgetType } from "@/types/enums";
 

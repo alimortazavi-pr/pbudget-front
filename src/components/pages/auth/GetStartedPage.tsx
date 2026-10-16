@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 import Link from "next/link";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
@@ -33,7 +33,6 @@ import {
 } from "@/common/utils/post-auth";
 import { showToast } from "@/common/utils/toast";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
-import { LanguageSelector } from "@/components/common/layout/LanguageSelector";
 import { AppLogo } from "@/components/common/brand/AppLogo";
 import { SiteFooterCredits } from "@/components/common/brand/SiteFooterCredits";
 import { FormInput } from "@/components/common/form/FormFields";
@@ -234,7 +233,6 @@ export function GetStartedPage() {
               </Link>
             </div>
             <div className="flex items-center gap-2">
-              <LanguageSelector />
               <ThemeToggle />
             </div>
           </div>

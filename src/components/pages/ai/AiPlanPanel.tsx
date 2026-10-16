@@ -9,7 +9,7 @@ import type { AiObligationKind, AiPlanResponse, AiStatus } from "@/common/interf
 import { formatPrice, toPersianDigits } from "@/common/utils";
 import { JALALI_MONTHS, getJalaliNow } from "@/common/utils/jalali-date";
 import { showErrorToast } from "@/common/utils/toast";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 const KIND_KEY: Record<AiObligationKind, string> = {
   installment: "kindInstallment",

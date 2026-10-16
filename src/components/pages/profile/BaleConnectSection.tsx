@@ -5,7 +5,7 @@ import { Button } from "@heroui/react";
 
 import * as profileApi from "@/common/api/profile";
 import { showErrorToast, showToast } from "@/common/utils/toast";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 export function BaleConnectSection() {
   const { t } = useTranslation();

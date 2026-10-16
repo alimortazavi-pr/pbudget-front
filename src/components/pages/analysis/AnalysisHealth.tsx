@@ -6,7 +6,7 @@ import type { AnalyticsReport } from "@/common/interfaces/analytics.interface";
 import { formatPrice } from "@/common/utils";
 import { moneyDisplayUnitLabel } from "@/common/utils/money-display";
 import { AnimatedNumber } from "@/components/common/motion/AnimatedNumber";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 import { useLocalizedDate } from "@/i18n/hooks/useLocalizedDate";
 
 type Tip = { id: string; tone: "good" | "warn" | "bad"; text: string };

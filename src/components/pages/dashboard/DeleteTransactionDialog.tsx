@@ -11,7 +11,7 @@ import {
   AppModalDialog,
   AppModalHeader,
 } from "@/components/common/ui/AppModal";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 import { BudgetType } from "@/types/enums";
 
 type DeleteTransactionDialogProps = {

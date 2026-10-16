@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 import type { UserCurrency, UserDateCalendar } from "@/common/constants/user-preferences";
 import { moneyDisplayUnitLabel } from "@/common/utils/money-display";
 

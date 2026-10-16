@@ -4,7 +4,7 @@ import { getTranslator } from "@/i18n";
 const t = getTranslator();
 
 import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";

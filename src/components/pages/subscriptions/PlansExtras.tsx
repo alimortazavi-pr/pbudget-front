@@ -6,7 +6,7 @@ import { Flash, MessageQuestion, SecuritySafe, Shield, Timer1 } from "iconsax-re
 
 import { PATHS } from "@/common/constants/PATHS";
 import { toPersianDigits } from "@/common/utils";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 export function PlansTrustBar() {
   const { t } = useTranslation();

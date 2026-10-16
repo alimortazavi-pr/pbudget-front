@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 import type { AnalyticsReport } from "@/common/interfaces/analytics.interface";
 import { paymentCardSubtitle } from "@/common/utils/payment-card";

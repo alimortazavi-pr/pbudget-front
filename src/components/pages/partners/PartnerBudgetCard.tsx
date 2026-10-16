@@ -9,7 +9,7 @@ import { formatBudgetDate } from "@/common/utils/calendar-date";
 import { formatPriceWithCurrency } from "@/common/utils/format-currency";
 import { resolveBudgetCurrency, resolveBudgetDateCalendar } from "@/common/constants/user-preferences";
 import { Link1 } from "iconsax-reactjs";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 import { BudgetType } from "@/types/enums";
 
 type PartnerBudgetCardProps = {

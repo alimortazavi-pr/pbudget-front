@@ -32,12 +32,10 @@ import type { SubscriptionPlan } from "@/common/interfaces/subscription.interfac
 import { AppLogo } from "@/components/common/brand/AppLogo";
 import { SiteFooterCredits } from "@/components/common/brand/SiteFooterCredits";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
-import { LanguageSelector } from "@/components/common/layout/LanguageSelector";
-import { useTranslation } from "@/components/providers/LanguageProvider";
-import { formatLocalizedDigits } from "@/i18n/format-localized-digits";
+import { useTranslation } from "@/i18n";
+import { toPersianDigits } from "@/common/utils/persian-digits";
 import { AnimatedNumber } from "@/components/common/motion/AnimatedNumber";
 import type { CSSProperties } from "react";
-import { landingContactLabels, landingWhyTitle } from "@/i18n/localize-landing-content";
 import { useAppSelector } from "@/stores/hooks";
 import { isAuthSelector } from "@/stores/auth";
 import { LandingContactForm } from "./LandingContactForm";
@@ -197,8 +195,8 @@ function Words({ text, from = 0 }: { text: string; from?: number }) {
 
 /** The exploded dashboard that separates into floating layers as you scroll. */
 function HeroStack() {
-  const { t, language } = useTranslation();
-  const digits = (value: string) => formatLocalizedDigits(value, language);
+  const { t } = useTranslation();
+  const digits = (value: string) => toPersianDigits(value);
   const bars = [42, 66, 38, 80, 54, 92, 70, 58];
   const rows = [
     { label: t("landingUi.mockTx1"), amount: "+45,000,000", income: true },
@@ -260,8 +258,8 @@ function HeroStack() {
 
 /** Four phone screens that cross-fade as the story scrolls. */
 function StoryScreens() {
-  const { t, language } = useTranslation();
-  const digits = (value: string) => formatLocalizedDigits(value, language);
+  const { t } = useTranslation();
+  const digits = (value: string) => toPersianDigits(value);
   const bars = [42, 66, 38, 80, 54, 92, 70];
   const labels = [t("landingUi.mockTx1"), t("landingUi.mockTx2"), t("landingUi.mockTx3"), t("landingUi.mockTx4")];
   const colors = ["#fb7185", "#a78bfa", "#2dd4bf", "#fbbf24"];
@@ -356,15 +354,19 @@ function PhoneDevice({ children }: { children: React.ReactNode }) {
 }
 
 export function LandingPage({ initialContent }: { initialContent?: ILandingContent }) {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
   const { content } = useLandingContent(initialContent);
   const isAuth = useAppSelector(isAuthSelector);
   const scrolled = useScrolled();
   const [menuOpen, setMenuOpen] = useState(false);
   const livePlans = useLivePlans();
   const { apkAvailable } = useAndroidAppAvailability();
-  const contactLabels = landingContactLabels(t);
-  const digits = (value: string) => formatLocalizedDigits(value, language);
+  const contactLabels = {
+    email: t("landing.contact.emailLabel"),
+    telegram: t("landing.contact.telegramLabel"),
+    phone: t("landing.contact.phoneLabel"),
+  };
+  const digits = (value: string) => toPersianDigits(value);
   useScrollScenes();
 
   const primaryHref = isAuth ? PATHS.HOME : PATHS.GET_STARTED;
@@ -393,8 +395,7 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
       }));
     }
     return content.pricing.plans;
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- digits depends on language only
-  }, [livePlans, content.pricing.plans, language, t]);
+      }, [livePlans, content.pricing.plans, t]);
 
   const navItems = content.nav.filter((item) => item.id !== "about");
   const trust = [
@@ -435,7 +436,6 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
 
           <div className="flex items-center gap-2">
             <div className="hidden items-center gap-1 sm:flex">
-              <LanguageSelector />
               <ThemeToggle />
             </div>
             {!isAuth ? (
@@ -486,7 +486,6 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
             </nav>
             <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-4">
               <div className="flex items-center gap-1">
-                <LanguageSelector />
                 <ThemeToggle />
               </div>
               <Link href={primaryHref} className="lx-btn lx-btn-primary lx-btn-sm">
@@ -703,7 +702,7 @@ export function LandingPage({ initialContent }: { initialContent?: ILandingConte
         {/* ------------------------------------------------ why us */}
         <section id="why-us" className="scroll-mt-20 py-20 md:py-28">
           <div className="lx-container">
-            <SectionHeading eyebrow={t("landingUi.whyEyebrow")} title={landingWhyTitle(t)} />
+            <SectionHeading eyebrow={t("landingUi.whyEyebrow")} title={t("landing.hero.whyTitle")} />
             <div className={`mt-14 grid gap-4 ${gridCols(content.whyUs.length)}`}>
               {content.whyUs.map((item, index) => (
                 <div key={item.title} data-rise className="l3-card" onPointerMove={cardGlow}>

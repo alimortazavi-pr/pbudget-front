@@ -5,7 +5,7 @@ import { Switch } from "@heroui/react";
 
 import * as profileApi from "@/common/api/profile";
 import { showErrorToast, showToast } from "@/common/utils/toast";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { setProfile, userSelector } from "@/stores/profile";
 

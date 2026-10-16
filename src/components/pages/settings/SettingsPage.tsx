@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 import Link from "next/link";
 import { Call, MessageQuestion, Refresh } from "iconsax-reactjs";

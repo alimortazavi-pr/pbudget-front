@@ -7,7 +7,7 @@ import { Button, Input, Label, TextField } from "@heroui/react";
 import { Add, ArrangeVertical, Brush2, Crown, DocumentDownload, DocumentUpload, Edit2, Eye, GalleryAdd, Lock1, Save2, Trash } from "iconsax-reactjs";
 import Image from "next/image";
 
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
 import * as exportsApi from "@/common/api/custom-exports";
 import type { ExportCanvasElement, ExportColumn, ExportField, ExportSource, ExportTemplate } from "@/common/interfaces/export-template.interface";

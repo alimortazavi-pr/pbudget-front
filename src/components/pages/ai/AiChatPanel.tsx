@@ -8,7 +8,7 @@ import { sendAiChat } from "@/common/api/ai";
 import type { AiChatMessage, AiStatus } from "@/common/interfaces/ai.interface";
 import { showErrorToast } from "@/common/utils/toast";
 import { AiRichText } from "@/components/pages/ai/AiRichText";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 const STORAGE_KEY = "pb-ai-chat-v2";
 const MAX_STORED = 24;

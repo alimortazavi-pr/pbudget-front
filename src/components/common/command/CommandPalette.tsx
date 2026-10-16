@@ -27,7 +27,7 @@ import {
   PRIMARY_NAV_ITEMS,
 } from "@/components/common/layout/shell-nav";
 import { ADMIN_NAV_GROUPS } from "@/components/common/layout/admin-nav";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 import { useOptionalSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { useAppSelector } from "@/stores/hooks";

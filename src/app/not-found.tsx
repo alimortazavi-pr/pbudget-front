@@ -4,7 +4,7 @@ import Link from "next/link";
 import { buttonVariants } from "@heroui/styles";
 
 import { PATHS } from "@/common/constants";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 export default function NotFound() {
   const { t } = useTranslation();

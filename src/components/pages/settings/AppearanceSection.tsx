@@ -28,7 +28,7 @@ import {
 } from "@/common/theme/custom-theme";
 import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
 import { useAmountsHidden } from "@/components/providers/AmountPrivacyProvider";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 import { useTheme } from "@/components/providers/ThemeProvider";
 
 const RADIUS_ORDER: ThemeRadius[] = ["sharp", "soft", "default", "round"];

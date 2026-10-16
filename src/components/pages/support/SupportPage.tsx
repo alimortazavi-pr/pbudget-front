@@ -13,7 +13,7 @@ import { formatIsoDateTimeJalali } from "@/common/utils/jalali-date";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { AppSelect } from "@/components/common/form/AppControls";
 import { PageHeader } from "@/components/common/layout/PageHeader";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 const CATEGORIES: SupportCategory[] = ["billing", "bug", "account", "feature", "general"];
 const STATUS_COLOR: Record<SupportStatus, "warning" | "success" | "default"> = {

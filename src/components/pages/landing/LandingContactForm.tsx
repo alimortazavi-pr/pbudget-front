@@ -7,7 +7,7 @@ import { DirectboxSend } from "iconsax-reactjs";
 import { submitSiteContact } from "@/common/api/site";
 import { toEnglishDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 export function LandingContactForm() {
   const { t } = useTranslation();

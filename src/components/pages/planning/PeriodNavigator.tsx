@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowLeft2, ArrowRight2 } from "iconsax-reactjs";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 type PeriodNavigatorProps = {
   label: string;

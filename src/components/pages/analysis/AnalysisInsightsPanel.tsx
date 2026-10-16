@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 import type { AnalyticsInsight } from "@/common/interfaces/analytics.interface";
 

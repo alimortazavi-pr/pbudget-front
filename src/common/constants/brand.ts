@@ -1,4 +1,4 @@
-import { allMessages } from "@/i18n/messages";
+import { messages } from "@/i18n/messages";
 
 /** English product name — exports, metadata, bot API labels */
 export const APP_NAME_EN = "Paradise Desk";
@@ -9,10 +9,10 @@ export const APP_TAGLINE_KEY = "brand.tagline";
 export const APP_DESCRIPTION_KEY = "brand.description";
 
 /** Persian defaults for SSR/metadata (fa catalog) */
-export const APP_NAME_FA = allMessages.fa[APP_NAME_KEY];
-export const APP_SHORT_NAME_FA = allMessages.fa[APP_SHORT_NAME_KEY];
-export const APP_TAGLINE_FA = allMessages.fa[APP_TAGLINE_KEY];
-export const APP_DESCRIPTION_FA = allMessages.fa[APP_DESCRIPTION_KEY];
+export const APP_NAME_FA = messages[APP_NAME_KEY];
+export const APP_SHORT_NAME_FA = messages[APP_SHORT_NAME_KEY];
+export const APP_TAGLINE_FA = messages[APP_TAGLINE_KEY];
+export const APP_DESCRIPTION_FA = messages[APP_DESCRIPTION_KEY];
 
 export const APP_SHORT_NAME_EN = "P Desk";
 

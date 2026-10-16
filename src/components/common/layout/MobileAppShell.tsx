@@ -25,8 +25,7 @@ import {
   MOBILE_TAB_SIDE_ITEMS,
   PRIMARY_NAV_ITEMS,
 } from "./shell-nav";
-import { useTranslation } from "@/components/providers/LanguageProvider";
-import { LanguageSelector } from "./LanguageSelector";
+import { useTranslation } from "@/i18n";
 
 type MobileAppShellProps = {
   children: ReactNode;
@@ -129,7 +128,6 @@ export function MobileAppShell({
                 <InfoCircle size={20} />
               </Button>
               <ChangeAccountPopover />
-              <LanguageSelector />
               <div className="lg:hidden">
                 <ThemeToggle />
               </div>

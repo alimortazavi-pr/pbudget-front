@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 import type { AnalyticsFeatureSummary } from "@/common/interfaces/analytics.interface";
 import { formatPrice, toPersianDigits } from "@/common/utils";
 import { moneyDisplayUnitLabel } from "@/common/utils/money-display";

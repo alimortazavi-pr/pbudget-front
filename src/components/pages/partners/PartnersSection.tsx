@@ -3,7 +3,7 @@
 import { getTranslator } from "@/i18n";
 const t = getTranslator();
 
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "@heroui/react";

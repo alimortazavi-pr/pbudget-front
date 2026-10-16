@@ -11,7 +11,7 @@ import { getNowDateParts } from "@/common/utils/calendar-date";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { FormDatePicker, FormInput, FormPriceInput, FormTextArea } from "@/components/common/form/FormFields";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 export function DebtEditModal({
   debt,

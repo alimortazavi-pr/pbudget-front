@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { Button, Input, Label, Switch, TextField } from "@heroui/react";

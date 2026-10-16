@@ -2,7 +2,7 @@
 
 import { Button } from "@heroui/react";
 import { ArrowDown2 } from "iconsax-reactjs";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 type BudgetMoreToggleProps = {
   open: boolean;

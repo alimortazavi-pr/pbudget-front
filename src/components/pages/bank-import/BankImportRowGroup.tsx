@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 
 import { toPersianDigits } from "@/common/utils";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 import type { ImportRowGroup } from "./import-row-group.util";
 
 type BankImportRowGroupProps = {

@@ -9,7 +9,7 @@ import type { AiInsightImpact, AiInsightTone, AiInsightsResponse, AiStatus } fro
 import { formatPrice, toPersianDigits } from "@/common/utils";
 import { getJalaliNow } from "@/common/utils/jalali-date";
 import { showErrorToast } from "@/common/utils/toast";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 type PeriodId = "this" | "last" | "year";
 

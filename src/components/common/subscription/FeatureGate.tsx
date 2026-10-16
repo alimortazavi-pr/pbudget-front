@@ -7,7 +7,7 @@ import { Crown, Lock1, Refresh2 } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 import { SUBSCRIPTION_FEATURE_CATALOG, type SubscriptionFeatureKey } from "@/common/constants/subscription-features";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 import { FeaturePreview } from "@/components/common/subscription/FeaturePreview";
 import { StartTrialButton } from "@/components/common/subscription/TrialPromo";
 import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";

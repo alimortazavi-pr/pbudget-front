@@ -17,7 +17,7 @@ import { formatPlanPrice, formatPrice, toPersianDigits } from "@/common/utils";
 import { formatIsoDateJalali } from "@/common/utils/jalali-date";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
 import { PageHeader } from "@/components/common/layout/PageHeader";
 import { TrialActiveBanner, TrialCard } from "@/components/common/subscription/TrialPromo";

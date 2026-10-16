@@ -4,7 +4,7 @@ import { Calendar } from "iconsax-reactjs";
 
 import type { IDebt } from "@/common/interfaces/debt.interface";
 import { daysUntilDue, dueTone } from "@/common/utils/debt-due";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 const TONE_CLASS = {
   overdue: "bg-danger/12 text-danger",

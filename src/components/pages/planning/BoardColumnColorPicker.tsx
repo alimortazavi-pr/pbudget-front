@@ -1,7 +1,7 @@
 "use client";
 
 import { BOARD_COLUMN_COLORS } from "@/common/utils/board-colors";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 type BoardColumnColorPickerProps = {
   value: string;

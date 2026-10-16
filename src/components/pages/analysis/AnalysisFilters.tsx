@@ -3,7 +3,7 @@
 import { getTranslator } from "@/i18n";
 const t = getTranslator();
 
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 import { Button } from "@heroui/react";
 import { ArrowLeft2, ArrowRight2 } from "iconsax-reactjs";

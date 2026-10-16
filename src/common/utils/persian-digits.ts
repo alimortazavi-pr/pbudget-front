@@ -1,14 +1,12 @@
 import { tomanToDisplayAmount } from "./money-display";
 import { AMOUNT_MASK, areAmountsHidden } from "./amount-privacy";
-import { formatLocalizedDigits } from "@/i18n/format-localized-digits";
-import { getActiveLanguage } from "@/i18n/translate";
 
 const PERSIAN_DIGITS = "۰۱۲۳۴۵۶۷۸۹";
 const ARABIC_DIGITS = "٠١٢٣٤٥٦٧٨٩";
 
-/** Digits in the user's UI language (Persian, Arabic-Indic or Latin). */
+/** Latin digits → Persian digits. */
 export function toPersianDigits(value: string | number): string {
-  return formatLocalizedDigits(value, getActiveLanguage());
+  return String(value).replace(/\d/g, (d) => PERSIAN_DIGITS[Number(d)] ?? d);
 }
 
 /** Normalizes Persian and Arabic-Indic digits to ASCII. */

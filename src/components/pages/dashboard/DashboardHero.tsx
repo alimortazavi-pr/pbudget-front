@@ -18,7 +18,7 @@ import {
 import { getWalletBalance } from "@/common/utils/wallet-balances";
 import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 import { useLocalizedDate } from "@/i18n/hooks/useLocalizedDate";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 import { useAppSelector } from "@/stores/hooks";
 import { userSelector } from "@/stores/profile";
 

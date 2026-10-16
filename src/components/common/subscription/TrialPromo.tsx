@@ -10,7 +10,7 @@ import { PATHS } from "@/common/constants";
 import { toPersianDigits } from "@/common/utils";
 import { formatIsoDateJalali } from "@/common/utils/jalali-date";
 import { showErrorToast, showToast } from "@/common/utils/toast";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
 
 export function StartTrialButton({ variant = "primary", className = "" }: { variant?: "primary" | "secondary"; className?: string }) {

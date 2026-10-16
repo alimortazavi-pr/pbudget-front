@@ -1,4 +1,4 @@
-import { createTranslator } from "@/i18n";
+import { t } from "@/i18n";
 import { DownloadPage } from "@/components/pages/download/DownloadPage";
 import { APP_NAME_EN, APP_NAME_FA } from "@/common/constants/brand";
 import {
@@ -8,7 +8,6 @@ import {
   SITE_URL,
 } from "@/common/seo";
 
-const t = createTranslator("fa", true);
 const title = t("download.badge", { appName: APP_NAME_FA });
 const description =
   "دانلود مستقیم اپ اندروید میز پردیس برای مدیریت مالی شخصی، ثبت درآمد و هزینه، اقساط، چک، پروژه و برنامه‌ریزی با تقویم شمسی.";

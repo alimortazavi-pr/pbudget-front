@@ -69,7 +69,7 @@ type ShellNavRowProps = {
   badge?: number;
 };
 
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 function ShellNavRow({ item, active, className, onNavigate, badge }: ShellNavRowProps) {
   const { t } = useTranslation();

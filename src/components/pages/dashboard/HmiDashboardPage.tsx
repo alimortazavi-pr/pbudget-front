@@ -25,7 +25,7 @@ import {
 } from "iconsax-reactjs";
 import moment from "moment-jalali";
 
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 import { LinkButton } from "@/components/common/ui/LinkButton";
 import { PATHS } from "@/common/constants";
 import type { AppMode } from "@/common/constants/app-mode";

@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 import { FeatureGate } from "@/components/common/subscription/FeatureGate";
 import { TasksPage } from "@/components/pages/tasks/TasksPage";
 

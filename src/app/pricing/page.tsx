@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { fetchLandingContentServer } from "@/common/api/site";
-import { createTranslator } from "@/i18n";
+import { t } from "@/i18n";
 import { PricingPage } from "@/components/pages/landing/PricingPage";
 import { APP_NAME_FA } from "@/common/constants/brand";
 import {
@@ -13,7 +13,6 @@ import {
 
 export const revalidate = 60;
 
-const t = createTranslator("fa", true);
 
 export async function generateMetadata(): Promise<Metadata> {
   const content = await fetchLandingContentServer();

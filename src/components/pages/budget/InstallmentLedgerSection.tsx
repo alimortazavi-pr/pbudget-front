@@ -7,7 +7,7 @@ import * as paymentPlansApi from "@/common/api/payment-plans";
 import type { IPaymentPlanOccurrence } from "@/common/interfaces/payment-plan.interface";
 import { formatJalaliDate, formatPrice } from "@/common/utils";
 import { FormSelect } from "@/components/common/form/FormFields";
-import { useTranslation } from "@/components/providers/LanguageProvider";
+import { useTranslation } from "@/i18n";
 
 export type InstallmentLedgerValue = {
   enabled: boolean;
