@@ -125,7 +125,7 @@ export function ProfilePage() {
   return (
     <div className="pb-form-page space-y-6">
       <form onSubmit={(e) => void saveProfile(e)}>
-        <div className="glass space-y-4 rounded-2xl p-5">
+        <div className="glass space-y-4 rounded-2xl p-5" data-tour="profile-info">
           <h2 className="text-lg font-bold">{t("nav.profile")}</h2>
 
           {!user?.isVerifiedMobile && (
@@ -187,7 +187,7 @@ export function ProfilePage() {
             )}
           </div>
 
-          <div className="flex flex-col gap-2 border-t border-border/50 pt-4">
+          <div className="flex flex-col gap-2 border-t border-border/50 pt-4" data-tour="profile-security">
             <Button
               type="button"
               variant="secondary"
@@ -223,7 +223,7 @@ export function ProfilePage() {
         </div>
       )}
 
-      <div className="glass rounded-2xl p-5">
+      <div className="glass rounded-2xl p-5" data-tour="profile-subscription">
         <div className="flex items-start justify-between gap-3">
           <div>
             <h2 className="text-lg font-bold">{t("common.currentSubscription")}</h2>

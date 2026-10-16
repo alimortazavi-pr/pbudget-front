@@ -198,7 +198,7 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
 
   return (
     <div className="space-y-5 pb-6">
-      <section className="glass rounded-3xl p-5">
+      <section className="glass rounded-3xl p-5" data-tour="detail-header">
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="flex flex-wrap items-center gap-2">
@@ -288,13 +288,13 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
         ) : null}
 
         {debt.status !== "settled" && (
-          <Button className="mt-4 w-full" onPress={() => setSettleOpen(true)}>
+          <Button className="mt-4 w-full" data-tour="debt-settle" onPress={() => setSettleOpen(true)}>
             {t("auto.k7931323bef")}
           </Button>
         )}
       </section>
 
-      <div className="flex gap-2 overflow-x-auto">
+      <div className="flex gap-2 overflow-x-auto" data-tour="detail-tabs">
         {(
           [
             { id: "overview" as const, label: t("auto.kc41f1c27a6") },

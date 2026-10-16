@@ -116,7 +116,7 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
 
   return (
     <div className="space-y-5 pb-6">
-      <section className="glass rounded-3xl p-5">
+      <section className="glass rounded-3xl p-5" data-tour="detail-header">
         <p className="text-sm text-muted">{t("auto.k9f48ae23bb")}</p>
         <h1 className="mt-1 text-2xl font-bold">{venture.title}</h1>
         {isPartner ? (
@@ -126,7 +126,7 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
         ) : null}
       </section>
 
-      <div className="flex gap-2 overflow-x-auto">
+      <div className="flex gap-2 overflow-x-auto" data-tour="detail-tabs">
         {tabs.map((item) => (
           <button
             key={item.id}

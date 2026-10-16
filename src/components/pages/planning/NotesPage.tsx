@@ -336,7 +336,7 @@ export function NotesPage() {
         description={t("pageHero.notes.description")}
       />
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-2" data-tour="notes-duration">
         {[
           { id: "general" as const, label: t("pageHero.notes.durationGeneral") },
           { id: "yearly" as const, label: t("common.yearly") },
@@ -371,7 +371,7 @@ export function NotesPage() {
         />
       )}
 
-      <section className="space-y-3 rounded-2xl border border-border bg-surface p-4">
+      <section className="space-y-3 rounded-2xl border border-border bg-surface p-4" data-tour="notes-categories">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Note size={18} className="text-accent" variant="Bold" />
@@ -473,7 +473,7 @@ export function NotesPage() {
           )}
         </section>
       ) : (
-        <section className="space-y-3 rounded-2xl border border-border bg-surface p-4">
+        <section className="space-y-3 rounded-2xl border border-border bg-surface p-4" data-tour="notes-editor">
           <div className="flex items-center justify-between gap-2">
             <div>
               <h2 className="font-semibold">{t("auto.k3ec8c91053")}{editingCategoryLabel}</h2>

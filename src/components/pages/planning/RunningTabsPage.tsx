@@ -160,7 +160,7 @@ export function RunningTabsPage() {
         descriptionClassName="mt-2 text-sm leading-7 text-white/85"
       />
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-3" data-tour="commitments-stats">
         <div className="glass rounded-2xl p-4">
           <p className="text-sm text-muted">{t("auto.k687b7c8520")}</p>
           <p className="mt-2 text-2xl font-bold text-expense">{formatPrice(stats.total)}</p>
@@ -176,7 +176,7 @@ export function RunningTabsPage() {
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2" data-tour="commitments-filters">
           {(
             [
               { id: "active" as const, label: t("pages.planning.runningFilterActive") },
@@ -194,7 +194,7 @@ export function RunningTabsPage() {
             </button>
           ))}
         </div>
-        <Button size="sm" onPress={openCreate}>
+        <Button size="sm" data-tour="commitments-add" onPress={openCreate}>
           <Add size={16} />
           {t("auto.ke0d1e76a1f")}
         </Button>
@@ -211,7 +211,7 @@ export function RunningTabsPage() {
               : t("pages.planning.runningEmptyNone")}
         </p>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3" data-tour="commitments-list">
           {visibleTabs.map((tab) => (
             <article
               key={tab._id}

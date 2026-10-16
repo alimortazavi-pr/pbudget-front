@@ -228,7 +228,7 @@ export function SubscriptionPlansPage() {
       ) : null}
 
       {current ? (
-        <div className="rounded-2xl border border-border/60 bg-surface p-4">
+        <div className="rounded-2xl border border-border/60 bg-surface p-4" data-tour="plans-current">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <span className="flex size-10 items-center justify-center rounded-xl bg-success/15 text-success-foreground">
@@ -302,7 +302,7 @@ export function SubscriptionPlansPage() {
       ) : plans.length === 0 ? (
         <div className="rounded-3xl border border-border/60 bg-surface p-10 text-center text-muted">{t("common.subscription.noPlans")}</div>
       ) : (
-        <div className={`grid gap-5 ${plans.length >= 3 ? "lg:grid-cols-3" : plans.length === 2 ? "lg:grid-cols-2" : "mx-auto max-w-md"}`}>
+        <div data-tour="plans-list" className={`grid gap-5 ${plans.length >= 3 ? "lg:grid-cols-3" : plans.length === 2 ? "lg:grid-cols-2" : "mx-auto max-w-md"}`}>
           {plans.map((plan) => {
             const isCurrent = plan.slug === currentSlug;
             const isRequested = pendingPlanId === plan._id;

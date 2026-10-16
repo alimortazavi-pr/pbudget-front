@@ -21,7 +21,7 @@ export function PeriodNavigator({
   const { t } = useTranslation();
 
   return (
-    <div className="glass flex items-center justify-between gap-2 rounded-2xl p-3">
+    <div className="glass flex items-center justify-between gap-2 rounded-2xl p-3" data-tour="period-navigator">
       {showNav ? (
         <button
           type="button"

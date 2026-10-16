@@ -555,6 +555,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
             {!budget ? (
               <Link
                 href={PATHS.BANK_IMPORT}
+                data-tour="budget-bank-import"
                 className="text-xs font-semibold text-accent underline-offset-2 hover:underline"
               >
                 {t("budget.bankImportBulkLink")}
@@ -562,7 +563,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
             ) : null}
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2" data-tour="budget-type">
             {[
               { id: String(BudgetType.INCOME), label: t("budget.income") },
               { id: String(BudgetType.COST), label: t("budget.expense") },
@@ -602,7 +603,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
             ))}
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2" data-tour="budget-currency">
             <p className="text-sm font-medium">{t("common.currencyType")}</p>
             <div className="grid grid-cols-3 gap-2">
               {CURRENCY_OPTIONS.map((option) => {
@@ -630,6 +631,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
             </div>
           </div>
 
+          <div data-tour="budget-amount">
           <FormPriceInput
             label={t("budget.amountWithCurrency", {
               currency: displayCurrencyLabel(formCurrency),
@@ -638,6 +640,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
             onChange={setPrice}
             currency={formCurrency}
           />
+          </div>
 
           <FormDatePicker
             label={
@@ -652,6 +655,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
             calendarType={formCalendar}
           />
 
+          <div data-tour="budget-category">
           <FormCategoryComboBox
             label={t("auto.kb561a47a9b")}
             placeholder={t("common.searchCategoryPlaceholder")}
@@ -660,6 +664,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
             options={categoryOptions}
             emptyMessage={t("common.noCategoryRegistered")}
           />
+          </div>
 
           {categorySpendHint ? (
             <p
@@ -680,11 +685,13 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
           />
 
           <>
+            <div data-tour="budget-more">
             <BudgetMoreToggle
               open={moreOpen}
               onToggle={() => setMoreOpen((current) => !current)}
               hint={moreOpen ? null : moreHint}
             />
+            </div>
 
             {moreOpen ? (
               <div className="space-y-4">
@@ -754,7 +761,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
             ) : null}
           </>
 
-          <div className="border-t border-border/50 pt-4">
+          <div className="border-t border-border/50 pt-4" data-tour="budget-new-category">
             <Button
               type="button"
               variant="secondary"
@@ -766,7 +773,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
             </Button>
           </div>
 
-          <div className="flex flex-col gap-2 border-t border-border/50 pt-4">
+          <div className="flex flex-col gap-2 border-t border-border/50 pt-4" data-tour="budget-submit">
             <Button type="submit" className="w-full" size="lg" isPending={loading}>
               {budget ? t("common.saveChanges") : t("nav.createTransaction")}
             </Button>

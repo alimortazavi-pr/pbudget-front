@@ -259,7 +259,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
 
   return (
     <div className="space-y-5 pb-6">
-      <section className="glass rounded-3xl p-5">
+      <section className="glass rounded-3xl p-5" data-tour="detail-header">
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-sm text-muted">{t("auto.kcce7e8ff41")}</p>
@@ -272,7 +272,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
               </p>
             ) : null}
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2" data-tour="project-links">
             {showWorkTime ? (
               <LinkButton href={PATHS.PROJECT_ATTENDANCE(projectId)} size="sm" className="bg-income text-white">
                 <Clock size={16} />
@@ -330,7 +330,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
         </div>
       </section>
 
-      <div className="flex gap-2 overflow-x-auto">
+      <div className="flex gap-2 overflow-x-auto" data-tour="detail-tabs">
         {detailTabs.map((item) => (
           <button
             key={item.id}

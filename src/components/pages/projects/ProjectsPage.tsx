@@ -101,7 +101,7 @@ export function ProjectsPage() {
       />
 
       {projects.length > 0 && (
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-3" data-tour="projects-summary">
           <div className="glass rounded-2xl p-4">
             <p className="text-sm text-muted">{t("auto.k277c53ca60")}</p>
             <p className="mt-2 text-xl font-bold">{formatPrice(summary.total)}</p>
@@ -124,13 +124,14 @@ export function ProjectsPage() {
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm text-muted">{formatCount(projects.length)} {t("nav.projects")}</p>
         <div className="flex flex-wrap gap-2">
-          <LinkButton href={PATHS.WORK_ATTENDANCE} size="sm" variant="secondary">
+          <LinkButton href={PATHS.WORK_ATTENDANCE} size="sm" variant="secondary" data-tour="projects-attendance">
             <Clock size={18} />
             {t("auto.ka4b30b68b9")}
           </LinkButton>
           <Button
             size="sm"
             className="bg-accent text-accent-foreground"
+            data-tour="projects-add"
             onPress={() => setCreateOpen(true)}
           >
             <Add size={18} />
@@ -151,7 +152,7 @@ export function ProjectsPage() {
           </Button>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3" data-tour="projects-list">
           {visibleProjects.map((project) => {
             const stats = project.stats;
             const received = stats?.receivedAmount ?? 0;

@@ -102,7 +102,7 @@ export function DebtsPage() {
       />
 
       {summary && (
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2" data-tour="debts-summary">
           <div className="glass rounded-2xl p-4">
             <div className="flex items-center gap-2 text-income">
               <ArrowDown size={18} variant="Bold" />
@@ -136,13 +136,13 @@ export function DebtsPage() {
 
       <div className="flex items-center justify-between gap-2">
         <p className="text-sm text-muted">{t("auto.k2bd34550a6")}</p>
-        <Button size="sm" onPress={() => setCreateOpen(true)}>
+        <Button size="sm" data-tour="debts-add" onPress={() => setCreateOpen(true)}>
           <Add size={18} />
           {t("pages.debts.newDebt")}
         </Button>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex gap-2" data-tour="debts-filters">
         {(
           [
             { id: "open" as const, label: t("pages.debts.filterOpen") },
@@ -177,7 +177,7 @@ export function DebtsPage() {
           </Button>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3" data-tour="debts-list">
           {sortedDebts.map((debt) => {
             const isReceivable = debt.type === DebtType.RECEIVABLE;
             const progress =

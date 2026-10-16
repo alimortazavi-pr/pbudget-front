@@ -190,7 +190,7 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
 
   return (
     <div className="space-y-5 pb-6">
-      <section className="glass rounded-3xl p-5">
+      <section className="glass rounded-3xl p-5" data-tour="detail-header">
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-sm text-muted">{t("auto.k2234933fad")}</p>
@@ -258,7 +258,7 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
         </div>
       </section>
 
-      <div className="flex gap-2 overflow-x-auto">
+      <div className="flex gap-2 overflow-x-auto" data-tour="detail-tabs">
         {(
           [
             { id: "installments" as const, label: t("nav.installments") },

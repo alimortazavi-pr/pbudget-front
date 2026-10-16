@@ -75,7 +75,7 @@ export function ChecksPage() {
       />
 
       {checkSummary && (
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2" data-tour="checks-summary">
           <div className="glass rounded-2xl p-4">
             <p className="text-sm text-muted">{t("auto.k4fd9e4fcd7")}</p>
             <p className="mt-2 text-xl font-bold">
@@ -91,7 +91,7 @@ export function ChecksPage() {
         </div>
       )}
 
-      <Button className="w-full" onPress={() => setCreateCheckOpen(true)}>
+      <Button className="w-full" data-tour="checks-add" onPress={() => setCreateCheckOpen(true)}>
         <Add size={18} />
         {t("pageHero.checks.recordButton")}
       </Button>
@@ -103,7 +103,7 @@ export function ChecksPage() {
           {t("auto.kb0cc29a8fd")}
         </p>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3" data-tour="checks-list">
           {checks.map((check) => (
             <div key={check._id} className="glass rounded-2xl p-4">
               <div className="flex items-start justify-between gap-3">

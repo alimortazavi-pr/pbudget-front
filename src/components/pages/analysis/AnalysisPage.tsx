@@ -283,6 +283,7 @@ export function AnalysisPage() {
       <PageHeader icon={<Chart21 size={24} variant="Bold" />} title={t("pages.analysis.title")} description={t("pages.analysis.subtitle")} />
       <Link
         href={PATHS.AI}
+        data-tour="analysis-ai"
         className="flex items-center gap-3 rounded-2xl border border-accent/30 bg-accent/8 px-4 py-3 text-sm transition hover:bg-accent/12"
       >
         <MagicStar size={20} variant="Bold" className="shrink-0 text-accent" />
@@ -391,7 +392,7 @@ export function AnalysisPage() {
             </p>
           )}
 
-          <div className="pb-tabs" role="tablist">
+          <div className="pb-tabs" role="tablist" data-tour="analysis-tabs">
             {tabs.map((item) => (
               <button
                 key={item.id}

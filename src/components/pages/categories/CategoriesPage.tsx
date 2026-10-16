@@ -151,12 +151,14 @@ export function CategoriesPage() {
         }
       />
 
+      <div data-tour="categories-search">
       <FormInput
         label={t("common.search")}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder={t("auto.k829e9722e7")}
       />
+      </div>
 
       {!filteredCategoryRows.length ? (
         <div className="rounded-2xl border border-dashed border-border p-10 text-center">
@@ -168,7 +170,7 @@ export function CategoriesPage() {
           </p>
         </div>
       ) : (
-        <div className="pb-card-grid">
+        <div className="pb-card-grid" data-tour="categories-list">
           {filteredCategoryRows.map(({ category, depth }, index) => (
             <div
               key={category._id}

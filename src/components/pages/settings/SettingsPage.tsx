@@ -29,7 +29,9 @@ export function SettingsPage() {
 
       <AppModeSection />
 
-      <UserPreferencesSettings />
+      <div data-tour="settings-preferences">
+        <UserPreferencesSettings />
+      </div>
 
       <div data-tour="settings-telegram">
         {isFeatureEnabled("telegram_bot") ? <TelegramConnectSection /> : null}

@@ -42,7 +42,7 @@ export function ShellSidebar() {
           <AppLogo />
         </Link>
 
-        <div>
+        <div data-tour="nav-primary">
           <p className="mb-2 px-3 text-xs font-semibold tracking-wide text-muted">
             {t("nav.primary")}
           </p>
@@ -104,13 +104,14 @@ export function ShellSidebar() {
           <Link
             href={BANK_IMPORT_NAV_ITEM.href}
             className="pb-sidebar-secondary-cta mt-2 opacity-70"
+            data-tour="nav-bank-import-cta"
             title={t("common.subscription.notForYourPlan")}
           >
             <Lock1 size={18} variant="Bold" />
             {t(BANK_IMPORT_NAV_ITEM.label)}
           </Link>
         ) : (
-          <Link href={BANK_IMPORT_NAV_ITEM.href} className="pb-sidebar-secondary-cta mt-2">
+          <Link href={BANK_IMPORT_NAV_ITEM.href} className="pb-sidebar-secondary-cta mt-2" data-tour="nav-bank-import-cta">
             <BANK_IMPORT_NAV_ITEM.icon size={18} variant="Bold" />
             {t(BANK_IMPORT_NAV_ITEM.label)}
           </Link>
@@ -123,12 +124,13 @@ export function ShellSidebar() {
             items={group.items}
             variant="sidebar"
             itemBadges={navBadges}
+            tourId={`nav-group-${group.title.replace("nav.", "")}`}
           />
         ))}
 
         <div className="min-h-4 shrink-0" aria-hidden />
 
-        <div className="mt-auto border-t border-border/50 pt-5 flex flex-col gap-2">
+        <div className="mt-auto border-t border-border/50 pt-5 flex flex-col gap-2" data-tour="sidebar-account">
           {/* The sidebar already lists the planning groups (and the account
               menu has the download link), so the account menu must not draw
               them a second time. */}

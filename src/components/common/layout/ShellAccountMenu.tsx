@@ -180,11 +180,11 @@ export function ShellAccountMenu({
           {t("nav.settings")}
         </p>
         <div className="flex flex-col gap-0.5">
-          <button type="button" className={utilityLinkClass} onClick={toggleTheme}>
+          <button type="button" className={utilityLinkClass} onClick={toggleTheme} data-tour="theme-toggle">
             {theme === "dark" ? <Sun1 size={20} /> : <Moon size={20} />}
             {theme === "dark" ? t("common.lightMode") : t("common.darkMode")}
           </button>
-          <Link href={PATHS.SUPPORT} className={utilityLinkClass} onClick={onNavigate}>
+          <Link href={PATHS.SUPPORT} className={utilityLinkClass} onClick={onNavigate} data-tour="support-link">
             <Call size={20} />
             {t("common.support")}
             {supportUnread > 0 ? (

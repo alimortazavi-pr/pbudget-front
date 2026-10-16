@@ -13,7 +13,7 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <header className="pb-page-header">
+    <header className="pb-page-header" data-tour="page-header">
       <div className="flex min-w-0 items-start gap-3">
         {icon ? <span className="pb-page-header-icon">{icon}</span> : null}
         <div className="min-w-0">
@@ -21,7 +21,7 @@ export function PageHeader({
           {description ? <p className="mt-1 max-w-2xl text-sm leading-6 text-muted">{description}</p> : null}
         </div>
       </div>
-      {actions ? <div className="flex shrink-0 items-center gap-2">{actions}</div> : null}
+      {actions ? <div className="flex shrink-0 items-center gap-2" data-tour="page-actions">{actions}</div> : null}
     </header>
   );
 }

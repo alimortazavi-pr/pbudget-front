@@ -62,6 +62,7 @@ export function ChangeAccountPopover() {
         variant="ghost"
         size="sm"
         aria-label={t("common.changeAccount")}
+        data-tour="account-switcher"
         onPress={() => setOpen(true)}
       >
         <Profile2User size={20} />

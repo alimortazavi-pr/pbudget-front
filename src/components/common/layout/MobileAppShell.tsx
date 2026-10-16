@@ -51,7 +51,7 @@ export function MobileAppShell({
   const pathname = usePathname();
   const router = useRouter();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const { startOnboarding, startPageTour } = useTour();
+  const { startPageTour } = useTour();
   const { t } = useTranslation();
   const displayTitle = t(title);
   const tabItems = MOBILE_TAB_ITEMS;
@@ -93,6 +93,7 @@ export function MobileAppShell({
                 type="button"
                 onClick={openCommandPalette}
                 aria-label={t("common.commandTitle")}
+                data-tour="command-palette"
                 className="pb-press me-1 hidden h-9 min-w-56 items-center gap-2 rounded-xl border border-border/60 bg-surface-secondary/60 px-3 text-sm text-muted transition-colors hover:border-accent/40 hover:text-foreground lg:flex"
               >
                 <SearchNormal1 size={16} />
@@ -107,6 +108,7 @@ export function MobileAppShell({
                 size="sm"
                 className="lg:hidden"
                 aria-label={t("common.commandTitle")}
+                data-tour="command-palette"
                 onPress={openCommandPalette}
               >
                 <SearchNormal1 size={20} />
@@ -117,18 +119,12 @@ export function MobileAppShell({
                 size="sm"
                 aria-label={t("common.help")}
                 data-tour="tour-button"
-                onPress={() => {
-                  if (pathname === PATHS.HOME) {
-                    startOnboarding();
-                  } else {
-                    startPageTour();
-                  }
-                }}
+                onPress={startPageTour}
               >
                 <InfoCircle size={20} />
               </Button>
               <ChangeAccountPopover />
-              <div className="lg:hidden">
+              <div className="lg:hidden" data-tour="theme-toggle">
                 <ThemeToggle />
               </div>
             </div>

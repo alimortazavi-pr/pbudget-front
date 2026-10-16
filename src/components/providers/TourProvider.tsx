@@ -16,6 +16,7 @@ import {
 import { createContext, useContext } from "react";
 import { usePathname } from "next/navigation";
 import { isPublicPath } from "@/common/constants/public-routes";
+import { PATHS } from "@/common/constants/PATHS";
 
 import {
   getTourForPath,
@@ -37,6 +38,7 @@ import {
   findVisibleTarget,
   getSpotlightRect,
   isMobileViewport,
+  isStepAvailable,
   resolveTourSteps,
   scrollTargetIntoView,
   type ResolvedPlacement,
@@ -82,8 +84,15 @@ function TourOverlay({
   const maskId = useId().replace(/:/g, "");
   const tooltipRef = useRef<HTMLDivElement>(null);
   const step = active.steps[active.index];
-  const isLast = active.index === active.steps.length - 1;
-  const isFirst = active.index === 0;
+  // Steps whose target is missing on this page/layout are skipped, so the
+  // counter and the first/last buttons only count the steps that will show.
+  const shownIndexes = active.steps
+    .map((item, i) => (i === active.index || isStepAvailable(item) ? i : -1))
+    .filter((i) => i >= 0);
+  const position = shownIndexes.indexOf(active.index) + 1;
+  const total = shownIndexes.length;
+  const isLast = findStepIndexWithTarget(active.steps, active.index + 1, 1) >= active.steps.length;
+  const isFirst = findStepIndexWithTarget(active.steps, active.index - 1, -1) < 0;
   const preferred = (step.placement ?? "bottom") as ResolvedPlacement;
   const spotlight = getSpotlightRect(active.rect, isMobileViewport() ? 6 : 8);
 
@@ -103,7 +112,7 @@ function TourOverlay({
     [active.rect, preferred, tooltipSize],
   );
 
-  const progress = ((active.index + 1) / active.steps.length) * 100;
+  const progress = (position / Math.max(total, 1)) * 100;
 
   return (
     <div
@@ -175,7 +184,7 @@ function TourOverlay({
         </div>
 
         <p className="text-xs font-medium text-accent">
-          {active.index + 1} {t("common.of")} {active.steps.length}
+          {position} {t("common.of")} {total}
           <span className="mx-1.5 text-border">·</span>
           {active.tour.name}
         </p>
@@ -292,8 +301,10 @@ export function TourProvider({ children }: { children: ReactNode }) {
   }, [startTour]);
 
   const startPageTour = useCallback(() => {
-    const tour = getTourForPath(pathname);
-    if (tour) startTour(tour);
+    // The dashboard's help button replays the full app tour (it includes the
+    // dashboard steps); pages without their own tour fall back to it too.
+    const tour = pathname === PATHS.HOME ? null : getTourForPath(pathname);
+    startTour(tour ?? ONBOARDING_TOUR);
   }, [pathname, startTour]);
 
   useEffect(() => {
@@ -304,6 +315,8 @@ export function TourProvider({ children }: { children: ReactNode }) {
     if (!mounted) return;
     // Never greet visitors of public pages (landing, pricing, guides…) with the in-app tour.
     if (isPublicPath(pathname) || pathname === "/landing-preview") return;
+    // The workspace picker has no app shell (no sidebar or help button).
+    if (pathname === PATHS.WORKSPACE) return;
 
     const timer = window.setTimeout(() => {
       const pendingKind = consumePendingPersonaTour();

@@ -15,6 +15,8 @@ type ShellNavGroupProps = {
   variant?: "sidebar" | "drawer";
   onNavigate?: () => void;
   itemBadges?: Record<string, number>;
+  /** data-tour id of the group, for the guided tour */
+  tourId?: string;
 };
 
 type IconComponent = ComponentType<{
@@ -32,6 +34,7 @@ export function ShellNavGroup({
   variant = "drawer",
   onNavigate,
   itemBadges,
+  tourId,
 }: ShellNavGroupProps) {
   const pathname = usePathname();
 
@@ -41,7 +44,7 @@ export function ShellNavGroup({
       : "flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-surface-secondary";
 
   return (
-    <div className={variant === "sidebar" ? "mt-6" : "mt-4"}>
+    <div className={variant === "sidebar" ? "mt-6" : "mt-4"} data-tour={tourId}>
       <p className="mb-2 px-3 text-xs font-semibold tracking-wide text-muted">
         {title}
       </p>
@@ -77,6 +80,7 @@ function ShellNavRow({ item, active, className, onNavigate, badge }: ShellNavRow
   const Icon = item.icon as IconComponent;
   const badgeLabel = badge && badge > 9 ? "9+" : badge;
   const featureLocked = Boolean(item.featureKey && !subscriptionLoading && !isFeatureEnabled(item.featureKey));
+  const tourId = item.href.startsWith("/") ? `nav-${item.href.replace(/\//g, "")}` : undefined;
   const content: ReactNode = (
     <>
       {featureLocked ? <Lock1 size={18} variant="Bold" /> : <Icon size={20} variant={active ? "Bold" : "Linear"} />}
@@ -98,6 +102,7 @@ function ShellNavRow({ item, active, className, onNavigate, badge }: ShellNavRow
         href={item.href}
         className={`${className} opacity-70`}
         data-active={active ? "true" : "false"}
+        data-tour={tourId}
         title={t("common.subscription.notForYourPlan")}
         onClick={onNavigate}
       >
@@ -125,6 +130,7 @@ function ShellNavRow({ item, active, className, onNavigate, badge }: ShellNavRow
       href={item.href}
       className={className}
       data-active={active ? "true" : "false"}
+      data-tour={tourId}
       onClick={onNavigate}
     >
       {content}

@@ -150,7 +150,7 @@ export function CustomExportsPage() {
 
       {loading ? <div className="glass h-48 animate-pulse rounded-2xl" /> : (
         <div className="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">
-          <aside className="glass space-y-3 rounded-2xl p-4">
+          <aside className="glass space-y-3 rounded-2xl p-4" data-tour="exports-templates">
             <div className="flex items-center justify-between"><h2 className="font-bold">{t("pages.customExports.templates")}</h2><Button size="sm" variant="ghost" onPress={startNew} aria-label={t("pages.customExports.newTemplate")}><Add size={18} /></Button></div>
             {templates.length === 0 ? <p className="rounded-xl bg-surface-secondary p-3 text-sm text-muted">{t("pages.customExports.noTemplates")}</p> : templates.map((template) => (
               <Button type="button" key={template._id} onPress={() => edit(template)} variant="ghost" className={`h-auto w-full justify-start rounded-2xl border p-3 text-start ${editingId === template._id ? "border-accent bg-accent/5" : "border-border hover:border-accent/50"}`}>
@@ -160,13 +160,13 @@ export function CustomExportsPage() {
           </aside>
 
           {draft ? (
-            <main className="glass min-w-0 rounded-2xl p-4 md:p-6">
+            <main className="glass min-w-0 rounded-2xl p-4 md:p-6" data-tour="exports-editor">
               <div className="grid gap-4 md:grid-cols-3">
                 <HeroInput label={t("pages.customExports.templateName")} value={draft.name} onChange={(value) => setDraft({ ...draft, name: value })} placeholder={t("pages.customExports.templateName")} />
                 <HeroInput className="md:col-span-2" label={t("pages.customExports.templateDescription")} value={draft.description} onChange={(value) => setDraft({ ...draft, description: value })} placeholder={t("pages.customExports.templateDescription")} />
                 <FormSelect label={t("pages.customExports.source")} selectedKey={draft.source} onSelectionChange={(key) => void selectSource(key as ExportSource)} options={[{ id: "budgets", label: t("pages.customExports.sourceBudgets") }, { id: "debts", label: t("pages.customExports.sourceDebts") }, { id: "combined", label: t("pages.customExports.sourceCombined") }]} />
               </div>
-              <div className="mt-5 flex flex-wrap gap-2 border-b border-border pb-3">
+              <div className="mt-5 flex flex-wrap gap-2 border-b border-border pb-3" data-tour="exports-tabs">
                 <Button size="sm" variant={tab === "fields" ? "secondary" : "ghost"} onPress={() => setTab("fields")}><DocumentDownload size={16} />{t("pages.customExports.columns")}</Button>
                 <Button size="sm" variant={tab === "design" ? "secondary" : "ghost"} onPress={() => setTab("design")}><Brush2 size={16} />{t("pages.customExports.canvas")}</Button>
                 <Button size="sm" variant={tab === "preview" ? "secondary" : "ghost"} onPress={() => setTab("preview")}><Eye size={16} />{t("pages.customExports.preview")}</Button>

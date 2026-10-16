@@ -72,7 +72,7 @@ export function AiAssistantPage() {
       ) : null}
 
       {usage && usage.limit > 0 ? (
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-2xl border border-border/60 bg-surface px-4 py-3">
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-2xl border border-border/60 bg-surface px-4 py-3" data-tour="ai-usage">
           <ProgressBar
             className="min-w-48 flex-1"
             aria-label={t("common.ai.usageLeft", { remaining: usage.remaining, limit: usage.limit })}
@@ -91,7 +91,7 @@ export function AiAssistantPage() {
       ) : null}
 
       <Tabs selectedKey={tab} onSelectionChange={(key) => setTab(String(key))}>
-        <Tabs.ListContainer>
+        <Tabs.ListContainer data-tour="ai-tabs">
           <Tabs.List aria-label={t("common.ai.title")}>
             {tabs.insights ? (
             <Tabs.Tab id="insights">

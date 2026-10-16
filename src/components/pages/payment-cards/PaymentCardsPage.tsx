@@ -147,7 +147,7 @@ export function PaymentCardsPage() {
           <p className="text-muted">{t("auto.k1686153266")}</p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3" data-tour="cards-list">
           {cards.map((card) => (
             <article key={card._id} className="glass flex items-center justify-between gap-3 rounded-2xl p-4">
               <div className="flex items-center gap-3">
@@ -175,6 +175,7 @@ export function PaymentCardsPage() {
                   isIconOnly
                   size="sm"
                   variant={defaultCardId === card._id ? "primary" : "ghost"}
+                  data-tour="cards-default"
                   aria-label={
                     defaultCardId === card._id
                       ? t("auto.k6003326f42")

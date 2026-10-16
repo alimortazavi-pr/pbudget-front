@@ -103,7 +103,7 @@ export function InvitesPage() {
   }
 
   return (
-    <div className="space-y-5 pb-6" data-tour="invites-list">
+    <div className="space-y-5 pb-6">
       <PageHeroSection
         variant="violetDeep"
         title={t("pageHero.invites.title")}
@@ -132,7 +132,7 @@ export function InvitesPage() {
           </Link>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3" data-tour="invites-list">
           {partnerInvites.map((item) => {
             const id = item._id;
             const token = extractToken(item.inviteLink);

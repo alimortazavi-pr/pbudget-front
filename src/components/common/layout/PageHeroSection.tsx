@@ -60,7 +60,7 @@ export function PageHeroSection({
   // The footer spans the full width (it used to sit in the title column next
   // to `aside`, which squeezed stats on mobile).
   return (
-    <section className={sectionClass}>
+    <section className={sectionClass} data-tour="page-hero">
       <span aria-hidden className="pb-hero-dots" />
       {aside ? (
         <div className="flex items-start justify-between gap-3">

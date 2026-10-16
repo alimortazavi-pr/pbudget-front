@@ -88,7 +88,7 @@ export function DashboardPeriodBar(props: PeriodBarProps) {
             {props.filter}
           </div>
           {props.onExport ? (
-            <button type="button" onClick={props.onExport} className="pb-press pb-ghost-btn mb-0.5 h-11" aria-label={t("common.export")}>
+            <button type="button" onClick={props.onExport} className="pb-press pb-ghost-btn mb-0.5 h-11" aria-label={t("common.export")} data-tour="dashboard-export">
               <Export size={17} />
               <span className="hidden sm:inline">{t("common.export")}</span>
             </button>
@@ -209,7 +209,7 @@ export function DashboardKpis({
   ];
 
   return (
-    <div className="pb-stagger grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+    <div className="pb-stagger grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4" data-tour="dashboard-kpis">
       {cards.map((card, index) => {
         const Icon = card.icon;
         return (
@@ -318,7 +318,7 @@ export function DashboardInsights({ budgets, currency, duration, year, month, ca
   const money = (n: number) => formatPriceWithCurrency(n, currency);
 
   return (
-    <aside className="flex flex-col gap-4">
+    <aside className="flex flex-col gap-4" data-tour="dashboard-insights">
       <section className="pb-panel">
         <header className="mb-4 flex items-center justify-between gap-2">
           <h3 className="flex items-center gap-2 text-sm font-bold">

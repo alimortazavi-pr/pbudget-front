@@ -45,11 +45,16 @@ export function filterStepsForPlatform(steps: TourStep[]): TourStep[] {
   });
 }
 
+/** A step can be shown now: it has no target, is centred, or its target is visible. */
+export function isStepAvailable(step: TourStep): boolean {
+  if (step.placement === "center" || !step.target || step.centerIfMissing) return true;
+  return Boolean(findVisibleTarget(step));
+}
+
 export function resolveTourSteps(tour: TourDefinition): TourStep[] {
   return filterStepsForPlatform(tour.steps).filter((step) => {
-    if (step.placement === "center" || !step.target) return true;
     if (step.optional) return true;
-    return Boolean(findVisibleTarget(step));
+    return isStepAvailable(step);
   });
 }
 
@@ -60,8 +65,7 @@ export function findStepIndexWithTarget(
 ): number {
   let index = startIndex;
   while (index >= 0 && index < steps.length) {
-    const step = steps[index];
-    if (step.placement === "center" || !step.target || findVisibleTarget(step)) {
+    if (isStepAvailable(steps[index])) {
       return index;
     }
     index += direction;

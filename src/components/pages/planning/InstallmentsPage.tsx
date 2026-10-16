@@ -87,7 +87,7 @@ export function InstallmentsPage() {
       />
 
       {monthlyData && (
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2" data-tour="installments-month">
           <div className="glass rounded-2xl p-4">
             <p className="text-sm text-muted">{t("debts.remaining")}{" "}{periodLabel}</p>
             <p className="mt-2 text-2xl font-bold text-expense">
@@ -128,7 +128,7 @@ export function InstallmentsPage() {
 
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted">{formatCount(plans.length)} {t("auto.k2234933fad")}</p>
-        <Button size="sm" onPress={() => setCreatePlanOpen(true)}>
+        <Button size="sm" data-tour="installments-add" onPress={() => setCreatePlanOpen(true)}>
           <Add size={18} />
           {t("auto.ka5b452289b")}
         </Button>
@@ -146,7 +146,7 @@ export function InstallmentsPage() {
           </Button>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3" data-tour="installments-list">
           {plans.map((plan) => {
             const progress =
               plan.totalInstallments && plan.totalInstallments > 0

@@ -160,7 +160,7 @@ export function BoxesPage() {
         title={t("nav.boxes")}
         description={t("auto.k5bebefac7e")}
         aside={
-          <Button className="bg-white/95 font-semibold text-emerald-700" onPress={() => openEditor(null)}>
+          <Button className="bg-white/95 font-semibold text-emerald-700" data-tour="boxes-add" onPress={() => openEditor(null)}>
             <Add size={18} />
             {t("auto.k284231b957")}
           </Button>
@@ -207,7 +207,7 @@ export function BoxesPage() {
           </Button>
         </div>
       ) : (
-        <div className="pb-card-grid !gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="pb-card-grid !gap-4 md:grid-cols-2 xl:grid-cols-3" data-tour="boxes-list">
           {boxes.map((box, index) => {
             const tone = BOX_TONES[index % BOX_TONES.length];
             const progress = box.goal ? Math.min(100, (box.budget / box.goal) * 100) : null;
@@ -279,7 +279,7 @@ export function BoxesPage() {
                   </button>
                 )}
 
-                <div className="mt-5 grid grid-cols-2 gap-2">
+                <div className="mt-5 grid grid-cols-2 gap-2" data-tour="boxes-move">
                   <Button size="sm" className="pb-press" onPress={() => setMove({ box, direction: "in" })}>
                     <MoneyRecive size={16} />
                     {t("pages.boxes.deposit")}

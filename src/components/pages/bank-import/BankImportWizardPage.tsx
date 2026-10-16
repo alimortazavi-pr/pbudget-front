@@ -358,7 +358,7 @@ export function BankImportWizardPage() {
         }
       />
 
-      <div className="grid grid-cols-4 gap-1.5 xs:gap-2">
+      <div className="grid grid-cols-4 gap-1.5 xs:gap-2" data-tour="bank-import-steps">
         {STEPS.map((item) => {
           const isActive = step === item.id;
           const isCompleted = step > item.id;
@@ -380,7 +380,7 @@ export function BankImportWizardPage() {
       </div>
 
       {draft.stored && step < 3 ? (
-        <section className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-accent/30 bg-accent/8 p-4">
+        <section className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-accent/30 bg-accent/8 p-4" data-tour="bank-import-draft">
           <div className="min-w-0">
             <p className="font-semibold">{t("pages.bankImport.draftTitle")}</p>
             <p className="mt-0.5 text-xs leading-6 text-muted">
@@ -403,7 +403,7 @@ export function BankImportWizardPage() {
       ) : null}
 
       {step === 1 && (
-        <section className="glass space-y-4 rounded-2xl p-6">
+        <section className="glass space-y-4 rounded-2xl p-6" data-tour="bank-import-banks">
           <h2 className="font-bold">{t("auto.ke6b33719b2")}</h2>
           {loadingBanks ? (
             <div className="h-24 animate-pulse rounded-xl bg-surface-secondary" />

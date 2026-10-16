@@ -193,7 +193,7 @@ export function WorkAttendancePage() {
         description={t("pageHero.workAttendance.description")}
       />
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-2" data-tour="attendance-tabs">
         {[
           { id: "today" as const, label: t("pageHero.workAttendance.tabToday") },
           { id: "all" as const, label: t("pageHero.workAttendance.tabAllProjects") },
@@ -213,7 +213,7 @@ export function WorkAttendancePage() {
         ))}
       </div>
 
-      <div className="glass flex items-center justify-between rounded-2xl p-3">
+      <div className="glass flex items-center justify-between rounded-2xl p-3" data-tour="attendance-month">
         <Button isIconOnly variant="ghost" onPress={() => shiftMonth(-1)}>
           <ArrowRight2 size={18} />
         </Button>
@@ -321,14 +321,14 @@ export function WorkAttendancePage() {
             ) : null}
           </section>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2" data-tour="attendance-manual">
             <Button variant="secondary" onPress={() => setManualOpen(true)}>
               <Add size={16} />
               {t("dashboard.manualEntry")}
             </Button>
           </div>
 
-          <section className="space-y-3">
+          <section className="space-y-3" data-tour="attendance-projects">
             <h2 className="text-sm font-semibold text-muted">
               {tab === "today"
                 ? t("pageHero.workAttendance.todayProjectsTitle")

@@ -288,7 +288,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
         }
       />
 
-      <div className="glass flex items-center justify-between rounded-2xl p-3">
+      <div className="glass flex items-center justify-between rounded-2xl p-3" data-tour="attendance-month">
         <Button isIconOnly variant="ghost" onPress={() => shiftMonth(-1)}>
           <ArrowRight2 size={18} />
         </Button>
@@ -312,7 +312,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
             />
           ) : null}
 
-          <section className="glass space-y-3 rounded-2xl p-4">
+          <section className="glass space-y-3 rounded-2xl p-4" data-tour="attendance-clock">
             <p className="text-sm text-muted">
               {fixedIncome
                 ? t("pages.attendance.fixedIncomeHint")
@@ -392,6 +392,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
           <section
             id="work-target-section"
             ref={setTargetSectionEl}
+            data-tour="attendance-target"
             className="glass space-y-3 rounded-2xl p-4"
           >
             <div className="flex items-center gap-2">

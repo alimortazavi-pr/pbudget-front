@@ -82,6 +82,7 @@ export function VenturesPage() {
         footer={
           <Button
             className="mt-4 bg-white text-violet-700"
+            data-tour="ventures-add"
             onPress={() => setCreateOpen(true)}
           >
             <Add size={18} />
@@ -105,7 +106,7 @@ export function VenturesPage() {
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3" data-tour="ventures-list">
           {ventures.map((venture) => (
             <Link
               key={venture._id}
