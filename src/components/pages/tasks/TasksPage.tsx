@@ -79,7 +79,8 @@ export function TasksPage() {
     shiftDay,
     shiftMonth,
     shiftYear,
-  } = usePeriodQuery(PATHS.TASKS);
+    // Tasks, routines and overdue checks are Jalali-only in the backend.
+  } = usePeriodQuery(PATHS.TASKS, "jalali");
 
   const duration = (get("duration", "daily") as TaskDuration);
   const { isFeatureEnabled } = useSubscriptionAccess();
@@ -212,6 +213,7 @@ export function TasksPage() {
   }
 
   async function removeTask(task: ITask) {
+    if (!confirm(t("common.deleteConfirm", { name: task.title }))) return;
     try {
       await tasksApi.deleteTask(task._id);
       setTasks((current) => current.filter((row) => row._id !== task._id));
@@ -478,7 +480,7 @@ export function TasksPage() {
                 </div>
 
                 <div className="flex shrink-0 gap-1">
-                  <Button
+                  <Button aria-label={t("common.edit")}
                     isIconOnly
                     size="sm"
                     variant="ghost"
@@ -486,7 +488,7 @@ export function TasksPage() {
                   >
                     <Edit2 size={16} />
                   </Button>
-                  <Button
+                  <Button aria-label={t("common.delete")}
                     isIconOnly
                     size="sm"
                     variant="ghost"

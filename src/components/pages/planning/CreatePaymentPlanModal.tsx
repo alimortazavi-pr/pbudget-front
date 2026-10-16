@@ -141,6 +141,7 @@ export function CreatePaymentPlanModal({
             label={t("budget.amountWithCurrency", { currency: displayCurrencyLabel(preferredCurrency) })}
             value={amount}
             onChange={setAmount}
+            currency={preferredCurrency}
           />
           <FormCategoryComboBox
             label={t("auto.k85a9d7d20f")}

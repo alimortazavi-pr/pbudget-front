@@ -71,6 +71,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
   const [report, setReport] = useState<IWorkTimeReport | null>(null);
   const [alerts, setAlerts] = useState<IWorkTimeAlert[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
   const [manualOpen, setManualOpen] = useState(false);
   const [editSession, setEditSession] = useState<IWorkSession | null>(null);
@@ -83,6 +84,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
 
   const load = useCallback(async () => {
     setLoading(true);
+    setLoadFailed(false);
     try {
       const projectDetail = await projectsApi.fetchProject(projectId);
       setProjectTitle(projectDetail.project.category?.title ?? t("pages.attendance.defaultProject"));
@@ -113,6 +115,9 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
       setSavedMonthTarget(sessions.monthTargetMinutes);
       setWorkingDaysInMonth(sessions.workingDaysInMonth);
     } catch (err) {
+      // Don't keep the previous month's data under the new month label.
+      setData(null);
+      setLoadFailed(true);
       showToast(err instanceof Error ? err.message : t("pages.attendance.loadError"));
     } finally {
       setLoading(false);
@@ -240,7 +245,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
     projectTitle,
   });
 
-  if (!loading && !trackWorkTime) {
+  if (!loading && !loadFailed && !trackWorkTime) {
     return (
       <div className="space-y-5 pb-6">
         <PageHeroSection
@@ -289,18 +294,25 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
       />
 
       <div className="glass flex items-center justify-between rounded-2xl p-3" data-tour="attendance-month">
-        <Button isIconOnly variant="ghost" onPress={() => shiftMonth(-1)}>
+        <Button aria-label={t("dashboard.simplePrevMonth")} isIconOnly variant="ghost" onPress={() => shiftMonth(-1)}>
           <ArrowRight2 size={18} />
         </Button>
         <p className="font-semibold">
           {formatJalaliMonthYear(String(year), String(month))}
         </p>
-        <Button isIconOnly variant="ghost" onPress={() => shiftMonth(1)}>
+        <Button aria-label={t("dashboard.simpleNextMonth")} isIconOnly variant="ghost" onPress={() => shiftMonth(1)}>
           <ArrowLeft2 size={18} />
         </Button>
       </div>
 
-      {loading || !data ? (
+      {!loading && !data && loadFailed ? (
+        <div className="glass rounded-2xl p-10 text-center text-muted">
+          <p>{t("auto.k0080763ff0")}</p>
+          <Button className="mt-4" variant="secondary" onPress={() => void load()}>
+            {t("common.tryAgain")}
+          </Button>
+        </div>
+      ) : loading || !data ? (
         <div className="glass rounded-2xl p-10 text-center text-muted">{t("common.loading")}</div>
       ) : (
         <>
@@ -479,7 +491,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
                       </div>
                       <div className="flex shrink-0 gap-1">
                         {session.durationMinutes ? (
-                          <Button
+                          <Button aria-label={t("common.edit")}
                             isIconOnly
                             size="sm"
                             variant="ghost"
@@ -508,7 +520,7 @@ export function ProjectAttendancePage({ projectId }: ProjectAttendancePageProps)
                           />
                         ) : null}
                         {session.durationMinutes ? (
-                          <Button
+                          <Button aria-label={t("common.delete")}
                             isIconOnly
                             size="sm"
                             variant="ghost"

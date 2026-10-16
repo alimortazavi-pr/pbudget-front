@@ -17,6 +17,7 @@ import {
   isAuthSelector,
   setDidTryAutoLogin,
   setUsers,
+  tokenSelector,
 } from "@/stores/auth";
 import { setProfile } from "@/stores/profile";
 import { setCategories } from "@/stores/category";
@@ -27,6 +28,7 @@ export function AuthBootstrap() {
   const pathname = usePathname();
   const isAuth = useAppSelector(isAuthSelector);
   const didTry = useAppSelector(didTryAutoLoginSelector);
+  const token = useAppSelector(tokenSelector);
 
   useEffect(() => {
     if (didTry) return;
@@ -70,12 +72,30 @@ export function AuthBootstrap() {
     void bootstrap();
   }, [dispatch, didTry, pathname, router]);
 
+  // Categories belong to the active account: reload them on every account
+  // switch (the token changes), and retry a failed load instead of leaving the
+  // category pickers empty for the rest of the session.
   useEffect(() => {
-    if (!isAuth) return;
-    void categoriesApi.fetchCategories().then((cats) => {
-      dispatch(setCategories(cats));
-    });
-  }, [dispatch, isAuth]);
+    if (!isAuth || !token) return;
+    let cancelled = false;
+    let timer: number | undefined;
+    const load = (attempt: number) => {
+      categoriesApi
+        .fetchCategories()
+        .then((cats) => {
+          if (!cancelled) dispatch(setCategories(cats));
+        })
+        .catch(() => {
+          if (!cancelled && attempt < 5) timer = window.setTimeout(() => load(attempt + 1), 2_000 * 2 ** attempt);
+        });
+    };
+    dispatch(setCategories([]));
+    load(0);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [dispatch, isAuth, token]);
 
   useEffect(() => {
     if (!didTry || !isAuth) return;

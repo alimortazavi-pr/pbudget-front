@@ -3,7 +3,7 @@
 import { useTranslation } from "@/i18n";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { Button } from "@heroui/react";
@@ -74,6 +74,9 @@ export function GetStartedPage() {
   const [code, setCode] = useState("");
   const [usePassword, setUsePassword] = useState(true);
   const [returnBanner, setReturnBanner] = useState<string | null>(null);
+  // Set while finishAuth navigates, so the "already signed in" redirect below
+  // doesn't race it (both consume the saved return URL).
+  const finishingAuthRef = useRef(false);
 
   const stepMeta: Record<Step, { title: string; sub: string }> = {
     mobile: { title: t("auth.stepMobileTitle"), sub: t("auth.stepMobileSub") },
@@ -99,6 +102,7 @@ export function GetStartedPage() {
 
   const finishAuth = useCallback(
     async (token: string, user: IProfile) => {
+      finishingAuthRef.current = true;
       dispatch(authenticate({ token }));
       dispatch(setProfile(user));
       const nextUsers = [
@@ -127,7 +131,7 @@ export function GetStartedPage() {
   );
 
   useEffect(() => {
-    if (!isAuth || isAddingAccount) return;
+    if (!isAuth || isAddingAccount || finishingAuthRef.current) return;
     void resolvePostAuthDestination({
       returnUrl: searchParams.get("return"),
     }).then((r) => {
@@ -208,7 +212,7 @@ export function GetStartedPage() {
     try {
       const data = usePassword
         ? await authApi.signInWithPassword({ mobile, password })
-        : await authApi.signIn({ mobile, code });
+        : await authApi.signIn({ mobile, code: toEnglishDigits(code) });
       await finishAuth(data.token, data.user);
     } catch (err) {
       showToast(err instanceof Error ? err.message : t("auth.loginError"));

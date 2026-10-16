@@ -152,6 +152,7 @@ export function CreateTaskModal({
                 month={month}
                 day={day}
                 inModal
+                calendarType="jalali"
                 onChange={({ year: y, month: m, day: d }) => {
                   setYear(y);
                   setMonth(m);

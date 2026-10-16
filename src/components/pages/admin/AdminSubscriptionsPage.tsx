@@ -12,6 +12,7 @@ import { PATHS } from "@/common/constants";
 import type { AdminUserRow } from "@/common/interfaces/admin";
 import type { SubscriptionFeature, SubscriptionPeriod, SubscriptionPlan, UserSubscription } from "@/common/interfaces/subscription.interface";
 import { showErrorToast, showToast } from "@/common/utils/toast";
+import { useTranslation } from "@/i18n";
 import { FormField, FormGrid, FormSection, SwitchRow } from "@/components/common/form/FormKit";
 import {
   AdminPageHeader,
@@ -54,20 +55,25 @@ export function AdminSubscriptionsPage() {
   const [summary, setSummary] = useState<Summary | null>(null);
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [assignOpen, setAssignOpen] = useState(false);
+  const [plansFailed, setPlansFailed] = useState(false);
 
   const loadPlans = useCallback(async () => {
     try {
       setPlans(await subscriptionApi.fetchAdminSubscriptionPlans());
+      setPlansFailed(false);
     } catch (error) {
+      setPlansFailed(true);
       showErrorToast(error);
     }
   }, []);
 
-  const loadSummary = useCallback(async () => {
+  // Only the first load may jump to the requests tab; later refreshes (after
+  // extending or revoking a subscription) must keep the admin where they are.
+  const loadSummary = useCallback(async (selectRequests = false) => {
     try {
       const result = await subscriptionApi.fetchAdminSubscriptionsFiltered({ limit: 1 });
       setSummary(result.summary);
-      if (result.summary.pending > 0) setTab((current) => (current === "subscribers" ? "requests" : current));
+      if (selectRequests && result.summary.pending > 0) setTab((current) => (current === "subscribers" ? "requests" : current));
     } catch (error) {
       showErrorToast(error);
     }
@@ -75,7 +81,7 @@ export function AdminSubscriptionsPage() {
 
   useEffect(() => {
     void loadPlans();
-    void loadSummary();
+    void loadSummary(true);
   }, [loadPlans, loadSummary]);
 
   const refreshAll = useCallback(async () => {
@@ -117,7 +123,7 @@ export function AdminSubscriptionsPage() {
       {tab === "requests" ? <RequestsTab onChanged={refreshAll} /> : null}
       {tab === "subscribers" ? <SubscribersTab plans={plans} onChanged={refreshAll} /> : null}
       {tab === "payments" ? <BalePaymentsTab /> : null}
-      {tab === "plans" ? <PlansTab plans={plans} onChanged={refreshAll} /> : null}
+      {tab === "plans" ? <PlansTab plans={plans} failed={plansFailed} onChanged={refreshAll} /> : null}
 
       <AssignDialog open={assignOpen} onOpenChange={setAssignOpen} plans={plans} onDone={refreshAll} />
     </div>
@@ -186,7 +192,7 @@ function BalePaymentsTab() {
                     <span className="text-xs font-normal text-muted" dir="ltr">{item.user?.mobile}</span>
                   </p>
                   <p className="text-xs text-muted">
-                    {item.plan?.name ?? "—"} · {formatNumberFa(item.amountPlanUnit)} تومان · {formatDateFa(item.paidAt ?? item.createdAt)}
+                    {item.plan?.name ?? "—"} · {formatNumberFa(Math.round(item.amountRial / 10))} تومان · {formatDateFa(item.paidAt ?? item.createdAt)}
                     {item.providerChargeId ? <span dir="ltr"> · {item.providerChargeId}</span> : null}
                   </p>
                 </div>
@@ -206,7 +212,9 @@ function BalePaymentsTab() {
 }
 
 function RequestsTab({ onChanged }: { onChanged: () => Promise<void> }) {
+  const { t } = useTranslation();
   const [data, setData] = useState<ListResponse | null>(null);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [rejecting, setRejecting] = useState<UserSubscription | null>(null);
   const [rejectNote, setRejectNote] = useState("");
@@ -214,7 +222,9 @@ function RequestsTab({ onChanged }: { onChanged: () => Promise<void> }) {
   const load = useCallback(async () => {
     try {
       setData(await subscriptionApi.fetchAdminSubscriptionsFiltered({ status: "pending", limit: 50 }));
+      setLoadFailed(false);
     } catch (error) {
+      setLoadFailed(true);
       showErrorToast(error);
     }
   }, []);
@@ -237,6 +247,18 @@ function RequestsTab({ onChanged }: { onChanged: () => Promise<void> }) {
     }
   }
 
+  if (!data && loadFailed) {
+    return (
+      <EmptyState
+        title={t("auto.k0080763ff0")}
+        action={
+          <Button size="sm" variant="secondary" onPress={() => void load()}>
+            {t("common.tryAgain")}
+          </Button>
+        }
+      />
+    );
+  }
   if (!data) return <SkeletonRows rows={3} height="h-24" />;
   if (data.items.length === 0) {
     return <EmptyState icon={<TickCircle size={36} />} title="درخواستی در انتظار نیست" description="وقتی کاربری از صفحه پلن‌ها درخواست ارتقا بدهد، اینجا و در تلگرام ادمین باخبر می‌شوید." />;
@@ -583,7 +605,8 @@ function toForm(plan?: SubscriptionPlan | null): PlanForm {
   };
 }
 
-function PlansTab({ plans, onChanged }: { plans: SubscriptionPlan[]; onChanged: () => Promise<void> }) {
+function PlansTab({ plans, failed, onChanged }: { plans: SubscriptionPlan[]; failed: boolean; onChanged: () => Promise<void> }) {
+  const { t } = useTranslation();
   const [editing, setEditing] = useState<{ open: boolean; plan: SubscriptionPlan | null }>({ open: false, plan: null });
   const [archiving, setArchiving] = useState<SubscriptionPlan | null>(null);
   const [busy, setBusy] = useState(false);
@@ -596,7 +619,16 @@ function PlansTab({ plans, onChanged }: { plans: SubscriptionPlan[]; onChanged: 
           پلن جدید
         </Button>
       </div>
-      {plans.length === 0 ? (
+      {plans.length === 0 && failed ? (
+        <EmptyState
+          title={t("auto.k0080763ff0")}
+          action={
+            <Button size="sm" variant="secondary" onPress={() => void onChanged()}>
+              {t("common.tryAgain")}
+            </Button>
+          }
+        />
+      ) : plans.length === 0 ? (
         <SkeletonRows rows={2} height="h-48" />
       ) : (
         <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">

@@ -5,15 +5,20 @@ import { useRouter } from "next/navigation";
 import moment from "moment-jalali";
 
 import { useHydratedSearchParams } from "@/common/hooks/useHydratedSearchParams";
+import type { UserDateCalendar } from "@/common/constants/user-preferences";
 import { getNowDateParts } from "@/common/utils";
 import { useAppSelector } from "@/stores/hooks";
 import { userSelector } from "@/stores/profile";
 
-export function usePeriodQuery(basePath: string) {
+/**
+ * `forceCalendar` pins the period to one calendar regardless of the user's
+ * preference — for data the backend only stores in Jalali (installments).
+ */
+export function usePeriodQuery(basePath: string, forceCalendar?: UserDateCalendar) {
   const router = useRouter();
   const { hydrated, get, getAll } = useHydratedSearchParams();
   const user = useAppSelector(userSelector);
-  const calendarType = user?.preferences?.dateCalendar ?? "jalali";
+  const calendarType = forceCalendar ?? user?.preferences?.dateCalendar ?? "jalali";
   const defaults = getNowDateParts(calendarType);
 
   const year = hydrated ? get("year", defaults.year) : defaults.year;

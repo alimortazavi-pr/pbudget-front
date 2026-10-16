@@ -6,7 +6,9 @@ import { CloseCircle, Filter } from "iconsax-reactjs";
 
 import * as cardsApi from "@/common/api/payment-cards";
 import * as projectsApi from "@/common/api/projects";
+import { resolveBudgetCurrency, type UserCurrency } from "@/common/constants/user-preferences";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
+import { formatAmountOnly } from "@/common/utils/format-currency";
 import {
   EMPTY_FILTERS,
   FILTER_FLAGS,
@@ -115,6 +117,7 @@ export function ActiveFilterChips({
   cards,
   projects,
   unit,
+  currency,
   resultCount,
   onChange,
   onClear,
@@ -125,6 +128,7 @@ export function ActiveFilterChips({
   cards: IPaymentCard[];
   projects: IProject[];
   unit: string;
+  currency?: UserCurrency;
   resultCount: number;
   onChange: (patch: FilterPatch) => void;
   onClear: () => void;
@@ -133,8 +137,8 @@ export function ActiveFilterChips({
   const chips: { key: string; label: string; clear: FilterPatch }[] = [];
   if (filters.type) chips.push({ key: "type", label: t(filters.type === "0" ? "dashboard.typeIncome" : "dashboard.typeExpense"), clear: { type: "" } });
   if (category) chips.push({ key: "category", label: categories.find((c) => c._id === category)?.title ?? t("dashboard.filterByCategory"), clear: { category: "" } });
-  if (filters.min) chips.push({ key: "min", label: `${t("dashboard.minAmount")}: ${filters.min} ${unit}`, clear: { min: "" } });
-  if (filters.max) chips.push({ key: "max", label: `${t("dashboard.maxAmount")}: ${filters.max} ${unit}`, clear: { max: "" } });
+  if (filters.min) chips.push({ key: "min", label: `${t("dashboard.minAmount")}: ${formatAmountOnly(filters.min, currency)} ${unit}`, clear: { min: "" } });
+  if (filters.max) chips.push({ key: "max", label: `${t("dashboard.maxAmount")}: ${formatAmountOnly(filters.max, currency)} ${unit}`, clear: { max: "" } });
   if (filters.from) chips.push({ key: "from", label: `${t("dashboard.fromDate")}: ${filters.from.replace(/-/g, "/")}`, clear: { from: "" } });
   if (filters.to) chips.push({ key: "to", label: `${t("dashboard.toDate")}: ${filters.to.replace(/-/g, "/")}`, clear: { to: "" } });
   if (filters.card) chips.push({ key: "card", label: cards.find((c) => c._id === filters.card)?.title ?? t("dashboard.filterCard"), clear: { card: "" } });
@@ -187,7 +191,8 @@ export function TransactionFilterModal({
   const { t } = useTranslation();
   const user = useAppSelector(userSelector);
   const { displayCurrencyLabel } = useCurrencyLabels();
-  const unit = displayCurrencyLabel(user?.preferences?.currency ?? "toman");
+  const currency = resolveBudgetCurrency(user?.preferences?.currency);
+  const unit = displayCurrencyLabel(currency);
   const [draft, setDraft] = useState<TransactionFilters>(filters);
   const [draftCategory, setDraftCategory] = useState(category);
   const [cards, setCards] = useState<IPaymentCard[]>([]);
@@ -273,8 +278,8 @@ export function TransactionFilterModal({
           <section className="space-y-3">
             <h4 className="pb-filter-title">{t("dashboard.filterAmount")}</h4>
             <div className="grid grid-cols-2 gap-3">
-              <FormPriceInput label={`${t("dashboard.minAmount")} (${unit})`} value={draft.min} onChange={(v) => set("min", v)} />
-              <FormPriceInput label={`${t("dashboard.maxAmount")} (${unit})`} value={draft.max} onChange={(v) => set("max", v)} />
+              <FormPriceInput label={`${t("dashboard.minAmount")} (${unit})`} value={draft.min} currency={currency} onChange={(v) => set("min", v)} />
+              <FormPriceInput label={`${t("dashboard.maxAmount")} (${unit})`} value={draft.max} currency={currency} onChange={(v) => set("max", v)} />
             </div>
           </section>
 

@@ -9,7 +9,8 @@ import { Add, Box1, Edit2, Flag, MoneyRecive, MoneySend, TickCircle, Trash } fro
 import * as boxesApi from "@/common/api/boxes";
 import * as profileApi from "@/common/api/profile";
 import type { IBox } from "@/common/interfaces/box.interface";
-import { formatPrice, formatPriceInput, getJalaliNow, parsePriceInput } from "@/common/utils";
+import { resolveBudgetCurrency, resolveBudgetDateCalendar } from "@/common/constants/user-preferences";
+import { formatAmountOnly, formatPriceInput, getNowDateParts, parsePriceInput } from "@/common/utils";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { FormInput } from "@/components/common/form/FormFields";
 import { PageHeroSection } from "@/components/common/layout/PageHeroSection";
@@ -34,7 +35,12 @@ export function BoxesPage() {
   const dispatch = useAppDispatch();
   const boxes = useAppSelector(boxesSelector);
   const user = useAppSelector(userSelector);
-  const unit = displayCurrencyLabel(user?.preferences?.currency ?? "toman");
+  // Box moves are stored as transactions in the user's own currency and
+  // calendar (the backend applies the preferences when none are sent).
+  const currency = resolveBudgetCurrency(user?.preferences?.currency);
+  const calendar = resolveBudgetDateCalendar(user?.preferences?.dateCalendar);
+  const unit = displayCurrencyLabel(currency);
+  const formatPrice = (amount: number) => formatAmountOnly(amount, currency);
   const [loading, setLoading] = useState(true);
 
   const [editor, setEditor] = useState<{ open: boolean; box: IBox | null }>({ open: false, box: null });
@@ -112,14 +118,12 @@ export function BoxesPage() {
     // parsing it again would divide by 10 a second time in rial mode.
     const value = Number(amount);
     if (!Number.isFinite(value) || value <= 0) return;
-    const now = getJalaliNow();
+    const now = getNowDateParts(calendar);
     setMoving(true);
     try {
       await boxesApi.changeBoxBudget(move.box._id, {
         price: String(move.direction === "in" ? value : -value),
-        year: String(now.jYear()),
-        month: String(now.jMonth() + 1),
-        day: String(now.jDate()),
+        ...now,
       });
       await refresh();
       showToast(move.direction === "in" ? t("pages.boxes.deposited") : t("pages.boxes.withdrawn"), "success");
@@ -134,14 +138,10 @@ export function BoxesPage() {
 
   async function confirmRemove() {
     if (!removing) return;
-    const now = getJalaliNow();
+    const now = getNowDateParts(calendar);
     setRemoveBusy(true);
     try {
-      await boxesApi.softDeleteBox(removing._id, {
-        year: String(now.jYear()),
-        month: String(now.jMonth() + 1),
-        day: String(now.jDate()),
-      });
+      await boxesApi.softDeleteBox(removing._id, now);
       await refresh();
       showToast(t("auto.ka99c0447ce"), "success");
       setRemoving(null);
@@ -312,8 +312,8 @@ export function BoxesPage() {
               <FormInput label={t("auto.k401698bc19")} value={title} onChange={(e) => setTitle(e.target.value)} autoFocus />
               <FormInput
                 label={t("pages.boxes.goalLabel", { unit })}
-                value={formatPriceInput(goal, true)}
-                onChange={(e) => setGoal(parsePriceInput(e.target.value, true))}
+                value={formatPriceInput(goal, true, currency)}
+                onChange={(e) => setGoal(parsePriceInput(e.target.value, true, currency))}
                 inputMode="numeric"
                 dir="ltr"
                 placeholder={t("pages.boxes.goalPlaceholder")}
@@ -348,8 +348,8 @@ export function BoxesPage() {
               </p>
               <FormInput
                 label={t("budget.amountWithCurrency", { currency: unit })}
-                value={formatPriceInput(amount, true)}
-                onChange={(e) => setAmount(parsePriceInput(e.target.value, true))}
+                value={formatPriceInput(amount, true, currency)}
+                onChange={(e) => setAmount(parsePriceInput(e.target.value, true, currency))}
                 inputMode="numeric"
                 dir="ltr"
                 autoFocus

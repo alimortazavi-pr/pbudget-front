@@ -12,9 +12,10 @@ import { showToast } from "@/common/utils/toast";
 
 type PendingInvitesBannerProps = {
   compact?: boolean;
+  onAccepted?: () => void;
 };
 
-export function PendingInvitesBanner({ compact = false }: PendingInvitesBannerProps) {
+export function PendingInvitesBanner({ compact = false, onAccepted }: PendingInvitesBannerProps) {
   const { t } = useTranslation();
   const [partnerInvites, setPartnerInvites] = useState<IPendingPartnerInvite[]>(
     [],
@@ -45,6 +46,7 @@ export function PendingInvitesBanner({ compact = false }: PendingInvitesBannerPr
       await partnersApi.acceptPartnerInvite(token);
       showToast(t("auto.k833c338585"), "success");
       void load();
+      onAccepted?.();
     } catch (err) {
       showToast(err instanceof Error ? err.message : t("auto.ke18ed389dc"));
     } finally {

@@ -3,8 +3,7 @@
 import { useMemo } from "react";
 
 import type { AnalyticsReport } from "@/common/interfaces/analytics.interface";
-import { formatPrice } from "@/common/utils";
-import { moneyDisplayUnitLabel } from "@/common/utils/money-display";
+import { useAnalysisMoney } from "./analysis-money";
 import { AnimatedNumber } from "@/components/common/motion/AnimatedNumber";
 import { useTranslation } from "@/i18n";
 import { useLocalizedDate } from "@/i18n/hooks/useLocalizedDate";
@@ -47,7 +46,7 @@ export function computeHealth(report: AnalyticsReport) {
 export function AnalysisHealth({ report }: { report: AnalyticsReport }) {
   const { t } = useTranslation();
   const { formatCount } = useLocalizedDate();
-  const unit = moneyDisplayUnitLabel();
+  const { money, unit } = useAnalysisMoney();
   const { score, cushionMonths, limits, payable, parts } = useMemo(() => computeHealth(report), [report]);
   const { summary } = report;
 
@@ -58,8 +57,8 @@ export function AnalysisHealth({ report }: { report: AnalyticsReport }) {
     const list: Tip[] = [];
     const over = limits.filter((row) => row.isOverLimit);
     if (summary.income <= 0 && summary.cost > 0) list.push({ id: "noincome", tone: "warn", text: t("pages.analysis.tipNoIncome") });
-    else if (summary.savingsRate < 0) list.push({ id: "deficit", tone: "bad", text: t("pages.analysis.tipDeficit", { amount: `${formatPrice(Math.abs(summary.net))} ${unit}` }) });
-    else if (summary.savingsRate < 10) list.push({ id: "lowsave", tone: "warn", text: t("pages.analysis.tipLowSavings", { amount: `${formatPrice(Math.round(summary.income * 0.1))} ${unit}` }) });
+    else if (summary.savingsRate < 0) list.push({ id: "deficit", tone: "bad", text: t("pages.analysis.tipDeficit", { amount: `${money(Math.abs(summary.net))} ${unit}` }) });
+    else if (summary.savingsRate < 10) list.push({ id: "lowsave", tone: "warn", text: t("pages.analysis.tipLowSavings", { amount: `${money(Math.round(summary.income * 0.1))} ${unit}` }) });
     else if (summary.savingsRate >= 20) list.push({ id: "goodsave", tone: "good", text: t("pages.analysis.tipGoodSavings", { rate: formatCount(Math.round(summary.savingsRate)) }) });
     const top = report.topExpenses[0];
     if (top && top.share >= 40) list.push({ id: "top", tone: "warn", text: t("pages.analysis.tipTopCategory", { title: top.title, share: formatCount(Math.round(top.share)) }) });
@@ -68,7 +67,7 @@ export function AnalysisHealth({ report }: { report: AnalyticsReport }) {
     if (payable > 0 && summary.income > 0 && payable > summary.income) list.push({ id: "debt", tone: "warn", text: t("pages.analysis.tipDebt") });
     if (!list.length) list.push({ id: "ok", tone: "good", text: t("pages.analysis.tipAllGood") });
     return list.slice(0, 4);
-  }, [report, limits, summary, cushionMonths, payable, t, unit, formatCount]);
+  }, [report, limits, summary, cushionMonths, payable, t, unit, money, formatCount]);
 
   const circumference = 2 * Math.PI * 52;
 

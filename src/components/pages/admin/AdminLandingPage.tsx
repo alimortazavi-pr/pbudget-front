@@ -115,6 +115,22 @@ export function AdminLandingPage() {
     }
   }
 
+  // Keep the JSON editor and the form tabs on the same draft: entering the
+  // JSON tab serializes the form, leaving it applies the edited JSON.
+  function changeTab(next: Tab) {
+    if (next === tab) return;
+    if (tab === "json") {
+      try {
+        setContent(JSON.parse(jsonText) as ILandingContent);
+      } catch {
+        showToast(t("auto.kcda46705e1"), "danger");
+        return;
+      }
+    }
+    if (next === "json") setJsonText(JSON.stringify(content, null, 2));
+    setTab(next);
+  }
+
   function resetDefaults() {
     if (!confirm(t("auto.kaa4bfbdc0d"))) return;
     setContent(DEFAULT_LANDING_CONTENT);
@@ -166,7 +182,7 @@ export function AdminLandingPage() {
             key={t.id}
             size="sm"
             variant={tab === t.id ? "secondary" : "ghost"}
-            onPress={() => setTab(t.id)}
+            onPress={() => changeTab(t.id)}
           >
             {t.label}
           </Button>

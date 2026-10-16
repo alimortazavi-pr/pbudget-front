@@ -7,7 +7,7 @@ import { Button, Modal } from "@heroui/react";
 
 import * as paymentPlansApi from "@/common/api/payment-plans";
 import type { IPaymentPlanOccurrence } from "@/common/interfaces/payment-plan.interface";
-import { getJalaliNow, toEnglishDigits } from "@/common/utils";
+import { getNowDateParts, toEnglishDigits } from "@/common/utils";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showToast } from "@/common/utils/toast";
 import { FormCategoryComboBox, FormPriceInput, FormTextArea } from "@/components/common/form/FormFields";
@@ -36,7 +36,8 @@ export function PayOccurrenceModal({
   const preferredCurrency = user?.preferences?.currency ?? "toman";
   const categories = useAppSelector(categoriesSelector);
   const categoryOptions = getCategorySelectOptions(categories ?? []);
-  const now = getJalaliNow();
+  // The backend stores the transaction in the user's calendar preference.
+  const formCalendar = user?.preferences?.dateCalendar ?? "jalali";
 
   const [category, setCategory] = useState("");
   const [amount, setAmount] = useState("");
@@ -57,13 +58,14 @@ export function PayOccurrenceModal({
     }
 
     setSubmitting(true);
+    const today = getNowDateParts(formCalendar);
     try {
       await paymentPlansApi.payOccurrence(occurrence._id, {
         category,
         amount: toEnglishDigits(amount),
-        year: String(now.jYear()),
-        month: String(now.jMonth() + 1),
-        day: String(now.jDate()),
+        year: today.year,
+        month: today.month,
+        day: today.day,
         note,
       });
       showToast(t("auto.kb92d05c117"), "success");
@@ -89,7 +91,7 @@ export function PayOccurrenceModal({
             {occurrence.day}
           </p>
 
-          <FormPriceInput label={t("budget.amountWithCurrency", { currency: displayCurrencyLabel(preferredCurrency) })} value={amount} onChange={setAmount} />
+          <FormPriceInput label={t("budget.amountWithCurrency", { currency: displayCurrencyLabel(preferredCurrency) })} value={amount} onChange={setAmount} currency={preferredCurrency} />
 
           <FormCategoryComboBox
             label={t("auto.kb561a47a9b")}

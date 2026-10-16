@@ -92,6 +92,13 @@ export function NotesPage() {
   const [categorySaving, setCategorySaving] = useState(false);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSavedRef = useRef("");
+  // Identifies the note on screen; a debounced save that lands after the user
+  // moved to another period/category must not overwrite this view's state.
+  const viewKey = `${noteDuration}|${year}|${month}|${day}|${categoryFilter}`;
+  const viewKeyRef = useRef(viewKey);
+  useEffect(() => {
+    viewKeyRef.current = viewKey;
+  }, [viewKey]);
 
   const editingCategoryId = categoryFilter || "none";
   const canEdit = Boolean(categoryFilter);
@@ -189,6 +196,7 @@ export function NotesPage() {
           categoryId: editingCategoryId === "none" ? null : editingCategoryId,
           items: nextLines,
         });
+        if (viewKey !== viewKeyRef.current) return;
         setNoteDoc(note);
         lastSavedRef.current = serialized;
         if (!silent) {
@@ -200,7 +208,7 @@ export function NotesPage() {
         setSaving(false);
       }
     },
-    [canEdit, noteDuration, year, month, day, editingCategoryId, t],
+    [canEdit, noteDuration, year, month, day, editingCategoryId, viewKey, t],
   );
 
   function scheduleSave(nextLines: INoteLine[]) {
@@ -286,6 +294,7 @@ export function NotesPage() {
   }
 
   async function removeCategory(category: INoteCategory) {
+    if (!confirm(t("common.deleteConfirm", { name: category.title }))) return;
     try {
       await noteCategoriesApi.deleteNoteCategory(category._id);
       setCategories((prev) => prev.filter((item) => item._id !== category._id));
@@ -419,7 +428,7 @@ export function NotesPage() {
               >
                 <span>{category.title}</span>
                 <div className="flex items-center gap-1">
-                  <Button
+                  <Button aria-label={t("common.edit")}
                     isIconOnly
                     size="sm"
                     variant="ghost"
@@ -427,7 +436,7 @@ export function NotesPage() {
                   >
                     <Edit2 size={16} />
                   </Button>
-                  <Button
+                  <Button aria-label={t("common.delete")}
                     isIconOnly
                     size="sm"
                     variant="ghost"

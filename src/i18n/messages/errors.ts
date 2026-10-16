@@ -10,7 +10,8 @@ export const errorsMessages: MessageTree = {
   fieldRequired: "{{field}} الزامی است",
   fieldMustNotBeGreater: "{{field}} نباید بیشتر از {{bound}} باشد",
   fieldMustNotBeLess: "{{field}} نباید کمتر از {{bound}} باشد",
-  default: "خطا",
+  default: "مشکلی پیش آمد؛ لطفاً دوباره تلاش کنید.",
+  network: "اتصال به سرور برقرار نشد؛ اینترنت را بررسی کنید و دوباره تلاش کنید.",
   fields: {
     remindDaysBefore: "تعداد روز یادآوری",
     dueDayOfMonth: "روز سررسید",

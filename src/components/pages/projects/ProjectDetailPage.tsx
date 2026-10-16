@@ -54,6 +54,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
   const currentUser = useAppSelector(userSelector);
   const [data, setData] = useState<IProjectDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [tab, setTab] = useState<TabId>("overview");
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -74,6 +75,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
 
   const load = useCallback(async () => {
     setLoading(true);
+    setLoadFailed(false);
     try {
       const detail = await projectsApi.fetchProject(projectId);
       setData(detail);
@@ -88,6 +90,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
         detail.project.hourlyRate ? String(detail.project.hourlyRate) : "",
       );
     } catch (err) {
+      setLoadFailed(true);
       showToast(err instanceof Error ? err.message : t("auto.k0080763ff0"));
     } finally {
       setLoading(false);
@@ -200,6 +203,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
   }
 
   async function removeItem(item: IProjectItem) {
+    if (!confirm(t("common.deleteConfirm", { name: item.content.slice(0, 60) }))) return;
     try {
       await projectsApi.deleteProjectItem(projectId, item._id);
       setData((current) =>
@@ -237,6 +241,17 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
     { id: "board" as const, label: t("auto.k11dd432167") },
     { id: "notebook" as const, label: t("auto.k8527309198") },
   ] as const;
+
+  if (!loading && !data && loadFailed) {
+    return (
+      <div className="glass rounded-2xl p-10 text-center text-muted">
+        <p>{t("auto.k0080763ff0")}</p>
+        <Button className="mt-4" variant="secondary" onPress={() => void load()}>
+          {t("common.tryAgain")}
+        </Button>
+      </div>
+    );
+  }
 
   if (loading || !data) {
     return (
@@ -379,6 +394,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
             }
             value={totalAmount}
             onChange={setTotalAmount}
+            currency={currentUser?.preferences?.currency ?? "toman"}
           />
           <FormSelect
             label={t("auto.k2f3c6cf127")}
@@ -447,6 +463,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
                   })}
                   value={hourlyRate}
                   onChange={setHourlyRate}
+                  currency={currentUser?.preferences?.currency ?? "toman"}
                 />
               ) : null}
               {!fixedIncome && hourlyRate ? (
@@ -696,7 +713,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
                     </p>
                   </div>
                   {canEditContent ? (
-                  <Button
+                  <Button aria-label={t("common.delete")}
                     isIconOnly
                     size="sm"
                     variant="ghost"
@@ -718,7 +735,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
                   <div className="flex items-start justify-between gap-3">
                     <p className="text-sm leading-7 whitespace-pre-wrap">{item.content}</p>
                     {canEditContent ? (
-                    <Button
+                    <Button aria-label={t("common.delete")}
                       isIconOnly
                       size="sm"
                       variant="ghost"

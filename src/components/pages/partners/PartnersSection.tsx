@@ -241,6 +241,9 @@ export function PartnersSection({ contextType, contextId, readOnly = false }: Pa
       />
 
       <PartnerSettlementPanel
+        key={activePartners
+          .map((partner) => `${partner._id}:${partner.sharePercent}:${partner.status}`)
+          .join("|")}
         contextType={contextType}
         contextId={contextId}
         isOwner={!readOnly}

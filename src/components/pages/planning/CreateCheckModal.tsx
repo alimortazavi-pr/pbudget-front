@@ -92,6 +92,11 @@ export function CreateCheckModal({
       showToast(t("auto.k4781ebf878"), "success");
       onCreated();
       onOpenChange(false);
+      setAmount("");
+      setPerson("");
+      setBankName("");
+      setCheckNumber("");
+      setDescription("");
     } catch (err) {
       showToast(err instanceof Error ? err.message : t("common.error"));
     } finally {
@@ -126,7 +131,7 @@ export function CreateCheckModal({
             ))}
           </div>
 
-          <FormPriceInput label={t("budget.amountWithCurrency", { currency: displayCurrencyLabel(preferredCurrency) })} value={amount} onChange={setAmount} />
+          <FormPriceInput label={t("budget.amountWithCurrency", { currency: displayCurrencyLabel(preferredCurrency) })} value={amount} onChange={setAmount} currency={preferredCurrency} />
           <FormPersonComboBox
             label={t("auto.k4617f9a4f6")}
             value={person}

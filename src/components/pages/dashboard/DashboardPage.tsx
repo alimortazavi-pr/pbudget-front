@@ -39,7 +39,6 @@ import { WorkTimeQuickWidget } from "@/components/pages/projects/WorkTimeQuickWi
 import { HmiDashboardPage } from "@/components/pages/dashboard/HmiDashboardPage";
 import { TransactionCard } from "@/components/pages/dashboard/TransactionCard";
 import { TransactionPagination } from "@/components/pages/dashboard/TransactionPagination";
-import { displayAmountToToman, shouldConvertToman } from "@/common/utils/money-display";
 import { TransactionListSkeleton } from "@/components/pages/dashboard/TransactionListSkeleton";
 import * as cardsApi from "@/common/api/payment-cards";
 import * as projectsApi from "@/common/api/projects";
@@ -122,12 +121,16 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
     }
   }, []);
 
-  /** Filter params as the server understands them (amounts in toman). */
+  /**
+   * Filter params as the server understands them. The URL already holds the
+   * canonical (toman) amount — FormPriceInput converts rial on input — so it
+   * must not be converted a second time here.
+   */
   const toBaseAmount = (value: string) => {
     if (!value) return "";
     const n = Number(value.replace(/[,\s]/g, ""));
     if (!Number.isFinite(n)) return "";
-    return String(shouldConvertToman(preferredCurrency) ? displayAmountToToman(n) : n);
+    return String(n);
   };
   const filterParams: Record<string, string> = {};
   if (filters.q) filterParams.q = filters.q;
@@ -467,6 +470,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         cards={cards}
         projects={projects}
         unit={displayCurrencyLabel(preferredCurrency)}
+        currency={preferredCurrency}
         resultCount={resultTotal}
         onChange={updateQuery}
         onClear={() =>

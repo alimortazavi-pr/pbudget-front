@@ -23,7 +23,7 @@ export function PeriodNavigator({
   return (
     <div className="glass flex items-center justify-between gap-2 rounded-2xl p-3" data-tour="period-navigator">
       {showNav ? (
-        <button
+        <button aria-label={t("dashboard.simplePrevMonth")}
           type="button"
           className="flex size-10 cursor-pointer items-center justify-center rounded-xl border border-border bg-surface"
           onClick={onPrev}
@@ -46,7 +46,7 @@ export function PeriodNavigator({
         )}
       </div>
       {showNav ? (
-        <button
+        <button aria-label={t("dashboard.simpleNextMonth")}
           type="button"
           className="flex size-10 cursor-pointer items-center justify-center rounded-xl border border-border bg-surface"
           onClick={onNext}

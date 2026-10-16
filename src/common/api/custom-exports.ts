@@ -48,8 +48,13 @@ export async function downloadExport(id: string, format: "xlsx" | "pdf") {
   const blob = new Blob([response.data], { type: format === "pdf" ? "text/html" : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
   if (format === "pdf") {
     const url = URL.createObjectURL(blob);
-    const printWindow = window.open(url, "_blank", "noopener,noreferrer");
-    if (printWindow) {
+    // No "noopener": with it window.open() always returns null, so the print
+    // dialog never opened and the blob URL leaked. The blob is same-origin
+    // content either way, so noopener added no isolation here.
+    const printWindow = window.open(url, "_blank");
+    if (!printWindow) {
+      window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    } else {
       const timer = window.setInterval(() => {
         if (printWindow.closed) {
           window.clearInterval(timer);

@@ -18,7 +18,7 @@ import { resolveDefaultPaymentCardId } from "@/common/utils/default-payment-card
 import { formatCardNumberForDisplay } from "@/common/utils/payment-card";
 import type { IBudget, IBudgetMutationResult } from "@/common/interfaces/budget.interface";
 import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
-import { getJalaliNow, normalizeJalaliPart, toEnglishDigits, getNowDateParts } from "@/common/utils";
+import { normalizeJalaliPart, toEnglishDigits, getNowDateParts } from "@/common/utils";
 import { formatPriceWithCurrency } from "@/common/utils/format-currency";
 import { fetchOpenDebtsForPerson } from "@/common/utils/debt-person-match";
 import {
@@ -241,34 +241,44 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
     }
 
     const limit = selectedCategory.monthlyLimit;
-    const now = getJalaliNow();
+    // The limit applies to the month of this entry, in the calendar it is
+    // stored in (a Jalali "now" never matched Gregorian-calendar entries).
+    // The returned totals and the limit are in the user's own currency.
+    const hintCurrency = userPrefs.currency;
+    let cancelled = false;
 
     void budgetsApi
       .fetchBudgets({
         duration: "monthly",
-        year: now.format("jYYYY"),
-        month: String(Number(now.format("jM"))),
+        year: String(year),
+        month: String(Number(month)),
         category,
       })
       .then((data) => {
+        if (cancelled) return;
         const spent = data.totalCostPrice;
         const remaining = limit - spent;
         setCategorySpendHint(
           remaining >= 0
             ? t("budget.limitSpendHint", {
-                limit: formatPriceWithCurrency(limit, formCurrency),
-                spent: formatPriceWithCurrency(spent, formCurrency),
-                remaining: formatPriceWithCurrency(remaining, formCurrency),
+                limit: formatPriceWithCurrency(limit, hintCurrency),
+                spent: formatPriceWithCurrency(spent, hintCurrency),
+                remaining: formatPriceWithCurrency(remaining, hintCurrency),
               })
             : t("budget.limitSpendOverHint", {
-                limit: formatPriceWithCurrency(limit, formCurrency),
-                spent: formatPriceWithCurrency(spent, formCurrency),
-                over: formatPriceWithCurrency(Math.abs(remaining), formCurrency),
+                limit: formatPriceWithCurrency(limit, hintCurrency),
+                spent: formatPriceWithCurrency(spent, hintCurrency),
+                over: formatPriceWithCurrency(Math.abs(remaining), hintCurrency),
               }),
         );
       })
-      .catch(() => setCategorySpendHint(null));
-  }, [category, selectedCategory?.monthlyLimit, type, formCurrency, t]);
+      .catch(() => {
+        if (!cancelled) setCategorySpendHint(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [category, selectedCategory?.monthlyLimit, type, year, month, userPrefs.currency, t]);
 
   const projectBlockedForVenture =
     Boolean(existingProjectId) ||

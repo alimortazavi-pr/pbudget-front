@@ -1,14 +1,16 @@
 import { resolveBudgetCurrency } from "@/common/constants/user-preferences";
 import type { IBudget } from "@/common/interfaces/budget.interface";
 import { normalizeQuickText } from "@/common/utils/quick-entry";
-import { shouldConvertToman, tomanToDisplayAmount } from "@/common/utils/money-display";
 
 /** Filters applied on top of the period the server returned. Kept in the URL. */
 export type TransactionFilters = {
   q: string;
   /** "" = both, "0" income, "1" expense */
   type: "" | "0" | "1";
-  /** Amounts in the unit the user sees (toman or rial). */
+  /**
+   * Canonical amounts (toman for toman budgets), as FormPriceInput stores
+   * them — never the rial display value, so they compare to `budget.price`.
+   */
   min: string;
   max: string;
   card: string;
@@ -127,10 +129,8 @@ export function applyTransactionFilters(budgets: IBudget[], filters: Transaction
       if (filters.project === "none" ? id : id !== filters.project) return false;
     }
     if (min !== null || max !== null) {
-      const currency = resolveBudgetCurrency(budget.currency);
-      const shown = shouldConvertToman(currency) ? tomanToDisplayAmount(budget.price) : budget.price;
-      if (min !== null && Number.isFinite(min) && shown < min) return false;
-      if (max !== null && Number.isFinite(max) && shown > max) return false;
+      if (min !== null && Number.isFinite(min) && budget.price < min) return false;
+      if (max !== null && Number.isFinite(max) && budget.price > max) return false;
     }
     if (from !== null || to !== null) {
       const key = dateKey(budget.year, budget.month, budget.day);

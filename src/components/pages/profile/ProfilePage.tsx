@@ -12,7 +12,7 @@ import * as profileApi from "@/common/api/profile";
 import * as subscriptionApi from "@/common/api/subscriptions";
 import type { MySubscriptionResponse } from "@/common/interfaces/subscription.interface";
 import { PATHS } from "@/common/constants";
-import { saveDataToLocal } from "@/common/utils";
+import { saveDataToLocal, toEnglishDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
 import { AppModal, AppModalHeader, AppModalSheet, modalSheetBodyClass, modalSheetFooterClass, modalSheetFormClass } from "@/components/common/ui/AppModal";
 import { FormInput } from "@/components/common/form/FormFields";
@@ -54,7 +54,7 @@ export function ProfilePage() {
       );
       dispatch(setUsers(nextUsers));
       saveDataToLocal({ token, users: nextUsers });
-    });
+    }).catch(() => undefined);
     // Refresh profile once on mount so verification flags match the server.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
@@ -97,7 +97,7 @@ export function ProfilePage() {
   async function verifyMobile(e?: FormEvent) {
     e?.preventDefault();
     try {
-      const updated = await profileApi.verifyMobile(code);
+      const updated = await profileApi.verifyMobile(toEnglishDigits(code));
       dispatch(setProfile(updated));
       const nextUsers = users.map((u) =>
         u._id === updated._id ? { ...updated, token: token! } : u,

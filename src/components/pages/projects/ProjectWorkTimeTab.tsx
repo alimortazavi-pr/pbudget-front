@@ -48,6 +48,7 @@ export function ProjectWorkTimeTab({
   const [month, setMonth] = useState(now.jMonth() + 1);
   const [data, setData] = useState<IProjectWorkSessions | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
   const [manualOpen, setManualOpen] = useState(false);
   const [editSession, setEditSession] = useState<IWorkSession | null>(null);
@@ -56,6 +57,7 @@ export function ProjectWorkTimeTab({
 
   const load = useCallback(async () => {
     setLoading(true);
+    setLoadFailed(false);
     try {
       const sessions = await workTimeApi.fetchProjectWorkSessions(projectId, year, month);
       setData(sessions);
@@ -65,6 +67,9 @@ export function ProjectWorkTimeTab({
           : "",
       );
     } catch (err) {
+      // Never keep showing the previous month's sessions under a new month label.
+      setData(null);
+      setLoadFailed(true);
       showToast(err instanceof Error ? err.message : t("auto.k0080763ff0"));
     } finally {
       setLoading(false);
@@ -152,6 +157,17 @@ export function ProjectWorkTimeTab({
     return budget.description || t("auto.k1e4443bd87");
   }
 
+  if (!loading && !data && loadFailed) {
+    return (
+      <div className="glass rounded-2xl p-8 text-center text-muted">
+        <p>{t("auto.k0080763ff0")}</p>
+        <Button className="mt-4" variant="secondary" onPress={() => void load()}>
+          {t("common.tryAgain")}
+        </Button>
+      </div>
+    );
+  }
+
   if (loading || !data) {
     return <div className="glass rounded-2xl p-8 text-center text-muted">{t("common.loading")}</div>;
   }
@@ -161,13 +177,13 @@ export function ProjectWorkTimeTab({
   return (
     <div className="space-y-4">
       <div className="glass flex items-center justify-between rounded-2xl p-3">
-        <Button isIconOnly variant="ghost" onPress={() => shiftMonth(-1)}>
+        <Button aria-label={t("dashboard.simplePrevMonth")} isIconOnly variant="ghost" onPress={() => shiftMonth(-1)}>
           <ArrowRight2 size={18} />
         </Button>
         <p className="font-semibold">
           {formatJalaliMonthYear(String(year), String(month))}
         </p>
-        <Button isIconOnly variant="ghost" onPress={() => shiftMonth(1)}>
+        <Button aria-label={t("dashboard.simpleNextMonth")} isIconOnly variant="ghost" onPress={() => shiftMonth(1)}>
           <ArrowLeft2 size={18} />
         </Button>
       </div>
@@ -279,7 +295,7 @@ export function ProjectWorkTimeTab({
                   </div>
                   <div className="flex shrink-0 gap-1">
                     {session.durationMinutes ? (
-                      <Button
+                      <Button aria-label={t("common.edit")}
                         isIconOnly
                         size="sm"
                         variant="ghost"
@@ -308,7 +324,7 @@ export function ProjectWorkTimeTab({
                       />
                     ) : null}
                     {session.durationMinutes ? (
-                      <Button
+                      <Button aria-label={t("common.delete")}
                         isIconOnly
                         size="sm"
                         variant="ghost"

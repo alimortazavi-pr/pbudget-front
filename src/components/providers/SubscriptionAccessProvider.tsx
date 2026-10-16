@@ -78,6 +78,20 @@ export function SubscriptionAccessProvider({ children }: { children: ReactNode }
     if (data?.subscription && !data.entitlements.privacy_mode?.enabled) setAmountsHidden(false);
   }, [data]);
 
+  // A failed load (server restarting, flaky network) retries on its own with
+  // backoff instead of leaving every paid feature locked until a refocus.
+  const [retry, setRetry] = useState(0);
+  useEffect(() => {
+    if (!error || !isAuth || retry >= 6) return;
+    const id = window.setTimeout(() => {
+      void refresh().finally(() => setRetry((count) => count + 1));
+    }, Math.min(30_000, 2_000 * 2 ** retry));
+    return () => window.clearTimeout(id);
+  }, [error, isAuth, retry, refresh]);
+  useEffect(() => {
+    if (!error) setRetry(0);
+  }, [error]);
+
   useEffect(() => {
     if (!isAuth) return;
     // A plan approved by the admin should unlock features without a reload.

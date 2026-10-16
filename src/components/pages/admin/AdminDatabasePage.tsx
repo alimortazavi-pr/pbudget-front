@@ -241,6 +241,7 @@ export function AdminDatabasePage() {
                         <Button
                           size="sm"
                           variant="ghost"
+                          aria-label={t("auto.kf79235e4be")}
                           onPress={() => startImport(collection.name)}
                           isDisabled={exporting !== null}
                         >
@@ -266,7 +267,7 @@ export function AdminDatabasePage() {
 
       {browsing ? (
         <div id="documents-browser" className="scroll-mt-24">
-          <AdminDocumentsBrowser collection={browsing} onClose={() => setBrowsing(null)} />
+          <AdminDocumentsBrowser key={browsing} collection={browsing} onClose={() => setBrowsing(null)} />
         </div>
       ) : null}
       </div>

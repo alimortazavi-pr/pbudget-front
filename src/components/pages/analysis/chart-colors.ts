@@ -1,4 +1,5 @@
-import { tomanToDisplayAmount } from "@/common/utils/money-display";
+import type { UserCurrency } from "@/common/constants/user-preferences";
+import { shouldConvertToman, tomanToDisplayAmount } from "@/common/utils/money-display";
 
 export const CHART_COLORS = {
   income: "#10b981",
@@ -20,8 +21,8 @@ export const CHART_COLORS = {
   ],
 };
 
-export function formatChartPrice(raw: number) {
-  const input = tomanToDisplayAmount(raw);
+export function formatChartPrice(raw: number, currency?: UserCurrency | null) {
+  const input = shouldConvertToman(currency) ? tomanToDisplayAmount(raw) : raw;
   const value = Math.abs(input);
   const sign = input < 0 ? "-" : "";
   if (value >= 1_000_000_000) return `${sign}${(value / 1_000_000_000).toFixed(1)}B`;

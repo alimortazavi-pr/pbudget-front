@@ -17,13 +17,15 @@ import {
   getCategoryParentId,
   getParentSelectOptions,
 } from "@/common/utils/category-tree";
-import { showToast } from "@/common/utils/toast";
+import { showErrorToast, showToast } from "@/common/utils/toast";
 import { formatAmountOnly } from "@/common/utils/format-currency";
 import { FormInput, FormPriceInput, FormSelect } from "@/components/common/form/FormFields";
 import { CategoryColorPicker } from "@/components/common/form/CategoryColorPicker";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { categoriesSelector, setCategories } from "@/stores/category";
+import { userSelector } from "@/stores/profile";
+import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 import { CategoryKind } from "@/types/enums";
 import { PageHeader } from "@/components/common/layout/PageHeader";
 
@@ -31,6 +33,12 @@ export function CategoriesPage() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const categories = useAppSelector(categoriesSelector);
+  const user = useAppSelector(userSelector);
+  const { displayCurrencyLabel } = useCurrencyLabels();
+  // Limits are compared with spending in the user's own currency.
+  const preferredCurrency = user?.preferences?.currency ?? "toman";
+  const [removing, setRemoving] = useState<ICategory | null>(null);
+  const [removeBusy, setRemoveBusy] = useState(false);
   const [open, setOpen] = useState(false);
   const [editItem, setEditItem] = useState<ICategory | null>(null);
   const [title, setTitle] = useState("");
@@ -58,9 +66,12 @@ export function CategoriesPage() {
   );
 
   useEffect(() => {
-    void categoriesApi.fetchCategories().then((data) => {
-      dispatch(setCategories(data));
-    });
+    void categoriesApi
+      .fetchCategories()
+      .then((data) => {
+        dispatch(setCategories(data));
+      })
+      .catch((err) => showErrorToast(err));
   }, [dispatch]);
 
   function openCreate() {
@@ -125,6 +136,7 @@ export function CategoriesPage() {
   }
 
   async function remove(cat: ICategory) {
+    setRemoveBusy(true);
     try {
       const removeIds = collectDescendantIdSet(categories ?? [], cat._id);
       await categoriesApi.softDeleteCategory(cat._id);
@@ -132,8 +144,11 @@ export function CategoriesPage() {
         setCategories((categories ?? []).filter((category) => !removeIds.has(category._id))),
       );
       showToast(t("common.deleted"), "success");
+      setRemoving(null);
     } catch (err) {
       showToast(err instanceof Error ? err.message : t("common.error"));
+    } finally {
+      setRemoveBusy(false);
     }
   }
 
@@ -160,7 +175,13 @@ export function CategoriesPage() {
       />
       </div>
 
-      {!filteredCategoryRows.length ? (
+      {categories === null ? (
+        <div className="pb-card-grid">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="pb-shimmer h-14 rounded-2xl" />
+          ))}
+        </div>
+      ) : !filteredCategoryRows.length ? (
         <div className="rounded-2xl border border-dashed border-border p-10 text-center">
           <Category size={36} className="mx-auto mb-3 text-muted" />
           <p>
@@ -195,7 +216,7 @@ export function CategoriesPage() {
                   {category.monthlyLimit && category.monthlyLimit > 0 ? (
                     <span className="rounded-md bg-surface-secondary px-1.5 py-0.5 text-[10px] text-muted">
                       {t("categories.limitBadge", {
-                        amount: formatAmountOnly(category.monthlyLimit),
+                        amount: `${formatAmountOnly(category.monthlyLimit, preferredCurrency)} ${displayCurrencyLabel(preferredCurrency)}`,
                       })}
                     </span>
                   ) : null}
@@ -210,6 +231,7 @@ export function CategoriesPage() {
                   isIconOnly
                   size="sm"
                   variant="ghost"
+                  aria-label={t("common.edit")}
                   onPress={() => openEdit(category)}
                 >
                   <Edit2 size={16} />
@@ -218,7 +240,8 @@ export function CategoriesPage() {
                   isIconOnly
                   size="sm"
                   variant="danger"
-                  onPress={() => void remove(category)}
+                  aria-label={t("common.delete")}
+                  onPress={() => setRemoving(category)}
                 >
                   <Trash size={16} />
                 </Button>
@@ -251,9 +274,10 @@ export function CategoriesPage() {
               />
               <CategoryColorPicker value={color} onChange={setColor} />
               <FormPriceInput
-                label={t("auto.k46aceba377")}
+                label={`${t("auto.k46aceba377")} (${displayCurrencyLabel(preferredCurrency)})`}
                 value={monthlyLimit}
                 onChange={setMonthlyLimit}
+                currency={preferredCurrency}
               />
               <p className="text-xs text-muted">
                 {t("categories.zeroLimitHint")}
@@ -279,6 +303,22 @@ export function CategoriesPage() {
               </Button>
             </Modal.Footer>
           </form>
+        </AppModalDialog>
+      </AppModal>
+
+      <AppModal open={Boolean(removing)} onOpenChange={(next) => !next && setRemoving(null)} size="sm">
+        <AppModalDialog>
+          <AppModalHeader onClose={() => setRemoving(null)}>
+            <Modal.Heading>{t("common.deleteConfirm", { name: removing?.title ?? "" })}</Modal.Heading>
+          </AppModalHeader>
+          <Modal.Footer>
+            <Button variant="ghost" onPress={() => setRemoving(null)}>
+              {t("common.cancel")}
+            </Button>
+            <Button variant="danger" isPending={removeBusy} onPress={() => removing && void remove(removing)}>
+              {t("common.delete")}
+            </Button>
+          </Modal.Footer>
         </AppModalDialog>
       </AppModal>
     </div>

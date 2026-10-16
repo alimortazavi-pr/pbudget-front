@@ -7,6 +7,7 @@ import { Add, ArrowRotateLeft, Code1, Edit2, Trash } from "iconsax-reactjs";
 import * as insightsApi from "@/common/api/admin-insights";
 import type { AdminUserOverview, AdminUserRecords } from "@/common/interfaces/admin";
 import { toPersianDigits } from "@/common/utils";
+import { useTranslation } from "@/i18n";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import {
   AdminPanel,
@@ -63,6 +64,7 @@ export function UserDataTab({
   onKeyChange: (key: string) => void;
   onChanged: () => Promise<void> | void;
 }) {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [data, setData] = useState<AdminUserRecords | null>(null);
@@ -82,13 +84,14 @@ export function UserDataTab({
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      setData(await insightsApi.fetchUserRecords(userId, activeKey, { page, limit: 25, includeDeleted }));
+      // The ledger tab has no "show deleted" switch, so a value left over from another tab must not apply.
+      setData(await insightsApi.fetchUserRecords(userId, activeKey, { page, limit: 25, includeDeleted: includeDeleted && !isLedger }));
     } catch (error) {
       showErrorToast(error, "دریافت داده‌ها ناموفق بود");
     } finally {
       setLoading(false);
     }
-  }, [activeKey, includeDeleted, page, userId]);
+  }, [activeKey, includeDeleted, isLedger, page, userId]);
 
   useEffect(() => {
     void load();
@@ -97,6 +100,20 @@ export function UserDataTab({
   async function afterChange(message: string) {
     showToast(message, "success");
     await Promise.all([load(), onChanged()]);
+  }
+
+  // The records endpoint returns plain JSON (ids/dates as strings, plus a
+  // computed categoryTitle). Saving that back would turn ObjectIds and dates
+  // into strings, so edit the Extended JSON copy from the documents API.
+  async function openJson(row: RecordRow) {
+    try {
+      const result = await insightsApi.fetchDocuments(collectionName, { search: row._id, limit: 1 });
+      const doc = (result.items as RecordRow[]).find((item) => item._id === row._id);
+      if (doc) setEditingJson(doc);
+      else showToast(t("auto.k0080763ff0"), "danger");
+    } catch (error) {
+      showErrorToast(error, t("auto.k0080763ff0"));
+    }
   }
 
   async function saveJson(value: Record<string, unknown>) {
@@ -144,7 +161,9 @@ export function UserDataTab({
         items={tabs}
         value={activeKey}
         onChange={(key) => {
+          if (key === activeKey) return;
           setPage(1);
+          setData(null);
           onKeyChange(key);
         }}
       />
@@ -227,7 +246,7 @@ export function UserDataTab({
                               <Button size="sm" variant="ghost" isIconOnly aria-label="ویرایش" onPress={() => setTxDialog({ open: true, row })}>
                                 <Edit2 size={16} />
                               </Button>
-                              <Button size="sm" variant="ghost" isIconOnly aria-label="JSON" onPress={() => setEditingJson(row)}>
+                              <Button size="sm" variant="ghost" isIconOnly aria-label="JSON" onPress={() => void openJson(row)}>
                                 <Code1 size={16} />
                               </Button>
                               <Button size="sm" variant="ghost" isIconOnly aria-label="حذف" onPress={() => setDeleting(row)}>
@@ -259,7 +278,7 @@ export function UserDataTab({
                         <td className="px-3 py-2.5 text-xs text-muted">{formatDateTimeFa(dateOf(row))}</td>
                         <td className="px-3 py-2.5">
                           <div className="flex justify-end gap-1">
-                            <Button size="sm" variant="ghost" isIconOnly aria-label="ویرایش JSON" onPress={() => setEditingJson(row)}>
+                            <Button size="sm" variant="ghost" isIconOnly aria-label="ویرایش JSON" onPress={() => void openJson(row)}>
                               <Code1 size={16} />
                             </Button>
                             {deleted ? (

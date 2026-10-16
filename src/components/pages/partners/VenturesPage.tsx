@@ -91,7 +91,7 @@ export function VenturesPage() {
         }
       />
 
-      <PendingInvitesBanner />
+      <PendingInvitesBanner onAccepted={() => void load()} />
 
       {loading ? (
         <div className="glass rounded-2xl p-10 text-center text-muted">

@@ -34,6 +34,8 @@ export function UserOverviewTab({
     try {
       await insightsApi.setUserNote(user._id, note);
       showToast("یادداشت ذخیره شد", "success");
+      // Refresh the overview so the saved note survives switching tabs.
+      await onReload();
     } catch (error) {
       showErrorToast(error);
     } finally {

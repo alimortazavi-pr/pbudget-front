@@ -8,8 +8,8 @@ import gregorianCalendar from "react-date-object/calendars/gregorian";
 import persianCalendar from "react-date-object/calendars/persian";
 import gregorianLocale from "react-date-object/locales/gregorian_en";
 import persianLocale from "react-date-object/locales/persian_fa";
-import { Input } from "@heroui/react";
 import DatePicker from "react-multi-date-picker";
+import { DatePickerInput } from "@/components/common/form/DatePickerInput";
 
 import type { UserDateCalendar } from "@/common/constants/user-preferences";
 import { DATE_PICKER_Z_INDEX } from "@/common/constants/overlay-z-index";
@@ -118,7 +118,7 @@ export function FilterDatePicker({
         offsetY={inModal ? 8 : undefined}
         containerClassName="w-full"
         inputClass="pb-form-date-input"
-        render={<Input variant="secondary" readOnly className="pb-form-date-input" />}
+        render={<DatePickerInput />}
         placeholder={
           isGregorian
             ? t("dashboard.gregorianDatePlaceholder")

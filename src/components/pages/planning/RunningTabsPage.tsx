@@ -232,7 +232,7 @@ export function RunningTabsPage() {
                   </p>
                 </div>
                 <div className="flex shrink-0 gap-1">
-                  <Button
+                  <Button aria-label={t("common.edit")}
                     isIconOnly
                     size="sm"
                     variant="ghost"
@@ -241,7 +241,7 @@ export function RunningTabsPage() {
                   >
                     <Edit2 size={16} />
                   </Button>
-                  <Button
+                  <Button aria-label={t("common.delete")}
                     isIconOnly
                     size="sm"
                     variant="ghost"

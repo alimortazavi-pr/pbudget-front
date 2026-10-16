@@ -35,14 +35,16 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
     transactionCount: number;
   }>();
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [tab, setTab] = useState<TabId>("overview");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
+    setLoadFailed(false);
     try {
       const data = await partnersApi.fetchVenture(ventureId);
       setVenture(data.venture);
@@ -51,6 +53,7 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
       setTitle(data.venture.title);
       setDescription(data.venture.description ?? "");
     } catch (err) {
+      setLoadFailed(true);
       showToast(err instanceof Error ? err.message : t("auto.k0080763ff0"));
     } finally {
       setLoading(false);
@@ -96,6 +99,17 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
     }
   }
 
+  if (!loading && !venture && loadFailed) {
+    return (
+      <div className="glass rounded-2xl p-10 text-center text-muted">
+        <p>{t("auto.k0080763ff0")}</p>
+        <Button className="mt-4" variant="secondary" onPress={() => void load()}>
+          {t("common.tryAgain")}
+        </Button>
+      </div>
+    );
+  }
+
   if (loading || !venture) {
     return (
       <div className="glass rounded-2xl p-10 text-center text-muted">
@@ -132,7 +146,11 @@ export function VentureDetailPage({ ventureId }: VentureDetailPageProps) {
             key={item.id}
             type="button"
             data-venture-tab={item.id}
-            onClick={() => setTab(item.id)}
+            onClick={() => {
+              // Partners/transactions tabs mutate data the overview summarises.
+              if (item.id === "overview" && tab !== "overview") void load(true);
+              setTab(item.id);
+            }}
             className={`shrink-0 cursor-pointer rounded-xl px-4 py-2 text-sm font-medium transition ${
               tab === item.id
                 ? "bg-accent text-accent-foreground"

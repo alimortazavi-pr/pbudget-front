@@ -13,7 +13,7 @@ import {
   pendingBazaarPurchases,
   purchaseWithBazaar,
 } from "@/common/native/bazaar";
-import { formatPlanPrice, formatPrice, toPersianDigits } from "@/common/utils";
+import { formatPlanPrice, toPersianDigits } from "@/common/utils";
 import { formatIsoDateJalali } from "@/common/utils/jalali-date";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
@@ -627,7 +627,7 @@ function BalePayDialog({
         <Modal.Body className="space-y-4">
           {session ? (
             <p className="rounded-xl bg-surface-secondary px-3 py-2 text-sm font-semibold">
-              {t("common.subscription.baleAmount", { amount: formatPrice(session.plan.price) })}
+              {t("common.subscription.baleAmount", { amount: `${formatPlanPrice(session.plan.price)} ${session.plan.priceUnit}` })}
             </p>
           ) : null}
           <ol className="space-y-2.5">

@@ -111,7 +111,8 @@ export function CustomExportsPage() {
   }, [hasAccess, load, subscriptionLoading]);
 
   async function selectSource(source: ExportSource) {
-    const nextFields = await exportsApi.fetchExportFields(source);
+    let nextFields: ExportField[];
+    try { nextFields = await exportsApi.fetchExportFields(source); } catch { showToast(t("common.error"), "danger"); return; }
     setFields(nextFields);
     setDraft((current) => current ? { ...current, source, columns: current.columns.filter((column) => nextFields.some((field) => field.key === column.key)) } : makeDraft(source, nextFields));
   }
@@ -154,7 +155,7 @@ export function CustomExportsPage() {
             <div className="flex items-center justify-between"><h2 className="font-bold">{t("pages.customExports.templates")}</h2><Button size="sm" variant="ghost" onPress={startNew} aria-label={t("pages.customExports.newTemplate")}><Add size={18} /></Button></div>
             {templates.length === 0 ? <p className="rounded-xl bg-surface-secondary p-3 text-sm text-muted">{t("pages.customExports.noTemplates")}</p> : templates.map((template) => (
               <Button type="button" key={template._id} onPress={() => edit(template)} variant="ghost" className={`h-auto w-full justify-start rounded-2xl border p-3 text-start ${editingId === template._id ? "border-accent bg-accent/5" : "border-border hover:border-accent/50"}`}>
-                <p className="font-semibold">{template.name}</p><p className="mt-1 text-xs text-muted">{template.columns.filter((column) => column.enabled).length} {t("pages.customExports.fieldsCount")} · {template.source}</p>
+                <p className="font-semibold">{template.name}</p><p className="mt-1 text-xs text-muted">{template.columns.filter((column) => column.enabled).length} {t("pages.customExports.fieldsCount")} · {t(template.source === "debts" ? "pages.customExports.sourceDebts" : template.source === "combined" ? "pages.customExports.sourceCombined" : "pages.customExports.sourceBudgets")}</p>
               </Button>
             ))}
           </aside>
@@ -190,7 +191,7 @@ export function CustomExportsPage() {
               </div>}
               {tab === "design" && <div className="mt-5"><CanvasEditor canvas={draft.canvas} fields={fields} onChange={(canvas) => setDraft({ ...draft, canvas })} /></div>}
               {tab === "preview" && <div className="mt-5"><Preview draft={draft} /></div>}
-              <div className="mt-6 flex flex-wrap justify-end gap-2 border-t border-border pt-4"><Button variant="ghost" onPress={() => void remove()} isDisabled={!editingId}><Trash size={17} />{t("pages.customExports.delete")}</Button><Button variant="secondary" onPress={() => void save()}><Save2 size={17} />{t("pages.customExports.save")}</Button>{editingId && <><Button variant="secondary" onPress={() => void exportsApi.downloadExport(editingId, "xlsx")}><DocumentDownload size={17} />{t("pages.customExports.exportExcel")}</Button><Button onPress={() => void exportsApi.downloadExport(editingId, "pdf")}><Eye size={17} />{t("pages.customExports.exportPdf")}</Button></>}</div>
+              <div className="mt-6 flex flex-wrap justify-end gap-2 border-t border-border pt-4"><Button variant="ghost" onPress={() => void remove()} isDisabled={!editingId}><Trash size={17} />{t("pages.customExports.delete")}</Button><Button variant="secondary" onPress={() => void save()}><Save2 size={17} />{t("pages.customExports.save")}</Button>{editingId && <><Button variant="secondary" onPress={() => void exportsApi.downloadExport(editingId, "xlsx").catch(() => showToast(t("common.error"), "danger"))}><DocumentDownload size={17} />{t("pages.customExports.exportExcel")}</Button><Button onPress={() => void exportsApi.downloadExport(editingId, "pdf").catch(() => showToast(t("common.error"), "danger"))}><Eye size={17} />{t("pages.customExports.exportPdf")}</Button></>}</div>
             </main>
           ) : <div className="glass flex min-h-[360px] items-center justify-center rounded-2xl p-8 text-center"><div><Edit2 size={32} className="mx-auto text-muted" /><p className="mt-3 text-sm text-muted">{t("pages.customExports.newTemplate")}</p><Button className="mt-4" onPress={startNew}>{t("pages.customExports.newTemplate")}</Button></div></div>}
         </div>

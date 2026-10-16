@@ -330,7 +330,9 @@ export function TourProvider({ children }: { children: ReactNode }) {
 
       if (pathname.startsWith("/admin")) return;
 
-      if (!isOnboardingDone()) {
+      // The first-run tour starts on the dashboard, where its steps live; a
+      // deep link into another page should not open it with most steps missing.
+      if (!isOnboardingDone() && pathname === PATHS.HOME) {
         startTour(ONBOARDING_TOUR);
         return;
       }

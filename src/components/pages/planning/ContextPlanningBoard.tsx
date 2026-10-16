@@ -337,7 +337,7 @@ export function ContextPlanningBoard({
 
         <div
           className={`mt-3 flex min-h-0 flex-col gap-2 ${
-            expanded ? "flex-1 overflow-y-auto pr-1" : "min-h-24"
+            expanded ? "flex-1 overflow-y-auto pe-1" : "min-h-24"
           }`}
         >
           {column.cards.map((card, cardIndex) => (
@@ -345,6 +345,11 @@ export function ContextPlanningBoard({
               key={card._id}
               draggable={!readOnly}
               onDragStart={(event) => handleDragStart(event, card, column._id)}
+              onDragEnd={() => {
+                // Dropped outside any column: clear the drag highlight.
+                setDragState(null);
+                setDragOverColumnId(null);
+              }}
               onDragOver={(event) => event.preventDefault()}
               onDrop={(event) => {
                 event.stopPropagation();

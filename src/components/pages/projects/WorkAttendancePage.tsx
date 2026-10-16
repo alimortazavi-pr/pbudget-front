@@ -54,6 +54,7 @@ export function WorkAttendancePage() {
   const [report, setReport] = useState<IWorkTimeReport | null>(null);
   const [alerts, setAlerts] = useState<IWorkTimeAlert[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [actionProjectId, setActionProjectId] = useState<string | null>(null);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
@@ -62,6 +63,7 @@ export function WorkAttendancePage() {
 
   const load = useCallback(async () => {
     setLoading(true);
+    setLoadFailed(false);
     try {
       const [dashboard, workReport, workAlerts] = await Promise.all([
         workTimeApi.fetchWorkTimeDashboard(year, month),
@@ -72,6 +74,11 @@ export function WorkAttendancePage() {
       setReport(workReport);
       setAlerts(workAlerts);
     } catch (err) {
+      // Don't keep the previous month's data under the new month label.
+      setData(null);
+      setReport(null);
+      setAlerts([]);
+      setLoadFailed(true);
       showToast(err instanceof Error ? err.message : t("pages.attendance.loadError"));
     } finally {
       setLoading(false);
@@ -214,7 +221,7 @@ export function WorkAttendancePage() {
       </div>
 
       <div className="glass flex items-center justify-between rounded-2xl p-3" data-tour="attendance-month">
-        <Button isIconOnly variant="ghost" onPress={() => shiftMonth(-1)}>
+        <Button aria-label={t("dashboard.simplePrevMonth")} isIconOnly variant="ghost" onPress={() => shiftMonth(-1)}>
           <ArrowRight2 size={18} />
         </Button>
         <p className="font-semibold">
@@ -230,13 +237,20 @@ export function WorkAttendancePage() {
           >
             <DocumentDownload size={18} />
           </Button>
-          <Button isIconOnly variant="ghost" onPress={() => shiftMonth(1)}>
+          <Button aria-label={t("dashboard.simpleNextMonth")} isIconOnly variant="ghost" onPress={() => shiftMonth(1)}>
             <ArrowLeft2 size={18} />
           </Button>
         </div>
       </div>
 
-      {loading || !data ? (
+      {!loading && !data && loadFailed ? (
+        <div className="glass rounded-2xl p-10 text-center text-muted">
+          <p>{t("auto.k0080763ff0")}</p>
+          <Button className="mt-4" variant="secondary" onPress={() => void load()}>
+            {t("common.tryAgain")}
+          </Button>
+        </div>
+      ) : loading || !data ? (
         <div className="glass rounded-2xl p-10 text-center text-muted">{t("common.loading")}</div>
       ) : (
         <>

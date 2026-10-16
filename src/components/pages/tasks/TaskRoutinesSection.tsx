@@ -52,6 +52,7 @@ export function TaskRoutinesSection() {
   }, [load]);
 
   async function removeRoutine(routine: ITaskRoutine) {
+    if (!confirm(t("common.deleteConfirm", { name: routine.title }))) return;
     try {
       await tasksApi.deleteTaskRoutine(routine._id);
       setRoutines((current) => current.filter((row) => row._id !== routine._id));
@@ -129,7 +130,7 @@ export function TaskRoutinesSection() {
                     </div>
                   </div>
                   <div className="flex shrink-0 gap-1">
-                    <Button
+                    <Button aria-label={t("common.edit")}
                       isIconOnly
                       size="sm"
                       variant="ghost"
@@ -140,7 +141,7 @@ export function TaskRoutinesSection() {
                     >
                       <Edit2 size={16} />
                     </Button>
-                    <Button
+                    <Button aria-label={t("common.delete")}
                       isIconOnly
                       size="sm"
                       variant="ghost"

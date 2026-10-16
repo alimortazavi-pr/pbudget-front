@@ -4,7 +4,8 @@ import { useTranslation } from "@/i18n";
 
 import type { AnalyticsReport } from "@/common/interfaces/analytics.interface";
 import { resolveCategoryColor } from "@/common/constants/category-colors";
-import { formatPrice, toPersianDigits } from "@/common/utils";
+import { toPersianDigits } from "@/common/utils";
+import { useAnalysisMoney } from "./analysis-money";
 
 type AnalysisBudgetLimitsPanelProps = {
   report: AnalyticsReport;
@@ -12,6 +13,7 @@ type AnalysisBudgetLimitsPanelProps = {
 
 export function AnalysisBudgetLimitsPanel({ report }: AnalysisBudgetLimitsPanelProps) {
   const { t } = useTranslation();
+  const { money } = useAnalysisMoney();
   const rows = report.categoryBudgets ?? [];
   if (rows.length === 0) return null;
 
@@ -38,7 +40,7 @@ export function AnalysisBudgetLimitsPanel({ report }: AnalysisBudgetLimitsPanelP
                     ) : null}
                   </p>
                   <p className="text-xs text-muted">
-                    {t("auto.kab3e1ccf9b")}{" "}{formatPrice(row.monthlyLimit)} · {t("auto.kb0c4ca0499")}{" "}{formatPrice(row.spent)}
+                    {t("auto.kab3e1ccf9b")}{" "}{money(row.monthlyLimit)} · {t("auto.kb0c4ca0499")}{" "}{money(row.spent)}
                   </p>
                 </div>
               </div>
@@ -48,8 +50,8 @@ export function AnalysisBudgetLimitsPanel({ report }: AnalysisBudgetLimitsPanelP
                 }`}
               >
                 {row.isOverLimit
-                  ? `${formatPrice(row.overLimitAmount)} ${t("nav.more")}`
-                  : `${formatPrice(row.remaining)} ${t("auto.k23d4b4c189")}`}
+                  ? `${money(row.overLimitAmount)} ${t("nav.more")}`
+                  : `${money(row.remaining)} ${t("auto.k23d4b4c189")}`}
               </p>
             </div>
             <div className="mt-2 h-2 overflow-hidden rounded-full bg-background">

@@ -77,7 +77,7 @@ export function PartnerDebtBalancePanel({
     } finally {
       setLoading(false);
     }
-  }, [activePartners.length, contextId, contextType, t]);
+  }, [activePartners, contextId, contextType, t]);
 
   useEffect(() => {
     void load();

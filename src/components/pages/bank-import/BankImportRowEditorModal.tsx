@@ -39,7 +39,6 @@ import {
 import { CreateCategoryModal } from "@/components/pages/categories/CreateCategoryModal";
 import { useAppSelector } from "@/stores/hooks";
 import { categoriesSelector } from "@/stores/category";
-import { userSelector } from "@/stores/profile";
 import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 import { BudgetType, CategoryKind, DebtType } from "@/types/enums";
 import type { ImportRowDraft } from "./import-row.types";
@@ -68,8 +67,9 @@ export function BankImportRowEditorModal({
   const { t } = useTranslation();
   const { displayCurrencyLabel } = useCurrencyLabels();
   const categories = useAppSelector(categoriesSelector);
-  const user = useAppSelector(userSelector);
-  const preferredCurrency = user?.preferences?.currency ?? "toman";
+  // Bank statements are always imported as toman (the backend saves every
+  // row with currency toman), whatever the user's default currency is.
+  const preferredCurrency = "toman" as const;
   const categoryOptions = getCategorySelectOptions(categories ?? []);
 
   const [form, setForm] = useState<ImportRowDraft | null>(null);

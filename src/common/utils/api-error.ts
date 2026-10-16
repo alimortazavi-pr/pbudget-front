@@ -97,6 +97,9 @@ export function getApiErrorMessage(error: unknown, fallback?: string): string {
     const payload = error.response?.data as { message?: unknown } | undefined;
     const fromPayload = normalizeMessagePayload(payload?.message);
     if (fromPayload) return fromPayload;
+    // No response at all: offline, server down/restarting, CORS or timeout.
+    if (!error.response) return t("errors.network");
+    return resolvedFallback;
   }
 
   if (error instanceof Error && error.message && !error.message.startsWith("Request failed with status code")) {

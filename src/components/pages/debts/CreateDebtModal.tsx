@@ -96,6 +96,7 @@ export function CreateDebtModal({ open, onOpenChange, onCreated }: CreateDebtMod
     const trimmed = person.trim();
     if (!trimmed || forceCreateNew) {
       setPersonMatches([]);
+      setCheckingPerson(false);
       return;
     }
 

@@ -16,6 +16,7 @@ import { formatPrice, toPersianDigits } from "@/common/utils";
 import { moneyDisplayUnitLabel } from "@/common/utils/money-display";
 import { showToast } from "@/common/utils/toast";
 import { AppSearch, AppSelect } from "@/components/common/form/AppControls";
+import { FormPriceInput } from "@/components/common/form/FormFields";
 
 type ContentTab = "budgets" | "categories" | "projects";
 
@@ -165,12 +166,17 @@ export function AdminContentPage() {
               <td className="px-4 py-3">
                 <RowActions
                   onEdit={() => setEditingBudget(item)}
+                  deleted={Boolean(item.deleted)}
                   onToggleDelete={async () => {
-                    await adminApi.updateAdminBudget(item._id, {
-                      deleted: !item.deleted,
-                    });
-                    showToast(t("common.updated"), "success");
-                    void load();
+                    try {
+                      await adminApi.updateAdminBudget(item._id, {
+                        deleted: !item.deleted,
+                      });
+                      showToast(t("common.updated"), "success");
+                      void load();
+                    } catch {
+                      showToast(t("common.saveFailed"), "danger");
+                    }
                   }}
                 />
               </td>
@@ -213,12 +219,17 @@ export function AdminContentPage() {
               <td className="px-4 py-3">
                 <RowActions
                   onEdit={() => setEditingCategory(item)}
+                  deleted={Boolean(item.deleted)}
                   onToggleDelete={async () => {
-                    await adminApi.updateAdminCategory(item._id, {
-                      deleted: !item.deleted,
-                    });
-                    showToast(t("common.updated"), "success");
-                    void load();
+                    try {
+                      await adminApi.updateAdminCategory(item._id, {
+                        deleted: !item.deleted,
+                      });
+                      showToast(t("common.updated"), "success");
+                      void load();
+                    } catch {
+                      showToast(t("common.saveFailed"), "danger");
+                    }
                   }}
                 />
               </td>
@@ -250,12 +261,17 @@ export function AdminContentPage() {
               <td className="px-4 py-3">
                 <RowActions
                   onEdit={() => setEditingProject(item)}
+                  deleted={Boolean(item.deleted)}
                   onToggleDelete={async () => {
-                    await adminApi.updateAdminProject(item._id, {
-                      deleted: !item.deleted,
-                    });
-                    showToast(t("common.updated"), "success");
-                    void load();
+                    try {
+                      await adminApi.updateAdminProject(item._id, {
+                        deleted: !item.deleted,
+                      });
+                      showToast(t("common.updated"), "success");
+                      void load();
+                    } catch {
+                      showToast(t("common.saveFailed"), "danger");
+                    }
                   }}
                 />
               </td>
@@ -355,16 +371,19 @@ function ContentTable({
 function RowActions({
   onEdit,
   onToggleDelete,
+  deleted,
 }: {
   onEdit: () => void;
   onToggleDelete: () => void;
+  deleted?: boolean;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="flex gap-1">
-      <Button size="sm" variant="ghost" onPress={onEdit}>
+      <Button aria-label={t("common.edit")} size="sm" variant="ghost" onPress={onEdit}>
         <Edit2 size={16} />
       </Button>
-      <Button size="sm" variant="ghost" onPress={() => void onToggleDelete()}>
+      <Button aria-label={deleted ? t("auto.kf79235e4be") : t("common.delete")} size="sm" variant="ghost" onPress={() => void onToggleDelete()}>
         <Trash size={16} />
       </Button>
     </div>
@@ -447,7 +466,7 @@ function BudgetEditModal({
               <Modal.Heading>{t("nav.editTransaction")}</Modal.Heading>
             </Modal.Header>
             <Modal.Body className="space-y-3">
-              <Input variant="secondary" type="number" aria-label={t("common.amount")} value={String(price)} onChange={(e) => setPrice(Number(e.target.value))} placeholder={t("common.amount")} />
+              <FormPriceInput label={t("common.amount")} value={String(price)} onChange={(raw) => setPrice(Number(raw) || 0)} />
               <AppSelect ariaLabel={t("common.type")} value={String(type)} onChange={(v) => setType(Number(v))} options={[{ value: "0", label: t("common.income") }, { value: "1", label: t("common.expense") }]} />
               <TextArea variant="secondary" aria-label={t("common.description")} value={description} onChange={(e) => setDescription(e.target.value)} placeholder={t("common.description")} rows={3} />
             </Modal.Body>
@@ -513,7 +532,7 @@ function CategoryEditModal({
             <Modal.Body className="space-y-3">
               <Input variant="secondary" aria-label={t("common.title")} value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("common.title")} />
               <Input variant="secondary" aria-label={t("common.color")} value={color} onChange={(e) => setColor(e.target.value)} placeholder={t("common.color")} />
-              <Input variant="secondary" type="number" aria-label={t("common.monthlyLimit")} value={String(monthlyLimit)} onChange={(e) => setMonthlyLimit(Number(e.target.value))} placeholder={t("common.monthlyLimit")} />
+              <FormPriceInput label={t("common.monthlyLimit")} value={String(monthlyLimit)} onChange={(raw) => setMonthlyLimit(Number(raw) || 0)} />
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onPress={onClose}>
@@ -573,7 +592,7 @@ function ProjectEditModal({
             </Modal.Header>
             <Modal.Body className="space-y-3">
               <TextArea variant="secondary" aria-label={t("common.description")} value={description} onChange={(e) => setDescription(e.target.value)} placeholder={t("common.description")} rows={3} />
-              <Input variant="secondary" type="number" aria-label={t("common.totalAmount")} value={String(totalAmount)} onChange={(e) => setTotalAmount(Number(e.target.value))} placeholder={t("common.totalAmount")} />
+              <FormPriceInput label={t("common.totalAmount")} value={String(totalAmount)} onChange={(raw) => setTotalAmount(Number(raw) || 0)} />
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onPress={onClose}>

@@ -96,7 +96,7 @@ export function AddPartnerModal({
     }
 
     const share = sharePercent ? Number(toEnglishDigits(sharePercent)) : 0;
-    if (sharePercent && (share < 0 || share > 100)) {
+    if (sharePercent && (!Number.isFinite(share) || share < 0 || share > 100)) {
       showToast(t("auto.k685adbee84"));
       return;
     }

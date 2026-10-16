@@ -4,7 +4,7 @@ import { useTranslation } from "@/i18n";
 
 import type { AnalyticsReport } from "@/common/interfaces/analytics.interface";
 import { paymentCardSubtitle } from "@/common/utils/payment-card";
-import { formatPrice } from "@/common/utils";
+import { useAnalysisMoney } from "./analysis-money";
 
 type AnalysisPaymentCardsPanelProps = {
   report: AnalyticsReport;
@@ -12,6 +12,7 @@ type AnalysisPaymentCardsPanelProps = {
 
 export function AnalysisPaymentCardsPanel({ report }: AnalysisPaymentCardsPanelProps) {
   const { t } = useTranslation();
+  const { money } = useAnalysisMoney();
   const rows = report.byPaymentCard ?? [];
   if (rows.length === 0) return null;
 
@@ -40,12 +41,12 @@ export function AnalysisPaymentCardsPanel({ report }: AnalysisPaymentCardsPanelP
                 </p>
               </div>
             </div>
-            <div className="text-left text-sm">
+            <div className="text-end text-sm">
               {row.cost > 0 ? (
-                <p className="font-semibold text-expense">-{formatPrice(row.cost)}</p>
+                <p className="font-semibold text-expense">-{money(row.cost)}</p>
               ) : null}
               {row.income > 0 ? (
-                <p className="font-semibold text-income">+{formatPrice(row.income)}</p>
+                <p className="font-semibold text-income">+{money(row.income)}</p>
               ) : null}
             </div>
           </div>

@@ -25,12 +25,9 @@ import {
 
 import type { AnalyticsReport } from "@/common/interfaces/analytics.interface";
 import { resolveCategoryColor } from "@/common/constants/category-colors";
-import { formatPrice, toPersianDigits } from "@/common/utils";
-import { moneyDisplayUnitLabel } from "@/common/utils/money-display";
-import {
-  CHART_COLORS,
-  formatChartPrice,
-} from "@/components/pages/analysis/chart-colors";
+import { toPersianDigits } from "@/common/utils";
+import { useAnalysisMoney } from "./analysis-money";
+import { CHART_COLORS } from "@/components/pages/analysis/chart-colors";
 
 export type AnalysisSection = "overview" | "expenses" | "income" | "assets";
 
@@ -69,6 +66,7 @@ function CustomTooltip({
   payload?: Array<{ name: string; value: number; color: string }>;
   label?: string;
 }) {
+  const { money, unit } = useAnalysisMoney();
   if (!active || !payload?.length) return null;
 
   return (
@@ -76,7 +74,7 @@ function CustomTooltip({
       <p className="mb-1 font-medium">{label}</p>
       {payload.map((entry) => (
         <p key={entry.name} style={{ color: entry.color }}>
-          {entry.name}: {formatPrice(entry.value)} {moneyDisplayUnitLabel()}
+          {entry.name}: {money(entry.value)} {unit}
         </p>
       ))}
     </div>
@@ -85,6 +83,7 @@ function CustomTooltip({
 
 export function AnalysisCharts({ report, duration, section }: AnalysisChartsProps) {
   const { t } = useTranslation();
+  const { money, unit, chartPrice } = useAnalysisMoney();
   const expensePieData = useMemo(
     () =>
       report.topExpenses.slice(0, 8).map((item, index) => ({
@@ -214,7 +213,7 @@ export function AnalysisCharts({ report, duration, section }: AnalysisChartsProp
                   </Pie>
                   <Tooltip
                     formatter={(value) => [
-                      `${formatPrice(Number(value ?? 0))} ${moneyDisplayUnitLabel()}`,
+                      `${money(Number(value ?? 0))} ${unit}`,
                       t("common.amount"),
                     ]}
                   />
@@ -235,7 +234,7 @@ export function AnalysisCharts({ report, duration, section }: AnalysisChartsProp
               <BarChart data={overviewBarData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.2)" />
                 <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                <YAxis tickFormatter={formatChartPrice} tick={{ fontSize: 11 }} />
+                <YAxis tickFormatter={chartPrice} tick={{ fontSize: 11 }} />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend />
                 <Bar dataKey="income" name={t("common.income")} fill={CHART_COLORS.income} radius={[8, 8, 0, 0]} />
@@ -270,7 +269,7 @@ export function AnalysisCharts({ report, duration, section }: AnalysisChartsProp
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.2)" />
                 <XAxis dataKey="label" tick={{ fontSize: 11 }} />
-                <YAxis tickFormatter={formatChartPrice} tick={{ fontSize: 11 }} />
+                <YAxis tickFormatter={chartPrice} tick={{ fontSize: 11 }} />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend />
                 <Area
@@ -300,7 +299,7 @@ export function AnalysisCharts({ report, duration, section }: AnalysisChartsProp
               <BarChart data={cashFlowData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.2)" />
                 <XAxis dataKey="label" tick={{ fontSize: 11 }} />
-                <YAxis tickFormatter={formatChartPrice} tick={{ fontSize: 11 }} />
+                <YAxis tickFormatter={chartPrice} tick={{ fontSize: 11 }} />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="net" name={t("auto.k306c8ddc1c")} radius={[6, 6, 0, 0]}>
                   {cashFlowData.map((entry, index) => (
@@ -342,7 +341,7 @@ export function AnalysisCharts({ report, duration, section }: AnalysisChartsProp
                   </Pie>
                   <Tooltip
                     formatter={(value) => [
-                      `${formatPrice(Number(value ?? 0))} ${moneyDisplayUnitLabel()}`,
+                      `${money(Number(value ?? 0))} ${unit}`,
                       t("common.amount"),
                     ]}
                   />
@@ -361,7 +360,7 @@ export function AnalysisCharts({ report, duration, section }: AnalysisChartsProp
             <ResponsiveContainer width="100%" height="100%" minHeight={320}>
               <BarChart data={categoryBarData} layout="vertical" margin={{ left: 12 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.2)" />
-                <XAxis type="number" tickFormatter={formatChartPrice} />
+                <XAxis type="number" tickFormatter={chartPrice} />
                 <YAxis type="category" dataKey="name" width={90} tick={{ fontSize: 11 }} />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend />
@@ -402,7 +401,7 @@ export function AnalysisCharts({ report, duration, section }: AnalysisChartsProp
                   </Pie>
                   <Tooltip
                     formatter={(value) => [
-                      `${formatPrice(Number(value ?? 0))} ${moneyDisplayUnitLabel()}`,
+                      `${money(Number(value ?? 0))} ${unit}`,
                       t("common.amount"),
                     ]}
                   />
@@ -426,7 +425,7 @@ export function AnalysisCharts({ report, duration, section }: AnalysisChartsProp
               <BarChart data={paymentCardBarData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.2)" />
                 <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                <YAxis tickFormatter={formatChartPrice} tick={{ fontSize: 11 }} />
+                <YAxis tickFormatter={chartPrice} tick={{ fontSize: 11 }} />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend />
                 <Bar dataKey="cost" name={t("auto.k1025955b55")} fill={CHART_COLORS.cost} radius={[6, 6, 0, 0]} />
@@ -469,7 +468,7 @@ export function AnalysisCharts({ report, duration, section }: AnalysisChartsProp
                   </Pie>
                   <Tooltip
                     formatter={(value) => [
-                      `${formatPrice(Number(value ?? 0))} ${moneyDisplayUnitLabel()}`,
+                      `${money(Number(value ?? 0))} ${unit}`,
                       t("auto.k90c9e7cad5"),
                     ]}
                   />
@@ -499,6 +498,7 @@ function CategoryBreakdown({
   rows: AnalyticsReport["byCategory"];
 }) {
   const { t } = useTranslation();
+  const { money, unit } = useAnalysisMoney();
   const [sortKey, setSortKey] = useState<SortKey>("cost");
   const [direction, setDirection] = useState<SortDirection>("desc");
   const [query, setQuery] = useState("");
@@ -558,7 +558,6 @@ function CategoryBreakdown({
     });
   }
 
-  const unit = moneyDisplayUnitLabel();
   const columns: Array<{ key: SortKey; label: string }> = [
     { key: "title", label: t("pages.analysis.category") },
     { key: "income", label: t("pages.analysis.income") },
@@ -603,11 +602,11 @@ function CategoryBreakdown({
               </div>
               <div>
                 <p className="text-xs text-muted">{t("pages.analysis.income")}</p>
-                <p className="font-semibold">{formatPrice(totals.income)} {unit}</p>
+                <p className="font-semibold">{money(totals.income)} {unit}</p>
               </div>
               <div>
                 <p className="text-xs text-muted">{t("pages.analysis.expense")}</p>
-                <p className="font-bold text-danger">{formatPrice(totals.cost)} {unit}</p>
+                <p className="font-bold text-danger">{money(totals.cost)} {unit}</p>
               </div>
               <div>
                 <p className="text-xs text-muted">{t("pages.analysis.shareOfExpense")}</p>
@@ -670,10 +669,10 @@ function CategoryBreakdown({
                           {row.title}
                         </span>
                       </td>
-                      <td className="py-2.5">{formatPrice(row.income)} {unit}</td>
-                      <td className="py-2.5">{formatPrice(row.cost)} {unit}</td>
+                      <td className="py-2.5">{money(row.income)} {unit}</td>
+                      <td className="py-2.5">{money(row.cost)} {unit}</td>
                       <td className={`py-2.5 font-semibold ${row.net >= 0 ? "text-success-foreground" : "text-danger"}`}>
-                        {formatPrice(row.net)} {unit}
+                        {money(row.net)} {unit}
                       </td>
                       <td className="py-2.5">{toPersianDigits(row.count)}</td>
                     </tr>

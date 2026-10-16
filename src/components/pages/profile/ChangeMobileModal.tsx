@@ -89,7 +89,7 @@ export function ChangeMobileModal({
     try {
       const { token: newToken, user } = await profileApi.changeMobile({
         mobile,
-        code,
+        code: toEnglishDigits(code),
       });
       dispatch(authenticate({ token: newToken }));
       dispatch(setProfile(user));

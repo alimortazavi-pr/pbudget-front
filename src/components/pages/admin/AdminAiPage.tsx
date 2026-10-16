@@ -365,7 +365,7 @@ function SettingsTab({ catalog, initial, onSaved }: { catalog: AiModelCatalog | 
 
 // ---- quota -------------------------------------------------------------------
 
-function PlanQuotaRow({ plan, onSaved }: { plan: AiAdminPlans["plans"][number]; onSaved: () => void }) {
+function PlanQuotaRow({ plan, defaultLimit, onSaved }: { plan: AiAdminPlans["plans"][number]; defaultLimit: number; onSaved: () => void }) {
   const [enabled, setEnabled] = useState(plan.enabled);
   const [limit, setLimit] = useState(String(plan.limit ?? ""));
   const [saving, setSaving] = useState(false);
@@ -380,7 +380,8 @@ function PlanQuotaRow({ plan, onSaved }: { plan: AiAdminPlans["plans"][number]; 
   async function save() {
     setSaving(true);
     try {
-      await aiApi.updateAdminAiPlan(plan.id, { enabled, limit: parsed });
+      // The API always requires a 1..2000 limit, even when switching AI off.
+      await aiApi.updateAdminAiPlan(plan.id, { enabled, limit: valid ? parsed : (plan.limit ?? defaultLimit) });
       showToast(`سهمیهٔ پلن «${plan.name}» ذخیره شد`, "success");
       onSaved();
     } catch (error) {
@@ -516,7 +517,7 @@ function QuotaTab({ defaultLimit }: { defaultLimit: number }) {
         ) : (
           <ul className="divide-y divide-border/50">
             {plans.plans.map((plan) => (
-              <PlanQuotaRow key={plan.id} plan={plan} onSaved={() => void loadPlans()} />
+              <PlanQuotaRow key={plan.id} plan={plan} defaultLimit={defaultLimit} onSaved={() => void loadPlans()} />
             ))}
           </ul>
         )}

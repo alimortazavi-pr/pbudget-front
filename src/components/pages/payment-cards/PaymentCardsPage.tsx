@@ -18,7 +18,7 @@ import {
   normalizeCardNumber,
   paymentCardSubtitle,
 } from "@/common/utils/payment-card";
-import { showToast } from "@/common/utils/toast";
+import { showErrorToast, showToast } from "@/common/utils/toast";
 import { FormInput } from "@/components/common/form/FormFields";
 import { CategoryColorPicker } from "@/components/common/form/CategoryColorPicker";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
@@ -39,13 +39,16 @@ export function PaymentCardsPage() {
   const [lastFour, setLastFour] = useState("");
   const [color, setColor] = useState<string>(DEFAULT_CATEGORY_COLORS[4]);
   const [saving, setSaving] = useState(false);
+  const [removing, setRemoving] = useState<IPaymentCard | null>(null);
+  const [removeBusy, setRemoveBusy] = useState(false);
 
   useEffect(() => {
     setDefaultCardId(getDefaultPaymentCardId(user?._id));
-    void paymentCardsApi.fetchPaymentCards().then((data) => {
-      setCards(data);
-      setLoading(false);
-    });
+    void paymentCardsApi
+      .fetchPaymentCards()
+      .then(setCards)
+      .catch((err) => showErrorToast(err))
+      .finally(() => setLoading(false));
   }, [user?._id]);
 
   function toggleDefaultCard(card: IPaymentCard) {
@@ -107,6 +110,7 @@ export function PaymentCardsPage() {
   }
 
   async function remove(card: IPaymentCard) {
+    setRemoveBusy(true);
     try {
       await paymentCardsApi.softDeletePaymentCard(card._id);
       setCards((prev) => prev.filter((item) => item._id !== card._id));
@@ -115,8 +119,11 @@ export function PaymentCardsPage() {
         setDefaultCardId(null);
       }
       showToast(t("common.deleted"), "success");
+      setRemoving(null);
     } catch (err) {
       showToast(err instanceof Error ? err.message : t("common.error"));
+    } finally {
+      setRemoveBusy(false);
     }
   }
 
@@ -188,10 +195,10 @@ export function PaymentCardsPage() {
                     variant={defaultCardId === card._id ? "Bold" : "Linear"}
                   />
                 </Button>
-                <Button isIconOnly size="sm" variant="ghost" onPress={() => openEdit(card)}>
+                <Button isIconOnly size="sm" variant="ghost" aria-label={t("common.edit")} onPress={() => openEdit(card)}>
                   <Edit2 size={16} />
                 </Button>
-                <Button isIconOnly size="sm" variant="danger" onPress={() => void remove(card)}>
+                <Button isIconOnly size="sm" variant="danger" aria-label={t("common.delete")} onPress={() => setRemoving(card)}>
                   <Trash size={16} />
                 </Button>
               </div>
@@ -221,9 +228,25 @@ export function PaymentCardsPage() {
             </Modal.Body>
             <Modal.Footer>
               <Button type="button" variant="ghost" onPress={() => setOpen(false)}>{t("common.cancel")}</Button>
-              <Button type="submit" isPending={saving}>{t("common.save")}</Button>
+              <Button type="submit" isPending={saving} isDisabled={!title.trim()}>{t("common.save")}</Button>
             </Modal.Footer>
           </form>
+        </AppModalDialog>
+      </AppModal>
+
+      <AppModal open={Boolean(removing)} onOpenChange={(next) => !next && setRemoving(null)} size="sm">
+        <AppModalDialog>
+          <AppModalHeader onClose={() => setRemoving(null)}>
+            <Modal.Heading>{t("common.deleteConfirm", { name: removing?.title ?? "" })}</Modal.Heading>
+          </AppModalHeader>
+          <Modal.Footer>
+            <Button variant="ghost" onPress={() => setRemoving(null)}>
+              {t("common.cancel")}
+            </Button>
+            <Button variant="danger" isPending={removeBusy} onPress={() => removing && void remove(removing)}>
+              {t("common.delete")}
+            </Button>
+          </Modal.Footer>
         </AppModalDialog>
       </AppModal>
     </div>

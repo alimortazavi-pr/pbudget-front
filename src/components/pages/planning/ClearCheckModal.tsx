@@ -7,7 +7,7 @@ import { Button, Modal } from "@heroui/react";
 
 import * as checksApi from "@/common/api/checks";
 import type { ICheck } from "@/common/interfaces/check.interface";
-import { getJalaliNow, toEnglishDigits } from "@/common/utils";
+import { getNowDateParts, toEnglishDigits } from "@/common/utils";
 import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { showToast } from "@/common/utils/toast";
 import { FormCategoryComboBox, FormPriceInput, FormTextArea } from "@/components/common/form/FormFields";
@@ -37,7 +37,8 @@ export function ClearCheckModal({
   const preferredCurrency = user?.preferences?.currency ?? "toman";
   const categories = useAppSelector(categoriesSelector);
   const categoryOptions = getCategorySelectOptions(categories ?? []);
-  const now = getJalaliNow();
+  // The backend stores the transaction in the user's calendar preference.
+  const formCalendar = user?.preferences?.dateCalendar ?? "jalali";
 
   const [category, setCategory] = useState("");
   const [amount, setAmount] = useState("");
@@ -58,13 +59,14 @@ export function ClearCheckModal({
     }
 
     setSubmitting(true);
+    const today = getNowDateParts(formCalendar);
     try {
       await checksApi.clearCheck(check._id, {
         category,
         amount: toEnglishDigits(amount),
-        year: String(now.jYear()),
-        month: String(now.jMonth() + 1),
-        day: String(now.jDate()),
+        year: today.year,
+        month: today.month,
+        day: today.day,
         note,
       });
       showToast(t("auto.kadc2f3e58b"), "success");
@@ -92,7 +94,7 @@ export function ClearCheckModal({
             {check.person} · {t("auto.k8b0f305f8a")}{check.dueYear}/{check.dueMonth}/{check.dueDay}
           </p>
 
-          <FormPriceInput label={t("budget.amountWithCurrency", { currency: displayCurrencyLabel(preferredCurrency) })} value={amount} onChange={setAmount} />
+          <FormPriceInput label={t("budget.amountWithCurrency", { currency: displayCurrencyLabel(preferredCurrency) })} value={amount} onChange={setAmount} currency={preferredCurrency} />
 
           <FormCategoryComboBox
             label={t("auto.kb561a47a9b")}

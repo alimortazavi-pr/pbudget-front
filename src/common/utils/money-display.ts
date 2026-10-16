@@ -8,20 +8,28 @@ const STORAGE_KEY = "pdesk.money-display-unit";
 const RIAL_MULTIPLIER = 10;
 
 let activeUnit: MoneyDisplayUnit = "toman";
-let initialized = false;
 
+/**
+ * The unit amounts render in right now. It starts as toman (what the server
+ * renders) and MoneyDisplayBoundary switches it after hydration, so the first
+ * client render always matches the server HTML.
+ */
 export function getMoneyDisplayUnit(): MoneyDisplayUnit {
-  if (!initialized && typeof window !== "undefined") {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    activeUnit = resolveMoneyDisplayUnit(stored as MoneyDisplayUnit | null);
-    initialized = true;
-  }
   return activeUnit;
+}
+
+/** The unit remembered on this device (used until the profile has loaded). */
+export function readStoredMoneyDisplayUnit(): MoneyDisplayUnit {
+  if (typeof window === "undefined") return "toman";
+  try {
+    return resolveMoneyDisplayUnit(window.localStorage.getItem(STORAGE_KEY) as MoneyDisplayUnit | null);
+  } catch {
+    return "toman";
+  }
 }
 
 export function setMoneyDisplayUnit(value?: MoneyDisplayUnit | null) {
   activeUnit = resolveMoneyDisplayUnit(value);
-  initialized = true;
   if (typeof window !== "undefined") {
     window.localStorage.setItem(STORAGE_KEY, activeUnit);
     window.dispatchEvent(

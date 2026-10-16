@@ -25,6 +25,7 @@ import type { AdminUserOverview } from "@/common/interfaces/admin";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { useAppSelector } from "@/stores/hooks";
 import { userSelector } from "@/stores/profile";
+import { useTranslation } from "@/i18n";
 import {
   ConfirmDialog,
   EmptyState,
@@ -56,6 +57,7 @@ const TABS: { id: TabId; label: string }[] = [
 type DialogId = "edit" | "password" | "admin" | "deactivate" | "revoke" | "hardDelete" | null;
 
 export function AdminUserDetailPage({ userId }: { userId: string }) {
+  const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const me = useAppSelector(userSelector);
@@ -65,6 +67,7 @@ export function AdminUserDetailPage({ userId }: { userId: string }) {
   const [overview, setOverview] = useState<AdminUserOverview | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [dialog, setDialog] = useState<DialogId>(null);
   const [busy, setBusy] = useState(false);
   const [editForm, setEditForm] = useState({ firstName: "", lastName: "" });
@@ -75,10 +78,14 @@ export function AdminUserDetailPage({ userId }: { userId: string }) {
       const next = await insightsApi.fetchUserOverview(userId);
       setOverview(next);
       setNotFound(false);
+      setLoadFailed(false);
     } catch (error) {
       const status = (error as { response?: { status?: number } })?.response?.status;
       if (status === 404 || status === 400) setNotFound(true);
-      else showErrorToast(error, "دریافت اطلاعات کاربر ناموفق بود");
+      else {
+        setLoadFailed(true);
+        showErrorToast(error, "دریافت اطلاعات کاربر ناموفق بود");
+      }
     } finally {
       setLoading(false);
     }
@@ -117,6 +124,26 @@ export function AdminUserDetailPage({ userId }: { userId: string }) {
         <div className="h-36 animate-pulse rounded-2xl bg-surface-secondary" />
         <SkeletonRows rows={6} height="h-24" />
       </div>
+    );
+  }
+
+  if (!overview && loadFailed && !notFound) {
+    return (
+      <EmptyState
+        title={t("auto.k0080763ff0")}
+        action={
+          <Button
+            size="sm"
+            variant="secondary"
+            onPress={() => {
+              setLoading(true);
+              void load();
+            }}
+          >
+            {t("common.tryAgain")}
+          </Button>
+        }
+      />
     );
   }
 

@@ -68,7 +68,7 @@ export function FormPersonComboBox({
         allowsCustomValue
         fullWidth
         variant="secondary"
-        menuTrigger="input"
+        menuTrigger="focus"
         inputValue={value}
         onInputChange={onChange}
         selectedKey={value.trim() || null}
@@ -222,7 +222,7 @@ export function FormCategoryComboBox({
       <ComboBox
         fullWidth
         variant="secondary"
-        menuTrigger="input"
+        menuTrigger="focus"
         isDisabled={isDisabled || creating}
         selectedKey={selectedKey ?? null}
         inputValue={inputValue}

@@ -9,11 +9,14 @@ import * as subscriptionApi from "@/common/api/subscriptions";
 import type { AdminSubscriptionHistory } from "@/common/interfaces/admin";
 import type { SubscriptionPlan, UserSubscription } from "@/common/interfaces/subscription.interface";
 import { showErrorToast, showToast } from "@/common/utils/toast";
+import { useTranslation } from "@/i18n";
 import { AdminPanel, ConfirmDialog, EmptyState, Field, KeyValue, NativeSelect, Pill, SkeletonRows } from "../ui/AdminUi";
 import { formatDateFa, formatDateTimeFa, formatNumberFa } from "../ui/admin-format";
 import { SUBSCRIPTION_STATUS_LABEL, SUBSCRIPTION_STATUS_TONE } from "../subscription-labels";
 
 export function UserSubscriptionTab({ userId, onChanged }: { userId: string; onChanged: () => Promise<void> | void }) {
+  const { t } = useTranslation();
+  const [loadFailed, setLoadFailed] = useState(false);
   const [data, setData] = useState<AdminSubscriptionHistory | null>(null);
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [planId, setPlanId] = useState("");
@@ -29,10 +32,12 @@ export function UserSubscriptionTab({ userId, onChanged }: { userId: string; onC
         subscriptionApi.fetchAdminSubscriptionPlans(),
       ]);
       setData(history);
+      setLoadFailed(false);
       const active = nextPlans.filter((plan) => plan.active);
       setPlans(active);
       setPlanId((current) => current || active.find((plan) => plan.slug !== "free")?._id || active[0]?._id || "");
     } catch (error) {
+      setLoadFailed(true);
       showErrorToast(error, "دریافت اشتراک ناموفق بود");
     }
   }, [userId]);
@@ -67,6 +72,18 @@ export function UserSubscriptionTab({ userId, onChanged }: { userId: string; onC
     );
   }
 
+  if (!data && loadFailed) {
+    return (
+      <EmptyState
+        title={t("auto.k0080763ff0")}
+        action={
+          <Button size="sm" variant="secondary" onPress={() => void load()}>
+            {t("common.tryAgain")}
+          </Button>
+        }
+      />
+    );
+  }
   if (!data) return <SkeletonRows rows={4} height="h-24" />;
 
   const current = data.current.subscription;

@@ -2,7 +2,7 @@
 
 import { useTranslation } from "@/i18n";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Button, Modal, Switch } from "@heroui/react";
 
 import * as categoriesApi from "@/common/api/categories";
@@ -74,8 +74,13 @@ export function CreateProjectModal({
 
   const hasExistingCategories = projectCategoryOptions.length > 0;
 
+  // Reset only when the modal opens: creating a category while saving (or a
+  // late category fetch) changes the options and must not wipe the form.
+  const wasOpenRef = useRef(false);
   useEffect(() => {
-    if (!open) return;
+    const justOpened = open && !wasOpenRef.current;
+    wasOpenRef.current = open;
+    if (!justOpened) return;
     if (hasExistingCategories) {
       setMode("existing");
       setCategoryId(projectCategoryOptions[0]?.id ?? "");
@@ -217,6 +222,7 @@ export function CreateProjectModal({
               }
               value={totalAmount}
               onChange={setTotalAmount}
+              currency={preferredCurrency}
             />
             <FormTextArea
               label={t("auto.k98fdf54bad")}
@@ -271,6 +277,7 @@ export function CreateProjectModal({
                     })}
                     value={hourlyRate}
                     onChange={setHourlyRate}
+                    currency={preferredCurrency}
                   />
                 ) : null}
               </>

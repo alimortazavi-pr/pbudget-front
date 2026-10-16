@@ -90,13 +90,16 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [detachingId, setDetachingId] = useState<string | null>(null);
+  const [loadFailed, setLoadFailed] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const detail = await debtsApi.fetchDebt(debtId);
       setDebt(detail);
+      setLoadFailed(false);
     } catch (err) {
+      setLoadFailed(true);
       showErrorToast(err, t("auto.k0080763ff0"));
     } finally {
       setLoading(false);
@@ -162,6 +165,17 @@ export function DebtDetailPage({ debtId }: DebtDetailPageProps) {
     } finally {
       setDetachingId(null);
     }
+  }
+
+  if (!loading && !debt && loadFailed) {
+    return (
+      <div className="glass rounded-2xl p-10 text-center text-muted">
+        <p>{t("auto.k0080763ff0")}</p>
+        <Button className="mt-4" variant="secondary" onPress={() => void load()}>
+          {t("common.tryAgain")}
+        </Button>
+      </div>
+    );
   }
 
   if (loading || !debt) {

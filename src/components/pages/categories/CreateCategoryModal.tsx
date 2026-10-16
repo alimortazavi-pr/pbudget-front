@@ -106,6 +106,7 @@ export function CreateCategoryModal({
               label={`${t("common.monthlyLimit")} (${displayCurrencyLabel(preferredCurrency)})`}
               value={monthlyLimit}
               onChange={setMonthlyLimit}
+              currency={preferredCurrency}
               placeholder={t("auto.kf69c4f20a2")}
             />
             <div className="flex items-center justify-between rounded-xl border border-border/50 bg-surface-secondary px-3 py-3">

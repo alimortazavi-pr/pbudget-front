@@ -26,7 +26,11 @@ export function InstallmentsPage() {
   const { t } = useTranslation();
   const { formatMonthYear } = useLocalizedDate();
   const router = useRouter();
-  const { year, month, calendarType, goToToday, shiftMonth } = usePeriodQuery(PATHS.INSTALLMENTS);
+  const { year, month, calendarType, goToToday, shiftMonth } = usePeriodQuery(
+    PATHS.INSTALLMENTS,
+    // Payment-plan occurrences are generated and stored in Jalali months only.
+    "jalali",
+  );
 
   const [loading, setLoading] = useState(true);
   const [monthlyData, setMonthlyData] = useState<IMonthlyPaymentOverview | null>(null);

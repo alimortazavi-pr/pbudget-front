@@ -4,7 +4,6 @@ import Link from "next/link";
 
 import { PATHS } from "@/common/constants";
 import type { IBudget } from "@/common/interfaces/budget.interface";
-import { formatPrice } from "@/common/utils";
 import { formatBudgetDate } from "@/common/utils/calendar-date";
 import { formatPriceWithCurrency } from "@/common/utils/format-currency";
 import { resolveBudgetCurrency, resolveBudgetDateCalendar } from "@/common/constants/user-preferences";
@@ -37,7 +36,10 @@ function usePerformerLabel(
     return t("common.registeredByShare", {
       name,
       percent: performer.sharePercent,
-      amount: formatPrice(performer.shareAmount),
+      amount: formatPriceWithCurrency(
+        performer.shareAmount,
+        resolveBudgetCurrency(budget.currency),
+      ),
     });
   }
 

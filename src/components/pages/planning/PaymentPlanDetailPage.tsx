@@ -78,12 +78,14 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
   const [startDay, setStartDay] = useState("");
   const [description, setDescription] = useState("");
   const [active, setActive] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const detail = await paymentPlansApi.fetchPaymentPlan(planId);
       setData(detail);
+      setLoadFailed(false);
       const plan = detail.plan;
       setTitle(plan.title);
       setPerson(plan.person ?? "");
@@ -96,6 +98,7 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
       setDescription(plan.description ?? "");
       setActive(plan.active);
     } catch (err) {
+      setLoadFailed(true);
       showErrorToast(err, t("auto.k0080763ff0"));
     } finally {
       setLoading(false);
@@ -178,6 +181,17 @@ export function PaymentPlanDetailPage({ planId }: PaymentPlanDetailPageProps) {
     } catch (err) {
       showErrorToast(err);
     }
+  }
+
+  if (!loading && !data && loadFailed) {
+    return (
+      <div className="glass rounded-2xl p-10 text-center text-muted">
+        <p>{t("auto.k0080763ff0")}</p>
+        <Button className="mt-4" variant="secondary" onPress={() => void load()}>
+          {t("common.tryAgain")}
+        </Button>
+      </div>
+    );
   }
 
   if (loading || !data) {

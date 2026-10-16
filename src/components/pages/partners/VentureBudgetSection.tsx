@@ -11,7 +11,9 @@ import { PATHS } from "@/common/constants";
 import * as partnersApi from "@/common/api/partners";
 import type { IBudget } from "@/common/interfaces/budget.interface";
 import { BudgetType } from "@/types/enums";
-import { formatJalaliDate, formatPrice } from "@/common/utils";
+import { formatBudgetDate } from "@/common/utils/calendar-date";
+import { formatPriceWithCurrency } from "@/common/utils/format-currency";
+import { resolveBudgetCurrency, resolveBudgetDateCalendar } from "@/common/constants/user-preferences";
 import { showToast } from "@/common/utils/toast";
 import {
   AppModal,
@@ -156,7 +158,7 @@ export function VentureBudgetSection({
                         {budget.description ? ` · ${budget.description}` : ""}
                       </p>
                       <p className="mt-0.5 text-xs text-muted">
-                        {formatJalaliDate(budget.year, budget.month, budget.day)}
+                        {formatBudgetDate(budget.year, budget.month, budget.day, resolveBudgetDateCalendar(budget.dateCalendar))}
                       </p>
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
@@ -164,7 +166,7 @@ export function VentureBudgetSection({
                         className={`text-sm font-bold ${isIncome ? "text-income" : "text-expense"}`}
                       >
                         {isIncome ? "+" : "-"}
-                        {formatPrice(budget.price)}
+                        {formatPriceWithCurrency(budget.price, resolveBudgetCurrency(budget.currency))}
                       </p>
                       <Button
                         size="sm"
