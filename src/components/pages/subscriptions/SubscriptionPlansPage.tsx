@@ -22,6 +22,8 @@ import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccess
 import { PageHeader } from "@/components/common/layout/PageHeader";
 import { TrialActiveBanner, TrialCard } from "@/components/common/subscription/TrialPromo";
 import { PlansFaq, PlansHowItWorks, PlansSupportCta, PlansTrustBar } from "@/components/pages/subscriptions/PlansExtras";
+import { DiscountCodeBox, DiscountedPrice, useDiscountCode } from "@/components/pages/subscriptions/DiscountCodeBox";
+import type { DiscountValidation } from "@/common/api/subscriptions";
 import { useAppSelector } from "@/stores/hooks";
 import { userSelector } from "@/stores/profile";
 
@@ -135,6 +137,12 @@ export function SubscriptionPlansPage() {
     return { featureCatalog: differing, commonCount: all.length - differing.length };
   }, [plans]);
 
+  // Codes are priced by the server for Bale and manual requests only; Bazaar
+  // sets its own in-app price, so plans bought there are left out.
+  const discountPlans = useMemo(() => plans.filter((plan) => plan.price > 0 && !(bazaarReady && plan.bazaarProductId)), [plans, bazaarReady]);
+  const hasBazaarPlans = bazaarReady && plans.some((plan) => plan.price > 0 && plan.bazaarProductId);
+  const discount = useDiscountCode(discountPlans);
+
   const current = mine?.subscription ?? null;
   const currentSlug = current?.plan?.slug ?? current?.planSnapshot?.slug;
   const currentIsFree = current ? (current.plan?.price ?? current.planSnapshot?.price ?? 0) === 0 : true;
@@ -188,7 +196,7 @@ export function SubscriptionPlansPage() {
   async function payWithBale(plan: SubscriptionPlan) {
     setBuyingPlanId(plan._id);
     try {
-      const checkout = await subscriptionApi.createBaleCheckout(plan._id);
+      const checkout = await subscriptionApi.createBaleCheckout(plan._id, discount.codeFor(plan._id));
       setBaleSession({ plan, checkout });
       // May be blocked by the browser; the dialog has a real link as the fallback.
       window.open(checkout.link, "_blank", "noopener");
@@ -302,6 +310,17 @@ export function SubscriptionPlansPage() {
       ) : plans.length === 0 ? (
         <div className="rounded-3xl border border-border/60 bg-surface p-10 text-center text-muted">{t("common.subscription.noPlans")}</div>
       ) : (
+        <>
+        {discountPlans.length > 0 ? (
+          <DiscountCodeBox
+            discount={discount}
+            hint={
+              hasBazaarPlans
+                ? "قیمت خرید از کافه‌بازار را خود بازار تعیین می‌کند؛ کد تخفیف فقط روی پرداخت با بله و درخواست دستی اعمال می‌شود."
+                : "کد تخفیف روی پرداخت با کیف پول بله و درخواست دستی اعمال می‌شود و مبلغ نهایی روی سرور محاسبه می‌شود."
+            }
+          />
+        ) : null}
         <div data-tour="plans-list" className={`grid gap-5 ${plans.length >= 3 ? "lg:grid-cols-3" : plans.length === 2 ? "lg:grid-cols-2" : "mx-auto max-w-md"}`}>
           {plans.map((plan) => {
             const isCurrent = plan.slug === currentSlug;
@@ -345,6 +364,8 @@ export function SubscriptionPlansPage() {
                     {t("common.subscription.perDay", { amount: formatPlanPrice(Math.round(plan.price / 30)), unit: plan.priceUnit })}
                   </p>
                 ) : null}
+                {!isFree ? <DiscountedPrice result={discount.results[plan._id]} codeApplies={!canBuyInBazaar} /> : null}
+                {!isFree && canBuyInBazaar && discount.anyValid ? <p className="mt-1 text-xs text-muted">کد تخفیف روی خرید از کافه‌بازار اعمال نمی‌شود.</p> : null}
 
                 <ul className="mt-6 flex-1 space-y-2.5 border-t border-border/60 pt-5">
                   {featureCatalog.map((catalogFeature) => {
@@ -426,6 +447,7 @@ export function SubscriptionPlansPage() {
             );
           })}
         </div>
+        </>
       )}
 
       <PlansHowItWorks />
@@ -478,6 +500,8 @@ export function SubscriptionPlansPage() {
 
       <RequestPlanDialog
         plan={requesting}
+        discountCode={requesting ? discount.codeFor(requesting._id) : undefined}
+        discountResult={requesting ? discount.results[requesting._id] : undefined}
         onClose={() => setRequesting(null)}
         onRequested={async () => {
           setRequesting(null);
@@ -497,10 +521,14 @@ function statusLabel(item: UserSubscription, t: (key: string) => string) {
 
 function RequestPlanDialog({
   plan,
+  discountCode,
+  discountResult,
   onClose,
   onRequested,
 }: {
   plan: SubscriptionPlan | null;
+  discountCode?: string;
+  discountResult?: DiscountValidation;
   onClose: () => void;
   onRequested: () => Promise<void>;
 }) {
@@ -520,7 +548,7 @@ function RequestPlanDialog({
     if (!plan) return;
     setSaving(true);
     try {
-      await subscriptionApi.requestSubscription(plan._id, note.trim() || undefined);
+      await subscriptionApi.requestSubscription(plan._id, note.trim() || undefined, discountCode);
       showToast(t("common.subscription.requestSent"), "success");
       await onRequested();
     } catch (error) {
@@ -538,6 +566,15 @@ function RequestPlanDialog({
         </AppModalHeader>
         <Modal.Body className="space-y-4">
           <p className="text-sm leading-7 text-muted">{t("common.subscription.requestDialogBody")}</p>
+          {plan && discountCode && discountResult?.valid ? (
+            <div className="rounded-xl bg-success/10 px-3 py-2 text-sm">
+              <p className="font-semibold text-success-foreground">
+                کد «{discountResult.code}» روی این درخواست اعمال می‌شود: {formatPlanPrice(discountResult.final)} {discountResult.priceUnit}
+                <span className="ms-2 text-xs font-normal text-muted line-through">{formatPlanPrice(discountResult.original)}</span>
+              </p>
+              <p className="mt-0.5 text-xs text-muted">کد هنگام تأیید ادمین ثبت می‌شود.</p>
+            </div>
+          ) : null}
           <label className="block space-y-1.5">
             <span className="text-sm font-medium">{t("common.subscription.requestNoteLabel")}</span>
             <TextArea
@@ -627,7 +664,12 @@ function BalePayDialog({
         <Modal.Body className="space-y-4">
           {session ? (
             <p className="rounded-xl bg-surface-secondary px-3 py-2 text-sm font-semibold">
-              {t("common.subscription.baleAmount", { amount: `${formatPlanPrice(session.plan.price)} ${session.plan.priceUnit}` })}
+              {t("common.subscription.baleAmount", { amount: `${formatPlanPrice(session.checkout.amountPlanUnit ?? session.plan.price)} ${session.checkout.priceUnit ?? session.plan.priceUnit}` })}
+              {session.checkout.discountCode && session.checkout.discountAmount ? (
+                <span className="ms-2 text-xs font-normal text-success-foreground">
+                  (کد {session.checkout.discountCode}: {formatPlanPrice(session.checkout.discountAmount)} تخفیف)
+                </span>
+              ) : null}
             </p>
           ) : null}
           <ol className="space-y-2.5">

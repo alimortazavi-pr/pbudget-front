@@ -3,13 +3,12 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button, Input, Switch, TextArea } from "@heroui/react";
-import { Add, Archive, Clock, Crown, Edit2, Flash, TickCircle, Timer1 } from "iconsax-reactjs";
+import { Add, Archive, Crown, DiscountShape, Edit2, Flash, TickCircle, TicketDiscount } from "iconsax-reactjs";
 
 import * as insightsApi from "@/common/api/admin-insights";
 import * as subscriptionApi from "@/common/api/subscriptions";
 import type { AdminSubscriptionStatusFilter, FeatureDefinition } from "@/common/api/subscriptions";
 import { PATHS } from "@/common/constants";
-import type { AdminUserRow } from "@/common/interfaces/admin";
 import type { SubscriptionFeature, SubscriptionPeriod, SubscriptionPlan, UserSubscription } from "@/common/interfaces/subscription.interface";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { useTranslation } from "@/i18n";
@@ -30,32 +29,29 @@ import {
   StatTile,
   UserAvatar,
 } from "./ui/AdminUi";
+import { SubscriptionOverviewTab } from "./subscriptions/SubscriptionOverviewTab";
+import { SubscribersTab, type SubscriberUser } from "./subscriptions/SubscribersTab";
+import { DiscountsTab } from "./subscriptions/DiscountsTab";
+import { formatPlanAmountFa } from "./subscriptions/subscription-format";
 import { formatDateFa, formatNumberFa, formatRelativeFa } from "./ui/admin-format";
-import { SUBSCRIPTION_PERIOD_LABEL, SUBSCRIPTION_STATUS_LABEL, SUBSCRIPTION_STATUS_TONE } from "./subscription-labels";
+import { SUBSCRIPTION_PERIOD_LABEL } from "./subscription-labels";
 
-type Tab = "requests" | "subscribers" | "plans" | "payments";
-type Summary = { paidActive: number; pending: number; expiringSoon: number; expiredThisMonth: number };
+type Tab = "overview" | "subscribers" | "requests" | "discounts" | "plans" | "payments";
 type ListResponse = Awaited<ReturnType<typeof subscriptionApi.fetchAdminSubscriptionsFiltered>>;
-
-const STATUS_FILTERS: { value: AdminSubscriptionStatusFilter; label: string }[] = [
-  { value: "current", label: "در حال حاضر فعال" },
-  { value: "expiring", label: "در ۷ روز آینده منقضی می‌شوند" },
-  { value: "scheduled", label: "زمان‌بندی‌شده" },
-  { value: "expired", label: "منقضی‌شده" },
-  { value: "canceled", label: "لغوشده" },
-  { value: "", label: "همه" },
-];
 
 function userName(subscription: UserSubscription) {
   return `${subscription.user?.firstName ?? ""} ${subscription.user?.lastName ?? ""}`.trim() || "کاربر حذف‌شده";
 }
 
 export function AdminSubscriptionsPage() {
-  const [tab, setTab] = useState<Tab>("subscribers");
-  const [summary, setSummary] = useState<Summary | null>(null);
+  const [tab, setTab] = useState<Tab>("overview");
+  const [pending, setPending] = useState<number | undefined>(undefined);
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
-  const [assignOpen, setAssignOpen] = useState(false);
+  const [assign, setAssign] = useState<{ open: boolean; user: SubscriberUser | null }>({ open: false, user: null });
   const [plansFailed, setPlansFailed] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [subscriberStatus, setSubscriberStatus] = useState<AdminSubscriptionStatusFilter>("current");
+  const [newCodeSignal, setNewCodeSignal] = useState(0);
 
   const loadPlans = useCallback(async () => {
     try {
@@ -67,52 +63,58 @@ export function AdminSubscriptionsPage() {
     }
   }, []);
 
-  // Only the first load may jump to the requests tab; later refreshes (after
-  // extending or revoking a subscription) must keep the admin where they are.
-  const loadSummary = useCallback(async (selectRequests = false) => {
+  const loadPending = useCallback(async () => {
     try {
       const result = await subscriptionApi.fetchAdminSubscriptionsFiltered({ limit: 1 });
-      setSummary(result.summary);
-      if (selectRequests && result.summary.pending > 0) setTab((current) => (current === "subscribers" ? "requests" : current));
-    } catch (error) {
-      showErrorToast(error);
+      setPending(result.summary.pending);
+    } catch {
+      // The count is a hint on the tab; the requests tab reports its own errors.
     }
   }, []);
 
   useEffect(() => {
     void loadPlans();
-    void loadSummary(true);
-  }, [loadPlans, loadSummary]);
+    void loadPending();
+  }, [loadPlans, loadPending]);
 
   const refreshAll = useCallback(async () => {
-    await Promise.all([loadSummary(), loadPlans()]);
-  }, [loadPlans, loadSummary]);
+    setRefreshKey((key) => key + 1);
+    await Promise.all([loadPending(), loadPlans()]);
+  }, [loadPending, loadPlans]);
 
   return (
     <div className="space-y-5">
       <AdminPageHeader
-        title="اشتراک‌ها"
-        description="درخواست‌های ارتقا را تأیید کنید، اشتراک‌ها را تمدید یا لغو کنید و پلن‌ها و قابلیت‌هایشان را تعریف کنید."
+        title="اشتراک‌ها و درآمد"
+        description="داشبورد درآمد و رشد، مدیریت مشترکین، تأیید درخواست‌ها، کدهای تخفیف و کمپین‌ها، و تعریف پلن‌ها."
         icon={<Crown size={24} variant="Bold" />}
         actions={
-          <Button size="sm" onPress={() => setAssignOpen(true)}>
-            <Flash size={16} />
-            فعال‌سازی دستی
-          </Button>
+          <>
+            <Button
+              size="sm"
+              variant="secondary"
+              onPress={() => {
+                setTab("discounts");
+                setNewCodeSignal((value) => value + 1);
+              }}
+            >
+              <TicketDiscount size={16} />
+              کد تخفیف جدید
+            </Button>
+            <Button size="sm" onPress={() => setAssign({ open: true, user: null })}>
+              <Flash size={16} />
+              فعال‌سازی دستی
+            </Button>
+          </>
         }
       />
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <StatTile label="مشترکین پولی فعال" value={formatNumberFa(summary?.paidActive ?? 0)} icon={<Crown size={20} variant="Bold" />} tone="warning" />
-        <StatTile label="درخواست‌های در انتظار" value={formatNumberFa(summary?.pending ?? 0)} icon={<Clock size={20} variant="Bold" />} tone={summary?.pending ? "danger" : "neutral"} />
-        <StatTile label="انقضا تا ۷ روز آینده" value={formatNumberFa(summary?.expiringSoon ?? 0)} icon={<Timer1 size={20} variant="Bold" />} tone="info" />
-        <StatTile label="منقضی‌شده در ۳۰ روز اخیر" value={formatNumberFa(summary?.expiredThisMonth ?? 0)} icon={<Archive size={20} />} tone="neutral" />
-      </div>
-
       <SegmentedTabs
         items={[
-          { id: "requests" as const, label: "درخواست‌ها", count: summary?.pending },
+          { id: "overview" as const, label: "نمای کلی" },
           { id: "subscribers" as const, label: "مشترکین" },
+          { id: "requests" as const, label: "درخواست‌ها", count: pending },
+          { id: "discounts" as const, label: "تخفیف‌ها و کمپین‌ها" },
           { id: "plans" as const, label: "پلن‌ها", count: plans.length },
           { id: "payments" as const, label: "پرداخت‌های بله" },
         ]}
@@ -120,12 +122,23 @@ export function AdminSubscriptionsPage() {
         onChange={setTab}
       />
 
+      {tab === "overview" ? (
+        <SubscriptionOverviewTab
+          refreshKey={refreshKey}
+          onOpenRequests={() => setTab("requests")}
+          onOpenExpiring={() => {
+            setSubscriberStatus("expiring");
+            setTab("subscribers");
+          }}
+        />
+      ) : null}
       {tab === "requests" ? <RequestsTab onChanged={refreshAll} /> : null}
-      {tab === "subscribers" ? <SubscribersTab plans={plans} onChanged={refreshAll} /> : null}
+      {tab === "subscribers" ? <SubscribersTab plans={plans} onChanged={refreshAll} initialStatus={subscriberStatus} onAssign={(user) => setAssign({ open: true, user })} /> : null}
+      {tab === "discounts" ? <DiscountsTab plans={plans} createSignal={newCodeSignal} /> : null}
       {tab === "payments" ? <BalePaymentsTab /> : null}
       {tab === "plans" ? <PlansTab plans={plans} failed={plansFailed} onChanged={refreshAll} /> : null}
 
-      <AssignDialog open={assignOpen} onOpenChange={setAssignOpen} plans={plans} onDone={refreshAll} />
+      <AssignDialog open={assign.open} presetUser={assign.user} onOpenChange={(open) => setAssign((current) => ({ ...current, open }))} plans={plans} onDone={refreshAll} />
     </div>
   );
 }
@@ -279,6 +292,18 @@ function RequestsTab({ onChanged }: { onChanged: () => Promise<void> }) {
                 درخواست پلن <span className="font-semibold">{item.plan?.name ?? item.planSnapshot?.name}</span>
                 <span className="text-xs text-muted"> · {formatRelativeFa(item.createdAt)}</span>
               </p>
+              {item.discount ? (
+                <p className="mt-1 flex flex-wrap items-center gap-1.5 text-xs">
+                  <Pill tone="accent">
+                    <DiscountShape size={12} />
+                    کد {item.discount.code}
+                  </Pill>
+                  <span className="font-semibold">{formatPlanAmountFa(item.discount.amountAfter, item.planSnapshot?.priceUnit)}</span>
+                  <span className="text-muted line-through">{formatPlanAmountFa(item.discount.amountBefore, item.planSnapshot?.priceUnit)}</span>
+                </p>
+              ) : item.planSnapshot?.price ? (
+                <p className="mt-1 text-xs text-muted">مبلغ: {formatPlanAmountFa(item.planSnapshot.price, item.planSnapshot.priceUnit)}</p>
+              ) : null}
               {item.requestNote ? <p className="mt-1 text-xs text-muted">«{item.requestNote}»</p> : null}
             </div>
           </div>
@@ -286,6 +311,11 @@ function RequestsTab({ onChanged }: { onChanged: () => Promise<void> }) {
             <Button size="sm" variant="ghost" isDisabled={busyId === item._id} onPress={() => { setRejectNote(""); setRejecting(item); }}>
               رد
             </Button>
+            {item.discount ? (
+              <Button size="sm" variant="secondary" isDisabled={busyId === item._id} onPress={() => void act(item._id, () => subscriptionApi.approveSubscriptionRequest(item._id, { dropDiscount: true }), "اشتراک با قیمت کامل فعال شد")}>
+                تأیید بدون تخفیف
+              </Button>
+            ) : null}
             <Button size="sm" isPending={busyId === item._id} onPress={() => void act(item._id, () => subscriptionApi.approveSubscriptionRequest(item._id), "اشتراک فعال شد و به کاربر اطلاع داده شد")}>
               <TickCircle size={16} />
               تأیید و فعال‌سازی
@@ -311,152 +341,23 @@ function RequestsTab({ onChanged }: { onChanged: () => Promise<void> }) {
   );
 }
 
-function SubscribersTab({ plans, onChanged }: { plans: SubscriptionPlan[]; onChanged: () => Promise<void> }) {
-  const [status, setStatus] = useState<AdminSubscriptionStatusFilter>("current");
-  const [planId, setPlanId] = useState("");
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [data, setData] = useState<ListResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [revoking, setRevoking] = useState<UserSubscription | null>(null);
-  const [busy, setBusy] = useState(false);
-
-  const load = useCallback(async () => {
-    setLoading(true);
-    try {
-      setData(await subscriptionApi.fetchAdminSubscriptionsFiltered({ page, limit: 20, search, status, planId }));
-    } catch (error) {
-      showErrorToast(error);
-    } finally {
-      setLoading(false);
-    }
-  }, [page, planId, search, status]);
-
-  useEffect(() => {
-    void load();
-  }, [load]);
-
-  async function run(action: () => Promise<unknown>, message: string) {
-    setBusy(true);
-    try {
-      await action();
-      showToast(message, "success");
-      setRevoking(null);
-      await Promise.all([load(), onChanged()]);
-    } catch (error) {
-      showErrorToast(error);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <AdminPanel bodyClassName="p-4 sm:p-5 space-y-4">
-      <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_14rem_12rem]">
-        <SearchField value={search} placeholder="نام یا موبایل کاربر…" onChange={(value) => { setSearch(value); setPage(1); }} />
-        <NativeSelect ariaLabel="وضعیت" value={status} onChange={(value) => { setStatus(value as AdminSubscriptionStatusFilter); setPage(1); }} options={STATUS_FILTERS} />
-        <NativeSelect ariaLabel="پلن" value={planId} onChange={(value) => { setPlanId(value); setPage(1); }} options={[{ value: "", label: "همه پلن‌ها" }, ...plans.map((plan) => ({ value: plan._id, label: plan.name }))]} />
-      </div>
-
-      {loading && !data ? (
-        <SkeletonRows rows={6} />
-      ) : !data || data.items.length === 0 ? (
-        <EmptyState title="اشتراکی با این فیلتر پیدا نشد" />
-      ) : (
-        <div className={loading ? "opacity-60" : ""}>
-          <div className="overflow-x-auto rounded-xl border border-border/60">
-            <table className="w-full min-w-[860px] text-sm">
-              <thead className="bg-surface-secondary/60 text-xs text-muted">
-                <tr>
-                  <th className="px-3 py-2.5 text-start font-medium">کاربر</th>
-                  <th className="px-3 py-2.5 text-start font-medium">پلن</th>
-                  <th className="px-3 py-2.5 text-start font-medium">وضعیت</th>
-                  <th className="px-3 py-2.5 text-start font-medium">شروع</th>
-                  <th className="px-3 py-2.5 text-start font-medium">انقضا</th>
-                  <th className="px-3 py-2.5" />
-                </tr>
-              </thead>
-              <tbody>
-                {data.items.map((item) => {
-                  const isFree = (item.plan?.slug ?? item.planSnapshot?.slug) === "free";
-                  const live = item.status === "active";
-                  return (
-                    <tr key={item._id} className="border-t border-border/50">
-                      <td className="px-3 py-2.5">
-                        {item.user?._id ? (
-                          <Link href={`${PATHS.ADMIN_USER(item.user._id)}?tab=subscription`} className="font-semibold hover:text-accent">
-                            {userName(item)}
-                          </Link>
-                        ) : (
-                          userName(item)
-                        )}
-                        <p className="text-xs text-muted" dir="ltr">{item.user?.mobile}</p>
-                      </td>
-                      <td className="px-3 py-2.5 font-medium">{item.plan?.name ?? item.planSnapshot?.name}</td>
-                      <td className="px-3 py-2.5">
-                        <Pill tone={SUBSCRIPTION_STATUS_TONE[item.status]}>{SUBSCRIPTION_STATUS_LABEL[item.status]}</Pill>
-                      </td>
-                      <td className="px-3 py-2.5 text-xs">{formatDateFa(item.startsAt)}</td>
-                      <td className="px-3 py-2.5 text-xs">
-                        {item.expiresAt ? (
-                          <>
-                            {formatDateFa(item.expiresAt)}
-                            {live ? <span className="block text-muted">{formatRelativeFa(item.expiresAt)}</span> : null}
-                          </>
-                        ) : (
-                          "نامحدود"
-                        )}
-                      </td>
-                      <td className="px-3 py-2.5">
-                        {live && !isFree ? (
-                          <div className="flex justify-end gap-1">
-                            <Button size="sm" variant="secondary" isDisabled={busy} onPress={() => void run(() => subscriptionApi.updateAdminSubscription(item._id, { extendDays: 30 }), "۳۰ روز تمدید شد")}>
-                              +۳۰ روز
-                            </Button>
-                            <Button size="sm" variant="ghost" isDisabled={busy} onPress={() => setRevoking(item)}>
-                              لغو
-                            </Button>
-                          </div>
-                        ) : null}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          <PaginationBar pagination={data.pagination} onPage={setPage} />
-        </div>
-      )}
-
-      <ConfirmDialog
-        open={Boolean(revoking)}
-        onOpenChange={(open) => !open && setRevoking(null)}
-        title="لغو اشتراک"
-        description={revoking ? `اشتراک «${revoking.plan?.name ?? revoking.planSnapshot?.name}» برای ${userName(revoking)} همین حالا لغو و کاربر به پلن رایگان منتقل می‌شود.` : null}
-        confirmLabel="لغو اشتراک"
-        isPending={busy}
-        onConfirm={() => revoking && void run(() => subscriptionApi.revokeAdminSubscription(revoking._id), "اشتراک لغو شد")}
-      />
-    </AdminPanel>
-  );
-}
-
 function AssignDialog({
   open,
+  presetUser,
   onOpenChange,
   plans,
   onDone,
 }: {
   open: boolean;
+  presetUser?: SubscriberUser | null;
   onOpenChange: (open: boolean) => void;
   plans: SubscriptionPlan[];
   onDone: () => Promise<void>;
 }) {
   const activePlans = useMemo(() => plans.filter((plan) => plan.active), [plans]);
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<AdminUserRow[]>([]);
-  const [user, setUser] = useState<AdminUserRow | null>(null);
+  const [results, setResults] = useState<SubscriberUser[]>([]);
+  const [user, setUser] = useState<SubscriberUser | null>(null);
   const [planId, setPlanId] = useState("");
   const [days, setDays] = useState("");
   const [note, setNote] = useState("");
@@ -466,11 +367,11 @@ function AssignDialog({
     if (!open) return;
     setQuery("");
     setResults([]);
-    setUser(null);
+    setUser(presetUser ?? null);
     setDays("");
     setNote("");
     setPlanId(activePlans.find((plan) => plan.slug !== "free")?._id ?? activePlans[0]?._id ?? "");
-  }, [open, activePlans]);
+  }, [open, activePlans, presetUser]);
 
   useEffect(() => {
     if (!open || query.length < 2) {

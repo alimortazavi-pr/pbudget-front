@@ -27,6 +27,12 @@ export interface BaleCheckout {
   link: string;
   amountRial: number;
   expiresAt: string;
+  /** Amount charged in the plan's own unit (after any discount). */
+  amountPlanUnit?: number;
+  originalPrice?: number;
+  discountAmount?: number;
+  priceUnit?: string;
+  discountCode?: string | null;
 }
 
 export type BalePaymentState = "pending" | "paid" | "expired";
@@ -43,8 +49,8 @@ export async function fetchBaleAvailability() {
 }
 
 /** Starts a Bale wallet payment; the user then finishes it inside the Bale bot. */
-export async function createBaleCheckout(planId: string) {
-  const { data } = await axiosInstance.post<BaleCheckout>("/subscriptions/bale/checkout", { planId });
+export async function createBaleCheckout(planId: string, discountCode?: string) {
+  const { data } = await axiosInstance.post<BaleCheckout>("/subscriptions/bale/checkout", { planId, discountCode: discountCode || undefined });
   return data;
 }
 
@@ -90,8 +96,8 @@ export async function revokeAdminSubscription(id: string) {
   return data;
 }
 
-export async function requestSubscription(planId: string, note?: string) {
-  const { data } = await axiosInstance.post<UserSubscription>("/subscriptions/requests", { planId, note });
+export async function requestSubscription(planId: string, note?: string, discountCode?: string) {
+  const { data } = await axiosInstance.post<UserSubscription>("/subscriptions/requests", { planId, note, discountCode: discountCode || undefined });
   return data;
 }
 
@@ -104,7 +110,7 @@ export async function updateAdminSubscription(id: string, payload: { expiresAt?:
   return data;
 }
 
-export async function approveSubscriptionRequest(id: string, payload: { note?: string; expiresAt?: string | null } = {}) {
+export async function approveSubscriptionRequest(id: string, payload: { note?: string; expiresAt?: string | null; dropDiscount?: boolean } = {}) {
   const { data } = await axiosInstance.patch<UserSubscription>(`/admin/subscriptions/${id}/approve`, payload);
   return data;
 }
@@ -116,13 +122,35 @@ export async function rejectSubscriptionRequest(id: string, payload: { note?: st
 
 export type AdminSubscriptionStatusFilter = "" | "current" | "expiring" | "scheduled" | "pending" | "active" | "expired" | "canceled" | "rejected" | "superseded";
 
-export async function fetchAdminSubscriptionsFiltered(params: {
+export type AdminSubscriptionSource = "" | "manual" | "bazaar" | "bale" | "trial";
+
+export interface AdminSubscriptionListParams {
   page?: number;
   limit?: number;
   search?: string;
   status?: AdminSubscriptionStatusFilter;
   planId?: string;
-}) {
+  source?: AdminSubscriptionSource;
+  /** Hide the automatic free plan and trials. */
+  paid?: boolean;
+  /** Only purchases made with a discount code. */
+  discounted?: boolean;
+  sort?: "" | "createdAt" | "expiresAt" | "amount";
+}
+
+function listQuery(params: AdminSubscriptionListParams) {
+  return {
+    search: params.search || undefined,
+    status: params.status || undefined,
+    planId: params.planId || undefined,
+    source: params.source || undefined,
+    paid: params.paid ? "1" : undefined,
+    discounted: params.discounted ? "1" : undefined,
+    sort: params.sort || undefined,
+  };
+}
+
+export async function fetchAdminSubscriptionsFiltered(params: AdminSubscriptionListParams) {
   const { data } = await axiosInstance.get<{
     items: UserSubscription[];
     summary: { paidActive: number; pending: number; expiringSoon: number; expiredThisMonth: number };
@@ -131,11 +159,201 @@ export async function fetchAdminSubscriptionsFiltered(params: {
     params: {
       page: params.page ?? 1,
       limit: params.limit ?? 20,
-      search: params.search || undefined,
-      status: params.status || undefined,
-      planId: params.planId || undefined,
+      ...listQuery(params),
     },
   });
+  return data;
+}
+
+/** Downloads the subscriber list (same filters as the table) as CSV. */
+export async function downloadAdminSubscriptionsCsv(params: AdminSubscriptionListParams) {
+  const query = Object.fromEntries(Object.entries(listQuery(params)).filter(([, value]) => value !== undefined)) as Record<string, string>;
+  const { downloadAdminFile } = await import("@/common/api/admin");
+  await downloadAdminFile("/admin/subscriptions/export", `subscriptions-${new Date().toISOString().slice(0, 10)}.csv`, query);
+}
+
+export async function addAdminSubscriptionNote(id: string, payload: { kind: "note" | "refund"; text?: string; amountToman?: number; revoke?: boolean }) {
+  const { data } = await axiosInstance.post<UserSubscription>(`/admin/subscriptions/${id}/notes`, payload);
+  return data;
+}
+
+// ---- Dashboard ---------------------------------------------------------------
+
+export interface SubscriptionOverviewPoint {
+  /** Tehran calendar day, YYYY-MM-DD. */
+  date: string;
+  /** Revenue in tomans. */
+  revenue: number;
+  payments: number;
+  newPaid: number;
+  churned: number;
+  trials: number;
+}
+
+/** All money values are in tomans. */
+export interface SubscriptionOverview {
+  generatedAt: string;
+  range: { days: number; from: string; to: string };
+  kpis: {
+    mrr: number;
+    revenue30d: number;
+    revenuePrev30d: number;
+    payments30d: number;
+    paymentsPrev30d: number;
+    averageOrder30d: number;
+    revenueInRange: number;
+    activePaid: number;
+    activeTrials: number;
+    pending: number;
+    expiringSoon: number;
+    churned30d: number;
+    churnRate30d: number;
+    trialConversion: { trials: number; converted: number; rate: number };
+    refunds30d: number;
+    discount30d: { redemptions: number; revenueToman: number; discountToman: number };
+  };
+  series: SubscriptionOverviewPoint[];
+  planMix: { planId: string; name: string; count: number; mrr: number }[];
+  sourceMix: { source: string; count: number }[];
+  revenueBySource30d: { source: string; revenue: number; payments: number }[];
+}
+
+export async function fetchAdminSubscriptionOverview(days: number) {
+  const { data } = await axiosInstance.get<SubscriptionOverview>("/admin/subscriptions/overview", { params: { days } });
+  return data;
+}
+
+// ---- Discount codes ------------------------------------------------------------
+
+export type DiscountType = "percent" | "fixed";
+export type DiscountState = "live" | "inactive" | "expired" | "scheduled" | "exhausted";
+
+export interface DiscountCodeStats {
+  redemptions: number;
+  reserved: number;
+  revenueToman: number;
+  discountToman: number;
+  lastRedeemedAt: string | null;
+}
+
+export interface AdminDiscountCode {
+  _id: string;
+  code: string;
+  title: string;
+  campaign: string;
+  description: string;
+  type: DiscountType;
+  /** Percent, or tomans for a fixed discount. */
+  value: number;
+  /** Tomans; percent codes only. */
+  maxDiscount: number | null;
+  planIds: { _id: string; name: string; slug: string }[];
+  startsAt: string | null;
+  endsAt: string | null;
+  usageLimit: number | null;
+  perUserLimit: number | null;
+  firstPurchaseOnly: boolean;
+  active: boolean;
+  usedCount: number;
+  createdBy?: { firstName?: string; lastName?: string } | null;
+  createdAt: string;
+  stats: DiscountCodeStats;
+  state: DiscountState;
+}
+
+export interface DiscountCampaign {
+  name: string;
+  codes: number;
+  activeCodes: number;
+  redemptions: number;
+  revenueToman: number;
+  discountToman: number;
+  startsAt: string | null;
+  endsAt: string | null;
+  lastRedeemedAt: string | null;
+}
+
+export interface AdminDiscountList {
+  items: AdminDiscountCode[];
+  campaigns: DiscountCampaign[];
+  totals: { codes: number; liveCodes: number; redemptions: number; revenueToman: number; discountToman: number };
+  daily: { _id: string; count: number; revenueToman: number; discountToman: number }[];
+}
+
+export interface DiscountCodePayload {
+  code: string;
+  title: string;
+  campaign?: string;
+  description?: string;
+  type: DiscountType;
+  value: number;
+  maxDiscount?: number | null;
+  planIds?: string[];
+  startsAt?: string | null;
+  endsAt?: string | null;
+  usageLimit?: number | null;
+  perUserLimit?: number | null;
+  firstPurchaseOnly?: boolean;
+  active?: boolean;
+}
+
+export async function fetchAdminDiscounts(params: { search?: string; status?: string; campaign?: string } = {}) {
+  const { data } = await axiosInstance.get<AdminDiscountList>("/admin/subscriptions/discounts", {
+    params: { search: params.search || undefined, status: params.status || undefined, campaign: params.campaign || undefined },
+  });
+  return data;
+}
+
+export async function createAdminDiscount(payload: DiscountCodePayload) {
+  const { data } = await axiosInstance.post<AdminDiscountCode>("/admin/subscriptions/discounts", payload);
+  return data;
+}
+
+export async function updateAdminDiscount(id: string, payload: Partial<DiscountCodePayload>) {
+  const { data } = await axiosInstance.patch<AdminDiscountCode>(`/admin/subscriptions/discounts/${id}`, payload);
+  return data;
+}
+
+export async function setAdminDiscountActive(id: string, active: boolean) {
+  const { data } = await axiosInstance.patch<AdminDiscountCode>(`/admin/subscriptions/discounts/${id}/${active ? "enable" : "disable"}`);
+  return data;
+}
+
+export async function deleteAdminDiscount(id: string) {
+  await axiosInstance.delete(`/admin/subscriptions/discounts/${id}`);
+}
+
+export interface DiscountRedemptionRow {
+  _id: string;
+  code: string;
+  flow: "bale" | "manual";
+  status: "reserved" | "redeemed";
+  priceUnit: string;
+  amountBefore: number;
+  discountAmount: number;
+  amountAfter: number;
+  redeemedAt?: string | null;
+  createdAt: string;
+  user?: { _id: string; firstName?: string; lastName?: string; mobile?: string } | null;
+  plan?: { name?: string } | null;
+}
+
+export async function fetchAdminDiscountRedemptions(id: string, page = 1) {
+  const { data } = await axiosInstance.get<{
+    stats: DiscountCodeStats;
+    items: DiscountRedemptionRow[];
+    pagination: { page: number; limit: number; total: number; totalPages: number };
+  }>(`/admin/subscriptions/discounts/${id}/redemptions`, { params: { page, limit: 10 } });
+  return data;
+}
+
+export type DiscountValidation =
+  | { valid: true; code: string; title: string; type: DiscountType; value: number; original: number; discount: number; final: number; priceUnit: string }
+  | { valid: false; reason: string; original: number; discount: number; final: number; priceUnit: string };
+
+/** Prices a plan with a code on the server (the client never computes the amount). */
+export async function validateDiscountCode(planId: string, code: string, flow: "bale" | "manual" = "manual") {
+  const { data } = await axiosInstance.post<DiscountValidation>("/subscriptions/discounts/validate", { planId, code, flow });
   return data;
 }
 

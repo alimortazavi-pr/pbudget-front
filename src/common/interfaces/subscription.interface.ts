@@ -47,6 +47,14 @@ export interface UserSubscription {
   requestNote?: string;
   createdAt?: string;
   planSnapshot?: { slug: string; name: string; price: number; priceUnit: string; features: Record<string, unknown> };
+  /** When the payment was received. */
+  purchasedAt?: string | null;
+  /** Discount code applied (amounts in the plan's unit). */
+  discount?: { codeId: string; code: string; amountBefore: number; discountAmount: number; amountAfter: number } | null;
+  /** Admin-only notes and refund records. */
+  adminNotes?: { _id: string; kind: "note" | "refund"; text: string; amountToman?: number | null; byName?: string; at: string }[];
+  /** Total refunded, in tomans (admin only). */
+  refundedToman?: number;
 }
 
 export interface MySubscriptionResponse {
