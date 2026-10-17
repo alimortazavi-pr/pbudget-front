@@ -85,7 +85,11 @@ function Preview({ draft }: { draft: Draft }) {
   return <div className="overflow-auto rounded-2xl border border-border bg-slate-100 p-4"><div className="mx-auto min-w-[620px] max-w-4xl bg-white p-6 text-slate-900 shadow-lg" style={{ borderTop: `6px solid ${draft.branding.primaryColor}`, background: draft.branding.backgroundColor }}><div className="flex items-center gap-3 border-b border-slate-200 pb-4">{draft.branding.logoDataUrl && <Image src={draft.branding.logoDataUrl} alt="" width={48} height={48} unoptimized className="h-12 w-12 object-contain" />}<div><h3 className="text-xl font-bold" style={{ color: draft.branding.primaryColor }}>{draft.branding.title}</h3><p className="text-sm text-slate-500">{draft.branding.subtitle}</p></div></div><div className="relative mx-auto my-5" style={{ width: draft.canvas.width, height: Math.min(draft.canvas.height, 280), maxWidth: "100%", background: draft.canvas.backgroundColor }}>{draft.canvas.elements.map((element) => <div key={element.id} className="absolute overflow-hidden p-2" style={{ left: element.x, top: element.y, width: element.width, height: element.height, color: element.color, background: element.type === "shape" ? element.fill : element.fill, fontSize: element.fontSize, fontWeight: element.bold ? 700 : 400, textAlign: element.align, borderRadius: element.radius, opacity: element.opacity }}>{element.type === "field" ? first[element.field ?? ""] ?? "—" : element.type === "shape" ? "" : element.text}</div>)}</div><table className="w-full border-collapse text-right text-xs"><thead><tr>{draft.columns.filter((column) => column.enabled).sort((a, b) => a.order - b.order).map((column) => <th key={column.id} className="border px-2 py-2 text-white" style={{ background: draft.branding.primaryColor }}>{column.label}</th>)}</tr></thead><tbody><tr>{draft.columns.filter((column) => column.enabled).sort((a, b) => a.order - b.order).map((column) => <td key={column.id} className="border px-2 py-2">{column.key === "amount" ? formatPrice(Number(first[column.key] ?? 0)) : first[column.key] ?? "—"}</td>)}</tr></tbody></table><p className="mt-4 text-xs text-slate-500">{draft.branding.footer}</p></div></div>;
 }
 
-export function CustomExportsPage() {
+/**
+ * Branded template designer (custom_exports plans). `embedded` renders it as a
+ * tab of the export center, which already handles the plan check and header.
+ */
+export function CustomExportsPage({ embedded = false }: { embedded?: boolean } = {}) {
   const { t } = useTranslation();
   const { data: subscriptionData, loading: subscriptionLoading } = useSubscriptionAccess();
   const [templates, setTemplates] = useState<ExportTemplate[]>([]);
@@ -142,12 +146,19 @@ export function CustomExportsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        icon={<Brush2 size={24} variant="Bold" />}
-        title={t("pages.customExports.title")}
-        description={t("pages.customExports.description")}
-        actions={<Button onPress={startNew}><Add size={18} />{t("pages.customExports.newTemplate")}</Button>}
-      />
+      {embedded ? (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="max-w-2xl text-sm leading-6 text-muted">{t("pages.customExports.description")}</p>
+          <Button onPress={startNew}><Add size={18} />{t("pages.customExports.newTemplate")}</Button>
+        </div>
+      ) : (
+        <PageHeader
+          icon={<Brush2 size={24} variant="Bold" />}
+          title={t("pages.customExports.title")}
+          description={t("pages.customExports.description")}
+          actions={<Button onPress={startNew}><Add size={18} />{t("pages.customExports.newTemplate")}</Button>}
+        />
+      )}
 
       {loading ? <div className="glass h-48 animate-pulse rounded-2xl" /> : (
         <div className="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">

@@ -19,6 +19,7 @@ import { authMessages } from "./auth";
 import { autoMessages } from "./auto";
 import { errorsMessages } from "./errors";
 import { changelogMessages } from "./changelog";
+import { exportsMessages } from "./exports";
 
 function merge(...trees: MessageTree[]): Record<string, string> {
   return Object.assign({}, ...trees.map((t) => flattenMessages(t)));
@@ -48,6 +49,7 @@ export const messages = {
     { auth: authMessages },
     { errors: errorsMessages },
     { changelog: changelogMessages },
+    { exports: exportsMessages },
   ),
   ...autoFlat,
 };

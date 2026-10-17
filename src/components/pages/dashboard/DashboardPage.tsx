@@ -495,7 +495,8 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         initialYear={year}
         initialMonth={month}
         initialDay={day}
-        initialDuration={duration === "daily" ? "daily" : "monthly"}
+        initialDuration={duration === "daily" || duration === "yearly" || duration === "all" ? duration : "monthly"}
+        dashboardFilters={filters}
       />
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] xl:grid-cols-[minmax(0,1fr)_22rem]">

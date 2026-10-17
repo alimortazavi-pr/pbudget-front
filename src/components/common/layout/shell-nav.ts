@@ -96,7 +96,7 @@ export const PLANNING_NAV_GROUPS = [
       { href: PATHS.TASKS, label: "nav.dailyPlanner", icon: Task, featureKey: "planner" },
       { href: PATHS.PROJECTS, label: "nav.projects", icon: Briefcase, featureKey: "projects" },
       { href: PATHS.NOTES, label: "nav.notes", icon: DocumentText, featureKey: "notes" },
-      { href: PATHS.EXPORTS, label: "nav.customExports", icon: DocumentDownload, featureKey: "custom_exports" },
+      { href: PATHS.EXPORTS, label: "nav.customExports", icon: DocumentDownload },
       { href: PATHS.PLANS, label: "nav.plans", icon: Crown },
     ],
   },
