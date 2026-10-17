@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Button, Modal, Spinner } from "@heroui/react";
-import { ArrowLeft, DocumentDownload, DocumentText, Export, Printer, TableDocument } from "iconsax-reactjs";
+import { ArrowLeft, Crown, DocumentDownload, DocumentText, Export, Lock1, Printer, TableDocument } from "iconsax-reactjs";
 
 import * as exportApi from "@/common/api/export-center";
 import { PATHS } from "@/common/constants";
@@ -20,6 +20,7 @@ import { AppSelect } from "@/components/common/form/AppControls";
 import { FormCategoryComboBox, FormDatePicker } from "@/components/common/form/FormFields";
 import { SwitchRow } from "@/components/common/form/FormKit";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
+import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
 import { useTranslation } from "@/i18n";
 import { useAppSelector } from "@/stores/hooks";
 import { userSelector } from "@/stores/profile";
@@ -58,6 +59,10 @@ export function BudgetExportModal({
 }: BudgetExportModalProps) {
   const { t } = useTranslation();
   const user = useAppSelector(userSelector);
+  const access = useSubscriptionAccess();
+  // Until the plan has loaded, assume access; the server checks again anyway.
+  const quickAllowed = !access.data || access.isFeatureEnabled("quick_export");
+  const advancedAllowed = !access.data || access.isFeatureEnabled("export_center");
   const calendar = user?.preferences?.dateCalendar === "gregorian" ? "gregorian" : "jalali";
   const gregorian = calendar === "gregorian";
   const hasDashboardRange = Boolean(dashboardFilters?.from || dashboardFilters?.to);
@@ -155,7 +160,7 @@ export function BudgetExportModal({
 
   // How many rows the file will have, before downloading anything.
   useEffect(() => {
-    if (!open || !request) return;
+    if (!open || !request || !quickAllowed) return;
     const controller = new AbortController();
     const timer = window.setTimeout(() => {
       setPreviewState("loading");
@@ -175,7 +180,7 @@ export function BudgetExportModal({
     };
     // requestKey covers every input of `request`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, requestKey]);
+  }, [open, requestKey, quickAllowed]);
 
   async function run(mode: "download" | "open") {
     if (!request) {
@@ -243,6 +248,17 @@ export function BudgetExportModal({
           </div>
         </AppModalHeader>
         <Modal.Body className="space-y-5">
+          {!quickAllowed ? (
+            <div className="flex items-start gap-3 rounded-2xl border border-warning/40 bg-warning/10 p-3 text-sm leading-7">
+              <Lock1 size={20} variant="Bold" className="mt-1 shrink-0 text-warning-foreground" />
+              <span>
+                خروجی گرفتن در اشتراک فعلی شما فعال نیست.{" "}
+                <Link href={PATHS.PLANS} className="font-semibold text-accent hover:underline" onClick={() => onOpenChange(false)}>
+                  مشاهدهٔ اشتراک‌ها
+                </Link>
+              </span>
+            </div>
+          ) : null}
           <div className="space-y-2">
             <p id="quick-export-period" className="text-sm font-medium">
               {t("dashboard.timeRange")}
@@ -373,7 +389,9 @@ export function BudgetExportModal({
           </div>
 
           <div className="rounded-2xl border border-border/60 bg-surface-secondary/60 p-3 text-sm" aria-live="polite">
-            {!request ? (
+            {!quickAllowed ? (
+              <p className="text-muted">برای دیدن تعداد ردیف‌ها، اشتراکی با امکان خروجی لازم است.</p>
+            ) : !request ? (
               <p className="text-muted">{t("exports.quick.pickPeriod")}</p>
             ) : previewState === "error" ? (
               <p className="text-danger">{t("exports.quick.countError")}</p>
@@ -402,14 +420,15 @@ export function BudgetExportModal({
             className="inline-flex w-full items-center justify-center gap-1 rounded-lg px-1 py-2 text-sm font-semibold text-accent hover:underline sm:me-auto sm:w-auto sm:justify-start"
             onClick={() => onOpenChange(false)}
           >
+            {advancedAllowed ? null : <Crown size={15} variant="Bold" className="text-warning" aria-label="نیازمند ارتقای اشتراک" />}
             {t("exports.quick.advanced")}
             <ArrowLeft size={16} />
           </Link>
-          <Button type="button" variant="secondary" className="flex-1 sm:flex-none" isPending={busy === "open"} isDisabled={!request || busy !== null} onPress={() => void run("open")}>
+          <Button type="button" variant="secondary" className="flex-1 sm:flex-none" isPending={busy === "open"} isDisabled={!request || !quickAllowed || busy !== null} onPress={() => void run("open")}>
             <Printer size={17} />
             {t("exports.download.print")}
           </Button>
-          <Button type="button" className="flex-1 sm:flex-none" isPending={busy === "download"} isDisabled={!request || busy !== null} onPress={() => void run("download")}>
+          <Button type="button" className="flex-1 sm:flex-none" isPending={busy === "download"} isDisabled={!request || !quickAllowed || busy !== null} onPress={() => void run("download")}>
             <DocumentDownload size={17} />
             {t("dashboard.downloadExport")}
           </Button>

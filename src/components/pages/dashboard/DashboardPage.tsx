@@ -1,6 +1,7 @@
 "use client";
 
 import { FloatingActionBar } from "@/components/common/ui/FloatingActionBar";
+import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
 import { useTranslation } from "@/i18n";
 
 import Link from "next/link";
@@ -70,6 +71,8 @@ type DashboardPageProps = {
 
 export function DashboardPage({ initialData }: DashboardPageProps) {
   const { t } = useTranslation();
+  const subscriptionAccess = useSubscriptionAccess();
+  const bulkAllowed = !subscriptionAccess.data || subscriptionAccess.isFeatureEnabled("bulk_actions");
   const { appMode } = useAppMode();
   const { formatMonthYear, formatDayMonthYear, formatCount } = useLocalizedDate();
   const dispatch = useAppDispatch();
@@ -653,7 +656,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
                 </>
               ) : (
                 <>
-                  {filteredBudgets.length ? (
+                  {filteredBudgets.length && bulkAllowed ? (
                     <Button size="sm" variant="ghost" onPress={() => setSelectMode(true)} data-tour="dashboard-select">
                       <TaskSquare size={16} />
                       انتخاب
