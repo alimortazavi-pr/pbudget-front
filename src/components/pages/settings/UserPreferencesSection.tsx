@@ -212,8 +212,7 @@ export function UserPreferencesOnboardingModal({
   }
 
   return (
-    <AppModal open={open} onOpenChange={() => {}} isDismissable={false}>
-      <Modal.Container size="md">
+    <AppModal open={open} onOpenChange={() => {}} isDismissable={false} size="md">
         <Modal.Dialog className="pb-form-page">
           <Modal.Header>
             <Modal.Heading>{t("common.initialSettings")}</Modal.Heading>
@@ -314,7 +313,6 @@ export function UserPreferencesOnboardingModal({
               </Button>
             </Modal.Footer>
           </Modal.Dialog>
-        </Modal.Container>
     </AppModal>
   );
 }

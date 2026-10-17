@@ -53,7 +53,11 @@ export function AppModal({
           size={mobileFull ? "full" : size}
           placement={mobileFull ? "bottom" : placement}
           className={[
-            "max-sm:!max-h-[100dvh] max-sm:!overflow-y-auto max-sm:!overscroll-y-contain",
+            // The modal body scrolls, never this container: on touch devices
+            // react-aria's scroll lock only lets the nearest scrollable element
+            // move, so a scrolling container made content unscrollable except
+            // at its edges.
+            "max-sm:!max-h-[100dvh]",
             mobileFull
               ? "max-sm:!flex max-sm:!h-auto max-sm:!min-h-0 max-sm:!flex-col sm:!h-auto sm:!max-h-[min(90dvh,720px)]"
               : "max-sm:!items-center",
