@@ -65,6 +65,7 @@ export const PRIVATE_PATH_PREFIXES = [
   "/settings",
   "/support",
   "/tasks",
+  "/trash",
   "/ventures",
   "/workspace",
   "/~offline",

@@ -1,11 +1,13 @@
 "use client";
 
+import { FloatingActionBar } from "@/components/common/ui/FloatingActionBar";
 import { useTranslation } from "@/i18n";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Filter } from "iconsax-reactjs";
+import { Filter, TaskSquare, Trash } from "iconsax-reactjs";
+import { Button } from "@heroui/react";
 
 import * as budgetsApi from "@/common/api/budgets";
 import { PATHS } from "@/common/constants";
@@ -18,7 +20,9 @@ import { formatPriceWithCurrency } from "@/common/utils/format-currency";
 import { resolveBudgetCurrency, resolveBudgetDateCalendar, type UserCurrency } from "@/common/constants/user-preferences";
 import { BudgetType } from "@/types/enums";
 import moment from "moment-jalali";
-import { showToast } from "@/common/utils/toast";
+import { showErrorToast, showToast } from "@/common/utils/toast";
+import { mergeProfileWallet } from "@/common/utils/wallet-balances";
+import { toPersianDigits } from "@/common/utils/persian-digits";
 import { BudgetExportModal } from "@/components/pages/dashboard/BudgetExportModal";
 import { DashboardInsights, DashboardKpis, DashboardPeriodBar } from "@/components/pages/dashboard/DashboardOverview";
 import {
@@ -49,13 +53,16 @@ import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import {
   budgetsSelector,
   budgetRevisionSelector,
+  bumpBudgetRevision,
   setBudgets,
   totalCostSelector,
   totalIncomeSelector,
 } from "@/stores/budget";
 import { categoriesSelector } from "@/stores/category";
 import { useAppMode } from "@/components/providers/AppModeProvider";
-import { userSelector } from "@/stores/profile";
+import { setProfile, userSelector } from "@/stores/profile";
+import { DeleteTransactionDialog } from "@/components/pages/dashboard/DeleteTransactionDialog";
+import { ConfirmBlockedDialog } from "@/components/pages/dashboard/BulkDeleteBlockedDialog";
 
 type DashboardPageProps = {
   initialData?: IBudgetsSummary;
@@ -81,6 +88,13 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
     { currency: string; income: number; cost: number; count: number }[]
   >([]);
   const [exportOpen, setExportOpen] = useState(false);
+  // Bulk selection and delete.
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const [bulkCount, setBulkCount] = useState(0);
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const [blocked, setBlocked] = useState<{ id: string; reason: string }[]>([]);
   const hasLoadedOnce = useRef(Boolean(initialData));
 
   const calendarType = user?.preferences?.dateCalendar || "jalali";
@@ -157,6 +171,10 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
     Object.entries(filterParams).forEach(([key, value]) => queryParams.set(key, value));
   }
   const queryString = queryParams.toString();
+  // A new page or filter starts a fresh selection.
+  useEffect(() => {
+    setSelectedIds(new Set());
+  }, [queryString]);
 
   const updateQuery = useCallback(
     (patch: Record<string, string>) => {
@@ -421,6 +439,48 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
     );
   }
 
+  function toggleSelected(id: string) {
+    setSelectedIds((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function exitSelectMode() {
+    setSelectMode(false);
+    setSelectedIds(new Set());
+  }
+
+  async function runBulkDelete(ids: string[], mode: budgetsApi.DeleteMode) {
+    setBulkBusy(true);
+    try {
+      const res = await budgetsApi.bulkDeleteBudgets(ids, mode);
+      if (user) dispatch(setProfile(mergeProfileWallet(user, res)));
+      dispatch(bumpBudgetRevision());
+      const done = res.trashed.length + res.deleted.length;
+      if (done) {
+        showToast(
+          res.trashed.length
+            ? `${toPersianDigits(res.trashed.length)} تراکنش به سطل زباله رفت`
+            : `${toPersianDigits(res.deleted.length)} تراکنش برای همیشه حذف شد`,
+          "success",
+        );
+      }
+      if (res.failed.length) {
+        showToast(`${toPersianDigits(res.failed.length)} تراکنش حذف نشد؛ دوباره تلاش کنید`, "danger");
+      }
+      setBulkOpen(false);
+      setBlocked(res.blocked);
+      exitSelectMode();
+    } catch (error) {
+      showErrorToast(error);
+    } finally {
+      setBulkBusy(false);
+    }
+  }
+
   return (
     <div className="pb-dashboard-page">
       <DashboardHero
@@ -499,15 +559,73 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         dashboardFilters={filters}
       />
 
+      {selectMode ? (
+        <FloatingActionBar label="عملیات گروهی">
+          <span className="text-sm font-semibold">
+            {selectedIds.size ? `${toPersianDigits(selectedIds.size)} تراکنش انتخاب شد` : "تراکنش‌ها را برای انتخاب لمس کنید"}
+          </span>
+          <Button size="sm" variant="danger" isDisabled={!selectedIds.size} onPress={() => { setBulkCount(selectedIds.size); setBulkOpen(true); }}>
+            <Trash size={16} />
+            حذف
+          </Button>
+        </FloatingActionBar>
+      ) : null}
+      <DeleteTransactionDialog
+        open={bulkOpen}
+        onOpenChange={setBulkOpen}
+        onConfirm={(mode) => void runBulkDelete([...selectedIds], mode)}
+        isPending={bulkBusy}
+        count={bulkCount}
+      />
+      <ConfirmBlockedDialog
+        blocked={blocked}
+        busy={bulkBusy}
+        onClose={() => setBlocked([])}
+        onDeletePermanently={() => void runBulkDelete(blocked.map((item) => item.id), "permanent")}
+      />
+
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] xl:grid-cols-[minmax(0,1fr)_22rem]">
         <section className="min-w-0">
-          <div className="mb-3 flex items-center justify-between">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
             <h3 className="text-base font-bold lg:text-lg">{t("dashboard.transactions")}</h3>
-            {resultTotal ? (
-              <span className="rounded-full bg-surface-secondary px-2.5 py-0.5 text-xs text-muted">
-                {t("dashboard.transactionCountInRange", { count: formatCount(resultTotal) })}
-              </span>
-            ) : null}
+            <div className="flex flex-wrap items-center gap-1.5">
+              {resultTotal && !selectMode ? (
+                <span className="rounded-full bg-surface-secondary px-2.5 py-0.5 text-xs text-muted">
+                  {t("dashboard.transactionCountInRange", { count: formatCount(resultTotal) })}
+                </span>
+              ) : null}
+              {selectMode ? (
+                <>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onPress={() =>
+                      setSelectedIds((current) =>
+                        current.size === filteredBudgets.length ? new Set() : new Set(filteredBudgets.map((item) => item._id)),
+                      )
+                    }
+                  >
+                    {selectedIds.size === filteredBudgets.length && filteredBudgets.length ? "لغو انتخاب همه" : "انتخاب همهٔ این صفحه"}
+                  </Button>
+                  <Button size="sm" variant="secondary" onPress={exitSelectMode}>
+                    پایان انتخاب
+                  </Button>
+                </>
+              ) : (
+                <>
+                  {filteredBudgets.length ? (
+                    <Button size="sm" variant="ghost" onPress={() => setSelectMode(true)} data-tour="dashboard-select">
+                      <TaskSquare size={16} />
+                      انتخاب
+                    </Button>
+                  ) : null}
+                  <Link href={PATHS.TRASH} className="inline-flex h-8 items-center gap-1.5 rounded-xl px-2.5 text-sm text-muted hover:bg-surface-secondary hover:text-foreground">
+                    <Trash size={16} />
+                    سطل زباله
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
           <div ref={listTopRef} className="-mt-3 scroll-mt-24" aria-hidden />
 
@@ -562,7 +680,12 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
                     <div className="pb-stagger flex flex-col gap-2.5 lg:gap-3">
                       {group.budgets.map((budget: IBudget, index) => (
                         <div key={budget._id} style={{ ["--i" as string]: groupIndex < 3 ? index : 0 }}>
-                          <TransactionCard budget={budget} />
+                          <TransactionCard
+                            budget={budget}
+                            selectMode={selectMode}
+                            selected={selectedIds.has(budget._id)}
+                            onToggleSelect={() => toggleSelected(budget._id)}
+                          />
                         </div>
                       ))}
                     </div>

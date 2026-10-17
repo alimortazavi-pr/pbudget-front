@@ -42,17 +42,20 @@ export function SimpleTransactionCard({ budget }: SimpleTransactionCardProps) {
     ? t("dashboard.needsCategory")
     : budget.category?.title ?? t("common.noCategory");
 
-  async function handleDelete() {
+  async function handleDelete(mode: budgetsApi.DeleteMode) {
     setDeleting(true);
     try {
-      const res = await budgetsApi.hardDeleteBudget(budget._id);
+      const res =
+        mode === "trash"
+          ? await budgetsApi.moveBudgetToTrash(budget._id)
+          : await budgetsApi.hardDeleteBudget(budget._id);
       dispatch(deleteBudget(budget));
       if (user) {
         dispatch(setProfile(mergeProfileWallet(user, res)));
       }
       dispatch(bumpBudgetRevision());
       setDeleteOpen(false);
-      showToast(t("common.deleted"), "success");
+      showToast(mode === "trash" ? "به سطل زباله منتقل شد" : t("common.deleted"), "success");
     } catch (err) {
       showToast(
         err instanceof Error
@@ -144,7 +147,7 @@ export function SimpleTransactionCard({ budget }: SimpleTransactionCardProps) {
       <DeleteTransactionDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        onConfirm={() => void handleDelete()}
+        onConfirm={(mode) => void handleDelete(mode)}
         isPending={deleting}
         price={budget.price}
         type={budget.type}

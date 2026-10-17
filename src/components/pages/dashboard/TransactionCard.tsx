@@ -5,7 +5,7 @@ import { useTranslation } from "@/i18n";
 import { useState } from "react";
 import { Button } from "@heroui/react";
 import { LinkButton } from "@/components/common/ui/LinkButton";
-import { ArrowDown, ArrowUp, Edit2, Trash } from "iconsax-reactjs";
+import { ArrowDown, ArrowUp, Edit2, TickCircle, Trash } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 import * as budgetsApi from "@/common/api/budgets";
@@ -32,6 +32,10 @@ import { DeleteTransactionDialog } from "./DeleteTransactionDialog";
 
 type TransactionCardProps = {
   budget: IBudget;
+  /** Bulk selection: tapping the card toggles it instead of expanding. */
+  selectMode?: boolean;
+  selected?: boolean;
+  onToggleSelect?: () => void;
 };
 
 function resolvePaymentCardLabel(
@@ -43,7 +47,7 @@ function resolvePaymentCardLabel(
   return [card.title, number].filter(Boolean).join(" · ");
 }
 
-export function TransactionCard({ budget }: TransactionCardProps) {
+export function TransactionCard({ budget, selectMode = false, selected = false, onToggleSelect }: TransactionCardProps) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const user = useAppSelector(userSelector);
@@ -61,17 +65,20 @@ export function TransactionCard({ budget }: TransactionCardProps) {
   const budgetCurrency = resolveBudgetCurrency(budget.currency);
   const budgetCalendar = resolveBudgetDateCalendar(budget.dateCalendar);
 
-  async function handleDelete() {
+  async function handleDelete(mode: budgetsApi.DeleteMode) {
     setDeleting(true);
     try {
-      const res = await budgetsApi.hardDeleteBudget(budget._id);
+      const res =
+        mode === "trash"
+          ? await budgetsApi.moveBudgetToTrash(budget._id)
+          : await budgetsApi.hardDeleteBudget(budget._id);
       dispatch(deleteBudget(budget));
       if (user) {
         dispatch(setProfile(mergeProfileWallet(user, res)));
       }
       dispatch(bumpBudgetRevision());
       setDeleteOpen(false);
-      showToast(t("common.deleted"), "success");
+      showToast(mode === "trash" ? "به سطل زباله منتقل شد" : t("common.deleted"), "success");
     } catch (err) {
       showToast(
         err instanceof Error
@@ -88,10 +95,30 @@ export function TransactionCard({ budget }: TransactionCardProps) {
       <article
         className={`pb-tx group ${isPendingCategory ? "pb-tx-pending" : ""}`}
         style={{ ["--cat" as string]: categoryColor }}
-        data-expanded={expanded ? "true" : "false"}
-        onClick={() => setExpanded((v) => !v)}
+        data-expanded={expanded && !selectMode ? "true" : "false"}
+        data-selected={selectMode && selected ? "true" : undefined}
+        role={selectMode ? "checkbox" : undefined}
+        aria-checked={selectMode ? selected : undefined}
+        tabIndex={selectMode ? 0 : undefined}
+        onKeyDown={(event) => {
+          if (selectMode && (event.key === " " || event.key === "Enter")) {
+            event.preventDefault();
+            onToggleSelect?.();
+          }
+        }}
+        onClick={() => (selectMode ? onToggleSelect?.() : setExpanded((v) => !v))}
       >
         <div className="flex items-center gap-3">
+          {selectMode ? (
+            <span
+              aria-hidden
+              className={`flex size-6 shrink-0 items-center justify-center rounded-full border-2 transition ${
+                selected ? "border-accent bg-accent text-accent-foreground" : "border-border"
+              }`}
+            >
+              {selected ? <TickCircle size={16} variant="Bold" /> : null}
+            </span>
+          ) : null}
           <span className="pb-tx-icon" aria-hidden>
             {isPendingCategory ? "؟" : (categoryTitle.trim().charAt(0) || (isIncome ? "+" : "−"))}
             <span className={`pb-tx-dir ${isIncome ? "bg-[var(--brand-teal)]" : "bg-[var(--brand-rose)]"}`}>
@@ -148,7 +175,7 @@ export function TransactionCard({ budget }: TransactionCardProps) {
           </p>
         </div>
 
-        {expanded && (
+        {expanded && !selectMode && (
           <div
             className="pb-rise-in mt-3 border-t border-border/50 pt-3"
             onClick={(e) => e.stopPropagation()}
@@ -189,7 +216,7 @@ export function TransactionCard({ budget }: TransactionCardProps) {
       <DeleteTransactionDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        onConfirm={() => void handleDelete()}
+        onConfirm={(mode) => void handleDelete(mode)}
         isPending={deleting}
         price={budget.price}
         type={budget.type}

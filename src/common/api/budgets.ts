@@ -155,3 +155,58 @@ export function openExportInBrowser(blob: Blob) {
   window.open(url, "_blank", "noopener,noreferrer");
   window.setTimeout(() => window.URL.revokeObjectURL(url), 60_000);
 }
+
+// ---- Trash and bulk delete -------------------------------------------------
+
+export type DeleteMode = "trash" | "permanent";
+type WalletPayload = Pick<IBudgetMutationResult, "userBudget" | "userWalletBalances" | "currency">;
+
+export interface BulkDeleteResult extends WalletPayload {
+  trashed: string[];
+  deleted: string[];
+  /** Linked transactions (debts, installments, checks, boxes, work hours) that can only be deleted permanently. */
+  blocked: { id: string; reason: string }[];
+  failed: { id: string; reason: string }[];
+}
+
+export interface TrashedBudget extends IBudget {
+  trashedAt: string;
+  purgeAt: string;
+}
+
+export interface TrashList {
+  items: TrashedBudget[];
+  retentionDays: number;
+  pagination: { page: number; limit: number; total: number; totalPages: number };
+}
+
+export async function moveBudgetToTrash(id: string) {
+  const { data } = await axiosInstance.delete<WalletPayload>(`/budgets/${id}/trash`);
+  return data;
+}
+
+export async function bulkDeleteBudgets(ids: string[], mode: DeleteMode) {
+  const { data } = await axiosInstance.post<BulkDeleteResult>("/budgets/bulk-delete", { ids, mode });
+  return data;
+}
+
+export async function fetchTrash(page = 1) {
+  const { data } = await axiosInstance.get<TrashList>("/budgets/trash", { params: { page, limit: 30 } });
+  return data;
+}
+
+export async function restoreFromTrash(ids: string[]) {
+  const { data } = await axiosInstance.post<WalletPayload & { restored: string[]; failed: { id: string; reason: string }[] }>(
+    "/budgets/trash/restore",
+    { ids },
+  );
+  return data;
+}
+
+export async function purgeTrash(target: string[] | "all") {
+  const { data } = await axiosInstance.post<WalletPayload & { deleted: string[] }>(
+    "/budgets/trash/purge",
+    target === "all" ? { all: true } : { ids: target },
+  );
+  return data;
+}

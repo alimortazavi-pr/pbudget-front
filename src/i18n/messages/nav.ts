@@ -7,6 +7,7 @@ export const navMessages: MessageTree = {
   financialAnalysis: "تحلیل مالی",
   aiAssistant: "دستیار هوشمند",
   customExports: "مرکز خروجی",
+  trash: "سطل زباله",
   plans: "پلن‌ها",
   support: "پشتیبانی",
   adminSupport: "پیام‌های پشتیبانی",

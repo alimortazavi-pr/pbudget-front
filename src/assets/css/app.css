@@ -1047,6 +1047,7 @@
   }
   .pb-tx[data-expanded="true"] { border-color: color-mix(in oklch, var(--cat) 45%, var(--border)); }
   .pb-tx[data-expanded="true"]::before { opacity: 1; }
+  .pb-tx[data-selected="true"] { border-color: var(--accent); background: color-mix(in oklch, var(--accent) 7%, var(--surface)); }
   .pb-tx:active { transform: scale(0.995); }
   .pb-tx-pending { @apply border-warning/40 bg-warning/5; }
   .pb-tx-icon {

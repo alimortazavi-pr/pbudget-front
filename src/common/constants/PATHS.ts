@@ -6,6 +6,7 @@ export const PATHS = {
   ANALYSIS: "/analysis",
   AI: "/ai",
   EXPORTS: "/exports",
+  TRASH: "/trash",
   GET_STARTED: "/get-started",
   DOWNLOAD: "/download",
   PRIVACY: "/privacy",
