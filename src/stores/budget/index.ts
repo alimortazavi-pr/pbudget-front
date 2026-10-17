@@ -26,6 +26,11 @@ const budgetSlice = createSlice({
       state.totalCostPrice = action.payload.totalCostPrice;
       state.totalIncomePrice = action.payload.totalIncomePrice;
     },
+    /** Next page of an infinite list; rows already shown are skipped. */
+    appendBudgets(state, action: PayloadAction<IBudget[]>) {
+      const seen = new Set((state.budgets ?? []).map((b) => b._id));
+      state.budgets = [...(state.budgets ?? []), ...action.payload.filter((b) => !seen.has(b._id))];
+    },
     deleteBudget(state, action: PayloadAction<IBudget>) {
       if (!state.budgets) return;
       state.budgets = state.budgets.filter((b) => b._id !== action.payload._id);
@@ -44,7 +49,7 @@ const budgetSlice = createSlice({
 });
 
 export const budgetReducer = budgetSlice.reducer;
-export const { setBudgets, deleteBudget, bumpBudgetRevision } = budgetSlice.actions;
+export const { setBudgets, appendBudgets, deleteBudget, bumpBudgetRevision } = budgetSlice.actions;
 export const budgetsSelector = (state: { budget: IBudgetState }) =>
   state.budget.budgets;
 export const totalIncomeSelector = (state: { budget: IBudgetState }) =>

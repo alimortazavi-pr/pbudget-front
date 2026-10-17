@@ -15,9 +15,9 @@ import { useHydratedSearchParams } from "@/common/hooks/useHydratedSearchParams"
 import { useLocalizedDate } from "@/i18n/hooks/useLocalizedDate";
 import { getJalaliNow } from "@/common/utils";
 import { getJalaliDaysInMonth } from "@/common/utils/jalali-date";
-import { formatBudgetDate, getNowDateParts } from "@/common/utils/calendar-date";
+import { getNowDateParts } from "@/common/utils/calendar-date";
 import { formatPriceWithCurrency } from "@/common/utils/format-currency";
-import { resolveBudgetCurrency, resolveBudgetDateCalendar, type UserCurrency } from "@/common/constants/user-preferences";
+import { resolveBudgetCurrency, type UserCurrency } from "@/common/constants/user-preferences";
 import { BudgetType } from "@/types/enums";
 import moment from "moment-jalali";
 import { showErrorToast, showToast } from "@/common/utils/toast";
@@ -41,8 +41,7 @@ import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 import { DashboardHero } from "@/components/pages/dashboard/DashboardHero";
 import { WorkTimeQuickWidget } from "@/components/pages/projects/WorkTimeQuickWidget";
 import { HmiDashboardPage } from "@/components/pages/dashboard/HmiDashboardPage";
-import { TransactionCard } from "@/components/pages/dashboard/TransactionCard";
-import { TransactionPagination } from "@/components/pages/dashboard/TransactionPagination";
+import { VirtualTransactionList } from "@/components/pages/dashboard/VirtualTransactionList";
 import { TransactionListSkeleton } from "@/components/pages/dashboard/TransactionListSkeleton";
 import * as cardsApi from "@/common/api/payment-cards";
 import * as projectsApi from "@/common/api/projects";
@@ -52,6 +51,7 @@ import type { IProject } from "@/common/interfaces/project.interface";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import {
   budgetsSelector,
+  appendBudgets,
   budgetRevisionSelector,
   bumpBudgetRevision,
   setBudgets,
@@ -115,8 +115,12 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
   const [projects, setProjects] = useState<IProject[]>([]);
   const { displayCurrencyLabel } = useCurrencyLabels();
   const paginated = appMode === "advanced";
-  const page = Math.max(1, parseInt(hydrated ? get("page", "1") : "1", 10) || 1);
-  const [pageSize, setPageSize] = useState(30);
+  // Infinite list: pages of PAGE_SIZE are appended as the reader scrolls.
+  const PAGE_SIZE = 50;
+  const [loadedPage, setLoadedPage] = useState(1);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const loadedPageRef = useRef(1);
+  const lastQueryRef = useRef<string | null>(null);
   const [serverMeta, setServerMeta] = useState<{
     pagination: NonNullable<IBudgetsSummary["pagination"]>;
     dayTotals: NonNullable<IBudgetsSummary["dayTotals"]>;
@@ -126,14 +130,6 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
   const listTopRef = useRef<HTMLDivElement>(null);
   const preferredCurrency = resolveBudgetCurrency(user?.preferences?.currency);
 
-  useEffect(() => {
-    try {
-      const stored = Number(window.localStorage.getItem("pb-page-size"));
-      if ([20, 30, 50, 100].includes(stored)) setPageSize(stored);
-    } catch {
-      /* private mode */
-    }
-  }, []);
 
   /**
    * Filter params as the server understands them. The URL already holds the
@@ -166,8 +162,8 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
   if (fetchDuration === "daily") queryParams.set("day", day);
   if (category) queryParams.set("category", category);
   if (paginated) {
-    queryParams.set("limit", String(pageSize));
-    queryParams.set("page", String(page));
+    queryParams.set("limit", String(PAGE_SIZE));
+    queryParams.set("page", "1");
     Object.entries(filterParams).forEach(([key, value]) => queryParams.set(key, value));
   }
   const queryString = queryParams.toString();
@@ -183,8 +179,8 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         if (v) params.set(k, v);
         else params.delete(k);
       });
-      // Any change other than paging itself starts again from page 1.
-      if (!("page" in patch)) params.delete("page");
+      // Paging is no longer in the URL (the list loads more as you scroll).
+      params.delete("page");
       router.replace(`${PATHS.HOME}?${params.toString()}`, { scroll: false });
     },
     [router],
@@ -211,17 +207,35 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
     async function load() {
       if (!hasLoadedOnce.current) setLoading(true);
       else setRefreshing(true);
+      // Same query (e.g. after a delete): reload every page already shown so
+      // the list doesn't jump back to the first page. New query: start over.
+      const sameQuery = lastQueryRef.current === queryString;
+      const pagesWanted = sameQuery ? loadedPageRef.current : 1;
       try {
-        const data = await budgetsApi.fetchBudgets(
-          Object.fromEntries(new URLSearchParams(queryString)),
-        );
+        const base = Object.fromEntries(new URLSearchParams(queryString));
+        const data = await budgetsApi.fetchBudgets(base);
+        let budgetsSoFar = data.budgets;
+        let dayTotals = data.dayTotals ?? [];
+        let pages = 1;
+        if (data.pagination) {
+          const last = Math.min(pagesWanted, data.pagination.pages);
+          for (let next = 2; next <= last && !cancelled; next += 1) {
+            const more = await budgetsApi.fetchBudgets({ ...base, page: String(next) });
+            budgetsSoFar = [...budgetsSoFar, ...more.budgets];
+            dayTotals = [...dayTotals, ...(more.dayTotals ?? [])];
+          }
+          pages = Math.max(1, last);
+        }
         if (!cancelled) {
-          dispatch(setBudgets(data));
+          dispatch(setBudgets({ ...data, budgets: budgetsSoFar }));
           setServerMeta(
             data.pagination
-              ? { pagination: data.pagination, dayTotals: data.dayTotals ?? [], insights: data.insights ?? { totalCost: 0, categories: [], days: [] } }
+              ? { pagination: data.pagination, dayTotals, insights: data.insights ?? { totalCost: 0, categories: [], days: [] } }
               : null,
           );
+          loadedPageRef.current = pages;
+          setLoadedPage(pages);
+          lastQueryRef.current = queryString;
           setOtherCurrencyTotals(
             Object.entries(data.totalsByCurrency ?? {})
               .filter(([currency]) => currency !== (data.currency ?? "toman"))
@@ -247,6 +261,32 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
       cancelled = true;
     };
   }, [hydrated, dispatch, queryString, budgetRevision, t]);
+
+  const hasMore = Boolean(serverMeta && loadedPage < serverMeta.pagination.pages);
+  const loadingMoreRef = useRef(false);
+  async function loadMore() {
+    if (!serverMeta || loadingMoreRef.current || loadedPage >= serverMeta.pagination.pages) return;
+    loadingMoreRef.current = true;
+    setLoadingMore(true);
+    const next = loadedPage + 1;
+    try {
+      const more = await budgetsApi.fetchBudgets({
+        ...Object.fromEntries(new URLSearchParams(queryString)),
+        page: String(next),
+      });
+      dispatch(appendBudgets(more.budgets));
+      setServerMeta((current) =>
+        current ? { ...current, dayTotals: [...current.dayTotals, ...(more.dayTotals ?? [])] } : current,
+      );
+      loadedPageRef.current = next;
+      setLoadedPage(next);
+    } catch (err) {
+      showErrorToast(err);
+    } finally {
+      loadingMoreRef.current = false;
+      setLoadingMore(false);
+    }
+  }
 
   // Labels for the active-filter chips (cheap, once).
   useEffect(() => {
@@ -605,7 +645,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
                       )
                     }
                   >
-                    {selectedIds.size === filteredBudgets.length && filteredBudgets.length ? "لغو انتخاب همه" : "انتخاب همهٔ این صفحه"}
+                    {selectedIds.size === filteredBudgets.length && filteredBudgets.length ? "لغو انتخاب همه" : "انتخاب همهٔ نمایش‌داده‌ها"}
                   </Button>
                   <Button size="sm" variant="secondary" onPress={exitSelectMode}>
                     پایان انتخاب
@@ -659,61 +699,18 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
                   ))}
                 </div>
               ) : null}
-              {dayGroups.map((group, groupIndex) => {
-                const first = group.budgets[0];
-                const net = group.income - group.cost;
-                return (
-                  <section key={group.key} className="flex flex-col gap-2.5 lg:gap-3">
-                    {duration !== "daily" ? (
-                      <div className="pb-day-header">
-                        <span className="text-foreground/80">
-                          {formatBudgetDate(first.year, first.month, first.day, resolveBudgetDateCalendar(first.dateCalendar))}
-                        </span>
-                        {net !== 0 ? (
-                          <span className={net > 0 ? "text-income" : "text-expense"}>
-                            {net > 0 ? "+" : "−"}
-                            {formatPriceWithCurrency(Math.abs(net), preferredCurrency)}
-                          </span>
-                        ) : null}
-                      </div>
-                    ) : null}
-                    <div className="pb-stagger flex flex-col gap-2.5 lg:gap-3">
-                      {group.budgets.map((budget: IBudget, index) => (
-                        <div key={budget._id} style={{ ["--i" as string]: groupIndex < 3 ? index : 0 }}>
-                          <TransactionCard
-                            budget={budget}
-                            selectMode={selectMode}
-                            selected={selectedIds.has(budget._id)}
-                            onToggleSelect={() => toggleSelected(budget._id)}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-                );
-              })}
-              {serverMeta ? (
-                <TransactionPagination
-                  page={serverMeta.pagination.page}
-                  pages={serverMeta.pagination.pages}
-                  total={serverMeta.pagination.total}
-                  limit={serverMeta.pagination.limit}
-                  busy={refreshing}
-                  onPage={(next) => {
-                    updateQuery({ page: next > 1 ? String(next) : "" });
-                    listTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-                  }}
-                  onLimit={(next) => {
-                    setPageSize(next);
-                    try {
-                      window.localStorage.setItem("pb-page-size", String(next));
-                    } catch {
-                      /* private mode */
-                    }
-                    updateQuery({ page: "" });
-                  }}
-                />
-              ) : null}
+              <VirtualTransactionList
+                groups={dayGroups}
+                showDayHeaders={duration !== "daily"}
+                currency={preferredCurrency}
+                selectMode={selectMode}
+                selectedIds={selectedIds}
+                onToggleSelect={toggleSelected}
+                hasMore={hasMore}
+                loadingMore={loadingMore}
+                onLoadMore={() => void loadMore()}
+                total={resultTotal}
+              />
             </div>
           )}
         </section>
