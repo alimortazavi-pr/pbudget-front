@@ -210,3 +210,54 @@ export async function purgeTrash(target: string[] | "all") {
   );
   return data;
 }
+
+type DueDate = { year: number; month: number; day: number };
+
+export type BudgetDetails = {
+  budget: IBudget & {
+    updatedAt?: string;
+    project?: { _id: string; description?: string } | null;
+  };
+  links: {
+    debts: {
+      _id: string;
+      role: "source" | "settlement";
+      type: number;
+      person: string;
+      totalAmount: number;
+      remainingAmount: number;
+      status: string;
+      currency: string;
+      settledAmount: number | null;
+      due: DueDate | null;
+    }[];
+    installment: {
+      planId: string;
+      title: string;
+      person: string;
+      sequence: number;
+      totalInstallments: number | null;
+      due: DueDate;
+    } | null;
+    check: {
+      _id: string;
+      type: number;
+      person: string;
+      bankName: string;
+      checkNumber: string;
+      amount: number;
+      status: string;
+      due: DueDate;
+    } | null;
+    box: { _id: string; title: string; deleted: boolean } | null;
+    workSessions: { _id: string; year: number; month: number; day: number; minutes: number | null; project: string | null }[];
+    venture: { _id: string; title: string } | null;
+    bankImport: { createdAt: string | null; statementRef: string | null } | null;
+  };
+};
+
+/** The transaction with everything it is linked to (debt, installment, check, box…). */
+export async function fetchBudgetDetails(id: string) {
+  const { data } = await axiosInstance.get<BudgetDetails>(`/budgets/${id}/details`);
+  return data;
+}

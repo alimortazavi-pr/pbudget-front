@@ -16,7 +16,7 @@ export type DayGroup = { key: string; budgets: IBudget[]; income: number; cost: 
 
 type Row =
   | { kind: "day"; key: string; group: DayGroup }
-  | { kind: "tx"; key: string; budget: IBudget };
+  | { kind: "tx"; key: string; budget: IBudget; number: number };
 
 /**
  * Transaction list that only renders the rows near the screen (the page itself
@@ -48,9 +48,10 @@ export function VirtualTransactionList({
 }) {
   const rows = useMemo<Row[]>(() => {
     const out: Row[] = [];
+    let number = 0;
     for (const group of groups) {
       if (showDayHeaders && group.key !== "sorted") out.push({ kind: "day", key: `day-${group.key}`, group });
-      for (const budget of group.budgets) out.push({ kind: "tx", key: budget._id, budget });
+      for (const budget of group.budgets) out.push({ kind: "tx", key: budget._id, budget, number: ++number });
     }
     return out;
   }, [groups, showDayHeaders]);
@@ -112,6 +113,7 @@ export function VirtualTransactionList({
                 <div className="pb-2.5 lg:pb-3">
                   <TransactionCard
                     budget={row.budget}
+                    rowNumber={row.number}
                     selectMode={selectMode}
                     selected={selectedIds.has(row.budget._id)}
                     onToggleSelect={() => onToggleSelect(row.budget._id)}

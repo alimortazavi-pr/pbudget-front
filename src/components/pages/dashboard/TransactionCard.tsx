@@ -13,10 +13,8 @@ import type { IBudget } from "@/common/interfaces/budget.interface";
 import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
 import { resolveCategoryColor } from "@/common/constants/category-colors";
 import { paymentCardSubtitle } from "@/common/utils/payment-card";
-import {
-  formatBudgetDate,
-  formatBudgetDateTime,
-} from "@/common/utils/calendar-date";
+import { formatBudgetDate } from "@/common/utils/calendar-date";
+import { toPersianDigits } from "@/common/utils/persian-digits";
 import { formatPriceWithCurrency } from "@/common/utils/format-currency";
 import { mergeProfileWallet } from "@/common/utils/wallet-balances";
 import {
@@ -29,6 +27,7 @@ import { bumpBudgetRevision, deleteBudget } from "@/stores/budget";
 import { setProfile, userSelector } from "@/stores/profile";
 import { BudgetType, DebtType } from "@/types/enums";
 import { DeleteTransactionDialog } from "./DeleteTransactionDialog";
+import { TransactionDetails } from "./TransactionDetails";
 
 type TransactionCardProps = {
   budget: IBudget;
@@ -36,6 +35,8 @@ type TransactionCardProps = {
   selectMode?: boolean;
   selected?: boolean;
   onToggleSelect?: () => void;
+  /** Position in the list (1 = newest), shown before the icon. */
+  rowNumber?: number;
 };
 
 function resolvePaymentCardLabel(
@@ -47,7 +48,7 @@ function resolvePaymentCardLabel(
   return [card.title, number].filter(Boolean).join(" · ");
 }
 
-export function TransactionCard({ budget, selectMode = false, selected = false, onToggleSelect }: TransactionCardProps) {
+export function TransactionCard({ budget, selectMode = false, selected = false, onToggleSelect, rowNumber }: TransactionCardProps) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const user = useAppSelector(userSelector);
@@ -119,6 +120,11 @@ export function TransactionCard({ budget, selectMode = false, selected = false, 
               {selected ? <TickCircle size={16} variant="Bold" /> : null}
             </span>
           ) : null}
+          {rowNumber ? (
+            <span className="min-w-5 shrink-0 text-center text-[11px] font-medium tabular-nums text-muted" title="ردیف">
+              {toPersianDigits(rowNumber)}
+            </span>
+          ) : null}
           <span className="pb-tx-icon" aria-hidden>
             {isPendingCategory ? "؟" : (categoryTitle.trim().charAt(0) || (isIncome ? "+" : "−"))}
             <span className={`pb-tx-dir ${isIncome ? "bg-[var(--brand-teal)]" : "bg-[var(--brand-rose)]"}`}>
@@ -180,16 +186,14 @@ export function TransactionCard({ budget, selectMode = false, selected = false, 
             className="pb-rise-in mt-3 border-t border-border/50 pt-3"
             onClick={(e) => e.stopPropagation()}
           >
-            <p className="mb-3 text-sm text-muted">
-              {formatBudgetDateTime(
-                budget.year,
-                budget.month,
-                budget.day,
-                budget.createdAt,
-                budgetCalendar
-              )}
-            </p>
-            <div className="flex gap-2">
+            <TransactionDetails
+              budget={budget}
+              currency={budgetCurrency}
+              calendar={budgetCalendar}
+              categoryTitle={isPendingCategory ? "" : categoryTitle}
+              paymentCardLabel={paymentCardLabel}
+            />
+            <div className="mt-3 flex gap-2">
               <LinkButton
                 href={PATHS.BUDGET(budget._id)}
                 size="sm"
