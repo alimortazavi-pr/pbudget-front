@@ -35,7 +35,7 @@ type TransactionCardProps = {
   selectMode?: boolean;
   selected?: boolean;
   onToggleSelect?: () => void;
-  /** Position in the list (1 = newest), shown before the icon. */
+  /** Position counted from the oldest transaction (1), shown before the icon. */
   rowNumber?: number;
 };
 

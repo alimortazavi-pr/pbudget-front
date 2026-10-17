@@ -48,13 +48,16 @@ export function VirtualTransactionList({
 }) {
   const rows = useMemo<Row[]>(() => {
     const out: Row[] = [];
-    let number = 0;
+    // Numbered from the oldest (1) up, so a new transaction never renumbers
+    // the ones already there; `total` covers pages not loaded yet.
+    const count = groups.reduce((sum, group) => sum + group.budgets.length, 0);
+    let number = Math.max(total, count) + 1;
     for (const group of groups) {
       if (showDayHeaders && group.key !== "sorted") out.push({ kind: "day", key: `day-${group.key}`, group });
-      for (const budget of group.budgets) out.push({ kind: "tx", key: budget._id, budget, number: ++number });
+      for (const budget of group.budgets) out.push({ kind: "tx", key: budget._id, budget, number: --number });
     }
     return out;
-  }, [groups, showDayHeaders]);
+  }, [groups, showDayHeaders, total]);
 
   const listRef = useRef<HTMLDivElement>(null);
   const [scrollMargin, setScrollMargin] = useState(0);
