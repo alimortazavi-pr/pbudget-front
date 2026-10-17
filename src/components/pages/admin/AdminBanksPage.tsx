@@ -182,7 +182,7 @@ export function AdminBanksPage() {
           <AppModalHeader>
             <Modal.Heading>{editItem ? t("auto.k2b3ad62018") : t("auto.k1f4ad95efd")}</Modal.Heading>
           </AppModalHeader>
-          <div className="space-y-4 p-4">
+          <Modal.Body className="space-y-4 p-4">
             <FormInput label={t("auto.kd58cb05310")} value={title} onChange={(e) => setTitle(e.target.value)} />
             <FormInput
               label={t("auto.k503016e279")}
@@ -207,7 +207,7 @@ export function AdminBanksPage() {
             <Button className="w-full" isPending={saving} onPress={() => void save()}>
               {t("common.save")}
             </Button>
-          </div>
+          </Modal.Body>
         </AppModalDialog>
       </AppModal>
     </div>

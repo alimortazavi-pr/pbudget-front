@@ -3,7 +3,7 @@
 import { useTranslation } from "@/i18n";
 
 import { useState } from "react";
-import { Button } from "@heroui/react";
+import { Button, Modal } from "@heroui/react";
 
 import type { IProject } from "@/common/interfaces/project.interface";
 import { ManualWorkSessionModal } from "@/components/pages/projects/ManualWorkSessionModal";
@@ -55,7 +55,7 @@ export function QuickManualWorkSessionModal({
     <AppModal open={open} onOpenChange={onOpenChange}>
       <AppModalDialog>
         <AppModalHeader>{t("auto.k874bd0048a")}</AppModalHeader>
-        <div className="space-y-2 p-4">
+        <Modal.Body className="space-y-2 p-4">
           <p className="text-sm text-muted">{t("auto.k723423f3e7")}</p>
           {projects.length === 0 ? (
             <p className="text-sm text-muted">{t("auto.k4f4cb60647")}</p>
@@ -71,7 +71,7 @@ export function QuickManualWorkSessionModal({
               </Button>
             ))
           )}
-        </div>
+        </Modal.Body>
       </AppModalDialog>
     </AppModal>
   );
