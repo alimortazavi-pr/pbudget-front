@@ -15,6 +15,8 @@ import { useTranslation } from "@/i18n";
 
 const SEEN_PREFIX = "pdesk-android-promo-seen-v";
 const SHOW_DELAY_MS = 2500;
+/** First versionCode of the native app: older APKs on the server must not be announced as "the native app". */
+const MIN_NATIVE_VERSION_CODE = 20;
 
 /** Pages where the promo would be noise: auth, the download page itself, legal and admin. */
 function isPromoPath(pathname: string) {
@@ -44,7 +46,7 @@ export function AndroidDownloadPrompt() {
   const seenKey = `${SEEN_PREFIX}${versionCode ?? 0}`;
 
   useEffect(() => {
-    if (!apkAvailable || !isPromoPath(pathname)) {
+    if (!apkAvailable || (versionCode ?? 0) < MIN_NATIVE_VERSION_CODE || !isPromoPath(pathname)) {
       setVisible(false);
       return;
     }
@@ -61,7 +63,7 @@ export function AndroidDownloadPrompt() {
     }
     const timer = window.setTimeout(() => setVisible(true), SHOW_DELAY_MS);
     return () => window.clearTimeout(timer);
-  }, [apkAvailable, pathname, seenKey]);
+  }, [apkAvailable, pathname, seenKey, versionCode]);
 
   const dismiss = useCallback(() => {
     try {
