@@ -53,6 +53,8 @@ export function useAndroidAppAvailability() {
     apkAvailable,
     showDownloadPromo,
     versionName: info?.versionName,
+    versionCode: info?.versionCode,
+    byteSize: info?.byteSize,
     downloadUrl: info?.downloadUrl,
   };
 }

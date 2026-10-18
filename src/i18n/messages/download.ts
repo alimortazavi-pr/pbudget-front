@@ -9,7 +9,7 @@ export const downloadMessages: MessageTree = {
   description:
     "{{tagline}}. نسخه اندروید به‌زودی منتشر می‌شود — فعلاً از نسخه وب یا PWA استفاده کنید.",
   descriptionReady:
-    "{{tagline}}. نسخه اندروید آماده دانلود است — یا از نسخه وب و PWA استفاده کنید.",
+    "{{tagline}}. اپ اندروید کاملاً نیتیو منتشر شد — سریع، روان و با همهٔ امکانات نسخه وب. با یک کلیک دانلود کنید.",
   downloadApk: "دانلود مستقیم APK",
   comingSoon: "به‌زودی در دسترس",
   versionInfo: "نسخه {{version}} · اندروید ۷ به بالا",
@@ -39,4 +39,11 @@ export const downloadMessages: MessageTree = {
     "2": "با شماره موبایل وارد شوید",
   },
   pageLinkLabel: "لینک این صفحه:",
+  promoTitle: "اپ اندروید {{appName}} منتشر شد!",
+  promoBody:
+    "نسخهٔ کاملاً نیتیو اندروید: سریع‌تر، روان‌تر و با همهٔ امکانات — بدون نیاز به مرورگر. با یک کلیک دانلود کنید.",
+  promoCta: "دانلود اپ",
+  promoGuide: "راهنمای نصب",
+  promoLater: "بعداً",
+  promoSize: "{{size}} مگابایت",
 };
