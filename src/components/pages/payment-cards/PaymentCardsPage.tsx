@@ -18,6 +18,7 @@ import { AccountCard } from "@/components/pages/payment-cards/AccountCard";
 import { AccountTransferModal } from "@/components/pages/payment-cards/AccountTransferModal";
 import { AccountTransfersList } from "@/components/pages/payment-cards/AccountTransfersList";
 import { CardFormModal } from "@/components/pages/payment-cards/CardFormModal";
+import { useFeatureFlag } from "@/components/providers/SubscriptionAccessProvider";
 import { useTranslation } from "@/i18n";
 import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 import { useAppSelector } from "@/stores/hooks";
@@ -29,6 +30,7 @@ export function PaymentCardsPage() {
   const user = useAppSelector(userSelector);
   const currency = user?.preferences?.currency ?? DEFAULT_USER_PREFERENCES.currency;
   const unit = displayCurrencyLabel(currency);
+  const { ready: planReady, enabled: balancesEnabled } = useFeatureFlag("account_balances");
 
   const [cards, setCards] = useState<IPaymentCard[]>([]);
   const [balances, setBalances] = useState<IAccountBalance[]>([]);
@@ -41,11 +43,13 @@ export function PaymentCardsPage() {
   const [removeBusy, setRemoveBusy] = useState(false);
 
   const load = useCallback(async () => {
+    // Wait for the plan: balances/transfers endpoints answer 403 when the feature is off.
+    if (!planReady) return;
     try {
       const [nextCards, nextBalances, nextTransfers] = await Promise.all([
         paymentCardsApi.fetchPaymentCards(),
-        paymentCardsApi.fetchAccountBalances().catch(() => [] as IAccountBalance[]),
-        paymentCardsApi.fetchAccountTransfers().catch(() => [] as IAccountTransfer[]),
+        balancesEnabled ? paymentCardsApi.fetchAccountBalances().catch(() => [] as IAccountBalance[]) : Promise.resolve([] as IAccountBalance[]),
+        balancesEnabled ? paymentCardsApi.fetchAccountTransfers().catch(() => [] as IAccountTransfer[]) : Promise.resolve([] as IAccountTransfer[]),
       ]);
       setCards(nextCards);
       setBalances(nextBalances);
@@ -55,7 +59,7 @@ export function PaymentCardsPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [planReady, balancesEnabled]);
 
   useEffect(() => {
     setDefaultCardId(getDefaultPaymentCardId(user?._id));
@@ -122,7 +126,7 @@ export function PaymentCardsPage() {
           </Button>
         }
         footer={
-          cards.length ? (
+          cards.length && balancesEnabled ? (
             <div className="mt-5" data-testid="accounts-summary">
               <div className={`grid gap-2 ${tracked.length ? "grid-cols-2" : "grid-cols-1"}`}>
                 {tracked.length ? tile(t("feat.accounts.accountsTotal"), trackedSum) : null}
@@ -140,7 +144,7 @@ export function PaymentCardsPage() {
         }
       />
 
-      {tracked.length >= 2 ? (
+      {balancesEnabled && tracked.length >= 2 ? (
         <div className="flex justify-end">
           <Button variant="secondary" onPress={() => setTransfer({ open: true })}>
             <ArrowSwapHorizontal size={18} />
@@ -149,7 +153,7 @@ export function PaymentCardsPage() {
         </div>
       ) : null}
 
-      {loading ? (
+      {loading || !planReady ? (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="pb-shimmer h-60 rounded-3xl" />
@@ -173,6 +177,7 @@ export function PaymentCardsPage() {
             <AccountCard
               key={card._id}
               card={card}
+              balancesEnabled={balancesEnabled}
               balance={card.trackBalance ? balanceById.get(card._id)?.balance : undefined}
               currency={currency}
               isDefault={defaultCardId === card._id}
@@ -187,13 +192,14 @@ export function PaymentCardsPage() {
         </div>
       )}
 
-      {transfers.length > 0 ? (
+      {balancesEnabled && transfers.length > 0 ? (
         <AccountTransfersList transfers={transfers} cards={cards} currency={currency} onChanged={() => void load()} />
       ) : null}
 
       <CardFormModal
         open={form.open}
         card={form.card}
+        balancesEnabled={balancesEnabled}
         startWithBalance={form.track}
         balance={form.card ? balanceById.get(form.card._id) : undefined}
         currency={currency}
@@ -201,6 +207,7 @@ export function PaymentCardsPage() {
         onSaved={() => void load()}
       />
 
+      {balancesEnabled ? (
       <AccountTransferModal
         open={transfer.open}
         onOpenChange={(open) => setTransfer((s) => ({ ...s, open }))}
@@ -210,6 +217,7 @@ export function PaymentCardsPage() {
         currency={currency}
         onDone={() => void load()}
       />
+      ) : null}
 
       <AppModal open={Boolean(removing)} onOpenChange={(next) => !next && setRemoving(null)} size="sm">
         <AppModalDialog>

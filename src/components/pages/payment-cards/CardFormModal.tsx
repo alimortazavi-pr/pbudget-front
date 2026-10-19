@@ -25,6 +25,8 @@ type Props = {
   card: IPaymentCard | null;
   /** Start with the "own balance" choice (the "track balance" call to action). */
   startWithBalance?: boolean;
+  /** The plan includes separate balances; off = a plain label, no balance choice. */
+  balancesEnabled?: boolean;
   balance?: IAccountBalance;
   currency: UserCurrency;
   onOpenChange: (open: boolean) => void;
@@ -37,7 +39,7 @@ const toNumber = (value: string) => {
 };
 
 /** A name, a colour and one plain choice: just a label for transactions, or an account with its own balance. */
-export function CardFormModal({ open, card, startWithBalance, balance, currency, onOpenChange, onSaved }: Props) {
+export function CardFormModal({ open, card, startWithBalance, balancesEnabled = true, balance, currency, onOpenChange, onSaved }: Props) {
   const { t } = useTranslation();
   const [title, setTitle] = useState("");
   const [bankName, setBankName] = useState("");
@@ -53,7 +55,7 @@ export function CardFormModal({ open, card, startWithBalance, balance, currency,
     setBankName(card?.bankName ?? "");
     setLastFour(card?.lastFour ?? "");
     setColor(card?.color || DEFAULT_CATEGORY_COLORS[4]);
-    setMode(card?.trackBalance || startWithBalance ? "balance" : "label");
+    setMode(balancesEnabled && (card?.trackBalance || startWithBalance) ? "balance" : "label");
     setCurrent(card?.trackBalance && balance ? String(balance.balance) : "");
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fill when the dialog opens
   }, [open, card?._id]);
@@ -71,9 +73,9 @@ export function CardFormModal({ open, card, startWithBalance, balance, currency,
         color,
       };
       const typed = toNumber(current);
-      if (mode === "label") {
+      if (mode === "label" || !balancesEnabled) {
         if (card) {
-          await paymentCardsApi.updatePaymentCard(card._id, { ...base, ...(card.trackBalance ? { trackBalance: false } : {}) });
+          await paymentCardsApi.updatePaymentCard(card._id, { ...base, ...(card.trackBalance && balancesEnabled ? { trackBalance: false } : {}) });
         } else {
           await paymentCardsApi.createPaymentCard(base);
         }
@@ -139,6 +141,7 @@ export function CardFormModal({ open, card, startWithBalance, balance, currency,
                 className="text-left"
               />
             </div>
+            {balancesEnabled ? (
             <div className="space-y-2">
               <p className="text-sm font-medium">{t("feat.accounts.modeQuestion")}</p>
               <div className="grid gap-2" role="radiogroup" aria-label={t("feat.accounts.modeQuestion")}>
@@ -177,6 +180,7 @@ export function CardFormModal({ open, card, startWithBalance, balance, currency,
                 </div>
               ) : null}
             </div>
+            ) : null}
 
             <CategoryColorPicker value={color} onChange={setColor} />
           </Modal.Body>

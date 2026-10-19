@@ -61,6 +61,7 @@ import { SaveTemplateModal } from "@/components/pages/budget/SaveTemplateModal";
 import { TemplateChipsRow } from "@/components/pages/budget/TemplateChipsRow";
 import { CreateCategoryModal } from "@/components/pages/categories/CreateCategoryModal";
 import { UserPreferencesOnboardingModal } from "@/components/pages/settings/UserPreferencesSection";
+import { useFeatureFlag } from "@/components/providers/SubscriptionAccessProvider";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { bumpBudgetRevision } from "@/stores/budget";
 import { categoriesSelector } from "@/stores/category";
@@ -98,6 +99,8 @@ function buildMoreHint(parts: string[]) {
 
 export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   const { t } = useTranslation();
+  const { enabled: templatesEnabled } = useFeatureFlag("templates");
+  const { enabled: balancesEnabled } = useFeatureFlag("account_balances");
   const { displayCurrencyLabel } = useCurrencyLabels();
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -229,11 +232,15 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   );
 
   useEffect(() => {
+    if (!balancesEnabled) {
+      setAccountBalances({});
+      return;
+    }
     void paymentCardsApi
       .fetchAccountBalances()
       .then((rows) => setAccountBalances(Object.fromEntries(rows.map((row) => [row.cardId, row.balance]))))
       .catch(() => setAccountBalances({}));
-  }, []);
+  }, [balancesEnabled]);
 
   useEffect(() => {
     void paymentCardsApi.fetchPaymentCards().then(setPaymentCards).catch(() => {
@@ -242,13 +249,17 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   }, []);
 
   const loadTemplates = useCallback(async () => {
+    if (!templatesEnabled) {
+      setTemplates([]);
+      return;
+    }
     try {
       setTemplates(await templatesApi.fetchTemplates());
     } catch {
       // Templates are optional: the form works the same without them.
       setTemplates([]);
     }
-  }, []);
+  }, [templatesEnabled]);
 
   useEffect(() => {
     if (!budget) void loadTemplates();
@@ -658,7 +669,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
         );
       }
       dispatch(bumpBudgetRevision());
-      if (!budget && appliedTemplateId) {
+      if (!budget && templatesEnabled && appliedTemplateId) {
         // Counts the use so favourite templates float to the front; never blocks saving.
         void templatesApi.markTemplateUsed(appliedTemplateId).then(loadTemplates).catch(() => undefined);
       }
@@ -698,7 +709,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
             ) : null}
           </div>
 
-          {!budget ? (
+          {!budget && templatesEnabled ? (
             <TemplateChipsRow
               templates={templates}
               activeId={appliedTemplateId}
@@ -827,7 +838,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
             onChange={(e) => setDescription(e.target.value)}
           />
 
-          {!budget ? (
+          {!budget && templatesEnabled ? (
             <button
               type="button"
               onClick={() => setSaveTemplateOpen(true)}
@@ -959,12 +970,14 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
         </div>
       </form>
 
+      {templatesEnabled ? (
       <SaveTemplateModal
         open={saveTemplateOpen}
         onOpenChange={setSaveTemplateOpen}
         defaultTitle={selectedCategory?.title ?? description.trim().slice(0, 40)}
         onSave={saveAsTemplate}
       />
+      ) : null}
 
       <CreateCategoryModal
         open={categoryModalOpen}

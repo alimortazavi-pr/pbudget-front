@@ -8,6 +8,7 @@ import { PATHS } from "@/common/constants";
 import { DEFAULT_USER_PREFERENCES } from "@/common/constants/user-preferences";
 import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
 import { formatPriceWithCurrency } from "@/common/utils/format-currency";
+import { useFeatureFlag } from "@/components/providers/SubscriptionAccessProvider";
 import { useTranslation } from "@/i18n";
 import { budgetRevisionSelector } from "@/stores/budget";
 import { useAppSelector } from "@/stores/hooks";
@@ -22,8 +23,13 @@ export function AccountsStrip() {
   const revision = useAppSelector(budgetRevisionSelector);
   const currency = user?.preferences?.currency ?? DEFAULT_USER_PREFERENCES.currency;
   const [rows, setRows] = useState<Row[]>([]);
+  const { enabled } = useFeatureFlag("account_balances");
 
   useEffect(() => {
+    if (!enabled) {
+      setRows([]);
+      return;
+    }
     let alive = true;
     Promise.all([paymentCardsApi.fetchPaymentCards(), paymentCardsApi.fetchAccountBalances()])
       .then(([cards, balances]) => {
@@ -35,9 +41,9 @@ export function AccountsStrip() {
     return () => {
       alive = false;
     };
-  }, [revision]);
+  }, [revision, enabled]);
 
-  if (!rows.length) return null;
+  if (!enabled || !rows.length) return null;
 
   return (
     <section className="space-y-2" aria-label={t("feat.accounts.stripTitle")} data-testid="accounts-strip">

@@ -24,6 +24,7 @@ import {
 } from "@/common/constants/user-preferences";
 import { showErrorToast, showToast } from "@/common/utils/toast";
 import { SaveTemplateModal } from "@/components/pages/budget/SaveTemplateModal";
+import { useFeatureFlag } from "@/components/providers/SubscriptionAccessProvider";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { bumpBudgetRevision, deleteBudget } from "@/stores/budget";
 import { setProfile, userSelector } from "@/stores/profile";
@@ -52,6 +53,7 @@ function resolvePaymentCardLabel(
 
 export function TransactionCard({ budget, selectMode = false, selected = false, onToggleSelect, rowNumber }: TransactionCardProps) {
   const { t } = useTranslation();
+  const { enabled: templatesEnabled } = useFeatureFlag("templates");
   const dispatch = useAppDispatch();
   const user = useAppSelector(userSelector);
   const [expanded, setExpanded] = useState(false);
@@ -216,14 +218,17 @@ export function TransactionCard({ budget, selectMode = false, selected = false, 
                 <Trash size={16} />
                 {t("common.delete")}
               </Button>
-              <Button size="sm" variant="ghost" className="w-full" onPress={() => setTemplateOpen(true)}>
-                <Flash size={16} />
-                {t("feat.templates.saveAction")}
-              </Button>
+              {templatesEnabled ? (
+                <Button size="sm" variant="ghost" className="w-full" onPress={() => setTemplateOpen(true)}>
+                  <Flash size={16} />
+                  {t("feat.templates.saveAction")}
+                </Button>
+              ) : null}
             </div>
           </div>
         )}
       </article>
+      {templatesEnabled ? (
       <SaveTemplateModal
         open={templateOpen}
         onOpenChange={setTemplateOpen}
@@ -248,6 +253,7 @@ export function TransactionCard({ budget, selectMode = false, selected = false, 
           }
         }}
       />
+      ) : null}
       <DeleteTransactionDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}

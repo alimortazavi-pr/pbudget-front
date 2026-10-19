@@ -15,6 +15,8 @@ type Props = {
   card: IPaymentCard;
   /** undefined = this account does not track a balance. */
   balance?: number;
+  /** The plan includes separate balances; otherwise the card is a plain label. */
+  balancesEnabled?: boolean;
   currency: UserCurrency;
   isDefault: boolean;
   canTransfer: boolean;
@@ -29,6 +31,7 @@ type Props = {
 export function AccountCard({
   card,
   balance,
+  balancesEnabled = true,
   currency,
   isDefault,
   canTransfer,
@@ -41,7 +44,7 @@ export function AccountCard({
   const { t } = useTranslation();
   const { displayCurrencyLabel } = useCurrencyLabels();
   const color = card.color || "#3b82f6";
-  const tracked = Boolean(card.trackBalance);
+  const tracked = balancesEnabled && Boolean(card.trackBalance);
   const digits = formatCardNumberForDisplay(card.lastFour, true);
   const amountText = balance === undefined ? "" : formatAmountOnly(Math.abs(balance), currency);
   const negative = (balance ?? 0) < 0;
@@ -64,7 +67,7 @@ export function AccountCard({
           ) : null}
         </div>
 
-        <div className="relative mt-4 min-h-[3.25rem]">
+        <div className={`relative ${balancesEnabled ? "mt-4 min-h-[3.25rem]" : "mt-2"}`}>
           {tracked ? (
             <>
               <p className="text-[11px] text-white/80">{t("feat.accounts.balanceLabel")}</p>
@@ -82,7 +85,7 @@ export function AccountCard({
                 </div>
               )}
             </>
-          ) : (
+          ) : balancesEnabled ? (
             <button
               type="button"
               onClick={onTrack}
@@ -90,10 +93,10 @@ export function AccountCard({
             >
               {t("feat.accounts.trackCta")}
             </button>
-          )}
+          ) : null}
         </div>
 
-        <div className="relative mt-4 flex items-end justify-between gap-3">
+        <div className={`relative ${balancesEnabled ? "mt-4" : "mt-10"} flex items-end justify-between gap-3`}>
           <p className="min-w-0 truncate font-bold" title={card.title}>
             {card.title}
           </p>

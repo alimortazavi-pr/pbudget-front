@@ -126,3 +126,16 @@ export function useSubscriptionAccess() {
   }
   return context;
 }
+
+/**
+ * Tri-state feature check for UI that must render nothing until the plan is
+ * known (no flash-then-hide) and must not fire API calls while off.
+ * `ready` is false while loading; `enabled` is true only once ready and on.
+ * Outside the provider (e.g. admin) the feature is treated as on.
+ */
+export function useFeatureFlag(key: string): { ready: boolean; enabled: boolean } {
+  const context = useContext(SubscriptionAccessContext);
+  if (!context) return { ready: true, enabled: true };
+  const ready = !context.loading || Boolean(context.data);
+  return { ready, enabled: ready && context.isFeatureEnabled(key) };
+}

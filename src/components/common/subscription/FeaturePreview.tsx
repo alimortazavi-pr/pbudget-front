@@ -145,6 +145,42 @@ const PREVIEWS: Record<string, () => ReactNode> = {
       </Card>
     </div>
   ),
+  assets: () => (
+    <div className="space-y-3">
+      <div className="grid grid-cols-2 gap-3">
+        <Stat label="ارزش کل دارایی‌ها" value={money(148000000)} />
+        <Stat label="سود و زیان" value={`+${money(12500000)}`} tone="text-success" />
+      </div>
+      <Card title="دارایی‌های من">
+        <Row left="طلای ۱۸ عیار" sub="۲۰ گرم" right={money(98000000)} chip={{ text: "طلا", tone: WARN }} />
+        <Row left="دلار" sub="۳۰۰ دلار" right={money(50000000)} chip={{ text: "ارز", tone: NEUTRAL }} />
+      </Card>
+    </div>
+  ),
+  templates: () => (
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-2 text-xs">
+        {["قبض برق", "اجاره", "ناهار", "بنزین"].map((name) => (
+          <span key={name} className="rounded-full bg-accent/12 px-3 py-1 font-semibold text-accent">
+            {name}
+          </span>
+        ))}
+      </div>
+      <Card title="قالب‌های من">
+        <Row left="اجاره ماهانه" sub="هزینه · اجاره و قبوض" right={money(15000000)} />
+        <Row left="ناهار کاری" sub="هزینه · خوراک" right={money(180000)} />
+      </Card>
+    </div>
+  ),
+  account_balances: () => (
+    <div className="space-y-3">
+      <Card title="موجودی حساب‌ها">
+        <Row left="کارت اصلی" sub="•••• ۱۲۳۴" right={money(8200000)} />
+        <Row left="کارت پس‌انداز" sub="•••• ۵۶۷۸" right={money(21000000)} />
+      </Card>
+      <div className="flex h-11 items-center justify-center rounded-xl bg-accent/90 text-sm font-semibold text-accent-foreground">انتقال بین حساب‌ها</div>
+    </div>
+  ),
   work_time: () => (
     <Card title="تردد این هفته">
       <Row left="شنبه" sub="۰۸:۱۵ تا ۱۶:۴۵" right="۸ ساعت" />

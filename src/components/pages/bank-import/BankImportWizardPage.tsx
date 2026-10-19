@@ -40,6 +40,7 @@ import {
   collectPendingDebts,
   hasDanglingPendingDebt,
 } from "@/components/pages/bank-import/import-row.util";
+import { useFeatureFlag } from "@/components/providers/SubscriptionAccessProvider";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { bumpBudgetRevision } from "@/stores/budget";
 import { categoriesSelector } from "@/stores/category";
@@ -57,6 +58,7 @@ const STEPS = [
 
 export function BankImportWizardPage() {
   const { t } = useTranslation();
+  const smsFeature = useFeatureFlag("sms_import");
   const dispatch = useAppDispatch();
   const user = useAppSelector(userSelector);
   const categories = useAppSelector(categoriesSelector);
@@ -351,9 +353,11 @@ export function BankImportWizardPage() {
         icon={<DocumentUpload size={24} variant="Bold" />}
         title={t("auto.k3785afd116")}
         actions={
-          <LinkButton href={PATHS.SMS_IMPORT} variant="secondary" size="sm">
-            {t("feat.sms.fromSms")}
-          </LinkButton>
+          smsFeature.enabled ? (
+            <LinkButton href={PATHS.SMS_IMPORT} variant="secondary" size="sm">
+              {t("feat.sms.fromSms")}
+            </LinkButton>
+          ) : undefined
         }
         description={
           <>

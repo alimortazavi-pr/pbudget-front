@@ -171,7 +171,7 @@ export function CommandPalette() {
         group: actions,
         icon: BANK_IMPORT_NAV_ITEM.icon as IconType,
         keywords: "پیامک sms بانک",
-        locked: locked(BANK_IMPORT_NAV_ITEM.featureKey),
+        locked: locked("sms_import"),
         run: () => go(PATHS.SMS_IMPORT),
       },
       {
