@@ -40,6 +40,7 @@ import {
 } from "@/common/utils/transaction-filters";
 import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
 import { AndroidAnnouncementBanner } from "@/components/pages/dashboard/AndroidAnnouncementBanner";
+import { AccountsStrip } from "@/components/pages/dashboard/AccountsStrip";
 import { DashboardHero } from "@/components/pages/dashboard/DashboardHero";
 import { WorkTimeQuickWidget } from "@/components/pages/projects/WorkTimeQuickWidget";
 import { HmiDashboardPage } from "@/components/pages/dashboard/HmiDashboardPage";
@@ -538,6 +539,8 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
         trend={trend}
         data-tour="dashboard-balance"
       />
+
+      <AccountsStrip />
 
       <DashboardPeriodBar
         duration={hasRange ? "all" : duration}

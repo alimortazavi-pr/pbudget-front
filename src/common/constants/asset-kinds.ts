@@ -32,3 +32,15 @@ export const ASSET_KIND_META: Record<AssetKind, { color: string; icon: KindIcon 
 export function assetKindMeta(kind: string) {
   return ASSET_KIND_META[kind as AssetKind] ?? ASSET_KIND_META.other;
 }
+
+/** Order of the big tiles in the "new asset" dialog. */
+export const ASSET_KIND_TILE_ORDER: readonly AssetKind[] = [
+  "gold",
+  "coin",
+  "currency",
+  "crypto",
+  "stock",
+  "silver",
+  "property",
+  "other",
+];

@@ -20,6 +20,8 @@ export interface IAsset {
   priceUpdatedAt?: string | null;
   note?: string;
   quantity: number;
+  /** Average price paid for one unit. */
+  avgBuyPrice: number;
   costBasis: number;
   value: number;
   /** null while the asset has no price yet. */

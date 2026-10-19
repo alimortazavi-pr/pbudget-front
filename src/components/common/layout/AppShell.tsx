@@ -26,6 +26,7 @@ const PAGE_TITLE_KEYS: Record<string, string> = {
   [PATHS.BANK_IMPORT]: "nav.bankImport",
   [PATHS.SMS_IMPORT]: "feat.sms.title",
   [PATHS.ASSETS]: "nav.assets",
+  [PATHS.TEMPLATES]: "nav.templates",
   [PATHS.VENTURES]: "nav.businessPartners",
   [PATHS.WORK_ATTENDANCE]: "nav.workAttendance",
   [PATHS.INVITES]: "nav.invites",
@@ -56,6 +57,7 @@ const APP_ROUTE_PREFIXES = [
   PATHS.BANK_IMPORT,
   PATHS.SMS_IMPORT,
   PATHS.ASSETS,
+  PATHS.TEMPLATES,
   PATHS.VENTURES,
   PATHS.INVITES,
   PATHS.CREATE_BUDGET,
@@ -123,6 +125,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const isInstallmentDetail =
     pathname.startsWith("/installments/") && pathname !== PATHS.INSTALLMENTS;
   const isDebtDetail = pathname.startsWith("/debts/") && pathname !== PATHS.DEBTS;
+  const isAssetDetail = pathname.startsWith("/assets/") && pathname !== PATHS.ASSETS;
   const titleKey =
     (isBudgetEdit
       ? "nav.editTransaction"
@@ -134,6 +137,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           ? "nav.paymentPlan"
           : isDebtDetail
             ? "nav.debts"
+            : isAssetDetail
+              ? "nav.assets"
             : pathname.startsWith("/ventures/")
               ? "nav.businessPartners"
             : PAGE_TITLE_KEYS[pathname]) ?? APP_NAME_FA;
@@ -159,7 +164,8 @@ export function AppShell({ children }: { children: ReactNode }) {
       pathname === PATHS.SETTINGS ||
       pathname.startsWith("/projects/") ||
       isInstallmentDetail ||
-      isDebtDetail,
+      isDebtDetail ||
+      isAssetDetail,
   };
 
   return (

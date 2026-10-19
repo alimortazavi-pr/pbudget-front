@@ -21,12 +21,6 @@ export interface IProfile {
   monthlySummaryEnabled?: boolean;
   /** Custom colour theme saved on the account (null = default theme). */
   theme?: CustomTheme | null;
-  /** Optional modules the user switched on (everything is off by default). */
-  features: IProfileFeatures;
-}
-
-export interface IProfileFeatures {
-  assets: boolean;
 }
 
 export interface IEditProfileForm {

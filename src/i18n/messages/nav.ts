@@ -14,6 +14,8 @@ export const navMessages: MessageTree = {
   boxes: "صندوق‌ها",
   myCards: "حساب‌ها و کارت‌ها",
   assets: "دارایی‌ها",
+  templates: "قالب‌های تراکنش",
+  money: "پول و حساب‌ها",
   categories: "دسته‌بندی‌ها",
   dailyPlanner: "برنامه روزانه",
   notes: "یادداشت‌ها",

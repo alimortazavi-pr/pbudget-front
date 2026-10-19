@@ -1,31 +1,31 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Button, Modal } from "@heroui/react";
 
 import * as assetsApi from "@/common/api/assets";
 import * as paymentCardsApi from "@/common/api/payment-cards";
+import { assetKindMeta } from "@/common/constants/asset-kinds";
 import { DEFAULT_USER_PREFERENCES, resolveBudgetDateCalendar } from "@/common/constants/user-preferences";
 import type { IAsset } from "@/common/interfaces/asset.interface";
 import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
 import { getNowDateParts } from "@/common/utils";
 import { formatQuantity, sanitizeQuantityInput } from "@/common/utils/asset-format";
-import { getCategorySelectOptions } from "@/common/utils/category-tree";
 import { formatPriceWithCurrency } from "@/common/utils/format-currency";
 import { toEnglishDigits, toPersianDigits } from "@/common/utils/persian-digits";
 import { showErrorToast, showToast } from "@/common/utils/toast";
+import { getWalletBalance } from "@/common/utils/wallet-balances";
+import { FormInput, FormPriceInput } from "@/components/common/form/FormFields";
 import {
-  FormCategoryComboBox,
-  FormDatePicker,
-  FormInput,
-  FormPriceInput,
-  FormSelect,
-} from "@/components/common/form/FormFields";
-import { SwitchRow } from "@/components/common/form/FormKit";
-import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
+  AppModal,
+  AppModalDialog,
+  AppModalHeader,
+  modalSheetBodyClass,
+  modalSheetFooterClass,
+} from "@/components/common/ui/AppModal";
+import { AssetRecordSection, type AssetRecordValue } from "@/components/pages/assets/AssetRecordSection";
 import { useTranslation } from "@/i18n";
 import { useAppSelector } from "@/stores/hooks";
-import { categoriesSelector } from "@/stores/category";
 import { userSelector } from "@/stores/profile";
 
 type Props = {
@@ -36,22 +36,27 @@ type Props = {
   onSaved: () => void;
 };
 
+function sameDay(date: { year: string; month: string; day: string }, now: { year: string; month: string; day: string }) {
+  return date.year === now.year && date.month === now.month && date.day === now.day;
+}
+
 /** Buy or sell some units. The price is the TOTAL paid or received. */
 export function AssetTradeModal({ open, asset, side, onOpenChange, onSaved }: Props) {
   const { t } = useTranslation();
   const user = useAppSelector(userSelector);
-  const categories = useAppSelector(categoriesSelector);
   const currency = user?.preferences?.currency ?? DEFAULT_USER_PREFERENCES.currency;
   const calendar = resolveBudgetDateCalendar(user?.preferences?.dateCalendar);
-  const categoryOptions = getCategorySelectOptions(categories ?? []);
 
   const [quantity, setQuantity] = useState("");
   const [total, setTotal] = useState("");
-  const [date, setDate] = useState(() => getNowDateParts(calendar));
   const [note, setNote] = useState("");
-  const [record, setRecord] = useState(false);
-  const [categoryId, setCategoryId] = useState("");
-  const [cardId, setCardId] = useState("");
+  const [record, setRecord] = useState(true);
+  const [recordTouched, setRecordTouched] = useState(false);
+  const [options, setOptions] = useState<AssetRecordValue>(() => ({
+    date: getNowDateParts(calendar),
+    categoryId: "",
+    cardId: "",
+  }));
   const [cards, setCards] = useState<IPaymentCard[]>([]);
   const [saving, setSaving] = useState(false);
 
@@ -60,35 +65,33 @@ export function AssetTradeModal({ open, asset, side, onOpenChange, onSaved }: Pr
     setQuantity("");
     setTotal("");
     setNote("");
-    setRecord(false);
-    setCategoryId("");
-    setCardId("");
-    setDate(getNowDateParts(calendar));
+    setRecord(true);
+    setRecordTouched(false);
+    setOptions({ date: getNowDateParts(calendar), categoryId: "", cardId: "" });
+    void paymentCardsApi.fetchPaymentCards().then(setCards).catch(() => setCards([]));
     // eslint-disable-next-line react-hooks/exhaustive-deps -- reset when the dialog opens
   }, [open]);
 
-  // Cards are only needed once the user asks to record a transaction.
-  useEffect(() => {
-    if (!open || !record || cards.length) return;
-    void paymentCardsApi.fetchPaymentCards().then(setCards).catch(() => setCards([]));
-  }, [open, record, cards.length]);
-
+  const unit = asset?.unit ?? "";
+  const held = asset?.quantity ?? 0;
   const qty = Number(toEnglishDigits(quantity));
   const totalValue = Number(total);
   const perUnit = qty > 0 && totalValue > 0 ? totalValue / qty : 0;
-  const tooMuch = side === "sell" && asset ? qty > asset.quantity + 1e-9 : false;
-  const valid = qty > 0 && totalValue > 0 && !tooMuch && (!record || Boolean(categoryId));
+  const tooMuch = side === "sell" && qty > held + 1e-9;
+  const wallet = getWalletBalance(user, currency);
+  const notEnough = side === "buy" && record && totalValue > 0 && totalValue > wallet;
+  const valid = qty > 0 && totalValue > 0 && !tooMuch && !notEnough;
+  const kindMeta = assetKindMeta(asset?.kind ?? "other");
 
-  const cardOptions = useMemo(
-    () => [
-      { id: "none", label: t("budget.noCard") },
-      ...cards.map((card) => ({ id: card._id, label: card.title })),
-    ],
-    [cards, t],
-  );
+  // A past date is usually a bookkeeping entry, so it is not recorded in the wallet by default.
+  function changeOptions(next: AssetRecordValue) {
+    setOptions(next);
+    if (!recordTouched) setRecord(sameDay(next.date, getNowDateParts(calendar)));
+  }
 
   async function submit(event?: FormEvent) {
     event?.preventDefault();
+    event?.stopPropagation();
     if (!asset || !valid) return;
     setSaving(true);
     try {
@@ -96,11 +99,17 @@ export function AssetTradeModal({ open, asset, side, onOpenChange, onSaved }: Pr
         side,
         quantity: String(qty),
         totalPrice: String(totalValue),
-        year: String(date.year),
-        month: String(date.month),
-        day: String(date.day),
+        year: options.date.year,
+        month: options.date.month,
+        day: options.date.day,
         note: note.trim() || undefined,
-        ...(record ? { recordTransaction: true, categoryId, paymentCardId: cardId || undefined } : {}),
+        ...(record
+          ? {
+              recordTransaction: true,
+              categoryId: options.categoryId || undefined,
+              paymentCardId: options.cardId || undefined,
+            }
+          : {}),
       });
       showToast(side === "buy" ? t("feat.assets.buyDone") : t("feat.assets.sellDone"), "success");
       onOpenChange(false);
@@ -112,85 +121,104 @@ export function AssetTradeModal({ open, asset, side, onOpenChange, onSaved }: Pr
     }
   }
 
-  const unit = asset?.unit ?? "";
-
   return (
     <AppModal open={open} onOpenChange={onOpenChange} mobileFull>
       <AppModalDialog className="flex max-h-[100dvh] flex-col sm:max-w-md">
         <form onSubmit={(e) => void submit(e)} className="flex min-h-0 flex-1 flex-col">
-          <AppModalHeader onClose={() => onOpenChange(false)}>
-            <Modal.Heading>
-              {side === "buy"
-                ? t("feat.assets.buyTitle", { title: asset?.title ?? "" })
-                : t("feat.assets.sellTitle", { title: asset?.title ?? "" })}
-            </Modal.Heading>
-          </AppModalHeader>
-          <Modal.Body className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-4">
-            <FormInput
-              label={t("feat.assets.quantityLabel", { unit })}
-              value={toPersianDigits(quantity).replace(/\./g, "٫")}
-              inputMode="decimal"
-              dir="ltr"
-              className="text-left"
-              onChange={(e) => setQuantity(sanitizeQuantityInput(e.target.value))}
-            />
-            {side === "sell" && asset ? (
-              <p className={`-mt-2 text-xs ${tooMuch ? "text-danger" : "text-muted"}`}>
-                {tooMuch
-                  ? t("feat.assets.sellTooMuch", { amount: `${formatQuantity(asset.quantity)} ${unit}` })
-                  : t("feat.assets.youHold", { amount: `${formatQuantity(asset.quantity)} ${unit}` })}
-              </p>
-            ) : null}
-            <FormPriceInput
-              label={side === "buy" ? t("feat.assets.totalPaid") : t("feat.assets.totalReceived")}
-              value={total}
-              onChange={setTotal}
-              currency={currency}
-            />
-            {perUnit > 0 ? (
-              <p className="-mt-2 text-xs text-muted" data-testid="per-unit-hint">
-                {t("feat.assets.perUnitHint", { price: formatPriceWithCurrency(perUnit, currency), unit })}
-              </p>
-            ) : null}
-            <FormDatePicker
-              label={t("feat.assets.date")}
-              year={String(date.year)}
-              month={String(date.month)}
-              day={String(date.day)}
-              inModal
-              calendarType={calendar}
-              onChange={(value) => setDate({ year: value.year, month: value.month, day: value.day })}
-            />
-            <FormInput label={t("feat.assets.tradeNote")} value={note} maxLength={500} onChange={(e) => setNote(e.target.value)} />
-
-            <SwitchRow
-              label={t("feat.assets.recordTransaction")}
-              description={side === "buy" ? t("feat.assets.recordBuyHint") : t("feat.assets.recordSellHint")}
-              selected={record}
-              onChange={setRecord}
-            />
-            {record ? (
-              <div className="space-y-4">
-                <FormCategoryComboBox
-                  label={t("auto.kb561a47a9b")}
-                  placeholder={t("common.searchCategoryPlaceholder")}
-                  selectedKey={categoryId || undefined}
-                  onSelectionChange={(key) => setCategoryId(key)}
-                  options={categoryOptions}
-                  emptyMessage={t("common.noCategoryRegistered")}
-                />
-                {cards.length > 0 ? (
-                  <FormSelect
-                    label={side === "buy" ? t("budget.paymentCardSource") : t("budget.paymentCardDestination")}
-                    selectedKey={cardId || "none"}
-                    onSelectionChange={(key) => setCardId(key === "none" ? "" : key)}
-                    options={cardOptions}
-                  />
-                ) : null}
+          <AppModalHeader>
+            <div className="flex items-center gap-2.5">
+              <span
+                className="flex size-9 shrink-0 items-center justify-center rounded-xl"
+                style={{ backgroundColor: `${kindMeta.color}22` }}
+              >
+                <kindMeta.icon size={20} variant="Bulk" color={kindMeta.color} />
+              </span>
+              <div className="min-w-0">
+                <Modal.Heading className="truncate">
+                  {side === "buy"
+                    ? t("feat.assets.buyTitle", { title: asset?.title ?? "" })
+                    : t("feat.assets.sellTitle", { title: asset?.title ?? "" })}
+                </Modal.Heading>
+                <p className="text-xs text-muted">
+                  {t("feat.assets.youHold", { amount: `${formatQuantity(held)} ${unit}` })}
+                </p>
               </div>
+            </div>
+          </AppModalHeader>
+
+          <Modal.Body className={`${modalSheetBodyClass} space-y-4`}>
+            <div className="space-y-1.5">
+              <FormInput
+                label={t(side === "buy" ? "feat.assets.buyQuantityLabel" : "feat.assets.sellQuantityLabel", { unit })}
+                value={toPersianDigits(quantity).replace(/\./g, "٫")}
+                inputMode="decimal"
+                dir="ltr"
+                className="text-left"
+                placeholder={toPersianDigits("0")}
+                onChange={(e) => setQuantity(sanitizeQuantityInput(e.target.value))}
+              />
+              {side === "sell" ? (
+                <div className="flex items-center justify-between gap-2">
+                  <p className={`text-xs ${tooMuch ? "text-danger" : "text-muted"}`}>
+                    {tooMuch
+                      ? t("feat.assets.sellTooMuch", { amount: `${formatQuantity(held)} ${unit}` })
+                      : ""}
+                  </p>
+                  {held > 0 ? (
+                    <button
+                      type="button"
+                      className="shrink-0 text-xs font-semibold text-accent hover:underline"
+                      onClick={() => setQuantity(String(held))}
+                    >
+                      {t("feat.assets.sellAll")}
+                    </button>
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
+
+            <div className="space-y-1.5">
+              <FormPriceInput
+                label={side === "buy" ? t("feat.assets.buyTotalLabel") : t("feat.assets.sellTotalLabel")}
+                value={total}
+                onChange={setTotal}
+                currency={currency}
+              />
+              <p className="min-h-5 text-xs text-muted" data-testid="per-unit-hint">
+                {perUnit > 0
+                  ? t("feat.assets.perUnitHint", { unit, price: formatPriceWithCurrency(perUnit, currency) })
+                  : t(side === "buy" ? "feat.assets.totalHint" : "feat.assets.totalHintSell")}
+              </p>
+            </div>
+
+            <AssetRecordSection
+              side={side}
+              value={options}
+              onChange={changeOptions}
+              cards={cards}
+              toggle={{
+                record,
+                onChange: (next) => {
+                  setRecordTouched(true);
+                  setRecord(next);
+                },
+              }}
+            />
+            {notEnough ? (
+              <p className="rounded-xl bg-expense-soft px-3 py-2 text-xs leading-6 text-expense" data-testid="wallet-short">
+                {t("feat.assets.walletShort", { amount: formatPriceWithCurrency(wallet, currency) })}
+              </p>
             ) : null}
+
+            <FormInput
+              label={t("feat.assets.tradeNote")}
+              value={note}
+              maxLength={500}
+              onChange={(e) => setNote(e.target.value)}
+            />
           </Modal.Body>
-          <Modal.Footer className="border-t border-border/40 px-5 py-4">
+
+          <Modal.Footer className={modalSheetFooterClass}>
             <Button type="button" variant="ghost" onPress={() => onOpenChange(false)}>
               {t("common.cancel")}
             </Button>

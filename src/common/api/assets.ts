@@ -11,12 +11,27 @@ export async function fetchAssets() {
   return data;
 }
 
+/** First buy, created together with the asset (all-or-nothing on the server). */
+export type AssetTradePayload = {
+  quantity: string;
+  totalPrice: string;
+  year: string;
+  month: string;
+  day: string;
+  recordTransaction?: boolean;
+  /** Only when the user picked a category; otherwise the server files it under «سرمایه‌گذاری». */
+  categoryId?: string;
+  paymentCardId?: string;
+  note?: string;
+};
+
 export async function createAsset(payload: {
   title: string;
   kind: AssetKind;
   unit?: string;
   unitPrice?: string;
   note?: string;
+  trade?: AssetTradePayload;
 }) {
   const { data } = await axiosInstance.post<{ asset: IAsset }>("/assets", payload);
   return data.asset;
@@ -43,21 +58,15 @@ export async function createAssetTrade(
   id: string,
   payload: {
     side: "buy" | "sell";
-    quantity: string;
-    totalPrice: string;
-    year: string;
-    month: string;
-    day: string;
-    note?: string;
-    recordTransaction?: boolean;
-    categoryId?: string;
-    paymentCardId?: string;
-  },
+  } & AssetTradePayload,
 ) {
   const { data } = await axiosInstance.post<{ trade: IAssetTrade }>(`/assets/${id}/trades`, payload);
   return data.trade;
 }
 
-export async function deleteAssetTrade(id: string, tradeId: string) {
-  await axiosInstance.delete(`/assets/${id}/trades/${tradeId}`);
+/** By default the linked transaction is deleted too; `keepTransaction` keeps it. */
+export async function deleteAssetTrade(id: string, tradeId: string, keepTransaction = false) {
+  await axiosInstance.delete(`/assets/${id}/trades/${tradeId}`, {
+    params: keepTransaction ? { keepTransaction: 1 } : undefined,
+  });
 }

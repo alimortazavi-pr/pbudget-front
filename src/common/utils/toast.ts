@@ -17,3 +17,10 @@ export function showToast(
 export function showErrorToast(error: unknown, fallback = t("common.error")) {
   showToast(getApiErrorMessage(error, fallback));
 }
+
+/** A success toast with one action button (for example "show it"). */
+export function showActionToast(message: string, actionLabel: string, onAction: () => void) {
+  toast.success(message.trim(), {
+    actionProps: { children: actionLabel, onPress: onAction },
+  });
+}

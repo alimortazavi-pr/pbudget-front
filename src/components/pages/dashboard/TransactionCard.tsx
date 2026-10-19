@@ -5,10 +5,11 @@ import { useTranslation } from "@/i18n";
 import { useState } from "react";
 import { Button } from "@heroui/react";
 import { LinkButton } from "@/components/common/ui/LinkButton";
-import { ArrowDown, ArrowUp, Edit2, TickCircle, Trash } from "iconsax-reactjs";
+import { ArrowDown, ArrowUp, Edit2, Flash, TickCircle, Trash } from "iconsax-reactjs";
 
 import { PATHS } from "@/common/constants";
 import * as budgetsApi from "@/common/api/budgets";
+import * as templatesApi from "@/common/api/transaction-templates";
 import type { IBudget } from "@/common/interfaces/budget.interface";
 import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
 import { resolveCategoryColor } from "@/common/constants/category-colors";
@@ -21,7 +22,8 @@ import {
   resolveBudgetCurrency,
   resolveBudgetDateCalendar,
 } from "@/common/constants/user-preferences";
-import { showToast } from "@/common/utils/toast";
+import { showErrorToast, showToast } from "@/common/utils/toast";
+import { SaveTemplateModal } from "@/components/pages/budget/SaveTemplateModal";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { bumpBudgetRevision, deleteBudget } from "@/stores/budget";
 import { setProfile, userSelector } from "@/stores/profile";
@@ -55,6 +57,7 @@ export function TransactionCard({ budget, selectMode = false, selected = false, 
   const [expanded, setExpanded] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [templateOpen, setTemplateOpen] = useState(false);
   const isIncome = budget.type === BudgetType.INCOME;
   const debt = budget.debt;
   const isPendingCategory = Boolean(budget.pendingCategory);
@@ -193,7 +196,7 @@ export function TransactionCard({ budget, selectMode = false, selected = false, 
               categoryTitle={isPendingCategory ? "" : categoryTitle}
               paymentCardLabel={paymentCardLabel}
             />
-            <div className="mt-3 flex gap-2">
+            <div className="mt-3 flex flex-wrap gap-2">
               <LinkButton
                 href={PATHS.BUDGET(budget._id)}
                 size="sm"
@@ -213,10 +216,38 @@ export function TransactionCard({ budget, selectMode = false, selected = false, 
                 <Trash size={16} />
                 {t("common.delete")}
               </Button>
+              <Button size="sm" variant="ghost" className="w-full" onPress={() => setTemplateOpen(true)}>
+                <Flash size={16} />
+                {t("feat.templates.saveAction")}
+              </Button>
             </div>
           </div>
         )}
       </article>
+      <SaveTemplateModal
+        open={templateOpen}
+        onOpenChange={setTemplateOpen}
+        defaultTitle={budget.description?.trim().slice(0, 40) || budget.category?.title || ""}
+        onSave={async (title) => {
+          try {
+            const card = typeof budget.paymentCard === "string" ? budget.paymentCard : budget.paymentCard?._id;
+            const project = typeof budget.project === "string" ? budget.project : budget.project?._id;
+            await templatesApi.createTemplate({
+              title,
+              type: budget.type === BudgetType.INCOME ? "0" : "1",
+              price: String(budget.price),
+              categoryId: budget.category?._id,
+              paymentCardId: card || undefined,
+              projectId: project || undefined,
+              description: budget.description?.trim() || undefined,
+            });
+            showToast(t("feat.templates.saved"), "success");
+          } catch (error) {
+            showErrorToast(error);
+            throw error;
+          }
+        }}
+      />
       <DeleteTransactionDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}

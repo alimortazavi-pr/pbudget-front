@@ -1,7 +1,9 @@
 "use client";
 
-import { Flash } from "iconsax-reactjs";
+import Link from "next/link";
+import { Add, Flash } from "iconsax-reactjs";
 
+import { PATHS } from "@/common/constants";
 import type { ITransactionTemplate } from "@/common/interfaces/transaction-template.interface";
 import { useTranslation } from "@/i18n";
 
@@ -9,28 +11,12 @@ type Props = {
   templates: ITransactionTemplate[];
   activeId: string;
   onApply: (template: ITransactionTemplate) => void;
-  onManage: () => void;
-  onCreate?: () => void;
 };
 
-/** One quiet, horizontally scrolling row of the user's templates (most used first). */
-export function TemplateChipsRow({ templates, activeId, onApply, onManage, onCreate }: Props) {
+/** One quiet, horizontally scrolling row of the user's templates (most used first). Hidden without templates. */
+export function TemplateChipsRow({ templates, activeId, onApply }: Props) {
   const { t } = useTranslation();
-  if (!templates.length) {
-    if (!onCreate) return null;
-    return (
-      <button
-        type="button"
-        onClick={onCreate}
-        data-testid="template-create"
-        className="flex w-full items-center gap-2 rounded-xl border border-dashed border-border/70 px-3 py-2 text-start text-xs text-muted transition-colors hover:border-accent/50 hover:text-accent"
-      >
-        <Flash size={14} />
-        <span className="font-semibold">{t("feat.templates.create")}</span>
-        <span className="hidden sm:inline">· {t("feat.templates.createHint")}</span>
-      </button>
-    );
-  }
+  if (!templates.length) return null;
 
   return (
     <div className="space-y-1.5" data-testid="template-chips">
@@ -39,9 +25,9 @@ export function TemplateChipsRow({ templates, activeId, onApply, onManage, onCre
           <Flash size={14} />
           {t("feat.templates.row")}
         </p>
-        <button type="button" onClick={onManage} className="text-xs font-semibold text-accent hover:underline">
+        <Link href={PATHS.TEMPLATES} className="text-xs font-semibold text-accent hover:underline">
           {t("feat.templates.manage")}
-        </button>
+        </Link>
       </div>
       <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:thin]">
         {templates.map((template) => {
@@ -68,6 +54,13 @@ export function TemplateChipsRow({ templates, activeId, onApply, onManage, onCre
             </button>
           );
         })}
+        <Link
+          href={`${PATHS.TEMPLATES}?new=1`}
+          className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full border border-dashed border-border/70 px-3 py-1.5 text-sm text-muted hover:border-accent/50 hover:text-accent"
+        >
+          <Add size={14} />
+          {t("feat.templates.newChip")}
+        </Link>
       </div>
     </div>
   );

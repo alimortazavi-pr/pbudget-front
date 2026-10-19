@@ -57,4 +57,6 @@ export const PATHS = {
   BANK_IMPORT: "/bank-import",
   SMS_IMPORT: "/sms-import",
   ASSETS: "/assets",
+  ASSET: (id: string) => `/assets/${id}`,
+  TEMPLATES: "/templates",
 } as const;

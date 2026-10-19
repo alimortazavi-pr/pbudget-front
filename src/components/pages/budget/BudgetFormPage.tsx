@@ -57,7 +57,6 @@ import {
   resolveVentureId,
   type VentureLedgerValue,
 } from "@/components/pages/budget/VentureLedgerSection";
-import { ManageTemplatesModal } from "@/components/pages/budget/ManageTemplatesModal";
 import { SaveTemplateModal } from "@/components/pages/budget/SaveTemplateModal";
 import { TemplateChipsRow } from "@/components/pages/budget/TemplateChipsRow";
 import { CreateCategoryModal } from "@/components/pages/categories/CreateCategoryModal";
@@ -167,7 +166,6 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   const [prefsModalOpen, setPrefsModalOpen] = useState(false);
   const [templates, setTemplates] = useState<ITransactionTemplate[]>([]);
   const [appliedTemplateId, setAppliedTemplateId] = useState("");
-  const [manageTemplatesOpen, setManageTemplatesOpen] = useState(false);
   const [saveTemplateOpen, setSaveTemplateOpen] = useState(false);
   const [keepOpenLoading, setKeepOpenLoading] = useState(false);
 
@@ -212,16 +210,30 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
     setFormCurrency(userPrefs.currency);
   }, [budget, userPrefs.dateCalendar, userPrefs.currency]);
 
+  const [accountBalances, setAccountBalances] = useState<Record<string, number>>({});
   const paymentCardOptions = useMemo(
     () =>
       paymentCards.map((card) => ({
         id: card._id,
-        label: [card.title, formatCardNumberForDisplay(card.lastFour, true)]
+        label: [
+          card.title,
+          formatCardNumberForDisplay(card.lastFour, true),
+          card._id in accountBalances
+            ? t("feat.accounts.pickerBalance", { amount: formatPriceWithCurrency(accountBalances[card._id], userPrefs.currency) })
+            : "",
+        ]
           .filter(Boolean)
           .join(" · "),
       })),
-    [paymentCards],
+    [paymentCards, accountBalances, t, userPrefs.currency],
   );
+
+  useEffect(() => {
+    void paymentCardsApi
+      .fetchAccountBalances()
+      .then((rows) => setAccountBalances(Object.fromEntries(rows.map((row) => [row.cardId, row.balance]))))
+      .catch(() => setAccountBalances({}));
+  }, []);
 
   useEffect(() => {
     void paymentCardsApi.fetchPaymentCards().then(setPaymentCards).catch(() => {
@@ -241,6 +253,17 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   useEffect(() => {
     if (!budget) void loadTemplates();
   }, [budget, loadTemplates]);
+
+  // /create-budget?template=ID (from "ثبت امروز" on the templates page) fills the form once.
+  const [deepLinkDone, setDeepLinkDone] = useState(false);
+  useEffect(() => {
+    if (budget || deepLinkDone || !templates.length || typeof window === "undefined") return;
+    const id = new URLSearchParams(window.location.search).get("template");
+    setDeepLinkDone(true);
+    const found = id ? templates.find((item) => item._id === id) : undefined;
+    if (found) applyTemplate(found);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- apply once after the templates load
+  }, [budget, deepLinkDone, templates]);
 
   function focusAmountField() {
     window.setTimeout(() => {
@@ -306,6 +329,19 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
       return resolveDefaultPaymentCardId(paymentCards, user?._id);
     });
   }, [budget, paymentCards, type, user?._id]);
+
+  // "موجودی ملت: ۲٬۰۰۰٬۰۰۰ ← بعد از این ۱٬۵۰۰٬۰۰۰" for accounts that keep their own balance.
+  const accountHint = (() => {
+    if (!paymentCardId || !(paymentCardId in accountBalances)) return "";
+    const card = paymentCards.find((item) => item._id === paymentCardId);
+    const current = accountBalances[paymentCardId];
+    const amount = Number(toEnglishDigits(price));
+    const name = card?.title ?? "";
+    const fmt = (value: number) => formatPriceWithCurrency(value, formCurrency);
+    if (budget || !(amount > 0)) return t("feat.accounts.hintBalance", { name, amount: fmt(current) });
+    const after = type === String(BudgetType.COST) ? current - amount : current + amount;
+    return t("feat.accounts.hintAfter", { name, amount: fmt(current), after: fmt(after) });
+  })();
 
   const [categorySpendHint, setCategorySpendHint] = useState<string | null>(null);
 
@@ -667,8 +703,6 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
               templates={templates}
               activeId={appliedTemplateId}
               onApply={applyTemplate}
-              onManage={() => setManageTemplatesOpen(true)}
-              onCreate={() => setSaveTemplateOpen(true)}
             />
           ) : null}
 
@@ -828,6 +862,11 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
                     options={[{ id: "none", label: t("budget.noCard") }, ...paymentCardOptions]}
                     emptyMessage={t("budget.noCardRegistered")}
                   />
+                  {accountHint ? (
+                    <p className="-mt-2 rounded-xl bg-surface-secondary px-3 py-2 text-xs leading-6 text-muted" data-testid="account-balance-hint">
+                      {accountHint}
+                    </p>
+                  ) : null}
                   {paymentCards.length === 0 ? (
                     <p className="text-xs text-muted">
                       {t("budget.noCardsYetPrefix")}{" "}
@@ -925,12 +964,6 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
         onOpenChange={setSaveTemplateOpen}
         defaultTitle={selectedCategory?.title ?? description.trim().slice(0, 40)}
         onSave={saveAsTemplate}
-      />
-      <ManageTemplatesModal
-        open={manageTemplatesOpen}
-        onOpenChange={setManageTemplatesOpen}
-        templates={templates}
-        onChanged={() => void loadTemplates()}
       />
 
       <CreateCategoryModal

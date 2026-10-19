@@ -258,6 +258,7 @@ export function SmsImportPage() {
         )}
       </section>
 
+      {!loading && !formats.length ? null : (
       <section className="glass space-y-3 rounded-2xl p-4 sm:p-5" data-testid="sms-paste">
         <h2 className="text-base font-bold">{t("feat.sms.pasteTitle")}</h2>
         <FormTextArea
@@ -275,6 +276,7 @@ export function SmsImportPage() {
           {t("feat.sms.check")}
         </Button>
       </section>
+      )}
 
       {rows && rows.length > 0 ? (
         <section className="glass space-y-3 rounded-2xl p-4 sm:p-5" data-testid="sms-preview-list">
