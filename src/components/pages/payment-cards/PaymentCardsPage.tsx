@@ -197,6 +197,22 @@ export function PaymentCardsPage() {
         }
       />
 
+      {!loading && cards.length > 0 && trackedCards.length === 0 ? (
+        <div className="flex flex-col gap-3 rounded-2xl border border-accent/25 bg-accent/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <p className="font-bold text-foreground">{t("feat.accounts.introTitle")}</p>
+            <p className="text-sm leading-7 text-muted">{t("feat.accounts.introBody")}</p>
+          </div>
+          <Button
+            variant="secondary"
+            className="shrink-0"
+            onPress={() => openEdit({ ...cards[0], trackBalance: true })}
+          >
+            {t("feat.accounts.introAction", { title: cards[0].title })}
+          </Button>
+        </div>
+      ) : null}
+
       {loading ? (
         <div className="glass rounded-2xl p-10 text-center text-muted">{t("common.loading")}</div>
       ) : cards.length === 0 ? (

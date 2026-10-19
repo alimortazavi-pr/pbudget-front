@@ -2,7 +2,24 @@ import type { MessageTree } from "../types";
 
 /** v2.1 features: account balances & transfers, templates, assets module, SMS import. */
 export const featuresMessages: MessageTree = {
+  adminApp: {
+    statsTitle: "آمار اپ اندروید",
+    statsHint: "کاربرانی که با اپ نیتیو وارد شده‌اند. نصب‌های مستقیم از بازار و مایکت را پنل خود آن‌ها نشان می‌دهد.",
+    users: "کاربران اپ (تاکنون)",
+    activeNow: "الان در اپ (۱۰ دقیقه اخیر)",
+    active24h: "فعال در ۲۴ ساعت",
+    active7d: "فعال در ۷ روز",
+    active30d: "فعال در ۳۰ روز",
+    downloads: "دانلود APK از سایت",
+    downloads7: "دانلود ۷ روز اخیر",
+    downloads30: "دانلود ۳۰ روز اخیر",
+    versions: "نسخه‌های در حال استفاده",
+    unknownVersion: "نامشخص (نسخه‌های قبلی)",
+  },
   accounts: {
+    introTitle: "موجودی هر حساب را جدا ببینید",
+    introBody: "هر کارت یا حساب می‌تواند موجودی مستقل داشته باشد؛ تراکنش‌ها و انتقال‌ها از همان حساب کم یا به آن اضافه می‌شوند. اختیاری است و موجودی کل را تغییر نمی‌دهد.",
+    introAction: "فعال‌سازی برای «{{title}}»",
     trackBalance: "پیگیری موجودی این حساب",
     trackBalanceHint: "اگر روشن کنید، برنامه موجودی این حساب را از روی تراکنش‌ها و انتقال‌ها حساب می‌کند. اختیاری است.",
     initialBalance: "موجودی اولیه",
@@ -32,6 +49,8 @@ export const featuresMessages: MessageTree = {
     titleLabel: "عنوان قالب",
     saved: "قالب ذخیره شد",
     saveAndNext: "ذخیره و ثبت بعدی",
+    create: "ساخت قالب از همین فرم",
+    createHint: "تراکنش‌های تکراری را یک‌بار قالب کنید.",
   },
   modules: {
     title: "ماژول‌های اختیاری",

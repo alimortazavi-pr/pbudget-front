@@ -668,6 +668,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
               activeId={appliedTemplateId}
               onApply={applyTemplate}
               onManage={() => setManageTemplatesOpen(true)}
+              onCreate={() => setSaveTemplateOpen(true)}
             />
           ) : null}
 

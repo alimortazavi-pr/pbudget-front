@@ -16,6 +16,7 @@ import { showToast } from "@/common/utils/toast";
 export function AdminAppPage() {
   const { t } = useTranslation();
   const [info, setInfo] = useState<AdminAndroidAppInfo | null>(null);
+  const [stats, setStats] = useState<adminApi.AdminAndroidStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [versionName, setVersionName] = useState("1.0.0");
@@ -39,6 +40,21 @@ export function AdminAppPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    let alive = true;
+    const pull = () =>
+      adminApi
+        .fetchAdminAndroidStats()
+        .then((data) => alive && setStats(data))
+        .catch(() => undefined);
+    void pull();
+    const timer = window.setInterval(pull, 30_000);
+    return () => {
+      alive = false;
+      window.clearInterval(timer);
+    };
+  }, []);
 
   const handleUpload = async (file: File | undefined) => {
     if (!file) return;
@@ -79,6 +95,46 @@ export function AdminAppPage() {
           {t("auto.k99da1e3a09")}
         </p>
       </div>
+
+
+      {stats ? (
+        <section className="glass rounded-2xl p-6">
+          <h4 className="font-bold">{t("feat.adminApp.statsTitle")}</h4>
+          <p className="mb-4 mt-1 text-xs text-muted">{t("feat.adminApp.statsHint")}</p>
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            {[
+              { label: t("feat.adminApp.activeNow"), value: stats.activeNow, accent: true },
+              { label: t("feat.adminApp.users"), value: stats.users },
+              { label: t("feat.adminApp.active24h"), value: stats.active24h },
+              { label: t("feat.adminApp.active7d"), value: stats.active7d },
+              { label: t("feat.adminApp.active30d"), value: stats.active30d },
+              { label: t("feat.adminApp.downloads"), value: stats.downloads.total },
+              { label: t("feat.adminApp.downloads7"), value: stats.downloads.last7Days },
+              { label: t("feat.adminApp.downloads30"), value: stats.downloads.last30Days },
+            ].map((item) => (
+              <div
+                key={item.label}
+                className={`rounded-xl border p-3 ${item.accent ? "border-accent/40 bg-accent/10" : "border-border/50 bg-surface-secondary"}`}
+              >
+                <p className="text-xs text-muted">{item.label}</p>
+                <p className="mt-1 text-2xl font-extrabold">{toPersianDigits(item.value)}</p>
+              </div>
+            ))}
+          </div>
+          {stats.versions.length ? (
+            <div className="mt-4">
+              <p className="mb-2 text-xs font-medium text-muted">{t("feat.adminApp.versions")}</p>
+              <div className="flex flex-wrap gap-2">
+                {stats.versions.map((v) => (
+                  <span key={v.version ?? "unknown"} className="rounded-full border border-border/60 px-3 py-1 text-xs" dir="auto">
+                    {v.version ?? t("feat.adminApp.unknownVersion")} · {toPersianDigits(v.count)}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ) : null}
+        </section>
+      ) : null}
 
       <section className="grid gap-4 lg:grid-cols-2">
         <div className="glass rounded-2xl p-6">

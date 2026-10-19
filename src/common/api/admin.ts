@@ -383,6 +383,21 @@ export async function updateAdminProject(
   return data;
 }
 
+export type AdminAndroidStats = {
+  users: number;
+  activeNow: number;
+  active24h: number;
+  active7d: number;
+  active30d: number;
+  versions: { version: string | null; count: number }[];
+  downloads: { total: number; last7Days: number; last30Days: number };
+};
+
+export async function fetchAdminAndroidStats() {
+  const { data } = await axiosInstance.get<AdminAndroidStats>("/admin/app/android/stats");
+  return data;
+}
+
 export async function fetchAdminAndroidAppInfo() {
   const { data } = await axiosInstance.get<AdminAndroidAppInfo>("/admin/app/android");
   return data;

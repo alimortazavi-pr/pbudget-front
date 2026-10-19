@@ -12,7 +12,7 @@ export const navMessages: MessageTree = {
   support: "پشتیبانی",
   adminSupport: "پیام‌های پشتیبانی",
   boxes: "صندوق‌ها",
-  myCards: "کارت‌های من",
+  myCards: "حساب‌ها و کارت‌ها",
   assets: "دارایی‌ها",
   categories: "دسته‌بندی‌ها",
   dailyPlanner: "برنامه روزانه",

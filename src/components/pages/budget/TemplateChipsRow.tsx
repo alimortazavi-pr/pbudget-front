@@ -10,12 +10,27 @@ type Props = {
   activeId: string;
   onApply: (template: ITransactionTemplate) => void;
   onManage: () => void;
+  onCreate?: () => void;
 };
 
 /** One quiet, horizontally scrolling row of the user's templates (most used first). */
-export function TemplateChipsRow({ templates, activeId, onApply, onManage }: Props) {
+export function TemplateChipsRow({ templates, activeId, onApply, onManage, onCreate }: Props) {
   const { t } = useTranslation();
-  if (!templates.length) return null;
+  if (!templates.length) {
+    if (!onCreate) return null;
+    return (
+      <button
+        type="button"
+        onClick={onCreate}
+        data-testid="template-create"
+        className="flex w-full items-center gap-2 rounded-xl border border-dashed border-border/70 px-3 py-2 text-start text-xs text-muted transition-colors hover:border-accent/50 hover:text-accent"
+      >
+        <Flash size={14} />
+        <span className="font-semibold">{t("feat.templates.create")}</span>
+        <span className="hidden sm:inline">· {t("feat.templates.createHint")}</span>
+      </button>
+    );
+  }
 
   return (
     <div className="space-y-1.5" data-testid="template-chips">
