@@ -15,6 +15,7 @@ import { UserPreferencesSettings } from "@/components/pages/settings/UserPrefere
 import { SiteFooterCredits } from "@/components/common/brand/SiteFooterCredits";
 import { useSubscriptionAccess } from "@/components/providers/SubscriptionAccessProvider";
 import { AppModeSection } from "@/components/pages/settings/AppModeSection";
+import { OptionalModulesSection } from "@/components/pages/settings/OptionalModulesSection";
 import { AppearanceSection } from "@/components/pages/settings/AppearanceSection";
 import { useVersion } from "@/components/providers/VersionProvider";
 
@@ -32,6 +33,8 @@ export function SettingsPage() {
       <div data-tour="settings-preferences">
         <UserPreferencesSettings />
       </div>
+
+      <OptionalModulesSection />
 
       <div data-tour="settings-telegram">
         {isFeatureEnabled("telegram_bot") ? <TelegramConnectSection /> : null}

@@ -6,6 +6,7 @@ import {
   Card,
   Category,
   Chart,
+  Coin1,
   Crown,
   DocumentUpload,
   Task,
@@ -117,6 +118,26 @@ export const PLANNING_NAV_GROUPS = [
     ],
   },
 ] as const;
+
+/** Shown only after the user switches the assets module on (Settings -> optional modules). */
+export const ASSETS_NAV_ITEM = {
+  href: PATHS.ASSETS,
+  label: "nav.assets",
+  icon: Coin1,
+} as const;
+
+/** The planning groups, with the optional modules the user enabled. */
+export function withOptionalModules(
+  groups: typeof PLANNING_NAV_GROUPS,
+  features: { assets?: boolean } | undefined,
+) {
+  if (!features?.assets) return groups;
+  return groups.map((group) =>
+    group.title === "nav.advancedFinance"
+      ? { ...group, items: [...group.items, ASSETS_NAV_ITEM] }
+      : group,
+  ) as unknown as typeof PLANNING_NAV_GROUPS;
+}
 
 export const ACCOUNT_NAV_ITEMS = [
   { href: PATHS.PROFILE, label: "nav.profile", icon: Profile },

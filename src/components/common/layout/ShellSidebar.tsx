@@ -13,8 +13,11 @@ import {
   BANK_IMPORT_NAV_ITEM,
   PLANNING_NAV_GROUPS,
   PRIMARY_NAV_ITEMS,
+  withOptionalModules,
 } from "@/components/common/layout/shell-nav";
 import { PATHS } from "@/common/constants";
+import { useAppSelector } from "@/stores/hooks";
+import { userSelector } from "@/stores/profile";
 import { usePendingInvitesCount } from "@/common/hooks/usePendingInvitesCount";
 import { useSupportUnread } from "@/common/hooks/useSupportUnread";
 import { AppLogo } from "@/components/common/brand/AppLogo";
@@ -34,6 +37,8 @@ export function ShellSidebar() {
     return Object.keys(badges).length > 0 ? badges : undefined;
   }, [pendingInvitesCount, supportUnread]);
   const navItems = PRIMARY_NAV_ITEMS;
+  const user = useAppSelector(userSelector);
+  const planningGroups = withOptionalModules(PLANNING_NAV_GROUPS, user?.features);
 
   return (
     <aside className="pb-sidebar" aria-label={t("common.desktopNavigation")} data-tour="sidebar">
@@ -117,7 +122,7 @@ export function ShellSidebar() {
           </Link>
         )}
 
-        {PLANNING_NAV_GROUPS.map((group) => (
+        {planningGroups.map((group) => (
           <ShellNavGroup
             key={group.title}
             title={t(group.title)}

@@ -2,13 +2,19 @@
 
 import { useTranslation } from "@/i18n";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Button, Modal } from "@heroui/react";
 import { Add, Card, Edit2, Star1, Trash } from "iconsax-reactjs";
+import { ArrowSwapHorizontal } from "iconsax-reactjs";
 
 import * as paymentCardsApi from "@/common/api/payment-cards";
 import { DEFAULT_CATEGORY_COLORS } from "@/common/constants/category-colors";
-import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
+import type { IAccountBalance, IAccountTransfer, IPaymentCard } from "@/common/interfaces/payment-card.interface";
+import { DEFAULT_USER_PREFERENCES } from "@/common/constants/user-preferences";
+import { formatPriceWithCurrency } from "@/common/utils/format-currency";
+import { AccountTransferModal } from "@/components/pages/payment-cards/AccountTransferModal";
+import { AccountTransfersList } from "@/components/pages/payment-cards/AccountTransfersList";
+import { SwitchRow } from "@/components/common/form/FormKit";
 import {
   getDefaultPaymentCardId,
   setDefaultPaymentCardId,
@@ -19,7 +25,7 @@ import {
   paymentCardSubtitle,
 } from "@/common/utils/payment-card";
 import { showErrorToast, showToast } from "@/common/utils/toast";
-import { FormInput } from "@/components/common/form/FormFields";
+import { FormInput, FormPriceInput } from "@/components/common/form/FormFields";
 import { CategoryColorPicker } from "@/components/common/form/CategoryColorPicker";
 import { AppModal, AppModalDialog, AppModalHeader } from "@/components/common/ui/AppModal";
 import { useAppSelector } from "@/stores/hooks";
@@ -41,6 +47,26 @@ export function PaymentCardsPage() {
   const [saving, setSaving] = useState(false);
   const [removing, setRemoving] = useState<IPaymentCard | null>(null);
   const [removeBusy, setRemoveBusy] = useState(false);
+  const [trackBalance, setTrackBalance] = useState(false);
+  const [initialBalance, setInitialBalance] = useState("");
+  const [balances, setBalances] = useState<IAccountBalance[]>([]);
+  const [transfers, setTransfers] = useState<IAccountTransfer[]>([]);
+  const [transferOpen, setTransferOpen] = useState(false);
+  const currency = user?.preferences?.currency ?? DEFAULT_USER_PREFERENCES.currency;
+
+  /** Balances and transfers only exist for accounts that opted in to tracking. */
+  const loadAccountData = useCallback(async () => {
+    try {
+      const [nextBalances, nextTransfers] = await Promise.all([
+        paymentCardsApi.fetchAccountBalances(),
+        paymentCardsApi.fetchAccountTransfers(),
+      ]);
+      setBalances(nextBalances);
+      setTransfers(nextTransfers);
+    } catch {
+      // Older servers / no tracked account: the page just shows no balances.
+    }
+  }, []);
 
   useEffect(() => {
     setDefaultCardId(getDefaultPaymentCardId(user?._id));
@@ -49,7 +75,11 @@ export function PaymentCardsPage() {
       .then(setCards)
       .catch((err) => showErrorToast(err))
       .finally(() => setLoading(false));
-  }, [user?._id]);
+    void loadAccountData();
+  }, [user?._id, loadAccountData]);
+
+  const trackedCards = cards.filter((card) => card.trackBalance);
+  const balanceByCard = new Map(balances.map((item) => [item.cardId, item.balance]));
 
   function toggleDefaultCard(card: IPaymentCard) {
     const nextId = defaultCardId === card._id ? null : card._id;
@@ -67,6 +97,8 @@ export function PaymentCardsPage() {
     setBankName("");
     setLastFour("");
     setColor(DEFAULT_CATEGORY_COLORS[4]);
+    setTrackBalance(false);
+    setInitialBalance("");
     setOpen(true);
   }
 
@@ -76,6 +108,8 @@ export function PaymentCardsPage() {
     setBankName(card.bankName);
     setLastFour(card.lastFour);
     setColor(card.color || DEFAULT_CATEGORY_COLORS[4]);
+    setTrackBalance(Boolean(card.trackBalance));
+    setInitialBalance(card.initialBalance ? String(card.initialBalance) : "");
     setOpen(true);
   }
 
@@ -90,6 +124,13 @@ export function PaymentCardsPage() {
         bankName: bankName.trim(),
         lastFour: normalizeCardNumber(lastFour),
         color,
+        // Only sent when it matters, so people who never use tracking see no change.
+        ...(trackBalance || editItem?.trackBalance
+          ? {
+              trackBalance,
+              initialBalance: trackBalance ? initialBalance.replace(/^-$/, "0") || "0" : "0",
+            }
+          : {}),
       };
 
       if (editItem) {
@@ -102,6 +143,7 @@ export function PaymentCardsPage() {
 
       showToast(t("common.saved"), "success");
       setOpen(false);
+      void loadAccountData();
     } catch (err) {
       showToast(err instanceof Error ? err.message : t("common.error"));
     } finally {
@@ -114,6 +156,7 @@ export function PaymentCardsPage() {
     try {
       await paymentCardsApi.softDeletePaymentCard(card._id);
       setCards((prev) => prev.filter((item) => item._id !== card._id));
+      void loadAccountData();
       if (defaultCardId === card._id) {
         setDefaultPaymentCardId(null, user?._id);
         setDefaultCardId(null);
@@ -139,10 +182,18 @@ export function PaymentCardsPage() {
           </>
         }
         actions={
-          <Button className="bg-accent text-accent-foreground" onPress={openCreate}>
-            <Add size={18} />
-            {t("auto.k480ffe699b")}
-          </Button>
+          <>
+            {trackedCards.length >= 2 ? (
+              <Button variant="secondary" onPress={() => setTransferOpen(true)}>
+                <ArrowSwapHorizontal size={18} />
+                {t("feat.accounts.transferAction")}
+              </Button>
+            ) : null}
+            <Button className="bg-accent text-accent-foreground" onPress={openCreate}>
+              <Add size={18} />
+              {t("auto.k480ffe699b")}
+            </Button>
+          </>
         }
       />
 
@@ -175,6 +226,17 @@ export function PaymentCardsPage() {
                     {paymentCardSubtitle(card.bankName, card.lastFour) ||
                       t("auto.ke3686141e8")}
                   </p>
+                  {card.trackBalance && balanceByCard.has(card._id) ? (
+                    <p
+                      className={`mt-0.5 text-sm font-semibold ${
+                        (balanceByCard.get(card._id) ?? 0) < 0 ? "text-danger" : "text-success"
+                      }`}
+                    >
+                      {t("feat.accounts.balanceLine", {
+                        amount: formatPriceWithCurrency(balanceByCard.get(card._id) ?? 0, currency),
+                      })}
+                    </p>
+                  ) : null}
                 </div>
               </div>
               <div className="flex gap-1">
@@ -207,6 +269,23 @@ export function PaymentCardsPage() {
         </div>
       )}
 
+      {transfers.length > 0 ? (
+        <AccountTransfersList
+          transfers={transfers}
+          cards={cards}
+          currency={currency}
+          onChanged={() => void loadAccountData()}
+        />
+      ) : null}
+
+      <AccountTransferModal
+        open={transferOpen}
+        onOpenChange={setTransferOpen}
+        cards={trackedCards}
+        currency={currency}
+        onDone={() => void loadAccountData()}
+      />
+
       <AppModal open={open} onOpenChange={setOpen}>
         <AppModalDialog className="sm:max-w-md">
           <form onSubmit={(e) => void save(e)}>
@@ -225,6 +304,21 @@ export function PaymentCardsPage() {
                 maxLength={19}
               />
               <CategoryColorPicker value={color} onChange={setColor} />
+              <SwitchRow
+                label={t("feat.accounts.trackBalance")}
+                description={t("feat.accounts.trackBalanceHint")}
+                selected={trackBalance}
+                onChange={setTrackBalance}
+              />
+              {trackBalance ? (
+                <FormPriceInput
+                  label={t("feat.accounts.initialBalance")}
+                  value={initialBalance}
+                  onChange={setInitialBalance}
+                  currency={currency}
+                  allowNegative
+                />
+              ) : null}
             </Modal.Body>
             <Modal.Footer>
               <Button type="button" variant="ghost" onPress={() => setOpen(false)}>{t("common.cancel")}</Button>

@@ -4,7 +4,7 @@ import { useTranslation } from "@/i18n";
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { Button } from "@heroui/react";
 import { Add } from "iconsax-reactjs";
 
@@ -13,11 +13,13 @@ import * as debtsApi from "@/common/api/debts";
 import * as partnersApi from "@/common/api/partners";
 import * as paymentCardsApi from "@/common/api/payment-cards";
 import * as paymentPlansApi from "@/common/api/payment-plans";
+import * as templatesApi from "@/common/api/transaction-templates";
 import { PATHS } from "@/common/constants";
 import { resolveDefaultPaymentCardId } from "@/common/utils/default-payment-card";
 import { formatCardNumberForDisplay } from "@/common/utils/payment-card";
 import type { IBudget, IBudgetMutationResult } from "@/common/interfaces/budget.interface";
 import type { IPaymentCard } from "@/common/interfaces/payment-card.interface";
+import type { ITransactionTemplate } from "@/common/interfaces/transaction-template.interface";
 import { normalizeJalaliPart, toEnglishDigits, getNowDateParts } from "@/common/utils";
 import { formatPriceWithCurrency } from "@/common/utils/format-currency";
 import { fetchOpenDebtsForPerson } from "@/common/utils/debt-person-match";
@@ -55,6 +57,9 @@ import {
   resolveVentureId,
   type VentureLedgerValue,
 } from "@/components/pages/budget/VentureLedgerSection";
+import { ManageTemplatesModal } from "@/components/pages/budget/ManageTemplatesModal";
+import { SaveTemplateModal } from "@/components/pages/budget/SaveTemplateModal";
+import { TemplateChipsRow } from "@/components/pages/budget/TemplateChipsRow";
 import { CreateCategoryModal } from "@/components/pages/categories/CreateCategoryModal";
 import { UserPreferencesOnboardingModal } from "@/components/pages/settings/UserPreferencesSection";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
@@ -160,6 +165,11 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   const [paymentCards, setPaymentCards] = useState<IPaymentCard[]>([]);
   const [paymentCardId, setPaymentCardId] = useState(() => existingPaymentCardId);
   const [prefsModalOpen, setPrefsModalOpen] = useState(false);
+  const [templates, setTemplates] = useState<ITransactionTemplate[]>([]);
+  const [appliedTemplateId, setAppliedTemplateId] = useState("");
+  const [manageTemplatesOpen, setManageTemplatesOpen] = useState(false);
+  const [saveTemplateOpen, setSaveTemplateOpen] = useState(false);
+  const [keepOpenLoading, setKeepOpenLoading] = useState(false);
 
   const needsPreferencesOnboarding =
     !budget &&
@@ -218,6 +228,75 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
       setPaymentCards([]);
     });
   }, []);
+
+  const loadTemplates = useCallback(async () => {
+    try {
+      setTemplates(await templatesApi.fetchTemplates());
+    } catch {
+      // Templates are optional: the form works the same without them.
+      setTemplates([]);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!budget) void loadTemplates();
+  }, [budget, loadTemplates]);
+
+  function focusAmountField() {
+    window.setTimeout(() => {
+      document.querySelector<HTMLInputElement>('[data-tour="budget-amount"] input')?.focus();
+    }, 50);
+  }
+
+  function applyTemplate(template: ITransactionTemplate) {
+    setAppliedTemplateId(template._id);
+    setType(String(template.type));
+    setPrice(template.price > 0 ? String(template.price) : "");
+    setCategory(template.category ?? "");
+    setPaymentCardId(template.paymentCard ?? "");
+    setDescription(template.description ?? "");
+    setProjectLedger({ enabled: Boolean(template.project), projectId: template.project ?? "" });
+    setVentureLedger({ enabled: false, ventureId: "" });
+    setDebtLedger(initialDebtLedger);
+    setInstallmentLedger({ enabled: false, occurrenceId: "" });
+    if (template.paymentCard || template.project) setMoreOpen(true);
+    // The date stays today; an amount of 0 means "ask every time".
+    if (template.price <= 0) focusAmountField();
+  }
+
+  async function saveAsTemplate(title: string) {
+    try {
+      const priceValue = Number(toEnglishDigits(price));
+      await templatesApi.createTemplate({
+        title,
+        type: type === String(BudgetType.INCOME) ? "0" : "1",
+        price: priceValue > 0 ? String(priceValue) : "0",
+        categoryId: category || undefined,
+        paymentCardId: paymentCardId || undefined,
+        projectId: projectLedger.enabled && projectLedger.projectId ? projectLedger.projectId : undefined,
+        description: description.trim() || undefined,
+      });
+      showToast(t("feat.templates.saved"), "success");
+      await loadTemplates();
+    } catch (err) {
+      showErrorToast(err);
+      throw err;
+    }
+  }
+
+  /** After "save and next": same type, date and card, everything else empty. */
+  function resetForNext() {
+    setPrice("");
+    setCategory("");
+    setDescription("");
+    setAppliedTemplateId("");
+    setDebtLedger(initialDebtLedger);
+    setInstallmentLedger({ enabled: false, occurrenceId: "" });
+    setProjectLedger({ enabled: false, projectId: "" });
+    setVentureLedger({ enabled: false, ventureId: "" });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    focusAmountField();
+  }
 
   useEffect(() => {
     if (budget || !paymentCards.length || type !== String(BudgetType.COST)) return;
@@ -356,7 +435,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
     setInstallmentLedger((current) => ({ ...current, ...patch }));
   }
 
-  async function submit(e?: FormEvent) {
+  async function submit(e?: FormEvent, keepOpen = false) {
     e?.preventDefault();
 
     if (needsPreferencesOnboarding && !user?.preferences?.configured) {
@@ -425,6 +504,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
     }
 
     setLoading(true);
+    setKeepOpenLoading(keepOpen);
     try {
       if (
         debtLedger.enabled &&
@@ -542,11 +622,20 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
         );
       }
       dispatch(bumpBudgetRevision());
+      if (!budget && appliedTemplateId) {
+        // Counts the use so favourite templates float to the front; never blocks saving.
+        void templatesApi.markTemplateUsed(appliedTemplateId).then(loadTemplates).catch(() => undefined);
+      }
+      if (keepOpen && !budget) {
+        resetForNext();
+        return;
+      }
       router.push(`${PATHS.HOME}?duration=monthly&year=${year}&month=${month}`);
     } catch (err) {
       showErrorToast(err);
     } finally {
       setLoading(false);
+      setKeepOpenLoading(false);
     }
   }
 
@@ -572,6 +661,15 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
               </Link>
             ) : null}
           </div>
+
+          {!budget ? (
+            <TemplateChipsRow
+              templates={templates}
+              activeId={appliedTemplateId}
+              onApply={applyTemplate}
+              onManage={() => setManageTemplatesOpen(true)}
+            />
+          ) : null}
 
           <div className="flex gap-2" data-tour="budget-type">
             {[
@@ -694,6 +792,16 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
             onChange={(e) => setDescription(e.target.value)}
           />
 
+          {!budget ? (
+            <button
+              type="button"
+              onClick={() => setSaveTemplateOpen(true)}
+              className="block text-xs font-semibold text-accent hover:underline"
+            >
+              {t("feat.templates.saveAction")}
+            </button>
+          ) : null}
+
           <>
             <div data-tour="budget-more">
             <BudgetMoreToggle
@@ -784,9 +892,21 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
           </div>
 
           <div className="flex flex-col gap-2 border-t border-border/50 pt-4" data-tour="budget-submit">
-            <Button type="submit" className="w-full" size="lg" isPending={loading}>
+            <Button type="submit" className="w-full" size="lg" isPending={loading && !keepOpenLoading}>
               {budget ? t("common.saveChanges") : t("nav.createTransaction")}
             </Button>
+            {!budget ? (
+              <Button
+                type="button"
+                className="w-full"
+                variant="secondary"
+                isPending={loading && keepOpenLoading}
+                isDisabled={loading && !keepOpenLoading}
+                onPress={() => void submit(undefined, true)}
+              >
+                {t("feat.templates.saveAndNext")}
+              </Button>
+            ) : null}
             <Button
               type="button"
               className="w-full"
@@ -798,6 +918,19 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
           </div>
         </div>
       </form>
+
+      <SaveTemplateModal
+        open={saveTemplateOpen}
+        onOpenChange={setSaveTemplateOpen}
+        defaultTitle={selectedCategory?.title ?? description.trim().slice(0, 40)}
+        onSave={saveAsTemplate}
+      />
+      <ManageTemplatesModal
+        open={manageTemplatesOpen}
+        onOpenChange={setManageTemplatesOpen}
+        templates={templates}
+        onChanged={() => void loadTemplates()}
+      />
 
       <CreateCategoryModal
         open={categoryModalOpen}

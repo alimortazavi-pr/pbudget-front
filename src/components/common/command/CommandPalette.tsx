@@ -25,6 +25,7 @@ import {
   BANK_IMPORT_NAV_ITEM,
   PLANNING_NAV_GROUPS,
   PRIMARY_NAV_ITEMS,
+  withOptionalModules,
 } from "@/components/common/layout/shell-nav";
 import { ADMIN_NAV_GROUPS } from "@/components/common/layout/admin-nav";
 import { useTranslation } from "@/i18n";
@@ -166,6 +167,15 @@ export function CommandPalette() {
         run: () => go(BANK_IMPORT_NAV_ITEM.href),
       },
       {
+        id: "sms-import",
+        label: t("feat.sms.title"),
+        group: actions,
+        icon: BANK_IMPORT_NAV_ITEM.icon as IconType,
+        keywords: "پیامک sms بانک",
+        locked: locked(BANK_IMPORT_NAV_ITEM.featureKey),
+        run: () => go(PATHS.SMS_IMPORT),
+      },
+      {
         id: "theme",
         label: theme === "dark" ? t("common.lightMode") : t("common.darkMode"),
         group: actions,
@@ -191,7 +201,7 @@ export function CommandPalette() {
       });
     };
     PRIMARY_NAV_ITEMS.forEach((item) => addPage(item as never));
-    PLANNING_NAV_GROUPS.forEach((group) => group.items.forEach((item) => addPage(item as never)));
+    withOptionalModules(PLANNING_NAV_GROUPS, user?.features).forEach((group) => group.items.forEach((item) => addPage(item as never)));
     ACCOUNT_NAV_ITEMS.forEach((item) => addPage(item as never));
     if (user?.isAdmin) {
       // Admins get every admin page too (searchable as "ادمین …").
@@ -212,7 +222,7 @@ export function CommandPalette() {
       );
     }
     return list;
-  }, [go, isFeatureEnabled, loading, t, theme, toggleTheme, user?.isAdmin]);
+  }, [go, isFeatureEnabled, loading, t, theme, toggleTheme, user?.features, user?.isAdmin]);
 
   // Admins: typing a name or mobile also finds users (debounced, server-side).
   const [userHits, setUserHits] = useState<Command[]>([]);

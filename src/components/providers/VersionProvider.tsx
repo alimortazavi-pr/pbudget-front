@@ -176,7 +176,9 @@ export const VersionProvider: FC<PropsWithChildren> = ({ children }) => {
 
       <ChangelogModal
         open={changelogOpen}
-        onOpenChange={(open) => !open && dismissChangelog()}
+        // AppModal reports its initial closed state through onOpenChange once on mount; counting
+        // that as "dismissed" marked the version as seen before the check above could run.
+        onOpenChange={(open) => !open && changelogOpen && dismissChangelog()}
         entries={entries}
         footer={
           <div className="flex w-full flex-col gap-2 sm:flex-row">

@@ -55,4 +55,6 @@ export const PATHS = {
   ADMIN_SUPPORT: "/admin/support",
   SUPPORT: "/support",
   BANK_IMPORT: "/bank-import",
+  SMS_IMPORT: "/sms-import",
+  ASSETS: "/assets",
 } as const;

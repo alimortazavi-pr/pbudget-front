@@ -24,6 +24,7 @@ import {
   ACCOUNT_NAV_ITEMS,
   DOWNLOAD_NAV_ITEM,
   PLANNING_NAV_GROUPS,
+  withOptionalModules,
 } from "@/components/common/layout/shell-nav";
 import { useTelegramStatus } from "@/common/hooks/useTelegramStatus";
 import { usePendingInvitesCount } from "@/common/hooks/usePendingInvitesCount";
@@ -157,7 +158,7 @@ export function ShellAccountMenu({
       </div>
 
       {showPlanning &&
-        PLANNING_NAV_GROUPS.map((group) => (
+        withOptionalModules(PLANNING_NAV_GROUPS, user?.features).map((group) => (
           <ShellNavGroup
             key={group.title}
             title={t(group.title)}

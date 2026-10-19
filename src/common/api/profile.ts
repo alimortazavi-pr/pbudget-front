@@ -27,6 +27,12 @@ export async function updateUserPreferences(payload: {
   return normalizeProfile(data.user as Record<string, unknown>);
 }
 
+/** Switch an optional module (such as assets) on or off. */
+export async function updateUserFeatures(payload: { assets?: boolean }) {
+  const { data } = await axiosInstance.put("/users/profile/features", payload);
+  return normalizeProfile(data.user as Record<string, unknown>);
+}
+
 /** Save (or with `null` clear) the account's custom theme so it follows the user to other devices. */
 export async function updateUserTheme(theme: CustomTheme | null) {
   const { data } = await axiosInstance.put(

@@ -50,5 +50,8 @@ export function normalizeProfile(user: Record<string, unknown>): IProfile {
     hasAnyBudget: Boolean(user.hasAnyBudget),
     monthlySummaryEnabled: user.monthlySummaryEnabled !== false,
     theme: sanitizeTheme(user.theme),
+    features: {
+      assets: Boolean((user.features as { assets?: unknown } | undefined)?.assets),
+    },
   };
 }

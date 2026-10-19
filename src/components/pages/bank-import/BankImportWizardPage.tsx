@@ -350,6 +350,11 @@ export function BankImportWizardPage() {
       <PageHeader
         icon={<DocumentUpload size={24} variant="Bold" />}
         title={t("auto.k3785afd116")}
+        actions={
+          <LinkButton href={PATHS.SMS_IMPORT} variant="secondary" size="sm">
+            {t("feat.sms.fromSms")}
+          </LinkButton>
+        }
         description={
           <>
             {t("auto.k1b3560798e")}
