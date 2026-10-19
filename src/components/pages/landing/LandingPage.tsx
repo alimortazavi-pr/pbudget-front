@@ -379,13 +379,13 @@ function HeroGetApp() {
     <div className="lx-enter mt-6" style={{ ["--d" as string]: 5 }}>
       <div className="l3-get">
         {showAndroid ? (
-          <a href={downloadUrl} download="pdesk.apk" className="l3-android">
+          <Link href={PATHS.DOWNLOAD} className="l3-android">
             <span className="l3-android-ico"><AndroidGlyph size={26} /></span>
             <span className="l3-android-txt">
               <small>{toPersianDigits(t("download.heroSmall", { version: versionName ?? "" }))}</small>
               <b>{t("download.heroTitle")}</b>
             </span>
-          </a>
+          </Link>
         ) : null}
         {showPwa ? (
           <button type="button" className="l3-pwa" onClick={() => (canInstall ? void install() : setIosHint((v) => !v))}>
