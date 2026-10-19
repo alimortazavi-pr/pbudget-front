@@ -7,6 +7,7 @@ import { Add, Archive, Crown, DiscountShape, Edit2, Flash, TickCircle, TicketDis
 
 import * as insightsApi from "@/common/api/admin-insights";
 import * as subscriptionApi from "@/common/api/subscriptions";
+import { featureDefaultFor } from "@/common/api/subscriptions";
 import type { AdminSubscriptionStatusFilter, FeatureDefinition } from "@/common/api/subscriptions";
 import { PATHS } from "@/common/constants";
 import type { SubscriptionFeature, SubscriptionPeriod, SubscriptionPlan, UserSubscription } from "@/common/interfaces/subscription.interface";
@@ -640,7 +641,7 @@ function PlanEditorDialog({
       const index = current.features.findIndex((feature) => feature.key === key);
       const next = [...current.features];
       if (index >= 0) next[index] = { ...next[index], ...patch };
-      else next.push({ key, label: definition?.label ?? key, description: "", enabled: definition?.defaultEnabled ?? false, limit: null, ...patch });
+      else next.push({ key, label: definition?.label ?? key, description: "", enabled: definition ? featureDefaultFor(definition, current.features, catalog) : false, limit: null, ...patch });
       return { ...current, features: next };
     });
   }
@@ -652,7 +653,7 @@ function PlanEditorDialog({
     }
     // Save every catalog feature explicitly (missing ones keep their catalog default).
     const features = [
-      ...catalog.map((definition) => form.features.find((feature) => feature.key === definition.key) ?? { key: definition.key, label: definition.label, description: "", enabled: definition.defaultEnabled, limit: null }),
+      ...catalog.map((definition) => form.features.find((feature) => feature.key === definition.key) ?? { key: definition.key, label: definition.label, description: "", enabled: featureDefaultFor(definition, form.features, catalog), limit: null }),
       ...form.features.filter((feature) => !catalog.some((definition) => definition.key === feature.key)),
     ];
     const payload = {
@@ -752,7 +753,7 @@ function FeatureMatrix({
   }, [catalog]);
   const stateOf = (definition: FeatureDefinition) => {
     const configured = features.find((feature) => feature.key === definition.key);
-    return { enabled: configured ? configured.enabled !== false : definition.defaultEnabled, limit: configured?.limit ?? null };
+    return { enabled: configured ? configured.enabled !== false : featureDefaultFor(definition, features, catalog), limit: configured?.limit ?? null };
   };
   const enabledCount = catalog.filter((definition) => stateOf(definition).enabled).length;
 

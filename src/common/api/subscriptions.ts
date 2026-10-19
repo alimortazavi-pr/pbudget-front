@@ -387,7 +387,24 @@ export interface FeatureDefinition {
   label: string;
   description: string;
   defaultEnabled: boolean;
+  /** A plan silent about this feature follows that other feature instead of `defaultEnabled`. */
+  inheritsFrom?: string;
   limitLabel?: string;
+}
+
+/** What a plan that does not mention `definition` effectively gets (mirrors the server). */
+export function featureDefaultFor(
+  definition: FeatureDefinition,
+  configured: { key: string; enabled?: boolean }[],
+  catalog: FeatureDefinition[],
+): boolean {
+  if (definition.inheritsFrom) {
+    const parent = configured.find((feature) => feature.key === definition.inheritsFrom);
+    if (parent) return parent.enabled !== false;
+    const parentDefinition = catalog.find((feature) => feature.key === definition.inheritsFrom);
+    if (parentDefinition) return featureDefaultFor(parentDefinition, configured, catalog);
+  }
+  return definition.defaultEnabled;
 }
 
 export async function fetchAdminFeatureCatalog() {
