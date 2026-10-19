@@ -31,7 +31,7 @@ const FALLBACK_APK_URL = process.env.NEXT_PUBLIC_APK_URL ?? "/downloads/pdesk.ap
 const FALLBACK_VERSION = process.env.NEXT_PUBLIC_APP_VERSION ?? "1.0.0";
 
 const FEATURE_KEYS = ["finance", "native", "secure"] as const;
-const STEP_INDICES = [0, 1, 2] as const;
+const STEP_INDICES = [0, 1, 2, 3] as const;
 const MOCK_ROW_INDICES = [0, 1, 2] as const;
 
 export function DownloadPage() {
