@@ -28,6 +28,7 @@ import {
 import * as subscriptionApi from "@/common/api/subscriptions";
 import { PATHS } from "@/common/constants";
 import { useAndroidAppAvailability } from "@/common/hooks/useAndroidAppAvailability";
+import { usePwaInstall } from "@/common/hooks/usePwaInstall";
 import type { ILandingContent, LandingAccent } from "@/common/interfaces/landing.interface";
 import type { SubscriptionPlan } from "@/common/interfaces/subscription.interface";
 import { AppLogo } from "@/components/common/brand/AppLogo";
@@ -357,6 +358,50 @@ function PhoneDevice({ children }: { children: React.ReactNode }) {
   );
 }
 
+function AndroidGlyph({ size = 24 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M17.6 9.5a.9.9 0 1 0-.9-.9.9.9 0 0 0 .9.9zm-11.2 0a.9.9 0 1 0-.9-.9.9.9 0 0 0 .9.9zM17.9 5.3l1.5-2.6a.3.3 0 1 0-.5-.3l-1.5 2.6A9.4 9.4 0 0 0 12 3.8a9.4 9.4 0 0 0-5.4 1.2L5.1 2.4a.3.3 0 0 0-.5.3l1.5 2.6A8.9 8.9 0 0 0 2.9 12h18.2a8.9 8.9 0 0 0-3.2-6.7zM2.9 13v6.4A1.6 1.6 0 0 0 4.5 21h1.3v3.2a1.4 1.4 0 0 0 2.8 0V21h2.9v3.2a1.4 1.4 0 0 0 2.8 0V21h2v0h1.3a1.6 1.6 0 0 0 1.6-1.6V13zM0 13.4v6a1.4 1.4 0 0 0 2.8 0v-6a1.4 1.4 0 0 0-2.8 0zm24 0v6a1.4 1.4 0 0 1-2.8 0v-6a1.4 1.4 0 0 1 2.8 0z" transform="translate(0 -1.5)" />
+    </svg>
+  );
+}
+
+/** Hero download row: the native Android app and, where possible, one-tap PWA install. */
+function HeroGetApp() {
+  const { t } = useTranslation();
+  const { apkAvailable, downloadUrl, versionName, versionCode } = useAndroidAppAvailability();
+  const { canInstall, isIos, install } = usePwaInstall();
+  const [iosHint, setIosHint] = useState(false);
+  const showAndroid = apkAvailable && (versionCode ?? 0) >= 20 && Boolean(downloadUrl);
+  const showPwa = canInstall || isIos;
+  if (!showAndroid && !showPwa) return null;
+  return (
+    <div className="lx-enter mt-6" style={{ ["--d" as string]: 5 }}>
+      <div className="l3-get">
+        {showAndroid ? (
+          <a href={downloadUrl} download="pdesk.apk" className="l3-android">
+            <span className="l3-android-ico"><AndroidGlyph size={26} /></span>
+            <span className="l3-android-txt">
+              <small>{toPersianDigits(t("download.heroSmall", { version: versionName ?? "" }))}</small>
+              <b>{t("download.heroTitle")}</b>
+            </span>
+          </a>
+        ) : null}
+        {showPwa ? (
+          <button type="button" className="l3-pwa" onClick={() => (canInstall ? void install() : setIosHint((v) => !v))}>
+            <Mobile size={22} />
+            <span>
+              <b>{t("download.pwaInstall")}</b>
+              <small>{t("download.pwaInstallHint")}</small>
+            </span>
+          </button>
+        ) : null}
+      </div>
+      {iosHint ? <p className="l3-pwa-hint mt-3 text-center lg:text-start">{t("download.pwaIosHint")}</p> : null}
+    </div>
+  );
+}
+
 export function LandingPage({ initialContent, guides = [] }: { initialContent?: ILandingContent; guides?: LandingGuideLink[] }) {
   const { t } = useTranslation();
   const { content } = useLandingContent(initialContent);
@@ -528,6 +573,7 @@ export function LandingPage({ initialContent, guides = [] }: { initialContent?: 
                     {content.hero.secondaryCta}
                   </a>
                 </div>
+                <HeroGetApp />
                 <p className="lx-muted lx-enter mt-4 text-xs" style={{ ["--d" as string]: 5 }}>{t("landingUi.heroNote")}</p>
               </div>
               <HeroStack />

@@ -39,6 +39,7 @@ import {
   sumByType,
 } from "@/common/utils/transaction-filters";
 import { useCurrencyLabels } from "@/i18n/hooks/useCurrencyLabels";
+import { AndroidAnnouncementBanner } from "@/components/pages/dashboard/AndroidAnnouncementBanner";
 import { DashboardHero } from "@/components/pages/dashboard/DashboardHero";
 import { WorkTimeQuickWidget } from "@/components/pages/projects/WorkTimeQuickWidget";
 import { HmiDashboardPage } from "@/components/pages/dashboard/HmiDashboardPage";
@@ -459,7 +460,9 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
 
   if (appMode !== "advanced") {
     return (
-      <HmiDashboardPage
+      <>
+        <AndroidAnnouncementBanner />
+        <HmiDashboardPage
         mode={appMode}
         user={user}
         budgets={filteredBudgets}
@@ -479,6 +482,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
           updateQuery({ duration: "daily", ...nextDate })
         }
       />
+      </>
     );
   }
 
@@ -526,6 +530,7 @@ export function DashboardPage({ initialData }: DashboardPageProps) {
 
   return (
     <div className="pb-dashboard-page">
+      <AndroidAnnouncementBanner />
       <DashboardHero
         firstName={user?.firstName}
         income={shownTotals.income}

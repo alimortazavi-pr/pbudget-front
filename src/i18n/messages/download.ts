@@ -46,4 +46,14 @@ export const downloadMessages: MessageTree = {
   promoGuide: "راهنمای نصب",
   promoLater: "بعداً",
   promoSize: "{{size}} مگابایت",
+  heroSmall: "دانلود مستقیم · نسخه {{version}}",
+  heroTitle: "دانلود اپ اندروید",
+  pwaInstall: "نصب وب‌اپ",
+  pwaInstallHint: "همین حالا، بدون دانلود",
+  pwaIosHint: "در سافاری روی دکمهٔ اشتراک‌گذاری بزنید و «افزودن به صفحهٔ اصلی» را انتخاب کنید.",
+  bannerTitle: "اپ اندروید میز پردیس منتشر شد 🎉",
+  bannerBody:
+    "نسخهٔ نیتیو اندروید با قالب تراکنش، حساب‌های جدا، دارایی‌ها و ورود خودکار از پیامک بانک. دانلودش کنید و همه‌جا همراهتان باشد.",
+  bannerCta: "دانلود اپ",
+  bannerDetails: "اطلاعات بیشتر",
 };

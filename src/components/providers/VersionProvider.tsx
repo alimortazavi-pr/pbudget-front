@@ -21,6 +21,8 @@ import {
   getChangelogSince,
   isNewerVersion,
 } from "@/common/constants/app-version";
+import { useAppSelector } from "@/stores/hooks";
+import { isAuthSelector } from "@/stores/auth";
 import {
   getLastSeenVersion,
   setLastSeenVersion,
@@ -110,14 +112,25 @@ export const VersionProvider: FC<PropsWithChildren> = ({ children }) => {
     setMounted(true);
   }, []);
 
+  const isAuth = useAppSelector(isAuthSelector);
+
+  // "What's new" is for people who already use the app: a first-time visitor
+  // (nothing stored) or a signed-out one never gets it thrown at them.
   useEffect(() => {
     if (!mounted) return;
-
     const lastSeen = getLastSeenVersion();
-    if (isNewerVersion(APP_VERSION, lastSeen)) {
+    if (!lastSeen) {
+      setLastSeenVersion(APP_VERSION);
+      return;
+    }
+    if (isAuth && isNewerVersion(APP_VERSION, lastSeen)) {
       setEntries(getChangelogSince(lastSeen));
       setChangelogOpen(true);
     }
+  }, [mounted, isAuth]);
+
+  useEffect(() => {
+    if (!mounted) return;
 
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.ready.then((reg) => {
