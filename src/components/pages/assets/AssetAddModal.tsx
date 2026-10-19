@@ -84,7 +84,7 @@ export function AssetAddModal({ open, initialKind, onOpenChange, onCreated }: Pr
   const average = qty > 0 && totalValue > 0 ? totalValue / qty : 0;
   const wallet = getWalletBalance(user, currency);
   const notEnough = bought === "now" && totalValue > 0 && totalValue > wallet;
-  const valid = Boolean(kind) && title.trim().length > 0 && qty > 0 && totalValue > 0 && !notEnough;
+  const valid = Boolean(kind) && title.trim().length > 0 && qty > 0 && totalValue > 0;
 
   const meta = useMemo(() => assetKindMeta(kind ?? "other"), [kind]);
 
@@ -255,7 +255,7 @@ export function AssetAddModal({ open, initialKind, onOpenChange, onCreated }: Pr
                 <AssetRecordSection side="buy" value={record} onChange={setRecord} cards={cards} />
               ) : null}
               {notEnough ? (
-                <p className="rounded-xl bg-expense-soft px-3 py-2 text-xs leading-6 text-expense" data-testid="wallet-short">
+                <p className="rounded-xl bg-surface-secondary px-3 py-2 text-xs leading-6 text-muted" data-testid="wallet-short">
                   {t("feat.assets.walletShort", { amount: formatPriceWithCurrency(wallet, currency) })}
                 </p>
               ) : null}

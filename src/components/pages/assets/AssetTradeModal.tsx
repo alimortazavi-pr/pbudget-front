@@ -80,7 +80,7 @@ export function AssetTradeModal({ open, asset, side, onOpenChange, onSaved }: Pr
   const tooMuch = side === "sell" && qty > held + 1e-9;
   const wallet = getWalletBalance(user, currency);
   const notEnough = side === "buy" && record && totalValue > 0 && totalValue > wallet;
-  const valid = qty > 0 && totalValue > 0 && !tooMuch && !notEnough;
+  const valid = qty > 0 && totalValue > 0 && !tooMuch;
   const kindMeta = assetKindMeta(asset?.kind ?? "other");
 
   // A past date is usually a bookkeeping entry, so it is not recorded in the wallet by default.
@@ -205,7 +205,7 @@ export function AssetTradeModal({ open, asset, side, onOpenChange, onSaved }: Pr
               }}
             />
             {notEnough ? (
-              <p className="rounded-xl bg-expense-soft px-3 py-2 text-xs leading-6 text-expense" data-testid="wallet-short">
+              <p className="rounded-xl bg-surface-secondary px-3 py-2 text-xs leading-6 text-muted" data-testid="wallet-short">
                 {t("feat.assets.walletShort", { amount: formatPriceWithCurrency(wallet, currency) })}
               </p>
             ) : null}
