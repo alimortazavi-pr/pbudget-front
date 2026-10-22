@@ -13,6 +13,7 @@ import { VersionProvider } from "./VersionProvider";
 import { AppShell } from "@/components/common/layout/AppShell";
 import { PwaInstallPrompt } from "@/components/common/PwaInstallPrompt";
 import { AndroidDownloadPrompt } from "@/components/common/AndroidDownloadPrompt";
+import { AnnouncementModal } from "@/components/common/AnnouncementModal";
 import { AppModeProvider } from "./AppModeProvider";
 import { MoneyDisplayBoundary } from "./MoneyDisplayBoundary";
 import { Suspense } from "react";
@@ -37,6 +38,7 @@ export const ClientProvider: FC<PropsWithChildren> = ({ children }) => {
                         <AppShell>{children}</AppShell>
                         <PwaInstallPrompt />
                         <AndroidDownloadPrompt />
+                        <AnnouncementModal />
                       </RootProvider>
                     </I18nProvider>
                   </TourProvider>

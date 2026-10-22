@@ -57,6 +57,7 @@ export const navMessages: MessageTree = {
   adminLanding: "صفحه لندینگ",
   adminContent: "مدیریت محتوا",
   adminApp: "اپ اندروید",
+  adminAnnouncements: "اعلان‌ها و پیام‌ها",
   adminBanks: "بانک‌ها",
   adminDatabase: "مدیریت دیتابیس",
   adminBackup: "بکاپ و خروجی",

@@ -6,4 +6,5 @@ export { AdminAuditPage } from "./AdminAuditPage";
 export { AdminAuthAuditPage } from "./AdminAuthAuditPage";
 export { AdminContentPage } from "./AdminContentPage";
 export { AdminAppPage } from "./AdminAppPage";
+export { AdminAnnouncementsPage } from "./AdminAnnouncementsPage";
 export { AdminRequestLogsPage } from "./AdminRequestLogsPage";
