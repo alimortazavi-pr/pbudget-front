@@ -24,6 +24,11 @@ export interface SubscriptionPlan {
   contactMessage: string;
   /** Cafe Bazaar in-app product that sells one period of this plan. */
   bazaarProductId?: string | null;
+  /** Regular price of the same period; set on discounted offers. */
+  originalPrice?: number | null;
+  /** no_paid = special offer shown only to people without a paid plan. */
+  audience?: "all" | "no_paid";
+  offerEndsAt?: string | null;
   activeSubscribers?: number;
   isFallback?: boolean;
 }

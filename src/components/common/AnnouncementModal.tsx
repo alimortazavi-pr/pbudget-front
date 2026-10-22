@@ -3,16 +3,19 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Modal } from "@heroui/react";
-import { Copy, TickCircle } from "iconsax-reactjs";
+import { Copy, Crown, Flash, TickCircle } from "iconsax-reactjs";
 
 import * as announcementApi from "@/common/api/announcements";
 import type { ActiveAnnouncement } from "@/common/api/announcements";
+import * as subscriptionApi from "@/common/api/subscriptions";
+import type { SubscriptionPlan } from "@/common/interfaces/subscription.interface";
 import { PATHS } from "@/common/constants";
+import { formatPlanPrice } from "@/common/utils";
 import { toPersianDigits } from "@/common/utils/persian-digits";
 import { showToast } from "@/common/utils/toast";
 import { isAuthSelector } from "@/stores/auth";
 import { useAppSelector } from "@/stores/hooks";
-import { AppModal, AppModalDialog, AppModalHeader, modalSheetBodyClass, modalSheetFooterClass } from "@/components/common/ui/AppModal";
+import { AppModal, AppModalDialog, modalSheetBodyClass, modalSheetFooterClass } from "@/components/common/ui/AppModal";
 
 /** "۱ روز و ۴ ساعت" / "۳ ساعت و ۵ دقیقه" until [endsAt]; null once it has passed. */
 function remaining(endsAt: string, now: number) {
@@ -33,6 +36,7 @@ export function AnnouncementModal() {
   const isAuth = useAppSelector(isAuthSelector);
   const [queue, setQueue] = useState<ActiveAnnouncement[]>([]);
   const [now, setNow] = useState(() => Date.now());
+  const [offers, setOffers] = useState<SubscriptionPlan[]>([]);
 
   useEffect(() => {
     if (!isAuth) {
@@ -54,6 +58,21 @@ export function AnnouncementModal() {
   }, [isAuth]);
 
   const current = queue[0];
+
+  useEffect(() => {
+    if (!current?.showOffers) {
+      setOffers([]);
+      return;
+    }
+    let alive = true;
+    void subscriptionApi
+      .fetchSubscriptionOffers()
+      .then((items) => alive && setOffers(items))
+      .catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, [current?.id, current?.showOffers]);
 
   useEffect(() => {
     if (!current?.endsAt) return;
@@ -86,11 +105,51 @@ export function AnnouncementModal() {
   return (
     <AppModal open onOpenChange={(open) => !open && finish(false)} mobileFull>
       <AppModalDialog className="flex max-h-[100dvh] flex-col sm:max-w-md">
-        <AppModalHeader>
-          <Modal.Heading>{current.title}</Modal.Heading>
-        </AppModalHeader>
+        <div className="relative shrink-0 overflow-hidden bg-gradient-to-br from-accent via-accent/80 to-violet-500 px-5 pb-6 pt-8 text-white">
+          <div className="pointer-events-none absolute -end-10 -top-10 size-40 rounded-full bg-white/15 blur-2xl" />
+          <div className="pointer-events-none absolute -bottom-12 start-0 size-32 rounded-full bg-white/10 blur-2xl" />
+          <span className="relative mb-3 flex size-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur">
+            <Flash size={26} variant="Bold" />
+          </span>
+          <Modal.Heading className="relative text-xl font-extrabold leading-8 text-white">{current.title}</Modal.Heading>
+        </div>
         <div className={`${modalSheetBodyClass} space-y-4`}>
           <p className="whitespace-pre-line text-sm leading-7">{current.body}</p>
+          {offers.length > 0 ? (
+            <div className="space-y-3">
+              {offers.map((plan, index) => {
+                const percent = plan.originalPrice && plan.originalPrice > plan.price ? Math.round((1 - plan.price / plan.originalPrice) * 100) : 0;
+                const best = index === 0;
+                return (
+                  <button
+                    key={plan._id}
+                    type="button"
+                    onClick={() => finish(true)}
+                    className={`relative flex w-full items-center justify-between gap-3 rounded-2xl border-2 p-4 text-start transition active:scale-[0.99] ${best ? "border-accent bg-accent/10 shadow-lg shadow-accent/10" : "border-border/60 bg-surface-secondary/60"}`}
+                  >
+                    {percent > 0 ? (
+                      <span className="absolute -top-3 end-4 rounded-full bg-danger px-3 py-0.5 text-xs font-bold text-white">{toPersianDigits(percent)}٪ تخفیف</span>
+                    ) : null}
+                    <span className="min-w-0">
+                      <span className="flex items-center gap-1.5 font-bold">
+                        <Crown size={16} variant="Bold" className="text-accent" />
+                        {plan.name}
+                      </span>
+                      {plan.originalPrice ? (
+                        <span className="mt-1 block text-xs text-muted">
+                          به‌جای <span className="line-through">{formatPlanPrice(plan.originalPrice)}</span> {plan.priceUnit}
+                        </span>
+                      ) : null}
+                    </span>
+                    <span className="shrink-0 text-end">
+                      <span className="block text-xl font-extrabold text-accent">{formatPlanPrice(plan.price)}</span>
+                      <span className="text-xs text-muted">{plan.priceUnit}</span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
           {current.discountCode ? (
             <button
               type="button"

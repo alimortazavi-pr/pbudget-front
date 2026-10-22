@@ -471,8 +471,18 @@ type PlanForm = {
   active: boolean;
   sortOrder: string;
   contactMessage: string;
+  originalPrice: string;
+  offerOnly: boolean;
+  offerEndsAt: string;
   features: SubscriptionFeature[];
 };
+
+/** Value for a datetime-local input (the browser's local time). */
+function localInputValue(iso: string) {
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
 
 function toForm(plan?: SubscriptionPlan | null): PlanForm {
   if (!plan) {
@@ -488,6 +498,9 @@ function toForm(plan?: SubscriptionPlan | null): PlanForm {
       active: true,
       sortOrder: "0",
       contactMessage: "برای خرید و فعال‌سازی با ادمین تماس بگیرید.",
+      originalPrice: "",
+      offerOnly: false,
+      offerEndsAt: "",
       features: [],
     };
   }
@@ -503,6 +516,9 @@ function toForm(plan?: SubscriptionPlan | null): PlanForm {
     active: plan.active,
     sortOrder: String(plan.sortOrder),
     contactMessage: plan.contactMessage,
+    originalPrice: plan.originalPrice ? String(plan.originalPrice) : "",
+    offerOnly: plan.audience === "no_paid",
+    offerEndsAt: plan.offerEndsAt ? localInputValue(plan.offerEndsAt) : "",
     features: plan.features.map((feature) => ({ ...feature })),
   };
 }
@@ -667,6 +683,9 @@ function PlanEditorDialog({
       active: form.active,
       sortOrder: Number(form.sortOrder) || 0,
       contactMessage: form.contactMessage.trim(),
+      originalPrice: Number(form.originalPrice) || null,
+      audience: form.offerOnly ? ("no_paid" as const) : ("all" as const),
+      offerEndsAt: form.offerEndsAt ? new Date(form.offerEndsAt).toISOString() : null,
       features,
     };
     setSaving(true);
@@ -719,6 +738,18 @@ function PlanEditorDialog({
           ) : null}
           <FormField label="ترتیب نمایش" hint="عدد کمتر زودتر نمایش داده می‌شود.">
             <Input variant="secondary" className="w-full" dir="ltr" inputMode="numeric" value={form.sortOrder} onChange={(event) => update("sortOrder", event.target.value.replace(/[^\d-]/g, ""))} />
+          </FormField>
+        </FormGrid>
+      </FormSection>
+
+      <FormSection title="پیشنهاد ویژه (تخفیف‌دار)" description="برای پلن‌های تخفیف‌دار: قیمت عادی را بنویسید تا قیمت خط‌خورده و درصد تخفیف نمایش داده شود.">
+        <SwitchRow label="فقط برای کاربران بدون پلن پولی" description="این پلن در بخش «پیشنهاد ویژه» فقط به کاربرانی نشان داده می‌شود که پلن پولی ندارند (رایگان و آزمایشی هم حساب می‌شوند)." selected={form.offerOnly} onChange={(selected) => update("offerOnly", selected)} />
+        <FormGrid>
+          <FormField label="قیمت عادی (خط‌خورده)" hint="خالی = بدون تخفیف. کد تخفیف روی پلن‌های تخفیف‌دار اعمال نمی‌شود.">
+            <Input variant="secondary" className="w-full" dir="ltr" inputMode="numeric" value={form.originalPrice} onChange={(event) => update("originalPrice", event.target.value.replace(/[^\d]/g, ""))} />
+          </FormField>
+          <FormField label="پایان پیشنهاد (اختیاری)" hint="به وقت مرورگر شما؛ خالی = بدون پایان.">
+            <Input variant="secondary" type="datetime-local" className="w-full" dir="ltr" value={form.offerEndsAt} onChange={(event) => update("offerEndsAt", event.target.value)} />
           </FormField>
         </FormGrid>
       </FormSection>

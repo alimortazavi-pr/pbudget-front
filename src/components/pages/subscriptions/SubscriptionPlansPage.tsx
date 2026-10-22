@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button, Modal, TextArea } from "@heroui/react";
-import { Clock, Crown, Lock1, Refresh2, TickCircle, Timer1, Warning2 } from "iconsax-reactjs";
+import { ArrowDown2, Clock, Crown, Flash, Lock1, Refresh2, TickCircle, Timer1, Warning2 } from "iconsax-reactjs";
 import { createPortal } from "react-dom";
 
 import * as subscriptionApi from "@/common/api/subscriptions";
@@ -39,7 +39,9 @@ function usePeriodLabel() {
         ? t("common.subscription.yearly")
         : plan.period === "lifetime"
           ? t("common.subscription.lifetime")
-          : `${toPersianDigits(plan.periodDays ?? 0)} ${t("common.subscription.custom")}`;
+          : plan.periodDays && plan.periodDays % 30 === 0
+            ? `${toPersianDigits(plan.periodDays / 30)} ماهه`
+            : `${toPersianDigits(plan.periodDays ?? 0)} ${t("common.subscription.custom")}`;
 }
 
 function planOf(subscription: UserSubscription) {
@@ -54,6 +56,7 @@ export function SubscriptionPlansPage() {
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [plansLoading, setPlansLoading] = useState(true);
   const [plansFailed, setPlansFailed] = useState(false);
+  const [offers, setOffers] = useState<SubscriptionPlan[]>([]);
   const [history, setHistory] = useState<UserSubscription[]>([]);
   const [showAllHistory, setShowAllHistory] = useState(false);
   const [requesting, setRequesting] = useState<SubscriptionPlan | null>(null);
@@ -90,6 +93,7 @@ export function SubscriptionPlansPage() {
     void loadPlans();
     void loadHistory();
     void refresh();
+    void subscriptionApi.fetchSubscriptionOffers().then(setOffers).catch(() => setOffers([]));
   }, [loadPlans, loadHistory, refresh]);
 
   // A purchase paid for but never redeemed (app killed, network dropped) is
@@ -311,6 +315,16 @@ export function SubscriptionPlansPage() {
         <div className="rounded-3xl border border-border/60 bg-surface p-10 text-center text-muted">{t("common.subscription.noPlans")}</div>
       ) : (
         <>
+        {offers.length > 0 ? (
+          <OffersSection
+            offers={offers}
+            periodLabel={periodLabel}
+            baleEnabled={baleEnabled}
+            buyingPlanId={buyingPlanId}
+            onBale={(plan) => void payWithBale(plan)}
+            onRequest={setRequesting}
+          />
+        ) : null}
         {discountPlans.length > 0 ? (
           <DiscountCodeBox
             discount={discount}
@@ -321,7 +335,7 @@ export function SubscriptionPlansPage() {
             }
           />
         ) : null}
-        <div data-tour="plans-list" className={`grid gap-5 ${plans.length >= 3 ? "lg:grid-cols-3" : plans.length === 2 ? "lg:grid-cols-2" : "mx-auto max-w-md"}`}>
+        <div data-tour="plans-list" className={`grid items-stretch gap-5 ${plans.length >= 4 ? "sm:grid-cols-2 xl:grid-cols-4" : plans.length === 3 ? "md:grid-cols-2 lg:grid-cols-3" : plans.length === 2 ? "md:grid-cols-2" : "mx-auto max-w-md"}`}>
           {plans.map((plan) => {
             const isCurrent = plan.slug === currentSlug;
             const isRequested = pendingPlanId === plan._id;
@@ -367,27 +381,7 @@ export function SubscriptionPlansPage() {
                 {!isFree ? <DiscountedPrice result={discount.results[plan._id]} codeApplies={!canBuyInBazaar} /> : null}
                 {!isFree && canBuyInBazaar && discount.anyValid ? <p className="mt-1 text-xs text-muted">کد تخفیف روی خرید از کافه‌بازار اعمال نمی‌شود.</p> : null}
 
-                <ul className="mt-6 flex-1 space-y-2.5 border-t border-border/60 pt-5">
-                  {featureCatalog.map((catalogFeature) => {
-                    const planFeature = plan.features.find((item) => item.key === catalogFeature.key);
-                    const enabled = Boolean(planFeature?.enabled);
-                    // Only the AI quota is enforced per plan, so only it shows a number.
-                    const limitNote = enabled && catalogFeature.key === "ai" && planFeature?.limit ? planFeature.limit : null;
-                    return (
-                      <li key={catalogFeature.key} className={`flex items-center gap-2.5 text-sm ${enabled ? "" : "text-muted"}`}>
-                        {enabled ? (
-                          <TickCircle size={18} className="shrink-0 text-success" variant="Bold" />
-                        ) : (
-                          <Lock1 size={16} className="shrink-0 text-muted/70" />
-                        )}
-                        <span className={enabled ? "" : "line-through decoration-muted/40"}>
-                          {catalogFeature.label}
-                          {limitNote ? <span className="ms-1.5 text-xs font-semibold text-accent">· {t("common.subscription.featureLimitPerDay", { count: toPersianDigits(limitNote) })}</span> : null}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ul>
+                <PlanFeatureList plan={plan} catalog={featureCatalog} />
                 {commonCount > 0 ? (
                   <p className="mb-6 mt-4 text-xs text-muted">{t("common.subscription.commonFeatures", { count: toPersianDigits(commonCount) })}</p>
                 ) : (
@@ -711,5 +705,123 @@ function BalePayDialog({
       </AppModalDialog>
     </AppModal>,
     document.body,
+  );
+}
+
+const FEATURES_PREVIEW = 8;
+
+/** Features of one plan: the ones it includes first, long lists fold behind a toggle. */
+function PlanFeatureList({ plan, catalog }: { plan: SubscriptionPlan; catalog: { key: string; label: string }[] }) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const rows = catalog
+    .map((item) => ({ item, feature: plan.features.find((f) => f.key === item.key) }))
+    .map((row) => ({ ...row, enabled: Boolean(row.feature?.enabled) }))
+    .sort((a, b) => Number(b.enabled) - Number(a.enabled));
+  const shown = open ? rows : rows.slice(0, FEATURES_PREVIEW);
+  return (
+    <div className="mt-6 flex-1 border-t border-border/60 pt-5">
+      <ul className="space-y-2.5">
+        {shown.map(({ item, feature, enabled }) => {
+          // Only the AI quota is enforced per plan, so only it shows a number.
+          const limitNote = enabled && item.key === "ai" && feature?.limit ? feature.limit : null;
+          return (
+            <li key={item.key} className={`flex items-center gap-2.5 text-sm ${enabled ? "" : "text-muted"}`}>
+              {enabled ? <TickCircle size={18} className="shrink-0 text-success" variant="Bold" /> : <Lock1 size={16} className="shrink-0 text-muted/70" />}
+              <span className={enabled ? "" : "line-through decoration-muted/40"}>
+                {item.label}
+                {limitNote ? <span className="ms-1.5 text-xs font-semibold text-accent">· {t("common.subscription.featureLimitPerDay", { count: toPersianDigits(limitNote) })}</span> : null}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+      {rows.length > FEATURES_PREVIEW ? (
+        <button type="button" onClick={() => setOpen((v) => !v)} className="mt-3 flex items-center gap-1 text-xs font-semibold text-accent">
+          {open ? "نمایش کمتر" : `نمایش همهٔ امکانات (${toPersianDigits(rows.length)})`}
+          <ArrowDown2 size={14} className={open ? "rotate-180" : ""} />
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
+/** "۱ روز و ۴ ساعت" until [endsAt]; null once it has passed. */
+function timeLeft(endsAt: string) {
+  const minutes = Math.floor((new Date(endsAt).getTime() - Date.now()) / 60_000);
+  if (minutes <= 0) return null;
+  const days = Math.floor(minutes / 1440);
+  const hours = Math.floor((minutes % 1440) / 60);
+  if (days > 0) return `${toPersianDigits(days)} روز و ${toPersianDigits(hours)} ساعت`;
+  return hours > 0 ? `${toPersianDigits(hours)} ساعت و ${toPersianDigits(minutes % 60)} دقیقه` : `${toPersianDigits(Math.max(minutes, 1))} دقیقه`;
+}
+
+/** Discounted plans for people without a paid plan (including the free trial). */
+function OffersSection({
+  offers,
+  periodLabel,
+  baleEnabled,
+  buyingPlanId,
+  onBale,
+  onRequest,
+}: {
+  offers: SubscriptionPlan[];
+  periodLabel: (plan: SubscriptionPlan) => string;
+  baleEnabled: boolean;
+  buyingPlanId: string | null;
+  onBale: (plan: SubscriptionPlan) => void;
+  onRequest: (plan: SubscriptionPlan) => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <section className="space-y-3 rounded-3xl border border-accent/40 bg-gradient-to-b from-accent/10 to-transparent p-4 sm:p-6">
+      <div className="flex items-center gap-2">
+        <Flash size={22} variant="Bold" className="text-accent" />
+        <h2 className="text-lg font-bold">پیشنهاد ویژه برای شما</h2>
+      </div>
+      <p className="text-sm text-muted">پلن حرفه‌ای را با تخفیف بگیرید. این قیمت‌ها فقط تا وقتی پلن پولی ندارید نمایش داده می‌شوند.</p>
+      <div className={`grid gap-4 ${offers.length > 1 ? "md:grid-cols-2" : "mx-auto max-w-md"}`}>
+        {offers.map((plan) => {
+          const percent = plan.originalPrice && plan.originalPrice > plan.price ? Math.round((1 - plan.price / plan.originalPrice) * 100) : 0;
+          const left = plan.offerEndsAt ? timeLeft(plan.offerEndsAt) : null;
+          const isBuying = buyingPlanId === plan._id;
+          return (
+            <article key={plan._id} className="relative flex flex-col rounded-2xl border border-border/60 bg-surface p-5">
+              {percent > 0 ? (
+                <span className="absolute -top-3 start-5 rounded-full bg-danger px-3 py-1 text-xs font-bold text-white">{toPersianDigits(percent)}٪ تخفیف</span>
+              ) : null}
+              <h3 className="text-lg font-bold">{plan.name}</h3>
+              {plan.description ? <p className="mt-1 text-sm leading-6 text-muted">{plan.description}</p> : null}
+              <p className="mt-4 flex flex-wrap items-baseline gap-x-2">
+                <span className="text-3xl font-extrabold">{formatPlanPrice(plan.price)}</span>
+                <span className="text-sm text-muted">
+                  {plan.priceUnit} / {periodLabel(plan)}
+                </span>
+                {plan.originalPrice ? <span className="text-sm text-muted line-through">{formatPlanPrice(plan.originalPrice)}</span> : null}
+              </p>
+              {left ? <p className="mt-2 text-xs font-semibold text-warning-foreground">فقط {left} فرصت دارید</p> : null}
+              <div className="mt-5 space-y-2">
+                {baleEnabled ? (
+                  <>
+                    <Button className="w-full" isPending={isBuying} isDisabled={buyingPlanId !== null && !isBuying} onPress={() => onBale(plan)}>
+                      <Crown size={17} variant="Bold" />
+                      {t("common.subscription.payWithBale")}
+                    </Button>
+                    <Button className="w-full" size="sm" variant="ghost" onPress={() => onRequest(plan)}>
+                      {t("common.subscription.orRequestManually")}
+                    </Button>
+                  </>
+                ) : (
+                  <Button className="w-full" onPress={() => onRequest(plan)}>
+                    <Crown size={17} variant="Bold" />
+                    {t("common.subscription.requestPlan")}
+                  </Button>
+                )}
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
   );
 }

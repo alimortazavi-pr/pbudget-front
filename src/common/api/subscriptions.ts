@@ -6,6 +6,12 @@ export async function fetchPublicSubscriptionPlans() {
   return data;
 }
 
+/** Discounted plans only users without a paid plan are offered. */
+export async function fetchSubscriptionOffers() {
+  const { data } = await axiosInstance.get<SubscriptionPlan[]>("/subscriptions/offers");
+  return data;
+}
+
 export async function fetchMySubscription() {
   const { data } = await axiosInstance.get<MySubscriptionResponse>("/subscriptions/me");
   return data;

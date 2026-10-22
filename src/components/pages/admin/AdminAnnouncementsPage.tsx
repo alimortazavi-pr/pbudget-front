@@ -42,6 +42,7 @@ const EMPTY: Draft = {
   platforms: ["web"],
   discountCode: "",
   ctaLabel: "مشاهدهٔ پلن‌ها",
+  showOffers: false,
   endsAt: null,
   active: true,
 };
@@ -91,6 +92,7 @@ export function AdminAnnouncementsPage() {
       platforms: row.platforms,
       discountCode: row.discountCode,
       ctaLabel: row.ctaLabel,
+      showOffers: row.showOffers === true,
       endsAt: row.endsAt,
       active: row.active,
     });
@@ -268,6 +270,7 @@ export function AdminAnnouncementsPage() {
           />
           {draft.endsAt ? <span className="text-xs text-muted">پایان: {formatDateTimeFa(draft.endsAt)}</span> : null}
         </Field>
+        <SwitchRow label="نمایش پلن‌های پیشنهادی" description="کارت‌های پلن‌های تخفیف‌دار (پیشنهاد ویژه) با قیمت خط‌خورده داخل مدال نشان داده می‌شود." selected={draft.showOffers} onChange={(showOffers) => setDraft({ ...draft, showOffers })} />
         <SwitchRow label="فعال" description="با غیرفعال کردن، پیام از نمایش خارج می‌شود." selected={draft.active} onChange={(active) => setDraft({ ...draft, active })} />
       </FormDialog>
 

@@ -11,6 +11,7 @@ export interface ActiveAnnouncement {
   discountCode: string | null;
   ctaLabel: string | null;
   endsAt: string | null;
+  showOffers: boolean;
 }
 
 export interface AdminAnnouncement {
@@ -21,6 +22,7 @@ export interface AdminAnnouncement {
   platforms: AnnouncementPlatform[];
   discountCode: string;
   ctaLabel: string;
+  showOffers: boolean;
   startsAt: string | null;
   endsAt: string | null;
   active: boolean;
@@ -37,6 +39,7 @@ export interface AnnouncementPayload {
   platforms: AnnouncementPlatform[];
   discountCode: string;
   ctaLabel: string;
+  showOffers: boolean;
   startsAt: string | null;
   endsAt: string | null;
   active: boolean;
