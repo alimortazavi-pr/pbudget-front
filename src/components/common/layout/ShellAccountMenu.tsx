@@ -20,6 +20,7 @@ import { storage } from "@/common/utils/storage";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { useBalanceModal } from "@/components/providers/BalanceModalProvider";
 import { ShellNavGroup } from "@/components/common/layout/ShellNavGroup";
+import { OpenBusinessLink } from "@/components/common/layout/OpenBusinessLink";
 import {
   ACCOUNT_NAV_ITEMS,
   DOWNLOAD_NAV_ITEM,
@@ -201,6 +202,7 @@ export function ShellAccountMenu({
               <span className="ms-auto rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold text-accent-foreground">{supportUnread}</span>
             ) : null}
           </Link>
+          <OpenBusinessLink className={utilityLinkClass} />
           <Link href={DOWNLOAD_NAV_ITEM.href} className={utilityLinkClass} onClick={onNavigate}>
             <Mobile size={20} />
             {t(DOWNLOAD_NAV_ITEM.label)}

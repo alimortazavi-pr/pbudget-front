@@ -8,6 +8,7 @@ export function isPublicPath(pathname: string): boolean {
     pathname === PATHS.GET_STARTED ||
     pathname === PATHS.DOWNLOAD ||
     pathname === PATHS.PRIVACY ||
+    pathname === "/sso" ||
     pathname === "/faq" ||
     pathname === "/learn" ||
     pathname.startsWith("/learn/") ||

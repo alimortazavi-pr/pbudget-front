@@ -19,6 +19,7 @@ import { authMessages } from "./auth";
 import { autoMessages } from "./auto";
 import { errorsMessages } from "./errors";
 import { changelogMessages } from "./changelog";
+import { ssoMessages } from "./sso";
 import { exportsMessages } from "./exports";
 import { featuresMessages } from "./features";
 
@@ -50,6 +51,7 @@ export const messages = {
     { auth: authMessages },
     { errors: errorsMessages },
     { changelog: changelogMessages },
+    { sso: ssoMessages },
     { exports: exportsMessages },
     { feat: featuresMessages },
   ),

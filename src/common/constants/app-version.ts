@@ -1,5 +1,5 @@
 /** Current app version — keep in sync with package.json */
-export const APP_VERSION = "2.2.0";
+export const APP_VERSION = "2.5.0";
 
 export type ChangelogEntryMeta = {
   version: string;
@@ -15,6 +15,12 @@ export type ChangelogEntryMeta = {
  * 3. Add a new entry to CHANGELOG_META and i18n changelog messages
  */
 export const CHANGELOG_META: ChangelogEntryMeta[] = [
+  {
+    version: "2.5.0",
+    dateKey: "changelog.v250.date",
+    titleKey: "changelog.v250.title",
+    itemKeys: ["changelog.v250.items.i1", "changelog.v250.items.i2", "changelog.v250.items.i3"],
+  },
   {
     version: "2.2.0",
     dateKey: "changelog.v220.date",
