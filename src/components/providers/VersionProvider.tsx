@@ -23,6 +23,7 @@ import {
 } from "@/common/constants/app-version";
 import { useAppSelector } from "@/stores/hooks";
 import { isAuthSelector } from "@/stores/auth";
+import { axiosInstance } from "@/common/axiosInstance";
 import {
   getLastSeenVersion,
   setLastSeenVersion,
@@ -49,15 +50,37 @@ export function useVersion() {
   return ctx;
 }
 
+type ReleaseMessage = { enabled: boolean; title: string; items: string[]; revision: number };
+
+const SEEN_REVISION_KEY = "release-message-revision";
+
+function readSeenRevision() {
+  try {
+    return Number(localStorage.getItem(SEEN_REVISION_KEY)) || 0;
+  } catch {
+    return 0;
+  }
+}
+
+function writeSeenRevision(revision: number) {
+  try {
+    localStorage.setItem(SEEN_REVISION_KEY, String(revision));
+  } catch {
+    // private mode: the message may show again next visit
+  }
+}
+
 function ChangelogModal({
   open,
   onOpenChange,
   entries,
+  message,
   footer,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   entries: ReturnType<typeof getChangelogSince>;
+  message?: ReleaseMessage | null;
   footer?: ReactNode;
 }) {
   const { t } = useTranslation();
@@ -70,7 +93,20 @@ function ChangelogModal({
         </AppModalHeader>
 
         <div className={`${modalSheetBodyClass} space-y-5 overflow-y-auto`}>
-          {entries.map((entry) => (
+          {message ? (
+            <div className="space-y-2">
+              <h3 className="font-bold">{message.title}</h3>
+              <ul className="space-y-1.5">
+                {message.items.map((item) => (
+                  <li key={item} className="flex items-start gap-2 text-sm">
+                    <TickCircle size={16} variant="Bold" className="mt-0.5 shrink-0 text-success" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          {(message ? [] : entries).map((entry) => (
             <div key={entry.version} className="space-y-2">
               <div>
                 <h3 className="font-bold">{t(entry.titleKey)}</h3>
@@ -107,26 +143,32 @@ export const VersionProvider: FC<PropsWithChildren> = ({ children }) => {
   const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null);
   const [entries, setEntries] = useState(getChangelogSince(null));
   const [mounted, setMounted] = useState(false);
+  const isAuth = useAppSelector(isAuthSelector);
+  const [message, setMessage] = useState<ReleaseMessage | null>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const isAuth = useAppSelector(isAuthSelector);
-
-  // "What's new" is for people who already use the app: a first-time visitor
-  // (nothing stored) or a signed-out one never gets it thrown at them.
+  // The "what's new" message is written by an admin and shown only while they have it switched on. Each revision is
+  // shown once per browser, and only to people who are signed in.
   useEffect(() => {
-    if (!mounted) return;
-    const lastSeen = getLastSeenVersion();
-    if (!lastSeen) {
-      setLastSeenVersion(APP_VERSION);
-      return;
-    }
-    if (isAuth && isNewerVersion(APP_VERSION, lastSeen)) {
-      setEntries(getChangelogSince(lastSeen));
-      setChangelogOpen(true);
-    }
+    if (!mounted || !isAuth) return;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const { data } = await axiosInstance.get<ReleaseMessage>("/site/release-notes");
+        if (cancelled || !data.enabled || !data.items.length) return;
+        if (readSeenRevision() >= data.revision) return;
+        setMessage(data);
+        setChangelogOpen(true);
+      } catch {
+        // the message is optional
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [mounted, isAuth]);
 
   useEffect(() => {
@@ -170,10 +212,13 @@ export const VersionProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const dismissChangelog = useCallback(() => {
     setLastSeenVersion(APP_VERSION);
+    if (message) writeSeenRevision(message.revision);
     setChangelogOpen(false);
-  }, []);
+    setMessage(null);
+  }, [message]);
 
   const showChangelog = useCallback(() => {
+    setMessage(null);
     setEntries(getChangelogSince(null));
     setChangelogOpen(true);
   }, []);
@@ -193,6 +238,7 @@ export const VersionProvider: FC<PropsWithChildren> = ({ children }) => {
         // that as "dismissed" marked the version as seen before the check above could run.
         onOpenChange={(open) => !open && changelogOpen && dismissChangelog()}
         entries={entries}
+        message={message}
         footer={
           <div className="flex w-full flex-col gap-2 sm:flex-row">
             {updateReady && (

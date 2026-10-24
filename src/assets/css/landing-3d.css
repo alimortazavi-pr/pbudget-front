@@ -359,5 +359,8 @@ footer .lx-container { position: relative; z-index: 1; }
 .l3-pwa:hover { background: rgb(255 255 255 / 0.16); transform: translateY(-2px); }
 .l3-pwa small { display: block; font-size: 0.72rem; opacity: 0.7; }
 .l3-pwa b { font-size: 0.95rem; font-weight: 700; }
+.l3-hero .l3-pwa { color: var(--foreground); background: color-mix(in oklch, var(--surface) 82%, transparent); border-color: var(--border); }
+.l3-hero .l3-pwa:hover { background: var(--surface-secondary); }
+.l3-hero .l3-pwa small { opacity: 0.75; }
 .l3-pwa-hint { max-width: 26rem; font-size: 0.78rem; line-height: 1.7; opacity: 0.8; }
 @media (prefers-reduced-motion: reduce) { .l3-android::after { animation: none; display: none; } }

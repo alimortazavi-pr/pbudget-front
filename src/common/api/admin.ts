@@ -449,3 +449,14 @@ export async function publishAdminLanding() {
   const { data } = await axiosInstance.post("/admin/landing/publish");
   return data;
 }
+export type ReleaseNotesAdmin = { enabled: boolean; title: string; items: string[]; revision: number };
+
+export async function fetchReleaseNotes() {
+  const { data } = await axiosInstance.get<ReleaseNotesAdmin>("/admin/release-notes");
+  return data;
+}
+
+export async function saveReleaseNotes(body: { enabled: boolean; title: string; items: string[]; resend?: boolean }) {
+  const { data } = await axiosInstance.put<ReleaseNotesAdmin>("/admin/release-notes", body);
+  return data;
+}

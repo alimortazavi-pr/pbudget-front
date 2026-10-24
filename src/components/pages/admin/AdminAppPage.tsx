@@ -12,6 +12,8 @@ import type { AdminAndroidAppInfo } from "@/common/interfaces/admin";
 import { formatBytes } from "@/common/utils/admin-format";
 import { toPersianDigits } from "@/common/utils";
 import { showToast } from "@/common/utils/toast";
+import { CHANGELOG_META } from "@/common/constants/app-version";
+import { AdminReleaseNotesCard } from "./AdminReleaseNotesCard";
 
 export function AdminAppPage() {
   const { t } = useTranslation();
@@ -135,6 +137,8 @@ export function AdminAppPage() {
           ) : null}
         </section>
       ) : null}
+
+      <AdminReleaseNotesCard options={CHANGELOG_META.map((e) => ({ version: e.version, title: t(e.titleKey), items: e.itemKeys.map((k) => t(k)) }))} />
 
       <section className="grid gap-4 lg:grid-cols-2">
         <div className="glass rounded-2xl p-6">

@@ -83,24 +83,24 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon.ico" },
+      { url: "/favicon.ico?v=2" },
       {
-        url: "/assets/icons/favicon-16x16.png",
+        url: "/assets/icons/favicon-16x16.png?v=2",
         sizes: "16x16",
         type: "image/png",
       },
       {
-        url: "/assets/icons/favicon-32x32.png",
+        url: "/assets/icons/favicon-32x32.png?v=2",
         sizes: "32x32",
         type: "image/png",
       },
       {
-        url: "/assets/icons/favicon-96x96.png",
+        url: "/assets/icons/favicon-96x96.png?v=2",
         sizes: "96x96",
         type: "image/png",
       },
       {
-        url: "/assets/icons/android-icon-192x192.png",
+        url: "/assets/icons/android-icon-192x192.png?v=2",
         sizes: "192x192",
         type: "image/png",
       },
