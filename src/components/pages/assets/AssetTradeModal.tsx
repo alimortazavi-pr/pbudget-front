@@ -51,6 +51,7 @@ export function AssetTradeModal({ open, asset, side, onOpenChange, onSaved }: Pr
   const [total, setTotal] = useState("");
   const [note, setNote] = useState("");
   const [record, setRecord] = useState(true);
+  const [noPrice, setNoPrice] = useState(false);
   const [recordTouched, setRecordTouched] = useState(false);
   const [options, setOptions] = useState<AssetRecordValue>(() => ({
     date: getNowDateParts(calendar),
@@ -66,6 +67,7 @@ export function AssetTradeModal({ open, asset, side, onOpenChange, onSaved }: Pr
     setTotal("");
     setNote("");
     setRecord(true);
+    setNoPrice(false);
     setRecordTouched(false);
     setOptions({ date: getNowDateParts(calendar), categoryId: "", cardId: "" });
     void paymentCardsApi.fetchPaymentCards().then(setCards).catch(() => setCards([]));
@@ -79,8 +81,9 @@ export function AssetTradeModal({ open, asset, side, onOpenChange, onSaved }: Pr
   const perUnit = qty > 0 && totalValue > 0 ? totalValue / qty : 0;
   const tooMuch = side === "sell" && qty > held + 1e-9;
   const wallet = getWalletBalance(user, currency);
-  const notEnough = side === "buy" && record && totalValue > 0 && totalValue > wallet;
-  const valid = qty > 0 && totalValue > 0 && !tooMuch;
+  const unpricedBuy = side === "buy" && noPrice;
+  const notEnough = side === "buy" && !unpricedBuy && record && totalValue > 0 && totalValue > wallet;
+  const valid = qty > 0 && (unpricedBuy || totalValue > 0) && !tooMuch;
   const kindMeta = assetKindMeta(asset?.kind ?? "other");
 
   // A past date is usually a bookkeeping entry, so it is not recorded in the wallet by default.
@@ -98,12 +101,12 @@ export function AssetTradeModal({ open, asset, side, onOpenChange, onSaved }: Pr
       await assetsApi.createAssetTrade(asset._id, {
         side,
         quantity: String(qty),
-        totalPrice: String(totalValue),
+        totalPrice: unpricedBuy ? "" : String(totalValue),
         year: options.date.year,
         month: options.date.month,
         day: options.date.day,
         note: note.trim() || undefined,
-        ...(record
+        ...(record && !unpricedBuy
           ? {
               recordTransaction: true,
               categoryId: options.categoryId || undefined,
@@ -177,6 +180,22 @@ export function AssetTradeModal({ open, asset, side, onOpenChange, onSaved }: Pr
               ) : null}
             </div>
 
+            {side === "buy" ? (
+              <label className="flex cursor-pointer items-center gap-2.5 rounded-xl bg-surface-secondary/60 px-3 py-2.5 text-sm">
+                <input
+                  type="checkbox"
+                  className="size-4 accent-[var(--accent)]"
+                  checked={noPrice}
+                  onChange={(e) => setNoPrice(e.target.checked)}
+                />
+                <span>
+                  قیمتش را ندارم (هدیه یا یادم نیست)
+                  <span className="block text-xs leading-5 text-muted">فقط مقدار اضافه می‌شود؛ سود و زیان برایش حساب نمی‌شود.</span>
+                </span>
+              </label>
+            ) : null}
+
+            {!unpricedBuy ? (
             <div className="space-y-1.5">
               <FormPriceInput
                 label={side === "buy" ? t("feat.assets.buyTotalLabel") : t("feat.assets.sellTotalLabel")}
@@ -190,7 +209,9 @@ export function AssetTradeModal({ open, asset, side, onOpenChange, onSaved }: Pr
                   : t(side === "buy" ? "feat.assets.totalHint" : "feat.assets.totalHintSell")}
               </p>
             </div>
+            ) : null}
 
+            {!unpricedBuy ? (
             <AssetRecordSection
               side={side}
               value={options}
@@ -204,6 +225,7 @@ export function AssetTradeModal({ open, asset, side, onOpenChange, onSaved }: Pr
                 },
               }}
             />
+            ) : null}
             {notEnough ? (
               <p className="rounded-xl bg-surface-secondary px-3 py-2 text-xs leading-6 text-muted" data-testid="wallet-short">
                 {t("feat.assets.walletShort", { amount: formatPriceWithCurrency(wallet, currency) })}

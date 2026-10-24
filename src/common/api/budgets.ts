@@ -60,7 +60,7 @@ export async function fetchBudgetById(id: string, token?: string) {
   return data;
 }
 
-export async function createBudget(payload: Record<string, string>) {
+export async function createBudget(payload: Record<string, unknown>) {
   const { data } = await axiosInstance.post<IBudgetMutationResult>(
     "/budgets",
     payload
@@ -70,7 +70,7 @@ export async function createBudget(payload: Record<string, string>) {
 
 export async function updateBudget(
   id: string,
-  payload: Record<string, string>
+  payload: Record<string, unknown>
 ) {
   const { data } = await axiosInstance.put<IBudgetMutationResult>(
     `/budgets/${id}`,
@@ -219,6 +219,15 @@ export type BudgetDetails = {
     project?: { _id: string; description?: string } | null;
   };
   links: {
+    investment: {
+      tradeId: string;
+      assetId: string;
+      title: string;
+      kind: string;
+      unit: string;
+      quantity: number;
+      assetDeleted: boolean;
+    } | null;
     debts: {
       _id: string;
       role: "source" | "settlement";

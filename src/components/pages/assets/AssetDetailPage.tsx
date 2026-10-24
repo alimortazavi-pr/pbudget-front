@@ -132,6 +132,10 @@ export function AssetDetailPage({ assetId }: { assetId: string }) {
   let sentence: string;
   if (asset.tradeCount === 0) sentence = t("feat.assets.sentenceNoTrades");
   else if (empty) sentence = t("feat.assets.sentenceSoldOut");
+  else if (asset.costKnown === false)
+    sentence = priced
+      ? `${formatQuantity(asset.quantity)} ${asset.unit} «${asset.title}» دارید که امروز ${money(asset.value)} ارزش دارد. قیمت خرید همه‌اش را ندارید، برای همین سود و زیان حساب نمی‌شود.`
+      : `${formatQuantity(asset.quantity)} ${asset.unit} «${asset.title}» دارید. قیمت امروز را وارد کنید تا ارزشش را ببینید.`;
   else if (!priced)
     sentence = t("feat.assets.sentenceNoPrice", {
       quantity: `${formatQuantity(asset.quantity)} ${asset.unit}`,
@@ -279,7 +283,9 @@ export function AssetDetailPage({ assetId }: { assetId: string }) {
                         </p>
                       </div>
                       <div className="flex shrink-0 items-center gap-1">
-                        <p className="text-sm font-extrabold">{money(trade.totalPrice)}</p>
+                        <p className="text-sm font-extrabold">
+                          {trade.priceKnown === false ? <span className="text-xs font-semibold text-muted">بدون قیمت (هدیه)</span> : money(trade.totalPrice)}
+                        </p>
                         <button
                           type="button"
                           className="pb-icon-btn hover:!text-danger"

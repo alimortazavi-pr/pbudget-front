@@ -67,6 +67,13 @@ import { bumpBudgetRevision } from "@/stores/budget";
 import { categoriesSelector } from "@/stores/category";
 import { setProfile, userSelector } from "@/stores/profile";
 import { BudgetType, CategoryKind, DebtType } from "@/types/enums";
+import {
+  initialInvestmentLedger,
+  InvestmentLedgerSection,
+  investmentPayload,
+  isInvestmentComplete,
+  type InvestmentLedgerValue,
+} from "@/components/pages/budget/InvestmentLedgerSection";
 
 type BudgetFormPageProps = {
   budget?: IBudget;
@@ -101,6 +108,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   const { t } = useTranslation();
   const { enabled: templatesEnabled } = useFeatureFlag("templates");
   const { enabled: balancesEnabled } = useFeatureFlag("account_balances");
+  const { enabled: assetsEnabled } = useFeatureFlag("assets");
   const { displayCurrencyLabel } = useCurrencyLabels();
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -155,6 +163,9 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
     enabled: false,
     ventureId: "",
   });
+  const [investment, setInvestment] = useState<InvestmentLedgerValue>(initialInvestmentLedger);
+  // Editing a transaction that already bought an asset.
+  const [investmentLinked, setInvestmentLinked] = useState(false);
   const [moreOpen, setMoreOpen] = useState(
     () =>
       Boolean(
@@ -319,6 +330,31 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
   }
 
   /** After "save and next": same type, date and card, everything else empty. */
+  useEffect(() => {
+    if (!budget?._id || !assetsEnabled) return;
+    let alive = true;
+    void budgetsApi
+      .fetchBudgetDetails(budget._id)
+      .then((details) => {
+        const linked = details.links.investment;
+        if (!alive || !linked) return;
+        setInvestmentLinked(true);
+        setInvestment({
+          enabled: true,
+          assetId: linked.assetDeleted ? "" : linked.assetId,
+          kind: linked.kind as InvestmentLedgerValue["kind"],
+          title: linked.title,
+          unit: linked.unit,
+          quantity: String(linked.quantity),
+        });
+        setMoreOpen(true);
+      })
+      .catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, [budget?._id, assetsEnabled]);
+
   function resetForNext() {
     setPrice("");
     setCategory("");
@@ -328,6 +364,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
     setInstallmentLedger({ enabled: false, occurrenceId: "" });
     setProjectLedger({ enabled: false, projectId: "" });
     setVentureLedger({ enabled: false, ventureId: "" });
+    setInvestment(initialInvestmentLedger);
     window.scrollTo({ top: 0, behavior: "smooth" });
     focusAmountField();
   }
@@ -419,6 +456,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
       projectLedger.enabled || isProjectCategory ? t("auto.kcce7e8ff41") : "",
       ventureLedger.enabled || existingVentureId ? t("auto.k9f48ae23bb") : "",
       budget?.debt ? t("auto.k4ffe94cc2d") : "",
+      investment.enabled && type === String(BudgetType.COST) ? "سرمایه‌گذاری" : "",
     ].filter(Boolean),
   );
 
@@ -544,6 +582,19 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
       }
     }
 
+    const isCost = String(type) === String(BudgetType.COST);
+    const body: Record<string, unknown> = { ...payload };
+    if (assetsEnabled && investment.enabled && isCost) {
+      if (!isInvestmentComplete(investment)) {
+        setMoreOpen(true);
+        showToast("مقدار سرمایه‌گذاری را وارد کنید");
+        return;
+      }
+      body.investment = investmentPayload(investment);
+    } else if (budget && investmentLinked && assetsEnabled) {
+      body.removeInvestment = true;
+    }
+
     if (!budget && installmentLedger.enabled && !installmentLedger.occurrenceId) {
       setMoreOpen(true);
       showToast(t("budget.selectInstallmentRequired"));
@@ -582,7 +633,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
       let savedBudgetId = budget?._id ?? "";
 
       if (budget) {
-        const res = await budgetsApi.updateBudget(budget._id, payload);
+        const res = await budgetsApi.updateBudget(budget._id, body);
         mutationResult = res;
         savedBudgetId = budget._id;
 
@@ -606,7 +657,7 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
           showToast(t("auto.ka1c79727b7"), "success");
         }
       } else {
-        const res = await budgetsApi.createBudget(payload);
+        const res = await budgetsApi.createBudget(body);
         mutationResult = res;
         savedBudgetId = res.budget._id;
 
@@ -898,6 +949,14 @@ export function BudgetFormPage({ budget }: BudgetFormPageProps) {
                   ) : (
                     <LinkedDebtSummary debt={budget.debt} />
                   )}
+
+                  {assetsEnabled && type === String(BudgetType.COST) ? (
+                    <InvestmentLedgerSection
+                      value={investment}
+                      onChange={(patch) => setInvestment((current) => ({ ...current, ...patch }))}
+                      linked={investmentLinked}
+                    />
+                  ) : null}
 
                   {!budget ? (
                     <InstallmentLedgerSection

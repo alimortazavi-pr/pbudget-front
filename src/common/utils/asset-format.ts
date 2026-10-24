@@ -56,7 +56,7 @@ export function summarizeAssets(assets: IAsset[]): AssetsSummary {
     worth += own;
     realized += asset.realizedProfit;
     if (asset.profit == null) {
-      if (asset.quantity > 0) unpriced += 1;
+      if (asset.quantity > 0 && asset.unitPrice <= 0) unpriced += 1;
     } else {
       profit += asset.profit;
       pricedCost += asset.costBasis;

@@ -67,10 +67,19 @@ export function AssetCard({ asset, currency, onBuy, onSell, onPrice }: Props) {
           <p className="text-lg font-extrabold text-muted">{t("feat.assets.soldOut")}</p>
         ) : (
           <>
-            <p className="break-words text-2xl font-extrabold tracking-tight">{money(assetWorth(asset))}</p>
+            {/* A gift with no price yet has no money value to show: show what is held. */}
+            <p className="break-words text-2xl font-extrabold tracking-tight">
+              {!priced && asset.costKnown === false && asset.costBasis <= 0
+                ? `${formatQuantity(asset.quantity)} ${asset.unit}`
+                : money(assetWorth(asset))}
+            </p>
             <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
               {profit != null ? (
                 <ProfitChip profit={profit} percent={percent} money={money} />
+              ) : asset.costKnown === false ? (
+                <span className="inline-flex items-center rounded-full bg-surface-secondary px-2.5 py-1 text-xs font-semibold text-muted">
+                  {priced ? "بدون قیمت خرید؛ سود و زیان ندارد" : "بدون قیمت خرید"}
+                </span>
               ) : (
                 <span className="inline-flex items-center rounded-full bg-warning/15 px-2.5 py-1 text-xs font-semibold text-warning-foreground">
                   {t("feat.assets.atBuyPrice")}

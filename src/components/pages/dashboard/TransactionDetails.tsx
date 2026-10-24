@@ -10,6 +10,7 @@ import {
   Calendar,
   Card,
   Clock,
+  Coin1,
   DocumentText,
   EmptyWallet,
   Moneys,
@@ -27,6 +28,7 @@ import type { IBudget } from "@/common/interfaces/budget.interface";
 import { formatBudgetDate, formatBudgetDateTime } from "@/common/utils/calendar-date";
 import { formatPriceWithCurrency } from "@/common/utils/format-currency";
 import { toPersianDigits } from "@/common/utils/persian-digits";
+import { formatQuantity } from "@/common/utils/asset-format";
 import { CheckType, DebtType } from "@/types/enums";
 
 const CURRENCY_LABELS: Record<string, string> = { toman: "تومان", usd: "دلار", dinar: "دینار" };
@@ -159,6 +161,19 @@ export function TransactionDetails({
               : `تسویهٔ ${kind} · ${debt.person}${debt.settledAmount ? ` (${formatPriceWithCurrency(debt.settledAmount, debtCurrency)})` : ""}`
           }
           subtitle={`${parts.join(" · ")}${DEBT_STATUS[debt.status] && debt.status !== "settled" ? ` · ${DEBT_STATUS[debt.status]}` : ""}`}
+        />,
+      );
+    }
+    if (links.investment) {
+      const item = links.investment;
+      linkCards.push(
+        <LinkCard
+          key="investment"
+          href={item.assetDeleted ? undefined : PATHS.ASSET(item.assetId)}
+          tone="warning"
+          icon={<Coin1 size={18} variant="Bold" />}
+          title={`سرمایه‌گذاری · ${item.title}`}
+          subtitle={`${toPersianDigits(formatQuantity(item.quantity))} ${item.unit} خریداری شد${item.assetDeleted ? " (دارایی حذف شده است)" : ""}`}
         />,
       );
     }

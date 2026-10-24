@@ -14,6 +14,7 @@ export async function fetchAssets() {
 /** First buy, created together with the asset (all-or-nothing on the server). */
 export type AssetTradePayload = {
   quantity: string;
+  /** Empty = price unknown (a gift); only allowed for a buy that records no transaction. */
   totalPrice: string;
   year: string;
   month: string;

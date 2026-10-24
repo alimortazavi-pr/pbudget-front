@@ -49,7 +49,7 @@ export function AssetAddModal({ open, initialKind, onOpenChange, onCreated }: Pr
   const [unit, setUnit] = useState("");
   const [quantity, setQuantity] = useState("");
   const [total, setTotal] = useState("");
-  const [bought, setBought] = useState<"now" | "before">("now");
+  const [bought, setBought] = useState<"now" | "before" | "gift">("now");
   const [unitPrice, setUnitPrice] = useState("");
   const [record, setRecord] = useState<AssetRecordValue>(() => ({
     date: getNowDateParts(calendar),
@@ -84,7 +84,10 @@ export function AssetAddModal({ open, initialKind, onOpenChange, onCreated }: Pr
   const average = qty > 0 && totalValue > 0 ? totalValue / qty : 0;
   const wallet = getWalletBalance(user, currency);
   const notEnough = bought === "now" && totalValue > 0 && totalValue > wallet;
-  const valid = Boolean(kind) && title.trim().length > 0 && qty > 0 && totalValue > 0;
+  // Only a purchase made now needs its price (it is recorded as an expense);
+  // something owned before may have no known price, and a gift has none.
+  const priceNeeded = bought === "now";
+  const valid = Boolean(kind) && qty > 0 && (!priceNeeded || totalValue > 0);
 
   const meta = useMemo(() => assetKindMeta(kind ?? "other"), [kind]);
 
@@ -96,13 +99,13 @@ export function AssetAddModal({ open, initialKind, onOpenChange, onCreated }: Pr
     try {
       const priceValue = Number(unitPrice);
       const asset = await assetsApi.createAsset({
-        title: title.trim(),
+        title: title.trim() || t(`feat.assets.defaultTitle.${kind}`),
         kind,
         unit: unit.trim() || undefined,
         unitPrice: priceValue > 0 ? String(priceValue) : undefined,
         trade: {
           quantity: String(qty),
-          totalPrice: String(totalValue),
+          totalPrice: bought !== "gift" && totalValue > 0 ? String(totalValue) : "",
           year: record.date.year,
           month: record.date.month,
           day: record.date.day,
@@ -189,7 +192,7 @@ export function AssetAddModal({ open, initialKind, onOpenChange, onCreated }: Pr
 
             <Modal.Body className={`${modalSheetBodyClass} space-y-4`}>
               <FormInput
-                label={t("feat.assets.nameLabel")}
+                label={`${t("feat.assets.nameLabel")} (اختیاری)`}
                 value={title}
                 maxLength={80}
                 onChange={(e) => setTitle(e.target.value)}
@@ -213,9 +216,38 @@ export function AssetAddModal({ open, initialKind, onOpenChange, onCreated }: Pr
                 />
               </div>
 
+              <div className="space-y-2">
+                <div className="grid grid-cols-3 gap-1.5 rounded-2xl bg-surface-secondary p-1" role="radiogroup" aria-label={t("feat.assets.boughtLabel")}>
+                  {(["now", "before", "gift"] as const).map((item) => (
+                    <button
+                      key={item}
+                      type="button"
+                      role="radio"
+                      aria-checked={bought === item}
+                      onClick={() => setBought(item)}
+                      className={`cursor-pointer rounded-xl px-2 py-2.5 text-[13px] font-semibold leading-5 transition-all ${
+                        bought === item
+                          ? "bg-surface text-accent shadow-sm ring-1 ring-accent/30"
+                          : "text-muted hover:text-foreground"
+                      }`}
+                    >
+                      {item === "now" ? t("feat.assets.boughtNow") : item === "before" ? t("feat.assets.boughtBefore") : "هدیه گرفتم"}
+                    </button>
+                  ))}
+                </div>
+                {bought === "before" ? (
+                  <p className="px-1 text-xs leading-6 text-muted">{t("feat.assets.boughtBeforeHint")}</p>
+                ) : bought === "gift" ? (
+                  <p className="px-1 text-xs leading-6 text-muted">
+                    فقط می‌گویید چه چیزی و چه مقدار دارید؛ قیمت خرید لازم نیست و به کیف پول دست نمی‌زنیم. سود و زیان برای این مقدار حساب نمی‌شود.
+                  </p>
+                ) : null}
+              </div>
+
+              {bought !== "gift" ? (
               <div className="space-y-1.5">
                 <FormPriceInput
-                  label={t("feat.assets.totalPaidQuestion")}
+                  label={bought === "before" ? "در مجموع چقدر بابتش دادید؟ (اختیاری)" : t("feat.assets.totalPaidQuestion")}
                   value={total}
                   onChange={setTotal}
                   currency={currency}
@@ -223,33 +255,13 @@ export function AssetAddModal({ open, initialKind, onOpenChange, onCreated }: Pr
                 <p className="min-h-5 text-xs text-muted" data-testid="average-hint">
                   {average > 0
                     ? t("feat.assets.averageLine", { unit: unitName, price: formatPriceWithCurrency(average, currency) })
-                    : t("feat.assets.totalHint")}
+                    : bought === "before"
+                      ? "اگر یادتان نیست خالی بگذارید؛ فقط سود و زیانش نمایش داده نمی‌شود."
+                      : t("feat.assets.totalHint")}
                 </p>
               </div>
 
-              <div className="space-y-2">
-                <div className="grid grid-cols-2 gap-1.5 rounded-2xl bg-surface-secondary p-1" role="radiogroup" aria-label={t("feat.assets.boughtLabel")}>
-                  {(["now", "before"] as const).map((item) => (
-                    <button
-                      key={item}
-                      type="button"
-                      role="radio"
-                      aria-checked={bought === item}
-                      onClick={() => setBought(item)}
-                      className={`cursor-pointer rounded-xl px-3 py-2.5 text-sm font-semibold transition-all ${
-                        bought === item
-                          ? "bg-surface text-accent shadow-sm ring-1 ring-accent/30"
-                          : "text-muted hover:text-foreground"
-                      }`}
-                    >
-                      {t(item === "now" ? "feat.assets.boughtNow" : "feat.assets.boughtBefore")}
-                    </button>
-                  ))}
-                </div>
-                {bought === "before" ? (
-                  <p className="px-1 text-xs leading-6 text-muted">{t("feat.assets.boughtBeforeHint")}</p>
-                ) : null}
-              </div>
+              ) : null}
 
               {bought === "now" ? (
                 <AssetRecordSection side="buy" value={record} onChange={setRecord} cards={cards} />

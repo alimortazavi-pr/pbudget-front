@@ -23,6 +23,8 @@ export interface IAsset {
   /** Average price paid for one unit. */
   avgBuyPrice: number;
   costBasis: number;
+  /** False while units without a purchase price (gifts) are held. */
+  costKnown?: boolean;
   value: number;
   /** null while the asset has no price yet. */
   profit: number | null;
@@ -42,6 +44,10 @@ export interface IAssetTrade {
   side: "buy" | "sell";
   quantity: number;
   totalPrice: number;
+  /** False for a buy without a price (a gift). */
+  priceKnown?: boolean;
+  /** Created from an expense marked as an investment. */
+  fromTransaction?: boolean;
   year: string | number;
   month: string | number;
   day: string | number;
