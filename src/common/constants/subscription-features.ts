@@ -7,6 +7,7 @@ export const SUBSCRIPTION_FEATURE_CATALOG = [
   { key: "installments", label: "اقساط" },
   { key: "checks", label: "چک‌ها" },
   { key: "commitments", label: "تعهدات جاری" },
+  { key: "category_totals", label: "جمع هزینهٔ هر دسته‌بندی" },
   { key: "analytics", label: "تحلیل مالی و گزارش‌ها" },
   { key: "bank_import", label: "ورود صورتحساب بانکی" },
   { key: "sms_import", label: "ورود از پیامک بانک" },

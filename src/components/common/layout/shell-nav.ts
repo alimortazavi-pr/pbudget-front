@@ -46,7 +46,7 @@ export const SIMPLE_NAV_ITEMS = [
 export const PRIMARY_NAV_ITEMS = [
   { href: PATHS.HOME, label: "nav.home", icon: Home2 },
   { href: PATHS.BANK_IMPORT, label: "nav.bankImport", icon: DocumentUpload, featureKey: "bank_import" },
-  { href: PATHS.ANALYSIS, label: "nav.financialAnalysis", icon: Chart, featureKey: "analytics" },
+  { href: PATHS.ANALYSIS, label: "nav.financialAnalysis", icon: Chart, featureKey: "category_totals" },
   { href: PATHS.AI, label: "nav.aiAssistant", icon: MagicStar, featureKey: "ai" },
   { href: PATHS.BOXES, label: "nav.boxes", icon: Box1, featureKey: "boxes" },
   { href: PATHS.ASSETS, label: "nav.assets", icon: Coin1, featureKey: "assets" },
