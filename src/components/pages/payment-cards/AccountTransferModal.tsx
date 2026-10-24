@@ -6,7 +6,7 @@ import { Button, Modal } from "@heroui/react";
 import * as paymentCardsApi from "@/common/api/payment-cards";
 import type { UserCurrency } from "@/common/constants/user-preferences";
 import { resolveBudgetDateCalendar } from "@/common/constants/user-preferences";
-import type { IAccountBalance, IPaymentCard } from "@/common/interfaces/payment-card.interface";
+import type { IAccountBalance, IAccountTransfer, IPaymentCard } from "@/common/interfaces/payment-card.interface";
 import { getNowDateParts } from "@/common/utils";
 import { formatPriceWithCurrency } from "@/common/utils/format-currency";
 import { showErrorToast, showToast } from "@/common/utils/toast";
@@ -37,10 +37,12 @@ type Props = {
   defaultFromId?: string;
   currency: UserCurrency;
   onDone: () => void;
+  /** Edit this transfer instead of creating a new one. */
+  editing?: IAccountTransfer | null;
 };
 
 /** Moves money between two tracked accounts. The wallet total never changes. */
-export function AccountTransferModal({ open, onOpenChange, cards, balances, defaultFromId, currency, onDone }: Props) {
+export function AccountTransferModal({ open, onOpenChange, cards, balances, defaultFromId, currency, onDone, editing }: Props) {
   const { t } = useTranslation();
   const user = useAppSelector(userSelector);
   const calendar = resolveBudgetDateCalendar(user?.preferences?.dateCalendar);
@@ -53,6 +55,14 @@ export function AccountTransferModal({ open, onOpenChange, cards, balances, defa
 
   useEffect(() => {
     if (!open) return;
+    if (editing) {
+      setFromId(editing.fromCard);
+      setToId(editing.toCard);
+      setAmount(String(editing.amount));
+      setDescription(editing.description ?? "");
+      setDate({ year: String(editing.year), month: String(editing.month), day: String(editing.day) });
+      return;
+    }
     const from = cards.find((card) => card._id === defaultFromId) ?? cards[0];
     setFromId(from?._id ?? "");
     setToId(cards.find((card) => card._id !== from?._id)?._id ?? "");
@@ -74,7 +84,11 @@ export function AccountTransferModal({ open, onOpenChange, cards, balances, defa
     [cards, balances, currency, t],
   );
   const valid = Boolean(fromId && toId && fromId !== toId && Number(amount) > 0);
-  const fromBalance = balances.get(fromId)?.balance;
+  // Editing: this transfer is already in the balance, so add it back first.
+  const fromBalance =
+    balances.get(fromId)?.balance === undefined
+      ? undefined
+      : (balances.get(fromId)?.balance ?? 0) + (editing && editing.fromCard === fromId ? editing.amount : 0);
   const goesNegative = fromBalance !== undefined && Number(amount) > fromBalance;
   const fromTitle = cards.find((card) => card._id === fromId)?.title ?? "";
 
@@ -83,16 +97,18 @@ export function AccountTransferModal({ open, onOpenChange, cards, balances, defa
     if (!valid) return;
     setSaving(true);
     try {
-      await paymentCardsApi.createAccountTransfer({
+      const payload = {
         fromCardId: fromId,
         toCardId: toId,
         amount: String(Number(amount)),
         year: String(date.year),
         month: String(date.month),
         day: String(date.day),
-        description: description.trim() || undefined,
-      });
-      showToast(t("feat.accounts.transferDone"), "success");
+        description: description.trim() || (editing ? "" : undefined),
+      };
+      if (editing) await paymentCardsApi.updateAccountTransfer(editing._id, payload);
+      else await paymentCardsApi.createAccountTransfer(payload);
+      showToast(editing ? "انتقال ویرایش شد" : t("feat.accounts.transferDone"), "success");
       onOpenChange(false);
       onDone();
     } catch (error) {
@@ -107,7 +123,7 @@ export function AccountTransferModal({ open, onOpenChange, cards, balances, defa
       <AppModalDialog className="flex max-h-[100dvh] flex-col sm:max-w-md">
         <form onSubmit={(e) => void submit(e)} className="flex min-h-0 flex-1 flex-col">
           <AppModalHeader>
-            <Modal.Heading>{t("feat.accounts.transferAction")}</Modal.Heading>
+            <Modal.Heading>{editing ? "ویرایش انتقال" : t("feat.accounts.transferAction")}</Modal.Heading>
           </AppModalHeader>
           <Modal.Body className={`${modalSheetBodyClass} space-y-4`}>
             <div className="space-y-2">
@@ -151,7 +167,7 @@ export function AccountTransferModal({ open, onOpenChange, cards, balances, defa
               {t("common.cancel")}
             </Button>
             <Button type="submit" isPending={saving} isDisabled={!valid}>
-              {t("feat.accounts.transferSubmit")}
+              {editing ? t("common.save") : t("feat.accounts.transferSubmit")}
             </Button>
           </Modal.Footer>
         </form>

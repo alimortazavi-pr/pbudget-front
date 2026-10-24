@@ -193,7 +193,7 @@ export function PaymentCardsPage() {
       )}
 
       {balancesEnabled && transfers.length > 0 ? (
-        <AccountTransfersList transfers={transfers} cards={cards} currency={currency} onChanged={() => void load()} />
+        <AccountTransfersList transfers={transfers} cards={cards} trackedCards={tracked} balances={balanceById} currency={currency} onChanged={() => void load()} />
       ) : null}
 
       <CardFormModal
